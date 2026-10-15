@@ -1,56 +1,77 @@
-# 🐾 宠物社区 Web 应用
+# 宠物社区 · 前端
 
-一个面向宠物爱好者的社区平台，提供宠物档案管理、社区互动、社交交流等功能。
+社区前台与管理后台的 Web 客户端（独立仓库 / 分支）。
 
-## 🛠️ 技术栈
+## 技术栈
 
-- **框架**: React 18+
-- **语言**: TypeScript 5+
-- **构建工具**: Vite
-- **样式**: TailwindCSS 3+
-- **组件库**: shadcn/ui
-- **状态管理**: Zustand
-- **HTTP 客户端**: axios
+- **框架**: React 19 + TypeScript
+- **构建**: Vite
+- **样式**: Tailwind CSS 4
+- **组件**: HeroUI
+- **状态**: Zustand
+- **路由**: React Router 6
+- **请求**: axios
+- **包管理**: pnpm
 
+## 目录结构
 
-
-## 📁 项目结构
-
-```bash
-pet_community/
-├── front/                 # 前端代码
-│   ├── src/
-│   │   ├── components/    # UI 组件
-│   │   ├── pages/         # 页面组件
-│   │   ├── hooks/         # 自定义 Hooks
-│   │   ├── api/           # API 请求封装
-│   │   ├── stores/        # Zustand 状态管理
-│   │   ├── router/        # 路由配置
-│   │   ├── utils/         # 工具函数
-│   │   └── types/         # 类型定义
-│   ├── public/            # 静态资源
-│   └── index.html         # HTML 入口
+```
+├── src/
+│   ├── api/           # API 封装
+│   ├── components/    # UI / 业务组件
+│   ├── hooks/         # 自定义 Hooks
+│   ├── pages/         # 页面
+│   ├── router/        # 路由
+│   ├── stores/        # Zustand
+│   ├── styles/        # 全局样式与主题
+│   ├── types/         # 类型
+│   └── utils/         # 工具方法
+├── e2e/               # Playwright E2E
+├── public/
+├── index.html
+└── package.json
 ```
 
-## 🚀 快速开始
+## 环境要求
 
-### 环境要求
+- Node.js >= 18
+- pnpm
 
-- Node.js >= 18.0.0
+依赖后端 API（默认 `http://localhost:8083`），需另行启动后端服务。
 
-### 前端启动
+## 快速开始
 
 ```bash
-cd front
 pnpm install
-pnpm run dev
+pnpm dev
 ```
 
-## 🔧 配置说明
+开发服务默认：`http://localhost:3000`  
+`/api` 已代理到后端 `http://localhost:8083`（见 `vite.config.ts`）。
 
-前端配置文件位于 `front/.env`：
+### 常用命令
+
+| 命令 | 说明 |
+|------|------|
+| `pnpm dev` | 本地开发 |
+| `pnpm build` | 生产构建 |
+| `pnpm typecheck` | TypeScript 检查 |
+| `pnpm lint` | ESLint |
+| `pnpm test` | 单元测试（Vitest） |
+| `pnpm test:e2e` | E2E（Playwright） |
+
+E2E 前置条件与账号见 [e2e/README.md](./e2e/README.md)。
+
+## 配置说明
+
+开发环境一般无需 `.env`：Vite 通过代理转发 `/api`。  
+若需直连后端，可配置：
 
 ```env
-VITE_API_URL=http://localhost:8080/api/v1
-VITE_APP_NAME=宠物社区
+VITE_API_URL=http://localhost:8083
 ```
+
+## 协作约定
+
+- 规格与前端规范见仓库内 / 关联文档中的 `docs/frontend/`、`docs/specs/`
+- Agent 协作规范见 `AGENTS.md`（若本分支包含）
