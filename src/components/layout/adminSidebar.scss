@@ -1,0 +1,29 @@
+@import '../../styles/variables.scss';
+
+// 管理后台侧栏：冷灰实色底（文档流内占位，不遮挡内容）
+.admin-sidebar {
+  background-color: $admin-sidebar-bg;
+  background-image: none;
+  opacity: 1;
+
+  &__header {
+    border-bottom: 1px solid $border-light;
+  }
+
+  // 菜单色阶：默认 Ink（冷灰底上可读）→ 悬停略深 + 白底 → 激活青竹
+  // 显式写在组件样式中，避免被全局 a 链接主色污染
+  &__link {
+    color: $text-primary;
+
+    &:hover:not([aria-current='page']) {
+      background-color: $background-white;
+      color: $secondary-dark;
+    }
+
+    &[aria-current='page'] {
+      background-color: $background-white;
+      color: $secondary-dark;
+      box-shadow: $shadow-card;
+    }
+  }
+}

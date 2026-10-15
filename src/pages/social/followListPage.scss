@@ -1,0 +1,201 @@
+@import '../../styles/variables.scss';
+
+.follow-list-page {
+  min-height: 100vh;
+  background-color: $background-color;
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: $background-white;
+    box-shadow: $shadow-card;
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: $text-primary;
+      cursor: pointer;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    .placeholder {
+      width: 40px;
+    }
+  }
+
+  .tab-bar {
+    display: flex;
+    background-color: $background-white;
+    margin-top: 10px;
+
+    .tab-item {
+      flex: 1;
+      padding: 14px 0;
+      text-align: center;
+      font-size: 16px;
+      color: $text-secondary;
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: relative;
+
+      &.active {
+        color: $primary-color;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 40px;
+          height: 3px;
+          background-color: $primary-color;
+          border-radius: 2px;
+        }
+      }
+    }
+  }
+
+  .user-list {
+    padding: 10px;
+
+    .loading,
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: $text-muted;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      background-color: $background-white;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      gap: 8px;
+
+      .user-item-main {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        min-width: 0;
+        min-height: 44px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+        color: inherit;
+
+        &:active {
+          opacity: 0.85;
+        }
+      }
+
+      .user-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        background-color: $background-muted;
+        flex-shrink: 0;
+      }
+
+      .user-info {
+        flex: 1;
+        margin-left: 14px;
+        min-width: 0;
+
+        .user-name {
+          font-size: 16px;
+          font-weight: 600;
+          color: $text-primary;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .secret-follow-icon {
+          display: inline-flex;
+          align-items: center;
+          color: $text-muted;
+          vertical-align: middle;
+        }
+
+        .user-signature {
+          font-size: 13px;
+          color: $text-muted;
+          margin-top: 4px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      .follow-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .secret-toggle {
+        padding: 6px;
+        min-width: 32px;
+        color: $text-muted;
+      }
+
+      .follow-btn {
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        border: 1px solid $primary-color;
+        color: $primary-color;
+        background: none;
+        cursor: pointer;
+
+        &.following {
+          background-color: $primary-color;
+          color: $background-white;
+        }
+      }
+    }
+  }
+
+  .load-more {
+    text-align: center;
+    padding: 20px;
+
+    button {
+      padding: 10px 30px;
+      border-radius: 25px;
+      border: none;
+      background-color: $background-white;
+      color: $text-secondary;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .follow-list-page {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}

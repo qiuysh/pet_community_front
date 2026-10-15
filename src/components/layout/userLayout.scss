@@ -1,0 +1,510 @@
+// User Layout Styles
+@import '../../styles/variables';
+
+// 壳层偏移量（含刘海 / Home Indicator），供页面 fixed/sticky 对齐
+.user-layout {
+  --user-header-height: 56px;
+  --user-tab-bar-height: 64px;
+  --user-safe-top: env(safe-area-inset-top, 0px);
+  --user-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --user-header-offset: calc(var(--user-header-height) + var(--user-safe-top));
+  --user-tab-bar-offset: calc(var(--user-tab-bar-height) + var(--user-safe-bottom));
+  --user-action-bar-height: 56px;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+// ============================================
+// User Header Styles
+// ============================================
+
+.user-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--user-header-offset);
+  padding-top: var(--user-safe-top);
+  background: $background-white;
+  border-bottom: 1px solid $border-light;
+  z-index: 100;
+  box-shadow: $shadow-soft;
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: var(--user-header-height);
+    padding: 0 $spacing-md;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
+    min-width: 0;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    color: $primary-color;
+    font-weight: 600;
+    font-size: $font-size-title;
+    flex-shrink: 0;
+    min-width: 0;
+
+    .logo-icon {
+      font-size: $font-size-xl;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      white-space: nowrap;
+    }
+
+    &:hover {
+      color: $primary-dark;
+    }
+
+    @media (max-width: 768px) {
+      .logo-text {
+        display: none;
+      }
+    }
+  }
+
+  .header-nav {
+    display: flex;
+    gap: $spacing-xs;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+
+    .nav-item {
+      color: $text-primary;
+      font-size: $font-size-base;
+      font-weight: 500;
+      padding: $spacing-sm $spacing-md;
+      border-radius: $border-radius-sm;
+      transition: color 0.2s ease, background-color 0.2s ease;
+      position: relative;
+
+      &:hover {
+        color: $primary-color;
+        background: rgba($primary-color, 0.06);
+      }
+
+      &:focus-visible {
+        color: $primary-color;
+        background: rgba($primary-color, 0.08);
+      }
+
+      &.active {
+        color: $primary-color;
+        background: rgba($primary-color, 0.08);
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 24px;
+          height: 3px;
+          background: $primary-color;
+          border-radius: 2px;
+        }
+      }
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex-shrink: 0;
+    min-width: 0;
+
+    @media (max-width: 768px) {
+      gap: 2px;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      @media (max-width: 768px) {
+        gap: 2px;
+      }
+
+      .action-link {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $text-secondary;
+        border-radius: $border-radius-sm;
+        transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+          color: $primary-color;
+          background: rgba($primary-color, 0.08);
+          transform: translateY(-1px);
+        }
+
+        &:focus-visible {
+          color: $primary-color;
+          background: rgba($primary-color, 0.08);
+        }
+
+        // 窄屏只保留搜索，通知/私信走「我的」
+        &--secondary {
+          @media (max-width: 768px) {
+            display: none;
+          }
+        }
+      }
+
+      .user-avatar-link {
+        display: block;
+
+        .user-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid $border-light;
+          transition: border-color 0.2s;
+
+          &:hover {
+            border-color: $primary-color;
+          }
+        }
+      }
+
+      // 用户下拉菜单
+      .user-menu-dropdown {
+        position: relative;
+
+        .user-avatar-btn {
+          width: 40px;
+          height: 40px;
+          padding: 0;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+
+          .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid $border-light;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+          }
+
+          &:hover .user-avatar {
+            border-color: $primary-color;
+            transform: scale(1.05);
+          }
+        }
+
+        .dropdown-menu {
+          position: absolute;
+          top: calc(100% + 8px);
+          right: 0;
+          min-width: 180px;
+          background: $background-white;
+          border: 1px solid $border-light;
+          border-radius: $border-radius-base;
+          box-shadow: $shadow-medium;
+          padding: $spacing-xs;
+          // 由 React state 控制显示，仅负责进入动画
+          animation: fadeIn 0.2s ease-out;
+          z-index: 200;
+          overscroll-behavior: contain;
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: $spacing-sm;
+          padding: $spacing-sm $spacing-md;
+          color: $text-primary;
+          font-size: $font-size-base;
+          border-radius: $border-radius-sm;
+          transition: color 0.2s ease, background-color 0.2s ease;
+          text-decoration: none;
+          width: 100%;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          text-align: left;
+
+          svg {
+            color: $text-muted;
+            flex-shrink: 0;
+          }
+
+          &:hover,
+          &:focus-visible {
+            background: rgba($primary-color, 0.08);
+            color: $primary-color;
+
+            svg {
+              color: $primary-color;
+            }
+          }
+        }
+
+        .dropdown-divider {
+          height: 1px;
+          background: $divider-color;
+          margin: $spacing-xs 0;
+        }
+
+        .logout-item {
+          color: $error-color;
+
+          svg {
+            color: $error-color;
+          }
+
+          &:hover {
+            background: $error-background;
+          }
+        }
+      }
+    }
+
+    .logout-btn {
+      padding: $spacing-xs $spacing-sm;
+      background: transparent;
+      border: 1px solid $border-color;
+      border-radius: $border-radius-sm;
+      color: $text-secondary;
+      font-size: $font-size-xs;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease;
+
+      &:hover {
+        border-color: $error-color;
+        color: $error-color;
+      }
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: $spacing-sm;
+
+      .login-btn,
+      .register-btn {
+        padding: $spacing-sm $spacing-md;
+        border-radius: $border-radius-base;
+        font-size: $font-size-base;
+        font-weight: 500;
+        transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .login-btn {
+        color: $text-primary;
+        background: transparent;
+        border: 1px solid $border-color;
+
+        &:hover {
+          color: $primary-color;
+          border-color: $primary-color;
+          background: rgba($primary-color, 0.05);
+        }
+      }
+
+      .register-btn {
+        background: $primary-color;
+        color: white;
+        border: none;
+
+        &:hover {
+          background: $primary-dark;
+          color: white;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba($primary-color, 0.2);
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// User Main Content Styles
+// ============================================
+
+.user-main {
+  padding-top: var(--user-header-offset);
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: $background-color;
+
+  .user-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: $spacing-lg;
+
+    @media (max-width: 768px) {
+      padding: $spacing-sm;
+      // 底部导航 + 安全区 + FAB 余量，避免内容被遮挡
+      padding-bottom: calc(var(--user-tab-bar-offset) + 60px + #{$spacing-md});
+    }
+  }
+}
+
+// ============================================
+// User Tab Bar Styles (Mobile)
+// ============================================
+
+.user-tab-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--user-tab-bar-offset);
+  padding: 0 $spacing-sm var(--user-safe-bottom);
+  background: $background-white;
+  border-top: 1px solid $border-light;
+  box-shadow: 0 -4px 16px rgba(43, 47, 51, 0.04);
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+
+  .tab-bar-items {
+    height: var(--user-tab-bar-height);
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 2px;
+  }
+
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    min-height: 44px;
+    color: $text-muted;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    padding: 6px 2px;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+
+    .tab-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+
+      svg {
+        width: 22px;
+        height: 22px;
+        transition: transform 0.2s ease, stroke-width 0.2s ease;
+      }
+    }
+
+    .tab-label {
+      font-size: 10px;
+      line-height: 1.2;
+      font-weight: 400;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: font-weight 0.2s ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: $primary-color;
+    }
+
+    &.active {
+      color: $primary-color;
+
+      .tab-icon svg {
+        stroke-width: 2.5;
+      }
+
+      .tab-label {
+        font-weight: 600;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 16px;
+        height: 3px;
+        background: $primary-color;
+        border-radius: 2px;
+      }
+    }
+  }
+
+  // 发帖 FAB：完整抬到底栏之上，避免挡住中间「活动」触控区
+  .create-post-fab {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--user-tab-bar-offset) + 8px);
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    z-index: 1;
+    -webkit-tap-highlight-color: transparent;
+
+    .create-post-icon {
+      width: 52px;
+      height: 52px;
+      background: $primary-color;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba($primary-color, 0.35);
+      transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+
+      svg {
+        stroke: white;
+        stroke-width: 2.5;
+      }
+    }
+
+    .fab-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    &:active .create-post-icon {
+      transform: scale(0.96);
+      background: $primary-dark;
+    }
+  }
+}

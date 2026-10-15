@@ -1,0 +1,101 @@
+// Pet Community - 蜜桃·青竹 设计系统变量
+// 取向：蜜桃珊瑚（情绪/CTA）+ 青竹青绿（结构/信任）+ 冷灰中性（阅读面）
+
+// ============================================
+// 颜色系统
+// ============================================
+
+// 主色调 - 蜜桃珊瑚
+$primary-color: #F0785A;
+$primary-light: #F59A82;
+$primary-dark: #D45E42;
+$primary-soft: #FFF0EB;
+
+// 辅助色 - 青竹（结构/信任，与成功色区分）
+$secondary-color: #3D9B8F;
+$secondary-light: #6BB5AB;
+$secondary-dark: #2E7A70;
+$secondary-soft: #E6F4F2;
+
+// 管理后台侧栏底（冷灰实色，弱于白卡、强于 cream，避免青绿突兀）
+$admin-sidebar-bg: #E8ECEE;
+
+// 背景色 - 微青冷调（白卡更跳，避免纯灰后台感）
+$background-color: #F4F7F7;
+$background-white: #FFFFFF;
+$background-soft: #FBFCFC;
+$background-muted: #E6EAED;
+
+// 文字色
+$text-primary: #2B2F33;
+$text-secondary: #5C6370;
+$text-muted: #8B929A;
+$text-light: #B0B6BE;
+
+// 边框/分隔色（略偏青，与底色同族）
+$border-color: #E0E6E8;
+$border-light: #EDF1F2;
+$divider-color: #EDF1F2;
+
+// 功能色（与主色/辅助色明确区分）
+$success-color: #2F9B7A;
+$success-dark: #248A6A;
+$success-soft: #E8F6F1;
+$warning-color: #E6A23C;
+$error-color: #D94A4A;
+$error-dark: #C03D3D;
+$info-color: #5B8DEF;
+
+// 功能背景色
+$error-background: #FDF4F4;
+$error-border: #F5D0D0;
+
+// 排行奖牌色（金牌偏琥珀，与 warning 区分）
+$rank-gold: #F0B429;
+$rank-gold-dark: #D9A012;
+$rank-silver: #A0A6AD;
+$rank-silver-dark: #7E868F;
+$rank-bronze: #C4895A;
+$rank-bronze-dark: #A87348;
+
+// 第三方品牌色（账号绑定图标）
+$brand-wechat: #07C160;
+$brand-weibo: #E6162D;
+$brand-qq: #12B7F5;
+
+// ============================================
+// 尺寸系统
+// ============================================
+
+// 圆角角色：控件 8 / 卡片 12 / 弹层 16 / 大容器 20
+$border-radius-xs: 8px;
+$border-radius-sm: 12px;
+$border-radius-base: 16px;
+$border-radius-lg: 20px;
+$border-radius-xl: 24px;
+
+$font-size-xs: 12px;
+$font-size-base: 14px;
+$font-size-sm: 15px;
+$font-size-large: 16px;
+$font-size-title: 20px;
+$font-size-xl: 24px;
+$font-size-2xl: 28px;
+
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+// ============================================
+// 阴影系统（中性内容卡 + 品牌色强调）
+// ============================================
+
+$shadow-soft: 0 4px 20px rgba(43, 47, 51, 0.06);
+$shadow-medium: 0 8px 30px rgba(43, 47, 51, 0.10);
+$shadow-card: 0 2px 16px rgba(43, 47, 51, 0.04), 0 4px 8px rgba(43, 47, 51, 0.03);
+$shadow-hover: 0 6px 24px rgba(43, 47, 51, 0.08), 0 8px 12px rgba(43, 47, 51, 0.05);
+$shadow-brand: 0 4px 16px rgba(240, 120, 90, 0.28);
+$shadow-brand-hover: 0 6px 22px rgba(240, 120, 90, 0.34);

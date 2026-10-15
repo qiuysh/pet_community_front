@@ -1,0 +1,286 @@
+@import '../../styles/variables.scss';
+
+.points-page {
+  min-height: 100vh;
+  background-color: $background-color;
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: $background-white;
+    box-shadow: $shadow-card;
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: $text-primary;
+      cursor: pointer;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    .placeholder {
+      width: 40px;
+    }
+  }
+
+  .level-card {
+    margin: 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    border-radius: 16px;
+    color: $background-white;
+
+    .level-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .level-badge {
+        padding: 4px 12px;
+        background-color: rgba($background-white, 0.2);
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-right: 10px;
+      }
+
+      .level-name {
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+
+    .points-info {
+      text-align: center;
+      margin-bottom: 16px;
+
+      .points-value {
+        font-size: 48px;
+        font-weight: 700;
+      }
+
+      .points-label {
+        font-size: 14px;
+        opacity: 0.8;
+      }
+    }
+
+    .progress-bar {
+      height: 8px;
+      background-color: rgba($background-white, 0.3);
+      border-radius: 4px;
+      overflow: hidden;
+
+      .progress-fill {
+        height: 100%;
+        background-color: $background-white;
+        border-radius: 4px;
+        transition: width 0.3s;
+      }
+    }
+
+    .progress-text {
+      text-align: right;
+      font-size: 12px;
+      margin-top: 8px;
+      opacity: 0.8;
+    }
+  }
+
+  .tab-bar {
+    display: flex;
+    background-color: $background-white;
+    margin: 0 16px;
+    border-radius: 12px;
+    padding: 4px;
+
+    .tab-item {
+      flex: 1;
+      padding: 12px 0;
+      text-align: center;
+      font-size: 15px;
+      color: $text-secondary;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &.active {
+        background-color: $primary-color;
+        color: $background-white;
+      }
+    }
+  }
+
+  .content-area {
+    padding: 16px;
+
+    .loading,
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: $text-muted;
+    }
+
+    .records-list {
+      .record-item {
+        display: flex;
+        align-items: center;
+        padding: 14px;
+        background-color: $background-white;
+        border-radius: 12px;
+        margin-bottom: 10px;
+
+        .record-icon {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: $background-color;
+          border-radius: 10px;
+          margin-right: 14px;
+        }
+
+        .record-info {
+          flex: 1;
+
+          .record-desc {
+            font-size: 15px;
+            color: $text-primary;
+          }
+
+          .record-time {
+            font-size: 12px;
+            color: $text-muted;
+            margin-top: 4px;
+          }
+        }
+
+        .record-points {
+          font-size: 16px;
+          font-weight: 600;
+
+          &.gain {
+            color: $primary-color;
+          }
+
+          &.lose {
+            color: $text-muted;
+          }
+        }
+      }
+    }
+
+    .rules-list {
+      .rule-item {
+        display: flex;
+        align-items: center;
+        padding: 14px;
+        background-color: $background-white;
+        border-radius: 12px;
+        margin-bottom: 10px;
+
+        .rule-icon {
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: rgba($primary-color, 0.06);
+          border-radius: 12px;
+          margin-right: 14px;
+        }
+
+        .rule-info {
+          flex: 1;
+
+          .rule-name {
+            font-size: 15px;
+            color: $text-primary;
+            font-weight: 600;
+          }
+
+          .rule-limit {
+            font-size: 12px;
+            color: $text-muted;
+            margin-top: 4px;
+          }
+        }
+
+        .rule-points {
+          font-size: 18px;
+          font-weight: 700;
+          color: $primary-color;
+        }
+      }
+    }
+
+    .benefits-list {
+      .benefit-item {
+        display: flex;
+        align-items: center;
+        padding: 14px;
+        background-color: $background-white;
+        border-radius: 12px;
+        margin-bottom: 10px;
+
+        .benefit-icon {
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: rgba($warning-color, 0.08);
+          border-radius: 12px;
+          margin-right: 14px;
+        }
+
+        .benefit-info {
+          flex: 1;
+
+          .benefit-name {
+            font-size: 15px;
+            color: $text-primary;
+            font-weight: 600;
+          }
+
+          .benefit-desc {
+            font-size: 12px;
+            color: $text-muted;
+            margin-top: 4px;
+          }
+        }
+
+        .benefit-level {
+          padding: 4px 10px;
+          background-color: $warning-color;
+          color: $background-white;
+          font-size: 12px;
+          font-weight: 600;
+          border-radius: 10px;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .points-page {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}

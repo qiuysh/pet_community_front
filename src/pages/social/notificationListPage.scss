@@ -1,0 +1,178 @@
+@import '../../styles/variables.scss';
+
+.notification-list-page {
+  min-height: 100vh;
+  background: $background-color;
+  padding-bottom: 80px;
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: $background-white;
+    box-shadow: $shadow-card;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: $background-color;
+      color: $text-primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:active {
+        background: $border-color;
+      }
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: $primary-color;
+      color: $background-white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:active {
+        background: $primary-dark;
+      }
+    }
+
+    .placeholder {
+      width: 40px;
+    }
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: $text-muted;
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    color: $text-muted;
+
+    p {
+      margin-top: 16px;
+      font-size: 16px;
+    }
+  }
+
+  .notification-list {
+    padding: 16px;
+
+    .notification-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 16px;
+      margin-bottom: 8px;
+      background: $background-white;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:active {
+        background: $background-muted;
+      }
+
+      &.unread {
+        background: rgba($primary-color, 0.06);
+      }
+
+      &.read {
+        opacity: 0.7;
+      }
+
+      .notification-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: $background-color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-right: 16px;
+      }
+
+      .notification-content {
+        flex: 1;
+        min-width: 0;
+
+        .notification-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: $text-primary;
+          margin-bottom: 4px;
+        }
+
+        .notification-desc {
+          font-size: 14px;
+          color: $text-secondary;
+          line-height: 1.5;
+          margin-bottom: 8px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .notification-time {
+          font-size: 12px;
+          color: $text-muted;
+        }
+      }
+
+      .unread-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: $primary-color;
+        margin-left: 8px;
+        margin-top: 4px;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .load-more {
+    text-align: center;
+    padding: 20px;
+
+    button {
+      padding: 10px 30px;
+      border-radius: 20px;
+      border: 1px solid $border-color;
+      background: $background-white;
+      color: $text-secondary;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:active {
+        background: $background-color;
+      }
+    }
+  }
+}

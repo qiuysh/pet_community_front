@@ -1,0 +1,118 @@
+@import '../../styles/variables.scss';
+
+.notification-settings-page {
+  min-height: 100vh;
+  background-color: $background-color;
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: $background-white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: $text-primary;
+      cursor: pointer;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    .placeholder {
+      width: 40px;
+    }
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: $text-muted;
+  }
+
+  .settings-list {
+    padding: 10px;
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background-color: $background-white;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+
+      &:active {
+        background-color: $background-muted;
+      }
+
+      .setting-info {
+        .setting-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: $text-primary;
+        }
+
+        .setting-desc {
+          font-size: 13px;
+          color: $text-muted;
+          margin-top: 4px;
+        }
+      }
+
+      .toggle-switch {
+        width: 50px;
+        height: 28px;
+        border-radius: 14px;
+        background-color: $border-color;
+        position: relative;
+        transition: background-color 0.3s;
+
+        &.on {
+          background-color: $primary-color;
+
+          .toggle-thumb {
+            transform: translateX(22px);
+          }
+        }
+
+        &.off {
+          .toggle-thumb {
+            transform: translateX(0);
+          }
+        }
+
+        .toggle-thumb {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background-color: $background-white;
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          transition: transform 0.3s;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .notification-settings-page {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}

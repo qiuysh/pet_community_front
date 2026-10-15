@@ -1,0 +1,142 @@
+@import "tailwindcss";
+@import "@heroui/styles";
+
+/*
+ * 蜜桃·青竹 Token（Tailwind v4 @theme）
+ * 与 _variables.scss / global.scss :root 保持同步
+ */
+@theme {
+  --color-primary: #f0785a;
+  --color-primary-light: #f59a82;
+  --color-primary-dark: #d45e42;
+  --color-primary-soft: #fff0eb;
+
+  --color-secondary: #3d9b8f;
+  --color-secondary-light: #6bb5ab;
+  --color-secondary-dark: #2e7a70;
+  --color-secondary-soft: #e6f4f2;
+
+  --color-admin-sidebar: #e8ecee;
+  --color-cream: #f4f7f7;
+  --color-soft: #fbfcfc;
+  --color-muted: #e6eaed;
+
+  --color-brown: #2b2f33;
+  --color-brown-secondary: #5c6370;
+  --color-brown-muted: #8b929a;
+  --color-brown-light: #b0b6be;
+
+  --color-border: #e0e6e8;
+  --color-border-light: #edf1f2;
+
+  --color-success: #2f9b7a;
+  --color-success-dark: #248a6a;
+  --color-success-soft: #e8f6f1;
+  --color-warning: #e6a23c;
+  --color-error: #d94a4a;
+  --color-error-dark: #c03d3d;
+  --color-info: #5b8def;
+
+  --color-rank-gold: #f0b429;
+  --color-rank-silver: #a0a6ad;
+  --color-rank-bronze: #c4895a;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
+    "Helvetica Neue", sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-soft: 0 4px 20px rgba(43, 47, 51, 0.06);
+  --shadow-medium: 0 8px 30px rgba(43, 47, 51, 0.1);
+  --shadow-card: 0 2px 16px rgba(43, 47, 51, 0.04), 0 4px 8px rgba(43, 47, 51, 0.03);
+  --shadow-hover: 0 6px 24px rgba(43, 47, 51, 0.08), 0 8px 12px rgba(43, 47, 51, 0.05);
+  --shadow-brand: 0 4px 16px rgba(240, 120, 90, 0.28);
+  --shadow-brand-hover: 0 6px 22px rgba(240, 120, 90, 0.34);
+  --shadow-focus: 0 0 0 3px rgba(240, 120, 90, 0.25);
+
+  /*
+   * 注意：不要在 @theme 定义 --spacing-sm/md/lg/xl/2xl。
+   * Tailwind v4 会把它们当作间距刻度，导致 max-w-md / w-md 等变成 16px。
+   * 设计间距继续用 SCSS $spacing-*（_variables.scss）。
+   */
+
+  --animate-fadeIn: fadeIn 0.3s ease-out;
+  --animate-slideIn: slideIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* HeroUI 语义色 → 蜜桃·青竹 */
+:root,
+.light,
+[data-theme="light"] {
+  --accent: #f0785a;
+  --accent-foreground: #ffffff;
+  --success: #2f9b7a;
+  --success-foreground: #ffffff;
+  --warning: #e6a23c;
+  --warning-foreground: #2b2f33;
+  --danger: #d94a4a;
+  --danger-foreground: #ffffff;
+  --background: #f4f7f7;
+  --foreground: #2b2f33;
+  --surface: #ffffff;
+  --surface-foreground: #2b2f33;
+  --muted: #e6eaed;
+  --muted-foreground: #8b929a;
+  --border: #e0e6e8;
+  --radius: 0.5rem;
+  --radius-control: 8px;
+  --radius-panel: 12px;
+}
+
+/* 社区主按钮：蜜桃投影 */
+@layer components {
+  .button.button--primary {
+    box-shadow: var(--shadow-brand);
+  }
+  .button.button--primary:hover,
+  .button.button--primary[data-hovered="true"] {
+    box-shadow: var(--shadow-brand-hover);
+  }
+}
+
+/* Tailwind v3 → v4 渐变类名兼容（存量页面） */
+@utility bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+@utility bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+@utility bg-gradient-to-b {
+  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+}
+@utility bg-gradient-to-t {
+  background-image: linear-gradient(to top, var(--tw-gradient-stops));
+}
+@utility bg-gradient-to-l {
+  background-image: linear-gradient(to left, var(--tw-gradient-stops));
+}

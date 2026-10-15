@@ -1,0 +1,656 @@
+@import '../../styles/variables.scss';
+
+.profile-settings-page {
+  min-height: 100vh;
+  background: $background-color;
+}
+
+.settings-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: $spacing-xl $spacing-md;
+
+  .page-title {
+    font-size: $font-size-2xl;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.settings-layout {
+  display: flex;
+  gap: $spacing-lg;
+  align-items: flex-start;
+}
+
+.settings-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: $background-white;
+  border-radius: $border-radius-base;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+
+  .sidebar-user {
+    padding: $spacing-md;
+    background: linear-gradient(135deg, $primary-color, $primary-dark);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    .sidebar-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 2px solid rgba(white, 0.3);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-info {
+      flex: 1;
+      min-width: 0;
+
+      .sidebar-nickname {
+        font-weight: 600;
+        font-size: $font-size-base;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar-bio {
+        font-size: 12px;
+        opacity: 0.8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .sidebar-menu {
+    list-style: none;
+    margin: 0;
+    padding: $spacing-xs 0;
+
+    > li {
+      margin: 0;
+      padding: 0;
+    }
+
+    .menu-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      min-height: 44px;
+      padding: $spacing-sm $spacing-md;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      color: $text-secondary;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: color 0.2s ease, background-color 0.2s ease;
+
+      &:hover,
+      &:focus-visible {
+        background: $background-soft;
+        color: $text-primary;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary-color;
+        outline-offset: -2px;
+      }
+
+      &.active {
+        color: $primary-color;
+        background: rgba($primary-color, 0.08);
+        font-weight: 500;
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 3px;
+          height: 24px;
+          background: $primary-color;
+          border-radius: 0 2px 2px 0;
+        }
+      }
+
+      .menu-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        flex-shrink: 0;
+        color: inherit;
+
+        svg {
+          display: block;
+          stroke: currentColor;
+        }
+      }
+
+      .menu-label {
+        flex: 1;
+        min-width: 0;
+        font-size: $font-size-sm;
+      }
+
+      .menu-arrow {
+        font-size: 18px;
+        color: $text-light;
+        opacity: 0;
+        transition: opacity 0.2s ease, color 0.2s ease;
+      }
+
+      &:hover .menu-arrow,
+      &:focus-visible .menu-arrow {
+        opacity: 1;
+      }
+
+      &.active .menu-arrow {
+        opacity: 1;
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+// 移动端：横向滚动卡片菜单（桌面隐藏）
+.settings-mobile-menu {
+  display: none;
+  width: 100%;
+
+  .mobile-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 2px 2px $spacing-xs;
+    display: flex;
+    gap: $spacing-sm;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    > li {
+      flex: 0 0 auto;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .menu-item--mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
+    width: auto;
+    min-width: 4.75rem;
+    min-height: 4.25rem;
+    padding: $spacing-sm;
+    background: $background-white;
+    border: 1px solid $border-light;
+    border-radius: $border-radius-base;
+    box-shadow: $shadow-soft;
+    cursor: pointer;
+    color: $text-secondary;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+    .menu-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      color: inherit;
+
+      svg {
+        display: block;
+        stroke: currentColor;
+      }
+    }
+
+    .menu-label {
+      flex: none;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 12px;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: $text-primary;
+      border-color: rgba($primary-color, 0.35);
+      background: $background-white;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary-color;
+      outline-offset: 2px;
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+
+    &.active {
+      color: $primary-color;
+      border-color: rgba($primary-color, 0.45);
+      background: linear-gradient(135deg, rgba($primary-color, 0.12), rgba($primary-color, 0.04));
+      box-shadow: 0 2px 8px rgba($primary-color, 0.12);
+      font-weight: 600;
+
+      &::before {
+        display: none;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 3px;
+        background: $primary-color;
+        border-radius: 2px 2px 0 0;
+      }
+    }
+  }
+}
+
+.settings-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.content-card {
+  background: $background-white;
+  border-radius: $border-radius-base;
+  box-shadow: $shadow-card;
+  min-height: 500px;
+}
+
+.form-wrapper {
+  padding: $spacing-lg;
+  max-width: 520px;
+  margin: 0 auto;
+
+  .avatar-section {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $divider-color;
+
+    .form-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid $border-light;
+    }
+
+    .avatar-actions {
+      flex: 1;
+
+      .form-hint {
+        margin-top: 6px;
+        font-size: 12px;
+        color: $text-muted;
+      }
+    }
+  }
+
+  .form-group {
+    margin-bottom: $spacing-md;
+
+    .radio-group {
+      display: flex;
+      gap: $spacing-lg;
+
+      .radio-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+
+        input[type="radio"] {
+          display: none;
+
+          &:checked + .radio-custom {
+            border-color: $primary-color;
+            background: $primary-color;
+            box-shadow: 0 0 0 2px $background-white inset;
+          }
+        }
+
+        .radio-custom {
+          width: 18px;
+          height: 18px;
+          border: 2px solid $border-color;
+          border-radius: 50%;
+          transition: all 0.2s ease;
+        }
+
+        .radio-label {
+          font-size: $font-size-sm;
+          color: $text-secondary;
+        }
+
+        &:hover .radio-custom {
+          border-color: $primary-color;
+        }
+      }
+    }
+  }
+
+  .privacy-section {
+    margin-bottom: $spacing-lg;
+
+    &:not(:last-child) {
+      padding-bottom: $spacing-md;
+      border-bottom: 1px solid $divider-color;
+    }
+
+    .section-title {
+      font-size: $font-size-base;
+      font-weight: 600;
+      color: $text-primary;
+      margin-bottom: 4px;
+    }
+
+    .section-desc {
+      font-size: 12px;
+      color: $text-muted;
+      margin-bottom: $spacing-sm;
+    }
+
+    // 移动端铺满；PC 端同组选项统一最小宽度
+    .radio-cards {
+      width: 100%;
+
+      @media (min-width: 768px) {
+        width: max-content;
+        min-width: 16rem;
+      }
+    }
+  }
+
+  .device-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+
+    .device-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-sm;
+      background: $background-soft;
+      border: 1px solid $border-light;
+      border-radius: $border-radius-sm;
+
+      &.device-current {
+        background: rgba($primary-color, 0.08);
+        border-color: rgba($primary-color, 0.25);
+
+        .device-icon-primary {
+          background: rgba($primary-color, 0.15);
+          color: $primary-dark;
+        }
+      }
+
+      .device-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: $border-radius-sm;
+        background: rgba($secondary-color, 0.1);
+        color: $secondary-dark;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .device-info {
+        flex: 1;
+        min-width: 0;
+
+        .device-name {
+          font-size: $font-size-sm;
+          font-weight: 500;
+          color: $text-primary;
+          margin-bottom: 2px;
+        }
+
+        .device-meta {
+          font-size: 12px;
+          color: $text-muted;
+        }
+      }
+
+      .device-status {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 12px;
+
+        &.status-online {
+          background: rgba($primary-color, 0.15);
+          color: $primary-dark;
+        }
+      }
+
+      .device-action {
+        font-size: $font-size-xs;
+        color: $error-color;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        padding: 4px 8px;
+        border-radius: $border-radius-sm;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background: rgba($error-color, 0.08);
+        }
+      }
+    }
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .binding-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    .binding-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-sm $spacing-md;
+      background: $background-soft;
+      border: 1px solid $border-light;
+      border-radius: $border-radius-sm;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: rgba($primary-color, 0.2);
+      }
+
+      .binding-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: $border-radius-sm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      &.binding-wechat .binding-icon {
+        background: rgba($brand-wechat, 0.12);
+        color: $brand-wechat;
+      }
+
+      &.binding-weibo .binding-icon {
+        background: rgba($brand-weibo, 0.12);
+        color: $brand-weibo;
+      }
+
+      &.binding-qq .binding-icon {
+        background: rgba($brand-qq, 0.12);
+        color: $brand-qq;
+      }
+
+      &.binding-phone .binding-icon {
+        background: rgba($primary-color, 0.12);
+        color: $primary-dark;
+      }
+
+      &.binding-email .binding-icon {
+        background: rgba($secondary-color, 0.12);
+        color: $secondary-dark;
+      }
+
+      .binding-info {
+        flex: 1;
+        min-width: 0;
+
+        .binding-name {
+          font-size: $font-size-sm;
+          font-weight: 500;
+          color: $text-primary;
+          margin-bottom: 2px;
+        }
+
+        .binding-status {
+          font-size: 12px;
+          color: $text-muted;
+        }
+      }
+
+      .binding-action {
+        font-size: $font-size-xs;
+        color: $primary-color;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: $border-radius-sm;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba($primary-color, 0.08);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-container {
+    padding: $spacing-md $spacing-sm;
+
+    .page-title {
+      font-size: $font-size-xl;
+      margin-bottom: $spacing-md;
+    }
+  }
+
+  .settings-layout {
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .settings-sidebar {
+    display: none;
+  }
+
+  .settings-mobile-menu {
+    display: block;
+  }
+
+  .settings-content {
+    width: 100%;
+  }
+
+  .content-card {
+    min-height: auto;
+  }
+
+  .form-wrapper {
+    padding: $spacing-md;
+    max-width: none;
+
+    .avatar-section {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: $spacing-sm;
+
+      .form-avatar {
+        width: 72px;
+        height: 72px;
+      }
+
+      .avatar-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .form-hint {
+          text-align: center;
+        }
+      }
+    }
+
+    .form-group {
+      // HeroUI RadioGroup 横向时保证可换行，避免挤出视口
+      [data-slot='radio-group'],
+      [role='radiogroup'] {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-sm;
+      }
+    }
+  }
+}

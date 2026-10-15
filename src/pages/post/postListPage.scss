@@ -1,0 +1,423 @@
+@import '../../styles/variables';
+
+.post-list-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  min-height: auto;
+  background: $background-color;
+
+  @media (max-width: 768px) {
+    // 外壳 .user-content 已有水平内边距，避免双重收窄
+    padding: 0;
+    max-width: none;
+  }
+
+  .post-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    background: $background-white;
+    padding: 12px 16px;
+    border-radius: $border-radius-sm;
+
+    .tabs-ui {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 24px;
+
+      .tab {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        cursor: pointer;
+        padding: 4px 0;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        transition: color 0.2s ease, border-color 0.2s ease, font-weight 0.2s ease;
+        font-family: inherit;
+
+        &:hover,
+        &:focus-visible {
+          color: $primary-color;
+        }
+
+        &.active {
+          color: $primary-color;
+          border-bottom-color: $primary-color;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .publish-btn {
+      background: $primary-color;
+      color: $background-white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: $border-radius-lg;
+      font-size: $font-size-base;
+      cursor: pointer;
+      font-weight: 500;
+      box-shadow: $shadow-brand;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+      &:hover {
+        background: $primary-dark;
+        transform: translateY(-1px);
+        box-shadow: $shadow-brand-hover;
+      }
+    }
+  }
+
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .loading, .empty {
+      text-align: center;
+      padding: 40px;
+      color: $text-muted;
+    }
+
+    .post-card {
+      position: relative;
+      color: inherit;
+      display: block;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+      .post-card-inner {
+        position: relative;
+        padding: 16px;
+      }
+
+      &:hover {
+        box-shadow: $shadow-card;
+      }
+
+      // 拉伸链接：覆盖整张卡片，让卡片任意位置点击都进入详情
+      .stretched-link {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        overflow: hidden;
+        text-indent: -9999px;
+
+        &:focus-visible {
+          outline: 2px solid $primary-color;
+          outline-offset: -4px;
+          border-radius: $border-radius-sm;
+        }
+      }
+
+      // 卡片内可交互子元素需高于 stretched-link
+      .topic-tag,
+      .post-image,
+      .play-btn,
+      .post-actions button {
+        position: relative;
+        z-index: 2;
+      }
+
+      .post-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+
+        .avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 1px solid $border-light;
+        }
+
+        .user-info {
+          .nickname {
+            font-size: $font-size-base;
+            font-weight: 600;
+            color: $text-primary;
+          }
+
+          .time {
+            font-size: $font-size-xs;
+            color: $text-muted;
+            margin-top: 2px;
+          }
+        }
+      }
+
+      .post-content {
+        font-size: $font-size-sm;
+        line-height: 1.6;
+        color: $text-primary;
+        margin-bottom: 12px;
+        word-break: break-word;
+      }
+
+      .post-images {
+        display: grid;
+        gap: 4px;
+        margin-bottom: 12px;
+        border-radius: $border-radius-xs;
+        overflow: hidden;
+
+        &.grid-1 {
+          grid-template-columns: 1fr;
+          .post-image {
+            max-height: 400px;
+          }
+        }
+        &.grid-2 {
+          grid-template-columns: 1fr 1fr;
+        }
+        &.grid-3 {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .post-image {
+          aspect-ratio: 1;
+          overflow: hidden;
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+          }
+        }
+      }
+
+      .post-video {
+        position: relative;
+        margin-bottom: 12px;
+        border-radius: $border-radius-xs;
+        overflow: hidden;
+        aspect-ratio: 16/9;
+        background: $text-primary;
+
+        video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .play-btn {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 50px;
+          height: 50px;
+          background: rgba($text-primary, 0.5);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: $background-white;
+          font-size: 20px;
+          pointer-events: none;
+        }
+      }
+
+      .post-topics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 8px;
+
+        .topic-tag {
+          color: $primary-color;
+          font-size: $font-size-xs + 1;
+          text-decoration: none;
+          cursor: pointer;
+          padding: 2px 4px;
+          border-radius: 4px;
+
+          &:hover,
+          &:focus-visible {
+            color: $primary-dark;
+            background: rgba($primary-color, 0.06);
+            outline: none;
+          }
+        }
+      }
+
+      .post-location {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: $font-size-xs + 1;
+        color: $text-secondary;
+        margin-bottom: 12px;
+
+        svg {
+          flex-shrink: 0;
+        }
+      }
+
+      .post-actions {
+        display: flex;
+        justify-content: space-around;
+        padding-top: 12px;
+        border-top: 1px solid $divider-color;
+
+        .action-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: $font-size-xs + 1;
+          color: $text-secondary;
+          font-variant-numeric: tabular-nums;
+
+          .icon {
+            display: inline-flex;
+            align-items: center;
+          }
+
+          .count {
+            min-width: 16px;
+            text-align: left;
+          }
+
+          &:hover {
+            color: $primary-color;
+          }
+        }
+      }
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+
+    button {
+      padding: 8px 16px;
+      border: 1px solid $border-color;
+      background: $background-white;
+      color: $text-primary;
+      border-radius: $border-radius-xs;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+
+      &:hover:not(:disabled) {
+        color: $primary-color;
+        border-color: $primary-color;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary-color;
+        outline-offset: 2px;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .page-info {
+      color: $text-secondary;
+      font-size: $font-size-base;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .post-list-page {
+    max-width: 720px;
+    padding: 20px;
+  }
+
+  .post-list-page .post-card .post-content {
+    font-size: $font-size-large;
+    line-height: 1.7;
+  }
+
+  .post-list-page .post-card .post-header .avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .post-list-page .post-card .post-header .user-info .nickname {
+    font-size: $font-size-large;
+  }
+
+  .post-list-page .post-card .post-actions .action-item {
+    font-size: $font-size-base;
+  }
+}
+
+@media (min-width: 1024px) {
+  .post-list-page {
+    max-width: 800px;
+    padding: 24px;
+  }
+
+  .post-list-page .post-list {
+    gap: 16px;
+  }
+
+  .post-list-page .post-card {
+    padding: 20px;
+  }
+
+  .post-list-page .post-list-header {
+    padding: 16px 20px;
+  }
+
+  .post-list-page .post-card .post-content {
+    font-size: $font-size-large;
+  }
+
+  .post-list-page .post-card .post-images &.grid-1 .post-image {
+    max-height: 500px;
+  }
+
+  .post-list-page .pagination {
+    gap: 24px;
+  }
+
+  .post-list-page .pagination button {
+    padding: 10px 24px;
+    font-size: $font-size-base;
+  }
+}
+
+@media (min-width: 1280px) {
+  .post-list-page {
+    max-width: 900px;
+  }
+
+  .post-list-page .post-card {
+    padding: 24px;
+  }
+
+  .post-list-page .post-card .post-header {
+    gap: 16px;
+  }
+
+  .post-list-page .post-card .post-header .avatar {
+    width: 56px;
+    height: 56px;
+  }
+
+  .post-list-page .post-card .post-content {
+    font-size: $font-size-title - 4;
+  }
+}
