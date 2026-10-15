@@ -8,7 +8,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import './topicSquarePage.scss';
 
 export const TopicSquarePage = () => {
-  const { loading, categories, tags } = useTopicSquare();
+  const { loading, categories, tags, hotTopics } = useTopicSquare();
   const navigate = useNavigate();
   const { user, isLoggedIn } = useUserStore();
   const canCreateTopic = !!user && (user.level ?? 0) >= 5;
@@ -116,18 +116,35 @@ export const TopicSquarePage = () => {
               <span className="section-subtitle">参与度最高的话题</span>
             </div>
             <div className="hot-topics">
-              {categories.slice(0, 5).map((cat, index) => (
-                <div key={cat.id} className="hot-topic-item">
+              {hotTopics.length === 0 && (
+                <div className="hot-topic-empty">暂无热门话题</div>
+              )}
+              {hotTopics.map((topic, index) => (
+                <Link
+                  key={topic.id}
+                  to={`/topics/${topic.id}`}
+                  className="hot-topic-item"
+                  aria-label={`查看话题 ${topic.name}`}
+                >
                   <span className={`rank rank-${index + 1}`}>{index + 1}</span>
-                  <div className="topic-icon">
-                    <CategoryIcon categoryName={cat.name} size={20} color="currentColor" />
+                  <div className="topic-icon" aria-hidden="true">
+                    {topic.cover ? (
+                      <img src={topic.cover} alt="" className="topic-cover-thumb" />
+                    ) : (
+                      <span className="topic-cover-fallback">#</span>
+                    )}
                   </div>
                   <div className="topic-info">
-                    <div className="topic-name">{cat.name}</div>
-                    <div className="topic-desc">{cat.description}</div>
+                    <div className="topic-name">{topic.name}</div>
+                    <div className="topic-desc">{topic.description || '暂无描述'}</div>
                   </div>
-                  <div className="topic-arrow">→</div>
-                </div>
+                  <div className="topic-meta">
+                    <span className="posts-count">{topic.postsCount} 动态</span>
+                    <span className="topic-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>

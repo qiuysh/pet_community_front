@@ -71,4 +71,25 @@ describe('PostActions 组件', () => {
     expect(screen.getByText('5')).toBeInTheDocument();
     expect(container.querySelectorAll('.action-item').length).toBeGreaterThanOrEqual(4);
   });
+
+  it('详情页 override：评论/分享走外部回调且不 navigate', async () => {
+    const mockNavigate = vi.fn();
+    (useNavigate as ReturnType<typeof vi.fn>).mockReturnValue(mockNavigate);
+    const onComment = vi.fn();
+    const onShare = vi.fn();
+    renderWith(
+      <PostActions
+        post={basePost}
+        onCommentOverride={onComment}
+        onShareOverride={onShare}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: /评论/ }));
+    fireEvent.click(screen.getByRole('button', { name: /分享/ }));
+    await waitFor(() => {
+      expect(onComment).toHaveBeenCalled();
+      expect(onShare).toHaveBeenCalled();
+    });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
 });

@@ -12,8 +12,14 @@ export interface PostActionsProps {
   post: PostInfo;
   compact?: boolean;
   className?: string;
-  /** 可选：在详情页覆盖某行为，例如详情评论本来就跳锚点不需要 navigate */
+  /** 详情页：聚焦评论区，不 navigate */
   onCommentOverride?: () => void;
+  /** 详情页：打开分享面板等 */
+  onShareOverride?: () => void;
+  /** 详情页：复用 usePostDetail 的点赞（展示以 post 为准） */
+  onLikeOverride?: () => void;
+  /** 详情页：复用 usePostDetail 的收藏（展示以 post 为准） */
+  onFavoriteOverride?: () => void;
 }
 
 const HeartIcon: React.FC<{ filled: boolean }> = ({ filled }) => (
@@ -40,8 +46,24 @@ const ShareIcon: React.FC = () => (
   </svg>
 );
 
-export const PostActions: React.FC<PostActionsProps> = ({ post, compact = false, className, onCommentOverride }) => {
+export const PostActions: React.FC<PostActionsProps> = ({
+  post,
+  compact = false,
+  className,
+  onCommentOverride,
+  onShareOverride,
+  onLikeOverride,
+  onFavoriteOverride,
+}) => {
   const { state, onLike, onFavorite, onShare, onComment } = usePostActions(post);
+
+  // 详情页传入 override 时以 post 为准，避免与 usePostDetail 双份状态
+  const isLiked = onLikeOverride ? !!post.isLiked : state.isLiked;
+  const likesCount = onLikeOverride ? post.likesCount : state.likesCount;
+  const isFavorited = onFavoriteOverride ? !!post.isFavorited : state.isFavorited;
+  const favoritesCount = onFavoriteOverride ? post.favoritesCount : state.favoritesCount;
+  const commentsCount = onCommentOverride ? post.commentsCount : state.commentsCount;
+  const sharesCount = onShareOverride ? post.sharesCount : state.sharesCount;
 
   const itemClass = [
     'action-item',
@@ -50,17 +72,22 @@ export const PostActions: React.FC<PostActionsProps> = ({ post, compact = false,
   ].join(' ');
 
   return (
-    <div className={`post-actions flex items-center gap-5 text-brown-light ${compact ? 'text-sm py-2' : 'text-base py-3'} ${className ?? ''}`}>
+    <div
+      className={`post-actions flex items-center gap-5 text-brown-light ${compact ? 'text-sm py-2' : 'text-base py-3'} ${className ?? ''}`}
+      role="group"
+      aria-label="动态操作"
+    >
       <Button
         type="button"
         variant="ghost"
         size="sm"
         aria-label="点赞"
-        className={`${itemClass} ${state.isLiked ? 'text-error' : ''}`}
-        onClick={onLike}
+        aria-pressed={isLiked}
+        className={`${itemClass} ${isLiked ? 'text-error' : ''}`}
+        onClick={onLikeOverride ?? onLike}
       >
-        <HeartIcon filled={state.isLiked} />
-        <span className="tabular-nums">{state.likesCount}</span>
+        <HeartIcon filled={isLiked} />
+        <span className="tabular-nums">{likesCount}</span>
       </Button>
 
       <Button
@@ -72,7 +99,7 @@ export const PostActions: React.FC<PostActionsProps> = ({ post, compact = false,
         onClick={onCommentOverride ?? onComment}
       >
         <CommentIcon />
-        <span className="tabular-nums">{state.commentsCount}</span>
+        <span className="tabular-nums">{commentsCount}</span>
       </Button>
 
       <Button
@@ -80,11 +107,12 @@ export const PostActions: React.FC<PostActionsProps> = ({ post, compact = false,
         variant="ghost"
         size="sm"
         aria-label="收藏"
-        className={`${itemClass} ${state.isFavorited ? 'text-amber-500' : ''}`}
-        onClick={onFavorite}
+        aria-pressed={isFavorited}
+        className={`${itemClass} ${isFavorited ? 'text-amber-500' : ''}`}
+        onClick={onFavoriteOverride ?? onFavorite}
       >
-        <BookmarkIcon filled={state.isFavorited} />
-        <span className="tabular-nums">{state.favoritesCount}</span>
+        <BookmarkIcon filled={isFavorited} />
+        <span className="tabular-nums">{favoritesCount}</span>
       </Button>
 
       <Button
@@ -93,10 +121,10 @@ export const PostActions: React.FC<PostActionsProps> = ({ post, compact = false,
         size="sm"
         aria-label="分享"
         className={itemClass}
-        onClick={() => onShare('copy')}
+        onClick={onShareOverride ?? (() => onShare('copy'))}
       >
         <ShareIcon />
-        <span className="tabular-nums">{state.sharesCount}</span>
+        <span className="tabular-nums">{sharesCount}</span>
       </Button>
     </div>
   );

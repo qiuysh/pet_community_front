@@ -44,6 +44,12 @@
       border-radius: $border-radius-sm;
     }
 
+    .topic-card-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+
     .topic-card {
       display: flex;
       gap: $spacing-md;

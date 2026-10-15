@@ -3,10 +3,8 @@
 .post-detail-page {
   background: $background-muted;
   min-height: 100vh;
-  // 详情页自有操作栏 + 底部 Tab（移动端）
-  padding-bottom: calc(
-    var(--user-action-bar-height, 56px) + var(--user-tab-bar-offset, 64px) + 16px
-  );
+  // 移动端仅预留底部 Tab，操作栏已改为正文内联
+  padding-bottom: 16px;
 
   .loading {
     text-align: center;
@@ -190,48 +188,37 @@
       margin-bottom: 16px;
     }
 
-    .post-stats {
+    .post-detail-actions {
       display: flex;
-      gap: 20px;
+      justify-content: space-around;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 4px;
       padding-top: 12px;
       border-top: 1px solid $divider-color;
-      font-size: 13px;
-      color: $text-muted;
-    }
-  }
-
-  .action-bar {
-    position: fixed;
-    bottom: var(--user-tab-bar-offset, 0px);
-    left: 0;
-    right: 0;
-    background: $background-white;
-    display: flex;
-    border-top: 1px solid $divider-color;
-    z-index: 20;
-    min-height: var(--user-action-bar-height, 56px);
-
-    .action-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 10px 0;
-      min-height: 48px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 12px;
       color: $text-secondary;
 
-      .icon {
-        font-size: 20px;
-      }
+      .action-item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 44px;
+        min-width: 0;
+        flex: 1;
+        font-variant-numeric: tabular-nums;
+        color: inherit;
+        transition: color 0.15s ease;
 
-      &.active {
-        color: $primary-color;
+        &:hover {
+          color: $primary-color;
+        }
+
+        &:focus-visible {
+          outline: 2px solid $primary-color;
+          outline-offset: 2px;
+        }
       }
     }
   }
@@ -239,6 +226,7 @@
   .comments-section {
     background: $background-white;
     padding: 16px;
+    scroll-margin-top: calc(var(--user-header-offset, 56px) + 48px);
 
     .comments-header {
       font-size: 16px;
@@ -584,16 +572,11 @@
 
 @media (min-width: 768px) {
   .post-detail-page {
-    // 桌面无底部 Tab
-    padding-bottom: calc(var(--user-action-bar-height, 56px) + 24px);
+    padding-bottom: 24px;
   }
 
   .post-detail-page .detail-header {
     padding: 16px 20px;
-  }
-
-  .post-detail-page .action-bar {
-    bottom: 0;
   }
 
   .post-detail-page .post-content-wrapper {
@@ -626,19 +609,20 @@
     max-height: 600px;
   }
 
-  .post-detail-page .action-bar {
-    padding: 0;
-    max-width: 720px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: $border-radius-sm $border-radius-sm 0 0;
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+  .post-detail-page .post-content-wrapper .post-detail-actions {
+    justify-content: flex-start;
+    gap: 28px;
+
+    .action-item {
+      flex: 0 0 auto;
+      min-width: 64px;
+    }
   }
 }
 
 @media (min-width: 1024px) {
   .post-detail-page {
-    padding-bottom: 120px;
+    padding-bottom: 48px;
   }
 
   .post-detail-page .post-content-wrapper {
@@ -668,22 +652,6 @@
     max-height: 700px;
   }
 
-  .post-detail-page .action-bar {
-    max-width: 800px;
-  }
-
-  .post-detail-page .action-bar .action-btn {
-    padding: 14px 0;
-  }
-
-  .post-detail-page .action-bar .action-btn .icon {
-    font-size: 24px;
-  }
-
-  .post-detail-page .action-bar .action-btn span {
-    font-size: 14px;
-  }
-
   .post-detail-page .comments-section .comment-item .comment-avatar {
     width: 44px;
     height: 44px;
@@ -705,10 +673,6 @@
   }
 
   .post-detail-page .comments-section {
-    max-width: 900px;
-  }
-
-  .post-detail-page .action-bar {
     max-width: 900px;
   }
 

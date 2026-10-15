@@ -15,6 +15,7 @@ export interface ButtonProps {
   children: ReactNode;
   onClick?: (e: MouseEvent<HTMLButtonElement> | unknown) => void;
   'aria-label'?: string;
+  'aria-pressed'?: boolean | 'true' | 'false' | 'mixed';
   form?: string;
 }
 

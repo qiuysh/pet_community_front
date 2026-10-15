@@ -5,9 +5,10 @@ import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { usePostDetail } from '../../hooks/usePostDetail';
 import { usePostComments } from '../../hooks/usePostComments';
 import { ReportReasonOptions } from '../../types/post';
-import { ChevronLeft, MoreHorizontal, MapPin, Heart, MessageCircle, Star, Share2 } from 'lucide-react';
+import { ChevronLeft, MoreHorizontal, MapPin, Heart } from 'lucide-react';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { ShareSheet } from '../../components/post/shareSheet';
+import { PostActions } from '../../components/post/postActions';
 import { Button } from '../../components/ui/button';
 import { Avatar } from '../../components/ui/avatar';
 import { Textarea } from '../../components/ui/input';
@@ -28,6 +29,7 @@ export const PostDetailPage = () => {
 
   const {
     comments,
+    totalCount: commentsTotal,
     replyTarget,
     addComment,
     toggleLike: onCommentLike,
@@ -43,6 +45,10 @@ export const PostDetailPage = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const focusCommentInput = () => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document
+      .getElementById('post-detail-comments')
+      ?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
     document.getElementById(COMMENT_INPUT_ID)?.focus();
   };
 
@@ -170,44 +176,17 @@ export const PostDetailPage = () => {
 
         {post.location && <div className="post-location"><MapPin size={14} aria-hidden="true" /> <span>{post.location}</span></div>}
 
-        <div className="post-stats">
-          <span>{post.likesCount} 赞</span>
-          <span>{post.commentsCount} 评论</span>
-          <span>{post.sharesCount} 分享</span>
-          <span>{post.favoritesCount} 收藏</span>
-        </div>
+        <PostActions
+          post={{ ...post, commentsCount: commentsTotal }}
+          onLikeOverride={onLike}
+          onFavoriteOverride={onFavorite}
+          onCommentOverride={focusCommentInput}
+          onShareOverride={() => setShareOpen(true)}
+          className="post-detail-actions"
+        />
       </div>
 
       <AdBanner location="detail_sidebar" className="detail-sidebar-ad" />
-
-      <div className="action-bar">
-        <Button
-          type="button"
-          variant="ghost"
-          className={`action-btn ${post.isLiked ? 'active' : ''}`}
-          onClick={onLike}
-        >
-          <span className="icon"><Heart size={20} fill={post.isLiked ? 'currentColor' : 'none'} aria-hidden="true" /></span>
-          <span>点赞</span>
-        </Button>
-        <Button type="button" variant="ghost" className="action-btn" onClick={focusCommentInput}>
-          <span className="icon"><MessageCircle size={20} aria-hidden="true" /></span>
-          <span>评论</span>
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          className={`action-btn ${post.isFavorited ? 'active' : ''}`}
-          onClick={onFavorite}
-        >
-          <span className="icon"><Star size={20} fill={post.isFavorited ? 'currentColor' : 'none'} aria-hidden="true" /></span>
-          <span>收藏</span>
-        </Button>
-        <Button type="button" variant="ghost" className="action-btn" onClick={() => setShareOpen(true)}>
-          <span className="icon"><Share2 size={20} aria-hidden="true" /></span>
-          <span>分享</span>
-        </Button>
-      </div>
 
       <ShareSheet
         open={shareOpen}
@@ -217,8 +196,8 @@ export const PostDetailPage = () => {
         onShare={(platform) => onShare(platform)}
       />
 
-      <div className="comments-section">
-        <div className="comments-header">评论 ({post.commentsCount})</div>
+      <div id="post-detail-comments" className="comments-section">
+        <div className="comments-header">评论 ({commentsTotal})</div>
 
         <div className="comment-input-wrapper">
           {replyTarget && (
@@ -229,6 +208,7 @@ export const PostDetailPage = () => {
           )}
           <Textarea
             id={COMMENT_INPUT_ID}
+            aria-label={replyTarget ? `回复 @${replyTarget.name}` : '发表评论'}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             placeholder={replyTarget ? `回复 @${replyTarget.name}` : '说点什么…'}
