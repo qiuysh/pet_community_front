@@ -2,7 +2,7 @@
  * HeroUI Toast 适配：应用层统一走 toast / ToastProvider，勿在页面直接 import @heroui/react。
  */
 import type { ReactNode } from 'react';
-import { Toast as HeroToast, toast as heroToast } from '@heroui/react';
+import { Toast as HeroToast, toast as heroToast } from '@heroui/react/toast';
 
 export type AppToastType = 'success' | 'error' | 'warning' | 'info';
 

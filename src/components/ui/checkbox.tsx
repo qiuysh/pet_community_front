@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Checkbox as HeroCheckbox } from '@heroui/react';
+import { Checkbox as HeroCheckbox } from '@heroui/react/checkbox';
 
 export interface CheckboxProps {
   checked?: boolean;

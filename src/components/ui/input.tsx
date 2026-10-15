@@ -7,13 +7,11 @@ import type {
   ChangeEvent,
 } from 'react';
 import { Children, isValidElement, useMemo } from 'react';
-import {
-  Input as HeroInput,
-  TextArea as HeroTextArea,
-  Label as HeroLabel,
-  ListBox,
-  Select as HeroSelect,
-} from '@heroui/react';
+import { Input as HeroInput } from '@heroui/react/input';
+import { Label as HeroLabel } from '@heroui/react/label';
+import { ListBox } from '@heroui/react/list-box';
+import { Select as HeroSelect } from '@heroui/react/select';
+import { TextArea as HeroTextArea } from '@heroui/react/textarea';
 
 function joinClass(...parts: Array<string | false | undefined>) {
   return parts.filter(Boolean).join(' ');

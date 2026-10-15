@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Radio as HeroRadio, RadioGroup as HeroRadioGroup } from '@heroui/react';
+import { Radio as HeroRadio } from '@heroui/react/radio';
+import { RadioGroup as HeroRadioGroup } from '@heroui/react/radio-group';
 
 export interface RadioGroupProps {
   name?: string;

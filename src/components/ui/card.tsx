@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import { Card as HeroCard } from '@heroui/react';
+import { Card as HeroCard } from '@heroui/react/card';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   hoverable?: boolean;

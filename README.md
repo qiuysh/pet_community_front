@@ -62,16 +62,3 @@ pnpm dev
 
 E2E 前置条件与账号见 [e2e/README.md](./e2e/README.md)。
 
-## 配置说明
-
-开发环境一般无需 `.env`：Vite 通过代理转发 `/api`。  
-若需直连后端，可配置：
-
-```env
-VITE_API_URL=http://localhost:8083
-```
-
-## 协作约定
-
-- 规格与前端规范见仓库内 / 关联文档中的 `docs/frontend/`、`docs/specs/`
-- Agent 协作规范见 `AGENTS.md`（若本分支包含）

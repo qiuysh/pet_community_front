@@ -2,7 +2,7 @@
  * 后台状态标签：ui 无 Badge，直连 HeroUI Chip。
  */
 import type { ReactNode } from 'react';
-import { Chip } from '@heroui/react';
+import { Chip } from '@heroui/react/chip';
 
 export type AdminChipTone = 'neutral' | 'secondary' | 'success' | 'warning' | 'danger';
 

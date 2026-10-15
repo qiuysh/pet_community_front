@@ -2,7 +2,7 @@
  * 社区 Table：HeroUI Table 适配层。业务页勿直接 import @heroui/react。
  */
 import type { ComponentProps, ReactNode } from 'react';
-import { Table as HeroTable } from '@heroui/react';
+import { Table as HeroTable } from '@heroui/react/table';
 
 export type TableRootProps = ComponentProps<typeof HeroTable>;
 export type TableContentProps = ComponentProps<typeof HeroTable.Content>;

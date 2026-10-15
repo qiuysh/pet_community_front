@@ -4,7 +4,10 @@
  */
 import type { DateValue } from '@internationalized/date';
 import { CalendarDateTime, parseDate, parseDateTime } from '@internationalized/date';
-import { Calendar, DateField, DatePicker, TimeField } from '@heroui/react';
+import { Calendar } from '@heroui/react/calendar';
+import { DateField } from '@heroui/react/date-field';
+import { DatePicker } from '@heroui/react/date-picker';
+import { TimeField } from '@heroui/react/time-field';
 
 export type DateTimePickerGranularity = 'day' | 'minute';
 export type DateTimePickerTone = 'primary' | 'secondary';

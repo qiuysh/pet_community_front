@@ -1,4 +1,4 @@
-import { Skeleton as HeroSkeleton } from '@heroui/react';
+import { Skeleton as HeroSkeleton } from '@heroui/react/skeleton';
 
 export interface SkeletonProps {
   className?: string;

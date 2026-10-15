@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Dropdown as HeroDropdown, Button as HeroButton } from '@heroui/react';
+import { Button as HeroButton } from '@heroui/react/button';
+import { Dropdown as HeroDropdown } from '@heroui/react/dropdown';
 
 export interface DropdownItem {
   key: string;

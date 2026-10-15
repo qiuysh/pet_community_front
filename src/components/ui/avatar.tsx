@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Avatar as HeroAvatar } from '@heroui/react';
+import { Avatar as HeroAvatar } from '@heroui/react/avatar';
 
 export interface AvatarProps {
   src?: string | null;

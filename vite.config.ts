@@ -3,6 +3,24 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
+/**
+ * 从模块 id 解析真实 npm 包名（取最后一个 node_modules 段）。
+ * 不可用 id.includes('xxx')：pnpm 虚拟路径常含 peer 版本后缀，会误匹配。
+ */
+function getPackageName(id: string): string | undefined {
+  const normalized = id.replace(/\\/g, '/');
+  const marker = '/node_modules/';
+  const idx = normalized.lastIndexOf(marker);
+  if (idx === -1) return undefined;
+
+  const rest = normalized.slice(idx + marker.length);
+  if (rest.startsWith('@')) {
+    const [scope, name] = rest.split('/');
+    return name ? `${scope}/${name}` : scope;
+  }
+  return rest.split('/')[0];
+}
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -11,21 +29,26 @@ export default defineConfig({
     },
   },
   build: {
-    // react-dom 生产包本身常超过 500kB；页面已按路由拆分
-    chunkSizeWarningLimit: 600,
+    // 共享运行时（React + HeroUI 等）自然体积较大；硬拆仅针对 ≥300KB 且场景隔离的依赖
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
+        /**
+         * 硬拆策略：只拆本身 ≥300KB、且与前台路由隔离的包。
+         * icons / router / axios / crypto / qrcode 等小包不硬拆，交给 Rollup 按引用自然分包。
+         */
         manualChunks(id) {
-          if (!id.includes('node_modules')) return;
-          if (id.includes('recharts')) return 'charts';
-          if (id.includes('@heroui')) return 'heroui';
-          if (id.includes('lucide-react')) return 'icons';
+          const pkg = getPackageName(id);
+          if (!pkg) return;
+
           if (
-            id.includes('react-dom') ||
-            id.includes('react-router') ||
-            /[/\\](react|scheduler)[/\\]/.test(id)
+            pkg === 'recharts' ||
+            pkg.startsWith('d3-') ||
+            pkg === 'victory-vendor' ||
+            pkg === 'internmap' ||
+            pkg === 'decimal.js-light'
           ) {
-            return 'react-vendor';
+            return 'charts';
           }
         },
       },

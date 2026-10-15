@@ -1,4 +1,4 @@
-import { Switch as HeroSwitch } from '@heroui/react';
+import { Switch as HeroSwitch } from '@heroui/react/switch';
 
 export interface SwitchProps {
   checked?: boolean;

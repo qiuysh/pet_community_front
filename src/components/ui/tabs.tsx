@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Tabs as HeroTabs } from '@heroui/react';
+import { Tabs as HeroTabs } from '@heroui/react/tabs';
 
 export interface TabItem {
   key: string;

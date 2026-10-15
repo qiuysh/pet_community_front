@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { Modal as HeroModal, useOverlayState } from '@heroui/react';
+import { Modal as HeroModal } from '@heroui/react/modal';
 import { Button } from './button';
+import { useOverlayState } from './useOverlayState';
 
 export interface ModalProps {
   open: boolean;

@@ -1,5 +1,5 @@
 import type { ReactNode, MouseEvent } from 'react';
-import { Button as HeroButton } from '@heroui/react';
+import { Button as HeroButton } from '@heroui/react/button';
 
 export interface FilterChipProps {
   active?: boolean;
