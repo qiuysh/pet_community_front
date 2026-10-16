@@ -129,6 +129,11 @@ const AdminNotificationPage = lazyNamed(
   () => import('../pages/admin/adminNotificationPage'),
   'AdminNotificationPage',
 );
+const AdminNotFoundPage = lazyNamed(
+  () => import('../pages/admin/adminNotFoundPage'),
+  'AdminNotFoundPage',
+);
+const NotFoundPage = lazyNamed(() => import('../pages/error/notFoundPage'), 'NotFoundPage');
 const AdminActivityListPage = lazyNamed(
   () => import('../pages/admin/adminActivityListPage'),
   'AdminActivityListPage',
@@ -256,6 +261,11 @@ const appRoutes: RouteObject[] = [
   { path: '/admin/activities/:id/registrations', element: withAdmin(<ActivityRegistrationsPage />) },
   { path: '/admin/activities/:id/vote', element: withAdmin(<ActivityVotePage />) },
   { path: '/admin/ads', element: withAdmin(<AdminAdPage />) },
+
+  // 未知后台路径（须在通配前台 * 之前）
+  { path: '/admin/*', element: withAdmin(<AdminNotFoundPage />) },
+  // 未知前台路径
+  { path: '*', element: withUser(<NotFoundPage />) },
 ];
 
 const routes: RouteObject[] = [
