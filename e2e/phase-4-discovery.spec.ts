@@ -58,6 +58,23 @@ test.describe('Phase4 - 话题广场', () => {
         expect(page.url()).toContain('/discover');
     });
 
+    test('V-T1-02 - 热门话题列表可点击进入详情', async ({ page }) => {
+        await page.goto('/discover');
+        await page.waitForTimeout(2000);
+
+        const hotSection = page.getByRole('heading', { name: '热门话题' }).first();
+        test.skip(!(await hotSection.isVisible()), '热门话题区块未渲染');
+
+        const hotLink = page.locator('a.hot-topic-item').first();
+        test.skip((await hotLink.count()) === 0, '暂无热门话题数据');
+
+        await Promise.all([
+            page.waitForURL(/\/topics\/\d+/, { timeout: 10_000 }),
+            hotLink.click(),
+        ]);
+        await expect(page.locator('body')).toContainText(/参与|分享|话题/, { timeout: 5_000 });
+    });
+
     test('V-T3-06 - 话题分享', async ({ page }) => {
         await page.goto('/discover');
         await page.waitForTimeout(2000);
@@ -78,6 +95,31 @@ test.describe('Phase4 - 话题广场', () => {
             // 验证分享面板弹出
             await expect(page.locator('body')).toContainText(/微信|微博|复制链接/, { timeout: 3_000 });
         }
+    });
+
+    test('V-T3-07 - 话题参与', async ({ page }) => {
+        await loginAsUser(page);
+        await page.goto('/discover');
+        await page.waitForTimeout(2000);
+
+        const topicLink = page.locator('a[href^="/topics/"]:not([href$="/create"])').first();
+        test.skip((await topicLink.count()) === 0, '暂无话题数据');
+
+        await topicLink.click();
+        await page.waitForURL(/\/topics\/\d+/, { timeout: 10_000 });
+        await page.waitForTimeout(1000);
+
+        const participated = page.getByRole('button', { name: '已参与' });
+        const joinBtn = page.getByRole('button', { name: '参与话题' });
+
+        if (await participated.isVisible()) {
+            await expect(participated).toBeVisible();
+            return;
+        }
+
+        test.skip(!(await joinBtn.isVisible()), '参与话题按钮未渲染');
+        await joinBtn.click();
+        await expect(page.getByRole('button', { name: /已参与|参与话题/ })).toBeVisible({ timeout: 5_000 });
     });
 
     test('V-T4-01 - 话题搜索', async ({ page }) => {
@@ -252,6 +294,20 @@ test.describe('Phase4 - 热门排行榜', () => {
             await page.waitForTimeout(500);
         }
         expect(page.url()).toContain('/ranking');
+    });
+
+    test('V-H3-02 - 热门话题榜项可点击', async ({ page }) => {
+        await page.goto('/ranking');
+        await page.waitForTimeout(2000);
+
+        await expect(page.getByText('热门话题').first()).toBeVisible({ timeout: 10_000 });
+        const topicLink = page.locator('a.ranking-item.topic-item, a.topic-item[href^="/topics/"]').first();
+        test.skip((await topicLink.count()) === 0, '热门话题榜暂无数据');
+
+        await Promise.all([
+            page.waitForURL(/\/topics\/\d+/, { timeout: 10_000 }),
+            topicLink.click(),
+        ]);
     });
 
     test('V-H4-01/V-H4-02/V-H4-03 - 排行榜周期切换', async ({ page }) => {

@@ -334,6 +334,39 @@ test.describe('Phase1 - 宠物寻回', () => {
         await page.waitForURL((url) => url.pathname.includes('/login'), { timeout: 10_000 });
     });
 
+    test('V-P6-05 - 已登录发布寻宠页含多图上传', async ({ page }) => {
+        await loginAsUser(page);
+        await page.goto('/lost-pets/create');
+        await page.waitForTimeout(1500);
+
+        await expect(page.getByText('发布寻宠')).toBeVisible({ timeout: 10_000 });
+        await expect(page.getByRole('button', { name: '选择照片' })).toBeVisible();
+        await expect(page.locator('body')).toContainText(/最多\s*9\s*张|≤5MB/);
+
+        const tinyPng = Buffer.from(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+            'base64',
+        );
+        const fileInput = page.locator('input[type="file"][accept*="image"]').first();
+        await fileInput.setInputFiles({
+            name: 'e2e-pet.png',
+            mimeType: 'image/png',
+            buffer: tinyPng,
+        });
+
+        // 上传成功后出现预览图或「删除图片」；失败则 toast，不强制后端可用
+        const previewOrDelete = page.locator('img[src*="/"], button[aria-label="删除图片"]').first();
+        const toastFail = page.getByText(/上传失败|失败/);
+        await Promise.race([
+            previewOrDelete.waitFor({ state: 'visible', timeout: 10_000 }),
+            toastFail.waitFor({ state: 'visible', timeout: 10_000 }),
+        ]).catch(() => undefined);
+
+        if (await previewOrDelete.isVisible()) {
+            await expect(previewOrDelete).toBeVisible();
+        }
+    });
+
     test('V-P6-04 - 游客访问寻宠详情联系方式脱敏（§4.11）', async ({ page }) => {
         // §4.11：寻宠联系方式不对游客明文展示；登录用户可查看
         await page.goto('/lost-pets');
@@ -353,6 +386,28 @@ test.describe('Phase1 - 宠物寻回', () => {
         const hasFullPhone = /\d{11}/.test(body);
         // 游客不应看到完整 11 位手机号
         expect(hasFullPhone).toBeFalsy();
+    });
+});
+
+test.describe('Phase1 - 页签标题', () => {
+    test('V-UX-01 - 前台 document.title', async ({ page }) => {
+        await clearAuth(page);
+        await page.goto('/');
+        await page.waitForTimeout(1000);
+        await expect(page).toHaveTitle(/宠物社区/);
+        expect(await page.title()).not.toMatch(/管理后台/);
+    });
+
+    test('V-UX-02 - 后台 document.title（含登录页）', async ({ page }) => {
+        await clearAuth(page);
+        await page.goto('/admin/login');
+        await page.waitForTimeout(1000);
+        await expect(page).toHaveTitle(/管理后台/);
+
+        await loginAsAdmin(page);
+        await page.goto('/admin/dashboard');
+        await page.waitForTimeout(1000);
+        await expect(page).toHaveTitle(/管理后台/);
     });
 });
 

@@ -5,6 +5,7 @@ import { createLostPet, uploadLostPetPhoto } from '../../api/pet';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { DateTimePicker } from '../../components/ui/dateTimePicker';
 import { FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
 
 const MAX_IMAGES = 9;
@@ -203,10 +204,11 @@ export function LostPetCreatePage() {
           </div>
           <div>
             <FieldLabel required>走失时间</FieldLabel>
-            <Input
-              type="datetime-local"
+            <DateTimePicker
+              aria-label="走失时间"
               value={lostTime}
-              onChange={(e) => setLostTime(e.target.value)}
+              onChange={setLostTime}
+              granularity="minute"
             />
           </div>
           <div>

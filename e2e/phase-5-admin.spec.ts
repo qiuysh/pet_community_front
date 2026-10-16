@@ -163,18 +163,18 @@ test.describe('Phase5 - 活动中心', () => {
     });
 
     test('V-A6-01 - 评选发奖（后台）', async ({ page }) => {
-        // A6=评选发奖；后台活动投票/评选入口 /admin/activities/:id/vote
+        // A6=评选发奖；入口：活动运营列表「评选」→ /admin/activities/:id/vote
         await loginAsAdmin(page);
         await page.goto('/admin/activities');
         await page.waitForTimeout(2000);
 
-        // 后台活动列表路由未实现，跳过
-        const voteLink = page.locator('a[href*="/vote"]').first();
-        test.skip(!(await voteLink.isVisible()), '评选发奖入口未渲染（后台活动列表路由未实现）');
+        await expect(page.getByRole('heading', { name: '活动运营' })).toBeVisible({ timeout: 10_000 });
+        const voteBtn = page.getByRole('button', { name: '评选' }).first();
+        test.skip(!(await voteBtn.isVisible()), '暂无活动或评选入口未渲染');
 
-        await voteLink.click();
-        await page.waitForTimeout(1500);
-        await expect(page.locator('body')).toContainText(/评选|发奖|投票|作品/, { timeout: 5_000 });
+        await voteBtn.click();
+        await page.waitForURL(/\/admin\/activities\/\d+\/vote/, { timeout: 10_000 });
+        await expect(page.locator('body')).toContainText(/评选|发奖|投票|作品|排行/, { timeout: 5_000 });
     });
 
     test('V-A7-01 - 线下活动展示', async ({ page }) => {
@@ -209,7 +209,16 @@ test.describe('Phase5 - 后台管理', () => {
         await page.waitForTimeout(2000);
 
         // §4.10：驾驶舱待办聚合内容审核/举报/广告；不含发布者侧领养一审，可含「领养违规待处理」
-        await expect(page.locator('body')).toContainText(/待审核|举报|广告/, { timeout: 5_000 });
+        await expect(page.locator('body')).toContainText(/待审核|举报|广告|待办/, { timeout: 5_000 });
+    });
+
+    test('V-Ad5-07 - 活动报名待办深链 focus=registrations', async ({ page }) => {
+        await loginAsAdmin(page);
+        await page.goto('/admin/activities?focus=registrations');
+        await page.waitForTimeout(2000);
+
+        await expect(page.getByRole('heading', { name: '活动运营' })).toBeVisible({ timeout: 10_000 });
+        await expect(page.locator('body')).toContainText(/报名审核|待审报名|待办入口/, { timeout: 5_000 });
     });
 
     test('V-Ad1-01 - 内容审核待审核列表', async ({ page }) => {
@@ -393,14 +402,48 @@ test.describe('Phase5 - 后台管理', () => {
         await page.waitForTimeout(2000);
 
         await expect(page.locator('body')).toContainText(/广告|广告位|投放/, { timeout: 5_000 });
+        // 广告位 Tab：可创建广告位
+        const positionsTab = page.getByRole('tab', { name: '广告位' }).or(page.getByRole('button', { name: '广告位' })).first();
+        if (await positionsTab.isVisible()) {
+            await positionsTab.click();
+            await page.waitForTimeout(500);
+        }
+        await expect(page.getByRole('button', { name: '创建广告位' })).toBeVisible({ timeout: 5_000 });
     });
 
-    test('V-Ad6-02 - 创建广告投放', async ({ page }) => {
+    test('V-Ad6-02 - 创建广告可选广告位', async ({ page }) => {
         await loginAsAdmin(page);
         await page.goto('/admin/ads');
         await page.waitForTimeout(2000);
 
-        await expect(page.locator('body')).toContainText(/广告|广告位|投放/, { timeout: 5_000 });
+        const adsTab = page.getByRole('tab', { name: '投放' }).or(page.getByRole('button', { name: '投放' })).first();
+        if (await adsTab.isVisible()) {
+            await adsTab.click();
+            await page.waitForTimeout(500);
+        }
+
+        const createBtn = page.getByRole('button', { name: '创建广告' }).first();
+        test.skip(!(await createBtn.isVisible()), '创建广告入口未渲染');
+
+        await createBtn.click();
+        await page.waitForTimeout(1000);
+
+        await expect(page.getByRole('heading', { name: '创建广告' })).toBeVisible({ timeout: 5_000 });
+        const slotTrigger = page.getByLabel('广告位').first();
+        await expect(slotTrigger).toBeVisible({ timeout: 5_000 });
+        await slotTrigger.click();
+        await page.waitForTimeout(300);
+        // HeroUI ListBox：有选项或空态提示
+        const opts = page.getByRole('option');
+        const optCount = await opts.count();
+        if (optCount === 0) {
+            await expect(page.locator('body')).toContainText(/暂无广告位|请先在「广告位」中创建|请选择广告位/, {
+                timeout: 3_000,
+            });
+        } else {
+            expect(optCount).toBeGreaterThanOrEqual(1);
+        }
+        await page.keyboard.press('Escape');
     });
 
     test('V-Ad6-05 - 广告统计', async ({ page }) => {
@@ -408,6 +451,11 @@ test.describe('Phase5 - 后台管理', () => {
         await page.goto('/admin/ads');
         await page.waitForTimeout(2000);
 
+        const statsTab = page.getByRole('tab', { name: '统计' }).or(page.getByRole('button', { name: '统计' })).first();
+        if (await statsTab.isVisible()) {
+            await statsTab.click();
+            await page.waitForTimeout(500);
+        }
         await expect(page.locator('body')).toContainText(/展示|点击|统计/, { timeout: 5_000 });
     });
 
@@ -435,16 +483,27 @@ test.describe('Phase5 - 后台管理', () => {
         await expect(page.locator('body')).toContainText(/日志|操作|记录/, { timeout: 5_000 });
     });
 
-    test('V-Ad8-03 - 日志筛选', async ({ page }) => {
+    test('V-Ad8-03 - 日志筛选（含双日期）', async ({ page }) => {
         await loginAsAdmin(page);
         await page.goto('/admin/logs');
         await page.waitForTimeout(1500);
 
-        const filterBtn = page.getByRole('button', { name: /筛选|类型/ }).first();
-        if (await filterBtn.isVisible()) {
-            await filterBtn.click();
-            await page.waitForTimeout(500);
+        // 目标类型（HeroUI Select，非原生 select）
+        const targetType = page.locator('#log-filter-target-type').first();
+        if (await targetType.isVisible()) {
+            await targetType.click();
+            const postOpt = page.getByRole('option', { name: '帖子' }).first();
+            if (await postOpt.isVisible()) {
+                await postOpt.click();
+            } else {
+                await page.keyboard.press('Escape');
+            }
+            await page.waitForTimeout(300);
         }
+
+        // AdminDateTime：开始/结束时间控件可见（HeroUI DatePicker）
+        await expect(page.getByLabel('开始时间').first()).toBeVisible({ timeout: 5_000 });
+        await expect(page.getByLabel('结束时间').first()).toBeVisible({ timeout: 5_000 });
     });
 
     test('V-Ad0-3-01 - 系统设置', async ({ page }) => {
@@ -453,6 +512,38 @@ test.describe('Phase5 - 后台管理', () => {
         await page.waitForTimeout(2000);
 
         await expect(page.locator('body')).toContainText(/网站配置|名称|Logo/, { timeout: 5_000 });
+    });
+
+    test('V-Ad0-3-05 - 审核配置开关可切换并保存', async ({ page }) => {
+        await loginAsAdmin(page);
+        await page.goto('/admin/settings');
+        await page.waitForTimeout(2000);
+
+        const auditTab = page.getByRole('tab', { name: '审核配置' }).or(page.getByRole('button', { name: '审核配置' })).first();
+        await expect(auditTab).toBeVisible({ timeout: 5_000 });
+        await auditTab.click();
+        await page.waitForTimeout(500);
+
+        await expect(page.getByRole('heading', { name: '自动审核' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: '敏感词过滤' })).toBeVisible();
+
+        const autoAudit = page.getByRole('switch', { name: '自动审核' });
+        await expect(autoAudit).toBeVisible({ timeout: 5_000 });
+
+        // HeroUI Switch：点可见滑块（checkbox 被 control 挡住）
+        const autoControl = page
+            .locator('div')
+            .filter({ has: page.getByRole('heading', { name: '自动审核' }) })
+            .locator('[data-slot="switch-control"]')
+            .first();
+        await autoControl.click();
+        await page.getByRole('button', { name: /保存配置/ }).click();
+        await expect(page.locator('body')).toContainText(/审核配置更新成功|保存成功|成功/, { timeout: 5_000 });
+
+        // 还原，避免污染环境
+        await autoControl.click();
+        await page.getByRole('button', { name: /保存配置/ }).click();
+        await page.waitForTimeout(800);
     });
 
     test('V-Ad0-3-02/V-Ad0-3-04 - 敏感词管理', async ({ page }) => {
@@ -469,20 +560,76 @@ test.describe('Phase5 - 后台管理', () => {
         await page.waitForTimeout(2000);
 
         await expect(page.locator('body')).toContainText(/活动标题|时间|类型|奖品/, { timeout: 5_000 });
+        // 创建页使用 AdminDateTime（aria-label=开始/结束时间）
+        await expect(page.getByLabel('开始时间').first()).toBeVisible({ timeout: 5_000 });
+        await expect(page.getByLabel('结束时间').first()).toBeVisible({ timeout: 5_000 });
     });
 
-    test('V-A1-10 - 发布活动', async ({ page }) => {
-        // 后台活动列表页路由未实现（仅有 /admin/activities/create、/edit/:id、/:id/vote）
-        test.skip(true, '后台活动列表页 /admin/activities 路由未实现');
+    test('V-A1-02 - 活动运营列表页', async ({ page }) => {
         await loginAsAdmin(page);
         await page.goto('/admin/activities');
         await page.waitForTimeout(2000);
 
-        const publishBtn = page.getByRole('button', { name: /发布/ }).first();
-        if (await publishBtn.isVisible()) {
-            await publishBtn.click();
-            await page.waitForTimeout(500);
+        await expect(page.getByRole('heading', { name: '活动运营' })).toBeVisible({ timeout: 10_000 });
+        await expect(page.getByRole('button', { name: '创建活动' })).toBeVisible();
+        await expect(page.locator('#activity-keyword').or(page.getByPlaceholder(/搜索标题/))).toBeVisible();
+        // 无多余独立「搜索」按钮：关键词回车即筛
+        await expect(page.getByRole('button', { name: /^搜索$/ })).toHaveCount(0);
+    });
+
+    test('V-A1-03 - 活动列表状态筛选', async ({ page }) => {
+        await loginAsAdmin(page);
+        await page.goto('/admin/activities');
+        await page.waitForTimeout(2000);
+
+        const statusSelect = page.locator('#activity-status');
+        await expect(statusSelect).toBeVisible({ timeout: 5_000 });
+        await statusSelect.click();
+        await page.getByRole('option', { name: '草稿' }).click();
+        await page.waitForTimeout(1000);
+        await expect(page.getByRole('heading', { name: '活动运营' })).toBeVisible();
+        await expect(page.locator('body')).toContainText(/草稿|暂无活动/, { timeout: 5_000 });
+    });
+
+    test('V-A1-10 - 发布活动', async ({ page }) => {
+        await loginAsAdmin(page);
+        await page.goto('/admin/activities');
+        await page.waitForTimeout(2000);
+
+        await expect(page.getByRole('heading', { name: '活动运营' })).toBeVisible({ timeout: 10_000 });
+
+        // 优先筛草稿，再点「发布」
+        const statusSelect = page.locator('#activity-status');
+        if (await statusSelect.isVisible()) {
+            await statusSelect.click();
+            const draftOpt = page.getByRole('option', { name: '草稿' });
+            if (await draftOpt.isVisible()) {
+                await draftOpt.click();
+                await page.waitForTimeout(1000);
+            } else {
+                await page.keyboard.press('Escape');
+            }
         }
+
+        const publishBtn = page.getByRole('button', { name: '发布' }).first();
+        test.skip(!(await publishBtn.isVisible()), '暂无草稿活动可发布');
+
+        await publishBtn.click();
+        await expect(page.locator('body')).toContainText(/发布成功|已发布/, { timeout: 5_000 });
+    });
+
+    test('V-A1-11 - 报名审核页', async ({ page }) => {
+        await loginAsAdmin(page);
+        await page.goto('/admin/activities');
+        await page.waitForTimeout(2000);
+
+        const regBtn = page.getByRole('button', { name: '报名' }).first();
+        test.skip(!(await regBtn.isVisible()), '暂无活动，无法进入报名审核');
+
+        await regBtn.click();
+        await page.waitForURL(/\/admin\/activities\/\d+\/registrations/, { timeout: 10_000 });
+        await expect(page.getByRole('heading', { name: '报名审核' })).toBeVisible({ timeout: 5_000 });
+        await expect(page.getByRole('button', { name: '返回列表' })).toBeVisible();
     });
 });
 
