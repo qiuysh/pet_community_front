@@ -6,7 +6,19 @@ import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Skeleton } from '../../components/ui/skeleton';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import './searchPage.scss';
+
+const metaIconProps = {
+  size: ICON_SIZE.inline,
+  strokeWidth: iconStroke(ICON_SIZE.inline),
+  'aria-hidden': true as const,
+};
+const actionIconProps = {
+  size: ICON_SIZE.action,
+  strokeWidth: iconStroke(ICON_SIZE.action),
+  'aria-hidden': true as const,
+};
 
 export const SearchPage = () => {
   const navigate = useNavigate();
@@ -27,7 +39,7 @@ export const SearchPage = () => {
     <div className="search-page">
       <div className="search-header">
         <div className="search-input-wrapper">
-          <span className="search-icon" aria-hidden="true"><Search size={16} /></span>
+          <span className="search-icon" aria-hidden="true"><Search {...actionIconProps} /></span>
           <Input
             type="text"
             value={keyword}
@@ -39,7 +51,7 @@ export const SearchPage = () => {
           />
           {keyword && (
             <Button type="button" variant="ghost" size="sm" className="clear-btn" onClick={() => setKeyword('')} aria-label="清空">
-              <X size={16} aria-hidden="true" />
+              <X {...actionIconProps} />
             </Button>
           )}
         </div>
@@ -82,12 +94,12 @@ export const SearchPage = () => {
               <div className="history-list">
                 {history.map((item) => (
                   <div key={item.id} className="history-item">
-                    <span className="history-icon" aria-hidden="true"><Search size={16} /></span>
+                    <span className="history-icon" aria-hidden="true"><Search {...metaIconProps} /></span>
                     <span className="history-keyword" onClick={() => setKeyword(item.keyword)}>
                       {item.keyword}
                     </span>
                     <Button type="button" variant="ghost" size="sm" className="delete-btn" onClick={() => handleDeleteHistory(item.id)} aria-label="删除历史">
-                      <X size={14} aria-hidden="true" />
+                      <X {...metaIconProps} />
                     </Button>
                   </div>
                 ))}
@@ -155,11 +167,11 @@ export const SearchPage = () => {
                       )}
                       <div className="post-meta">
                         <span className="action-item">
-                          <Heart size={14} aria-hidden="true" />
+                          <Heart {...metaIconProps} />
                           <span className="count">{post.likesCount}</span>
                         </span>
                         <span className="action-item">
-                          <MessageCircle size={14} aria-hidden="true" />
+                          <MessageCircle {...metaIconProps} />
                           <span className="count">{post.commentsCount}</span>
                         </span>
                       </div>

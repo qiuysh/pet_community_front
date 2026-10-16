@@ -44,6 +44,7 @@ export const getRecommendPosts = async (
 
 export const getCategoryPosts = async (
   params: {
+    categoryId?: number;
     petType?: string;
     postType?: string;
     sort?: string;

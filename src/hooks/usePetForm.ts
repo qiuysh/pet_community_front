@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { createPet, updatePet, getPetDetail, getPetBreeds } from '../api/pet';
+import { createPet, updatePet, getPetDetail, getPetBreeds, uploadPetAvatar } from '../api/pet';
 import { useAsync } from './useAsync';
 import { showSuccessToast, showErrorToast } from '../utils/toastManager';
 import { PetCreateRequest, PetBreedInfo } from '../types/pet';
@@ -23,6 +23,7 @@ export function usePetForm() {
 
   const { loading, run } = useAsync();
   const { run: runBreeds } = useAsync();
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [breeds, setBreeds] = useState<PetBreedInfo[]>([]);
   const [formData, setFormData] = useState<PetCreateRequest>({
     name: '',
@@ -110,12 +111,37 @@ export function usePetForm() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleAvatarUpload = async (file: File | null) => {
+    if (!file) return;
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!allowed.includes(file.type) && !/\.(jpe?g|png|webp)$/i.test(file.name)) {
+      showErrorToast('仅支持 JPG、PNG、WebP 格式');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      showErrorToast('头像大小不能超过 2MB');
+      return;
+    }
+    setUploadingAvatar(true);
+    try {
+      const res = await uploadPetAvatar(file);
+      updateField('avatar', res.url);
+      showSuccessToast('头像已上传');
+    } catch (err) {
+      showErrorToast((err as Error).message || '头像上传失败');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   return {
     isEdit,
     loading,
+    uploadingAvatar,
     breeds,
     formData,
     updateField,
+    handleAvatarUpload,
     handleSubmit,
   };
 }

@@ -217,15 +217,15 @@ export function AdminAdPage() {
     return (
         <div className={adminUi.page}>
             <AdminPageHeader
-                title="广告管理"
-                description="管理广告位和广告投放"
+                title="广告投放"
+                description="配置广告位、投放素材与效果统计"
                 tabs={
                     <AdminTabs
-                        aria-label="广告管理分区"
+                        aria-label="广告投放分区"
                         items={[
-                            { key: 'positions', label: '广告位管理' },
-                            { key: 'ads', label: '广告投放' },
-                            { key: 'stats', label: '广告统计' },
+                            { key: 'positions', label: '广告位' },
+                            { key: 'ads', label: '投放' },
+                            { key: 'stats', label: '统计' },
                         ]}
                         selectedKey={activeTab}
                         onSelectionChange={(key) => {

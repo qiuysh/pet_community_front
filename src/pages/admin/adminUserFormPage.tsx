@@ -173,7 +173,7 @@ export function AdminUserFormPage() {
       <div className="bg-white rounded-md shadow-card animate-fadeIn">
         <div className="px-6 py-6">
           <h1 className={`${adminUi.pageTitle} mb-6`}>
-            {isEdit ? '编辑运营人员' : '添加运营人员'}
+            {isEdit ? '编辑后台账号' : '新建后台账号'}
           </h1>
 
           {error && (

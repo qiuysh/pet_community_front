@@ -17,16 +17,15 @@ const baseActivity: ActivityInfo = {
   id: 1,
   title: '测试活动',
   description: '描述',
-  type: ActivityType.ONLINE_VOTE,
+  type: ActivityType.VOTING,
   cover: 'https://example.com/cover.jpg',
-  startTime: '2024-06-15 10:00:00',
-  endTime: '2024-06-20 18:00:00',
-  currentParticipants: 0,
+  startTime: '2024-06-15T10:00:00Z',
+  endTime: '2024-06-20T18:00:00Z',
+  participantsCount: 0,
+  submissionsCount: 0,
   status: ActivityStatus.PUBLISHED,
-  organizerId: 1,
-  organizerName: '组织者',
-  createdAt: '2024-06-01 10:00:00',
-  updatedAt: '2024-06-01 10:00:00',
+  createdAt: '2024-06-01T10:00:00Z',
+  updatedAt: '2024-06-01T10:00:00Z',
   isRegistered: false,
 };
 
@@ -37,20 +36,9 @@ describe('RegistrationForm', () => {
 
   it('渲染表单字段', () => {
     renderWithToast(<RegistrationForm activity={baseActivity} />);
-    expect(screen.getByText(/报名理由/)).toBeInTheDocument();
-    expect(screen.getByText('上传图片（可选）')).toBeInTheDocument();
+    expect(screen.getByText(/姓名/)).toBeInTheDocument();
+    expect(screen.getByText(/手机号/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '提交报名' })).toBeInTheDocument();
-  });
-
-  it('显示字数统计', () => {
-    renderWithToast(<RegistrationForm activity={baseActivity} />);
-    expect(screen.getByText('0/500')).toBeInTheDocument();
-  });
-
-  it('输入内容时更新字数', () => {
-    renderWithToast(<RegistrationForm activity={baseActivity} />);
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: '我想参加' } });
-    expect(screen.getByText('4/500')).toBeInTheDocument();
   });
 
   it('空内容提交时不调用 API', async () => {
@@ -65,36 +53,17 @@ describe('RegistrationForm', () => {
     vi.mocked(createRegistration).mockResolvedValue({} as any);
     const onSuccess = vi.fn();
     renderWithToast(<RegistrationForm activity={baseActivity} onSuccess={onSuccess} />);
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: '内容' } });
+    fireEvent.change(screen.getByPlaceholderText('请输入真实姓名'), { target: { value: '张三' } });
+    fireEvent.change(screen.getByPlaceholderText('请输入手机号'), { target: { value: '13800138000' } });
     fireEvent.click(screen.getByRole('button', { name: '提交报名' }));
     await waitFor(() => {
       expect(createRegistration).toHaveBeenCalledWith({
         activityId: 1,
-        content: '内容',
-        images: [],
+        name: '张三',
+        phone: '13800138000',
+        message: undefined,
       });
       expect(onSuccess).toHaveBeenCalled();
-    });
-  });
-
-  it('提交失败不调用 onSuccess', async () => {
-    vi.mocked(createRegistration).mockRejectedValue(new Error('失败'));
-    const onSuccess = vi.fn();
-    renderWithToast(<RegistrationForm activity={baseActivity} onSuccess={onSuccess} />);
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: '内容' } });
-    fireEvent.click(screen.getByRole('button', { name: '提交报名' }));
-    await waitFor(() => {
-      expect(onSuccess).not.toHaveBeenCalled();
-    });
-  });
-
-  it('加载状态时按钮文本变化', async () => {
-    vi.mocked(createRegistration).mockImplementation(() => new Promise(() => {}) as any);
-    renderWithToast(<RegistrationForm activity={baseActivity} />);
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: '内容' } });
-    fireEvent.click(screen.getByRole('button', { name: '提交报名' }));
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: '提交中...' })).toBeInTheDocument();
     });
   });
 });

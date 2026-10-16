@@ -207,9 +207,16 @@
         min-height: 44px;
         min-width: 0;
         flex: 1;
+        font-size: $font-size-base;
         font-variant-numeric: tabular-nums;
         color: inherit;
         transition: color 0.15s ease;
+
+        svg {
+          flex-shrink: 0;
+          width: 20px;
+          height: 20px;
+        }
 
         &:hover {
           color: $primary-color;

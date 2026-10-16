@@ -1,5 +1,5 @@
 import { useActivityList } from '../../hooks/useActivityList';
-import { ActivityType, ActivityStatus } from '../../types/activity';
+import { ActivityType } from '../../types/activity';
 import { ActivityCard } from '../../components/activity';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -33,44 +33,44 @@ export const ActivityListPage = () => {
               全部
             </FilterChip>
             <FilterChip
-              active={filters.type === ActivityType.ONLINE_VOTE}
-              onClick={() => handleTypeChange(ActivityType.ONLINE_VOTE)}
+              active={filters.type === ActivityType.VOTING}
+              onClick={() => handleTypeChange(ActivityType.VOTING)}
             >
-              线上投票
+              投票评选
             </FilterChip>
             <FilterChip
-              active={filters.type === ActivityType.OFFLINE_EVENT}
-              onClick={() => handleTypeChange(ActivityType.OFFLINE_EVENT)}
+              active={filters.type === ActivityType.CONTEST}
+              onClick={() => handleTypeChange(ActivityType.CONTEST)}
             >
-              线下活动
+              作品征集
             </FilterChip>
             <FilterChip
-              active={filters.type === ActivityType.ADOPTION}
-              onClick={() => handleTypeChange(ActivityType.ADOPTION)}
+              active={filters.type === ActivityType.COLLECTION}
+              onClick={() => handleTypeChange(ActivityType.COLLECTION)}
             >
-              领养活动
+              话题征集
             </FilterChip>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <FilterChip
               tone="secondary"
-              active={filters.status === ActivityStatus.ONGOING}
-              onClick={() => handleStatusChange(ActivityStatus.ONGOING)}
+              active={filters.status === 'active'}
+              onClick={() => handleStatusChange('active')}
             >
               进行中
             </FilterChip>
             <FilterChip
               tone="secondary"
-              active={filters.status === ActivityStatus.PUBLISHED}
-              onClick={() => handleStatusChange(ActivityStatus.PUBLISHED)}
+              active={filters.status === 'upcoming'}
+              onClick={() => handleStatusChange('upcoming')}
             >
               即将开始
             </FilterChip>
             <FilterChip
               tone="secondary"
-              active={filters.status === ActivityStatus.ENDED}
-              onClick={() => handleStatusChange(ActivityStatus.ENDED)}
+              active={filters.status === 'ended'}
+              onClick={() => handleStatusChange('ended')}
             >
               已结束
             </FilterChip>
@@ -78,47 +78,47 @@ export const ActivityListPage = () => {
         </div>
       </div>
 
-      <div className="px-4">
-        {loading && activities.length === 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} padding="none" className="overflow-hidden">
-                <Skeleton className="aspect-video w-full" />
+      <div className="px-4 py-4">
+        {loading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} padding="none">
+                <Skeleton className="h-40 w-full rounded-t-md" />
                 <div className="p-4 space-y-2">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-4 w-2/3" />
+                  <Skeleton className="h-3 w-full" />
                 </div>
               </Card>
             ))}
           </div>
+        ) : activities.length === 0 ? (
+          <div className="py-16 text-center text-brown-muted">暂无活动</div>
+        ) : (
+          <div className="space-y-3">
+            {activities.map((activity) => (
+              <ActivityCard key={activity.id} activity={activity} />
+            ))}
+          </div>
         )}
 
-        {!loading && activities.length === 0 && (
-          <div className="py-8 text-center text-brown-muted">暂无活动</div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-          {activities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} />
-          ))}
-        </div>
-
-        {total > 10 && (
-          <div className="flex justify-center items-center gap-4 mt-6">
+        {totalPages > 1 && (
+          <div className="mt-6 flex justify-center gap-2">
             <Button
-              variant="ghost"
-              className="bg-white"
+              type="button"
+              variant="outline"
+              size="sm"
               disabled={page <= 1}
               onClick={() => setPage(page - 1)}
             >
               上一页
             </Button>
-            <span className="text-sm text-brown-muted">
-              第 {page} 页 / 共 {totalPages} 页
+            <span className="flex items-center text-sm text-brown-muted">
+              {page} / {totalPages}
             </span>
             <Button
-              variant="ghost"
-              className="bg-white"
+              type="button"
+              variant="outline"
+              size="sm"
               disabled={page >= totalPages}
               onClick={() => setPage(page + 1)}
             >

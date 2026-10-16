@@ -25,9 +25,11 @@ export const adminUi = {
   page: 'bg-white rounded-md shadow-card animate-fadeIn',
   panel: 'bg-white rounded-md shadow-card',
 
-  /** 页头：标题 + Tabs/主操作同行 */
-  pageHeader:
-    'flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-6 py-4 border-b border-border-light',
+  /**
+   * 页头：上行为标题 + 主操作，有分区 Tabs 时独占下一行，避免与按钮挤在右上角。
+   */
+  pageHeader: 'flex flex-col gap-3 px-6 py-4 border-b border-border-light',
+  pageHeaderTop: 'flex flex-row items-start justify-between gap-3',
   /** 后台页标题：20px（! 覆盖 global.scss 未入 layer 的 h1=28px） */
   pageTitle: '!text-[20px] font-semibold leading-snug text-brown text-balance',
   /** 分区标题（h2）：16px，小于页标题 */
@@ -35,7 +37,10 @@ export const adminUi = {
   /** 卡片/图表块标题（h3）：14px，小于分区标题 */
   blockTitle: '!text-sm font-semibold leading-snug text-brown text-balance',
   pageDesc: 'mt-1 text-sm text-brown-muted',
-  pageHeaderActions: 'flex flex-wrap items-center gap-3 shrink-0',
+  /** 主操作区：始终靠右，与 Tabs 分行 */
+  pageHeaderActions: 'flex shrink-0 flex-wrap items-center gap-2 sm:justify-end',
+  /** 分区 Tabs 行：全宽，窄屏可横向滚动 */
+  pageHeaderTabs: 'min-w-0 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
   /** 图表/指标卡外壳：铺满网格/弹性子项 */
   chartCard: 'w-full min-w-0 !bg-white rounded-md shadow-card border border-border-light/60 p-5',
 
@@ -98,7 +103,7 @@ export const adminUi = {
   modal: 'bg-white rounded-md p-6 max-w-md w-full mx-4 shadow-card overscroll-contain',
   modalDialog: 'bg-white rounded-md shadow-hover w-full max-w-md mx-4 animate-scaleIn overscroll-contain',
 
-  th: 'px-6 py-3 text-left text-xs font-medium text-brown-muted uppercase tracking-wider',
+  th: 'px-6 py-3 text-left text-xs font-medium text-brown-muted tracking-wider whitespace-nowrap',
   tableHead: 'bg-soft',
   tableRow: 'hover:bg-soft/50 transition-colors',
 } as const;

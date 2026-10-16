@@ -36,16 +36,18 @@ export function useCategory(pageSize = 10) {
   );
   const categoryInfo: TopicCategoryInfo | null = categoryData ?? null;
 
-  // 加载分类帖子
+  // 加载分类帖子（含路由 categoryId）
+  const categoryId = id ? Number(id) : undefined;
   const { loading, data: postsData } = useAsyncEffect(
     () => getCategoryPosts({
+      categoryId: categoryId && !Number.isNaN(categoryId) ? categoryId : undefined,
       petType: petType || undefined,
       postType: postType || undefined,
       sort: sortType,
       page,
       pageSize,
     }),
-    [page, petType, postType, sortType],
+    [page, petType, postType, sortType, categoryId],
     { onError: (err) => console.error('加载分类帖子失败', err) },
   );
   const posts: RecommendPostInfo[] = postsData?.list ?? [];

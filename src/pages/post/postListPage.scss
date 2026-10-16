@@ -272,12 +272,19 @@
         border-top: 1px solid $divider-color;
 
         .action-item {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           gap: 6px;
-          font-size: $font-size-xs + 1;
+          min-height: 44px;
+          font-size: $font-size-base;
           color: $text-secondary;
           font-variant-numeric: tabular-nums;
+
+          svg {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+          }
 
           .icon {
             display: inline-flex;

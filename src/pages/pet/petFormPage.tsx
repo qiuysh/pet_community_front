@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { usePetForm } from '../../hooks/usePetForm';
@@ -10,12 +11,15 @@ import { Radio, RadioGroup } from '../../components/ui/radio';
 
 export function PetFormPage() {
   const navigate = useNavigate();
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const {
     isEdit,
     loading,
+    uploadingAvatar,
     breeds,
     formData,
     updateField,
+    handleAvatarUpload,
     handleSubmit,
   } = usePetForm();
 
@@ -40,17 +44,39 @@ export function PetFormPage() {
         <Card className="space-y-6" padding="lg">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex items-center gap-6">
-              <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/10 to-primary-dark/10 flex items-center justify-center text-brown">
-                {(() => {
-                  const PetIcon = getPetTypeIcon(formData.petType);
-                  return <PetIcon size={32} aria-hidden="true" />;
-                })()}
+              <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/10 to-primary-dark/10 flex items-center justify-center text-brown overflow-hidden">
+                {formData.avatar ? (
+                  <img src={formData.avatar} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  (() => {
+                    const PetIcon = getPetTypeIcon(formData.petType);
+                    return <PetIcon size={32} aria-hidden="true" />;
+                  })()
+                )}
               </div>
               <div>
-                <Button type="button" variant="outline" size="sm">
-                  上传头像
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+                  className="sr-only"
+                  aria-hidden="true"
+                  tabIndex={-1}
+                  onChange={(e) => {
+                    void handleAvatarUpload(e.target.files?.[0] ?? null);
+                    e.target.value = '';
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={uploadingAvatar}
+                  onClick={() => avatarInputRef.current?.click()}
+                >
+                  {uploadingAvatar ? '上传中…' : '上传头像'}
                 </Button>
-                <p className="text-xs text-brown-muted mt-2">支持 JPG、PNG 格式，小于 2MB</p>
+                <p className="text-xs text-brown-muted mt-2">支持 JPG、PNG、WebP 格式，小于 2MB</p>
               </div>
             </div>
 

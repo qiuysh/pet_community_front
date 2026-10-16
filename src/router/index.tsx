@@ -128,6 +128,10 @@ const AdminNotificationPage = lazyNamed(
   () => import('../pages/admin/adminNotificationPage'),
   'AdminNotificationPage',
 );
+const AdminActivityListPage = lazyNamed(
+  () => import('../pages/admin/adminActivityListPage'),
+  'AdminActivityListPage',
+);
 const ActivityCreatePage = lazyNamed(
   () => import('../pages/admin/activityCreatePage'),
   'ActivityCreatePage',
@@ -135,6 +139,10 @@ const ActivityCreatePage = lazyNamed(
 const ActivityEditPage = lazyNamed(
   () => import('../pages/admin/activityEditPage'),
   'ActivityEditPage',
+);
+const ActivityRegistrationsPage = lazyNamed(
+  () => import('../pages/admin/activityRegistrationsPage'),
+  'ActivityRegistrationsPage',
 );
 
 function withUser(page: ReactNode, protectedRoute = false) {
@@ -232,8 +240,10 @@ const routes: RouteObject[] = [
   { path: '/admin/reviews', element: withAdmin(<AdminReviewPage />) },
   { path: '/admin/reports', element: withAdmin(<AdminReportPage />) },
   { path: '/admin/notifications', element: withAdmin(<AdminNotificationPage />) },
+  { path: '/admin/activities', element: withAdmin(<AdminActivityListPage />) },
   { path: '/admin/activities/create', element: withAdmin(<ActivityCreatePage />) },
   { path: '/admin/activities/:id/edit', element: withAdmin(<ActivityEditPage />) },
+  { path: '/admin/activities/:id/registrations', element: withAdmin(<ActivityRegistrationsPage />) },
   { path: '/admin/activities/:id/vote', element: withAdmin(<ActivityVotePage />) },
   { path: '/admin/ads', element: withAdmin(<AdminAdPage />) },
 ];

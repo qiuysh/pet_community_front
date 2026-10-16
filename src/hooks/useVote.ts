@@ -16,9 +16,9 @@ export const useVote = () => {
     );
   }, [run, toast]);
 
-  const cancel = useCallback(async (activityId: number, submissionId: number) => {
+  const cancel = useCallback(async (submissionId: number) => {
     return run(
-      () => cancelVote(activityId, submissionId),
+      () => cancelVote(submissionId),
       () => toast.success('取消投票成功'),
       (err: unknown) => toast.error((err instanceof Error ? err.message : '') || '取消投票失败'),
     );

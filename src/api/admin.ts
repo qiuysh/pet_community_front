@@ -39,7 +39,6 @@ import {
     UpdateAnnouncementRequest,
     UpdateAnnouncementStatusRequest,
     BehaviorLogListResponse,
-    LogStatsResponse,
     AdminReportListResponse,
     HandleReportRequest,
     BatchHandleReportRequest,
@@ -516,20 +515,4 @@ export const exportLogs = async (params: {
     return await get<Blob>(`/api/v1/admin/logs/export?${query.toString()}`, {
         responseType: 'blob'
     });
-};
-
-export const getLogStats = async (params: {
-    userId?: number;
-    actionType?: string;
-    startTime?: string;
-    endTime?: string;
-    days?: number;
-}): Promise<LogStatsResponse> => {
-    const query = new URLSearchParams();
-    if (params.userId) query.set('userId', params.userId.toString());
-    if (params.actionType) query.set('actionType', params.actionType);
-    if (params.startTime) query.set('startTime', params.startTime);
-    if (params.endTime) query.set('endTime', params.endTime);
-    if (params.days) query.set('days', params.days.toString());
-    return await get<LogStatsResponse>(`/api/v1/admin/logs/stats?${query.toString()}`);
 };

@@ -3,37 +3,37 @@ import { useCategory } from '../../hooks/useCategory';
 import { PetIcon, PostIcon } from '../../components/discovery/filterIcons';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Heart, MessageCircle, Share, ArrowLeft, Play, Image } from 'lucide-react';
+import { Heart, MessageCircle, Share2, ArrowLeft, Play, Image } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Spinner } from '../../components/ui/spinner';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import './categoryPage.scss';
 
-// SVG 操作图标组件
-const LikeIcon = ({ active, size = 16 }: { active?: boolean; size?: number }) => (
-  <Heart size={size} strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />
+const LikeIcon = ({ active, size = ICON_SIZE.action }: { active?: boolean; size?: number }) => (
+  <Heart size={size} strokeWidth={iconStroke(size)} fill={active ? 'currentColor' : 'none'} aria-hidden="true" />
 );
 
-const CommentIcon = ({ size = 16 }: { size?: number }) => (
-  <MessageCircle size={size} strokeWidth={1.8} />
+const CommentIcon = ({ size = ICON_SIZE.action }: { size?: number }) => (
+  <MessageCircle size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
 );
 
-const ShareIcon = ({ size = 16 }: { size?: number }) => (
-  <Share size={size} strokeWidth={1.8} />
+const ShareIcon = ({ size = ICON_SIZE.action }: { size?: number }) => (
+  <Share2 size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
 );
 
-const ArrowLeftIcon = ({ size = 20 }: { size?: number }) => (
-  <ArrowLeft size={size} strokeWidth={2} />
+const ArrowLeftIcon = ({ size = ICON_SIZE.nav }: { size?: number }) => (
+  <ArrowLeft size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
 );
 
 const PlayIcon = () => (
-  <Play fill="white" stroke="none" />
+  <Play size={ICON_SIZE.feature} fill="white" stroke="none" aria-hidden="true" />
 );
 
-const ImageIcon = ({ size = 16 }: { size?: number }) => (
-  <Image size={size} strokeWidth={1.8} />
+const ImageIcon = ({ size = ICON_SIZE.feature }: { size?: number }) => (
+  <Image size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
 );
 
 export const CategoryPage = () => {
@@ -84,14 +84,14 @@ export const CategoryPage = () => {
         <div className="hero-decor hero-decor-2" />
         <div className="hero-back">
           <Link to="/discover">
-            <ArrowLeftIcon size={20} />
+            <ArrowLeftIcon />
           </Link>
         </div>
         <div className="hero-content">
           {categoryInfo ? (
             <>
               <div className="hero-icon-wrap">
-                <CategoryIcon categoryName={categoryInfo.name} size={32} color="currentColor" />
+                <CategoryIcon categoryName={categoryInfo.name} size={ICON_SIZE.feature} color="currentColor" />
               </div>
               <h1 className="hero-title">{categoryInfo.name}</h1>
               <p className="hero-desc">{categoryInfo.description}</p>
@@ -99,7 +99,7 @@ export const CategoryPage = () => {
           ) : (
             <>
               <div className="hero-icon-wrap hero-icon-default">
-                <ImageIcon size={28} />
+                <ImageIcon />
               </div>
               <h1 className="hero-title">分类浏览</h1>
               <p className="hero-desc">发现感兴趣的宠物内容</p>
@@ -120,7 +120,7 @@ export const CategoryPage = () => {
                 onClick={() => setPetType(pt.value)}
                 className="filter-chip"
               >
-                {pt.icon && <PetIcon type={pt.icon} size={14} />}
+                {pt.icon && <PetIcon type={pt.icon} />}
                 <span>{pt.label}</span>
               </FilterChip>
             ))}
@@ -136,7 +136,7 @@ export const CategoryPage = () => {
                 onClick={() => setPostType(pt.value)}
                 className="filter-chip"
               >
-                {pt.icon && <PostIcon type={pt.icon} size={14} />}
+                {pt.icon && <PostIcon type={pt.icon} />}
                 <span>{pt.label}</span>
               </FilterChip>
             ))}
@@ -189,7 +189,18 @@ export const CategoryPage = () => {
         )}
         {!loading && posts.length === 0 && (
           <div className="empty-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.3">
+            <svg
+              width={ICON_SIZE.empty}
+              height={ICON_SIZE.empty}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.3"
+              aria-hidden="true"
+            >
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
@@ -229,15 +240,15 @@ export const CategoryPage = () => {
             )}
             <div className="post-actions">
               <span className={`action-item like-action ${post.isLiked ? 'liked' : ''}`}>
-                <LikeIcon active={post.isLiked} size={15} />
+                <LikeIcon active={post.isLiked} />
                 <span>{formatCount(post.likesCount)}</span>
               </span>
               <span className="action-item">
-                <CommentIcon size={15} />
+                <CommentIcon />
                 <span>{formatCount(post.commentsCount)}</span>
               </span>
               <span className="action-item">
-                <ShareIcon size={15} />
+                <ShareIcon />
                 <span>{formatCount(post.sharesCount)}</span>
               </span>
             </div>

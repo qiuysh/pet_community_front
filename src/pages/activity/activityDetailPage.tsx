@@ -3,7 +3,7 @@ import { useActivityDetail } from '../../hooks/useActivityDetail';
 import { ActivityType } from '../../types/activity';
 import { RegistrationForm, SubmissionUploader, VoteButton } from '../../components/activity';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Clock, MapPin, Users, Check, Trophy, X } from 'lucide-react';
+import { Clock, Users, Check, Trophy, X } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Tabs } from '../../components/ui/tabs';
@@ -13,7 +13,6 @@ export const ActivityDetailPage = () => {
   const {
     activity,
     submissions,
-    registrations,
     loading,
     refetch,
     isLoggedIn,
@@ -56,30 +55,17 @@ export const ActivityDetailPage = () => {
           <h1 className="text-xl font-bold text-brown mb-2">{activity.title}</h1>
           <p className="text-brown-muted mb-3">{activity.description}</p>
 
-          <div className="flex items-center gap-2 mb-3">
-            <img
-              src={activity.organizerAvatar || getDefaultUserAvatar()}
-              alt=""
-              className="w-8 h-8 rounded-full"
-            />
-            <span className="text-sm text-brown-secondary">{activity.organizerName}</span>
-          </div>
-
           <div className="space-y-2 text-sm text-brown-muted">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" aria-hidden="true" />
               <span>{formatTime(activity.startTime)} - {formatTime(activity.endTime)}</span>
             </div>
-            {activity.location && (
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" aria-hidden="true" />
-                <span>{activity.location}</span>
-              </div>
-            )}
-            {activity.maxParticipants && (
+            {(activity.maxParticipants ?? 0) > 0 && (
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" aria-hidden="true" />
-                <span>{activity.currentParticipants}/{activity.maxParticipants} 人参与</span>
+                <span>
+                  {activity.participantsCount}/{activity.maxParticipants} 人参与
+                </span>
               </div>
             )}
           </div>
@@ -99,7 +85,7 @@ export const ActivityDetailPage = () => {
                 立即报名
               </Button>
             )}
-            {isSubmissionOpen() && !activity.isSubmitted && (
+            {isSubmissionOpen() && !activity.hasSubmitted && (
               <Button
                 variant="secondary"
                 className="flex-1"
@@ -126,11 +112,8 @@ export const ActivityDetailPage = () => {
           onSelectionChange={(key) => setActiveTab(key as typeof activeTab)}
           items={[
             { key: 'detail', title: '活动详情' },
-            ...(activity.type === ActivityType.ONLINE_VOTE
-              ? [
-                  { key: 'submissions', title: '作品展示' },
-                  { key: 'registrations', title: '报名列表' },
-                ]
+            ...(activity.type === ActivityType.VOTING || activity.type === ActivityType.CONTEST
+              ? [{ key: 'submissions', title: '作品展示' }]
               : []),
           ]}
         />
@@ -151,15 +134,10 @@ export const ActivityDetailPage = () => {
                 <p className="text-sm text-brown-muted">{activity.prizes}</p>
               </div>
             )}
-            {activity.maxVotesPerUser && (
+            {(activity.votesPerDay ?? 0) > 0 && (
               <div className="mb-4">
                 <h3 className="text-base font-medium text-brown mb-2">投票规则</h3>
-                <p className="text-sm text-brown-muted">每人最多可投票 {activity.maxVotesPerUser} 次</p>
-                {activity.voteStartTime && activity.voteEndTime && (
-                  <p className="text-sm text-brown-muted mt-1">
-                    投票时间：{formatTime(activity.voteStartTime)} - {formatTime(activity.voteEndTime)}
-                  </p>
-                )}
+                <p className="text-sm text-brown-muted">每人每天最多可投票 {activity.votesPerDay} 次</p>
               </div>
             )}
           </Card>
@@ -174,7 +152,7 @@ export const ActivityDetailPage = () => {
                 {submissions.map((submission) => (
                   <Card key={submission.id} padding="none">
                     <img
-                      src={submission.images[0] || '/default-submission.png'}
+                      src={submission.images?.[0] || '/default-submission.png'}
                       alt={submission.title}
                       className="w-full h-32 object-cover"
                     />
@@ -194,53 +172,19 @@ export const ActivityDetailPage = () => {
                           <VoteButton
                             activityId={activity.id}
                             submissionId={submission.id}
-                            hasVoted={submission.hasVoted || false}
+                            hasVoted={submission.isVoted || false}
                             votesCount={submission.votesCount}
                             onVoteSuccess={() => refetch()}
                           />
                         )}
                       </div>
-                      {submission.award && (
+                      {submission.awardLevel && (
                         <div className="mt-2 text-xs text-warning flex items-center gap-1">
                           <Trophy size={12} aria-hidden="true" />
-                          <span>{submission.award}</span>
+                          <span>{submission.awardLevel}</span>
                         </div>
                       )}
                     </div>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'registrations' && (
-          <div>
-            {registrations.length === 0 ? (
-              <div className="py-8 text-center text-brown-muted">暂无报名</div>
-            ) : (
-              <div className="space-y-3">
-                {registrations.map((registration) => (
-                  <Card key={registration.id} padding="sm">
-                    <div className="flex items-center gap-2 mb-2">
-                      <img
-                        src={registration.userAvatar || getDefaultUserAvatar()}
-                        alt=""
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <div>
-                        <div className="text-sm font-medium text-brown">{registration.userNickname}</div>
-                        <div className="text-xs text-brown-muted">{formatTime(registration.createdAt)}</div>
-                      </div>
-                    </div>
-                    <p className="text-sm text-brown-muted">{registration.content}</p>
-                    {registration.images && registration.images.length > 0 && (
-                      <div className="flex gap-2 mt-2">
-                        {registration.images.slice(0, 3).map((img, idx) => (
-                          <img key={idx} src={img} alt="" className="w-16 h-16 object-cover rounded-sm" />
-                        ))}
-                      </div>
-                    )}
                   </Card>
                 ))}
               </div>

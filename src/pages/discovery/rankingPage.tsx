@@ -5,7 +5,14 @@ import { Flame, Heart, MessageCircle, ArrowUpRight } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import './rankingPage.scss';
+
+const metaIconProps = {
+  size: ICON_SIZE.inline,
+  strokeWidth: iconStroke(ICON_SIZE.inline),
+  'aria-hidden': true as const,
+};
 
 export const RankingPage = () => {
   const { loading, data, period, setPeriod } = useRanking();
@@ -71,12 +78,12 @@ export const RankingPage = () => {
                       <div className="post-content">{post.content}</div>
                     </Link>
                     <div className="post-stats">
-                      <span className="stat-item flex items-center gap-1"><Heart size={14} aria-hidden="true" /><span>{post.likesCount}</span></span>
-                      <span className="stat-item flex items-center gap-1"><MessageCircle size={14} aria-hidden="true" /><span>{post.commentsCount}</span></span>
-                      <span className="stat-item flex items-center gap-1"><ArrowUpRight size={14} aria-hidden="true" /><span>{post.sharesCount}</span></span>
+                      <span className="stat-item flex items-center gap-1"><Heart {...metaIconProps} /><span>{post.likesCount}</span></span>
+                      <span className="stat-item flex items-center gap-1"><MessageCircle {...metaIconProps} /><span>{post.commentsCount}</span></span>
+                      <span className="stat-item flex items-center gap-1"><ArrowUpRight {...metaIconProps} /><span>{post.sharesCount}</span></span>
                     </div>
                   </div>
-                  <span className="hot-score flex items-center gap-1"><Flame size={14} aria-hidden="true" /><span>{post.hotScore}</span></span>
+                  <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{post.hotScore}</span></span>
                 </div>
               ))}
             </div>
@@ -100,7 +107,7 @@ export const RankingPage = () => {
                       <span>{user.postsCount}动态</span>
                     </div>
                   </div>
-                  <span className="hot-score flex items-center gap-1"><Flame size={14} aria-hidden="true" /><span>{user.hotScore}</span></span>
+                  <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{user.hotScore}</span></span>
                 </Link>
               ))}
             </div>
@@ -122,7 +129,7 @@ export const RankingPage = () => {
                   </div>
                   <div className="topic-stats">
                     <span>{topic.postsCount}帖子</span>
-                    <span className="hot-score flex items-center gap-1"><Flame size={14} aria-hidden="true" /><span>{topic.hotScore}</span></span>
+                    <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{topic.hotScore}</span></span>
                   </div>
                 </Link>
               ))}

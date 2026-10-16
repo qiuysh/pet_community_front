@@ -61,10 +61,9 @@ export const AwardSetting = ({ submissions, selectedAward, onAwardChange, onSubm
       return;
     }
 
-    const awards: AwardRequest[] = selectedSubmissions.map(submissionId => ({
+    const awards: AwardRequest[] = selectedSubmissions.map((submissionId) => ({
       submissionId,
-      award: selectedAward,
-      rank: selectedSubmissions.indexOf(submissionId) + 1,
+      awardLevel: selectedAward,
     }));
 
     run(

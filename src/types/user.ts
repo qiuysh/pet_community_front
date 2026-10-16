@@ -141,9 +141,12 @@ export interface ThirdPartyBindRequest {
 export interface ThirdPartyLoginResponse {
   token?: string;
   refreshToken?: string;
+  deviceId?: string;
   user?: UserInfo;
-  needBind: boolean;
-  platform: string;
+  isNewUser?: boolean;
+  /** 兼容旧字段：部分流程需绑定手机 */
+  needBind?: boolean;
+  platform?: string;
 }
 
 export interface UserListParams {

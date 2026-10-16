@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useVerificationCode } from '../../hooks/useVerificationCode';
-import { showErrorToast, showInfoToast } from '../../utils/toastManager';
+import { showErrorToast } from '../../utils/toastManager';
 import {
   getRememberedUserAccount,
   isUserRemembered,
@@ -23,7 +23,7 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [remember, setRemember] = useState(() => isUserRemembered() || !!getRememberedUserAccount());
-  const { loading, login } = useAuth();
+  const { loading, login, loginWithThirdParty } = useAuth();
   const { countdown, send: sendCodeNow } = useVerificationCode();
 
   const handleSendCode = () => {
@@ -194,7 +194,8 @@ export function LoginPage() {
               type="button"
               variant="ghost"
               aria-label="使用微信登录"
-              onClick={() => showInfoToast('微信登录暂未开放,请使用账号密码登录')}
+              disabled={loading}
+              onClick={() => void loginWithThirdParty('wechat')}
               className="w-10 h-10 min-w-0 p-0 rounded-full shadow-soft border-0 bg-[#07C160] text-white hover:bg-[#06AD56]"
             >
               <BrandSocialIcon platform="wechat" size={20} />
@@ -203,7 +204,8 @@ export function LoginPage() {
               type="button"
               variant="ghost"
               aria-label="使用微博登录"
-              onClick={() => showInfoToast('微博登录暂未开放,请使用账号密码登录')}
+              disabled={loading}
+              onClick={() => void loginWithThirdParty('weibo')}
               className="w-10 h-10 min-w-0 p-0 rounded-full shadow-soft border-0 bg-[#E6162D] text-white hover:bg-[#CF1428]"
             >
               <BrandSocialIcon platform="weibo" size={20} />
@@ -212,7 +214,8 @@ export function LoginPage() {
               type="button"
               variant="ghost"
               aria-label="使用 QQ 登录"
-              onClick={() => showInfoToast('QQ 登录暂未开放,请使用账号密码登录')}
+              disabled={loading}
+              onClick={() => void loginWithThirdParty('qq')}
               className="w-10 h-10 min-w-0 p-0 rounded-full shadow-soft border-0 bg-[#12B7F5] text-white hover:bg-[#0FA3DB]"
             >
               <BrandSocialIcon platform="qq" size={20} />

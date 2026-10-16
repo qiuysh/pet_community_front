@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/toast';
 import { useAsync } from '../../hooks/useAsync';
-import { createActivity } from '../../api/activity';
-import { ActivityType, ActivityStatus, ActivityTypeOptions } from '../../types/activity';
+import { createActivity, publishActivity } from '../../api/activity';
+import { ActivityType, ActivityTypeOptions } from '../../types/activity';
+import { toRFC3339 } from '../../utils/activityDateTime';
 import {
   AdminDateTime,
   AdminHint,
@@ -13,6 +14,7 @@ import {
   AdminTextarea,
 } from '../../components/admin/adminField';
 import { AdminButton } from '../../components/admin/adminButton';
+import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { adminUi } from '../../styles/adminUi';
 
 export const ActivityCreatePage = () => {
@@ -22,20 +24,17 @@ export const ActivityCreatePage = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: ActivityType.ONLINE_VOTE,
+    type: ActivityType.VOTING,
     cover: '',
-    images: [] as string[],
     startTime: '',
     endTime: '',
-    registrationDeadline: '',
-    voteStartTime: '',
-    voteEndTime: '',
     maxParticipants: '',
-    maxVotesPerUser: '3',
+    maxSubmissions: '1',
+    votesPerDay: '10',
     rules: '',
     prizes: '',
-    location: '',
-    status: ActivityStatus.DRAFT,
+    requireApproval: false,
+    publishNow: false,
   });
 
   const setField = <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {
@@ -69,44 +68,38 @@ export const ActivityCreatePage = () => {
       toast.warning('请填写活动标题');
       return;
     }
-
     if (!formData.description.trim()) {
       toast.warning('请填写活动描述');
       return;
     }
-
-    if (!formData.cover) {
-      toast.warning('请上传活动封面');
-      return;
-    }
-
     if (!formData.startTime || !formData.endTime) {
       toast.warning('请选择活动开始和结束时间');
       return;
     }
 
     await run(
-      () =>
-        createActivity({
+      async () => {
+        const created = await createActivity({
           title: formData.title.trim(),
           description: formData.description.trim(),
           type: formData.type,
-          cover: formData.cover,
-          images: formData.images,
-          startTime: formData.startTime,
-          endTime: formData.endTime,
-          registrationDeadline: formData.registrationDeadline || undefined,
-          voteStartTime: formData.voteStartTime || undefined,
-          voteEndTime: formData.voteEndTime || undefined,
-          maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : undefined,
-          maxVotesPerUser: formData.maxVotesPerUser ? parseInt(formData.maxVotesPerUser) : undefined,
+          cover: formData.cover || undefined,
+          startTime: toRFC3339(formData.startTime),
+          endTime: toRFC3339(formData.endTime),
+          maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants, 10) : 0,
+          maxSubmissions: formData.maxSubmissions ? parseInt(formData.maxSubmissions, 10) : 1,
+          votesPerDay: formData.votesPerDay ? parseInt(formData.votesPerDay, 10) : 10,
           rules: formData.rules.trim() || undefined,
           prizes: formData.prizes.trim() || undefined,
-          location: formData.location.trim() || undefined,
-          status: formData.status,
-        }),
+          requireApproval: formData.requireApproval,
+        });
+        if (formData.publishNow && created?.id) {
+          await publishActivity(created.id);
+        }
+        return created;
+      },
       () => {
-        toast.success('活动创建成功');
+        toast.success(formData.publishNow ? '活动创建并发布成功' : '活动草稿已保存');
         navigate('/admin/activities');
       },
       (err: unknown) => toast.error((err instanceof Error ? err.message : '') || '活动创建失败'),
@@ -159,7 +152,7 @@ export const ActivityCreatePage = () => {
         </div>
 
         <div>
-          <AdminLabel required>活动封面</AdminLabel>
+          <AdminLabel>活动封面</AdminLabel>
           {formData.cover ? (
             <div className="relative inline-block">
               <img src={formData.cover} alt="封面" width={128} height={128} className="w-32 h-32 object-cover rounded-sm" />
@@ -206,51 +199,6 @@ export const ActivityCreatePage = () => {
           </div>
         </div>
 
-        {formData.type === ActivityType.ONLINE_VOTE && (
-          <>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <AdminLabel>报名截止时间</AdminLabel>
-                <AdminDateTime
-                  aria-label="报名截止时间"
-                  value={formData.registrationDeadline}
-                  onChange={(value) => setField('registrationDeadline', value)}
-                />
-              </div>
-              <div>
-                <AdminLabel>投票开始时间</AdminLabel>
-                <AdminDateTime
-                  aria-label="投票开始时间"
-                  value={formData.voteStartTime}
-                  onChange={(value) => setField('voteStartTime', value)}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <AdminLabel>投票结束时间</AdminLabel>
-                <AdminDateTime
-                  aria-label="投票结束时间"
-                  value={formData.voteEndTime}
-                  onChange={(value) => setField('voteEndTime', value)}
-                />
-              </div>
-              <div>
-                <AdminLabel>每人最大投票数</AdminLabel>
-                <AdminInput
-                  type="number"
-                  name="maxVotesPerUser"
-                  value={formData.maxVotesPerUser}
-                  onChange={(e) => setField('maxVotesPerUser', e.target.value)}
-                  placeholder="例如 3…"
-                  min={1}
-                  max={10}
-                />
-              </div>
-            </div>
-          </>
-        )}
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <AdminLabel>最大参与人数</AdminLabel>
@@ -259,19 +207,43 @@ export const ActivityCreatePage = () => {
               name="maxParticipants"
               value={formData.maxParticipants}
               onChange={(e) => setField('maxParticipants', e.target.value)}
-              placeholder="不限…"
-              min={1}
+              placeholder="0 表示不限…"
+              min={0}
             />
-            <AdminHint>留空表示不限</AdminHint>
+            <AdminHint>0 或不填表示不限</AdminHint>
           </div>
           <div>
-            <AdminLabel>活动地点</AdminLabel>
+            <AdminLabel>每人每日票数</AdminLabel>
             <AdminInput
-              name="location"
-              value={formData.location}
-              onChange={(e) => setField('location', e.target.value)}
-              placeholder="请输入活动地点…"
+              type="number"
+              name="votesPerDay"
+              value={formData.votesPerDay}
+              onChange={(e) => setField('votesPerDay', e.target.value)}
+              min={1}
+              max={50}
             />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <AdminLabel>每人作品上限</AdminLabel>
+            <AdminInput
+              type="number"
+              name="maxSubmissions"
+              value={formData.maxSubmissions}
+              onChange={(e) => setField('maxSubmissions', e.target.value)}
+              min={1}
+              max={10}
+            />
+          </div>
+          <div className="flex items-end pb-2">
+            <AdminCheckbox
+              checked={formData.requireApproval}
+              onChange={(checked) => setField('requireApproval', checked)}
+            >
+              报名需审核
+            </AdminCheckbox>
           </div>
         </div>
 
@@ -297,17 +269,12 @@ export const ActivityCreatePage = () => {
           />
         </div>
 
-        <div>
-          <AdminLabel>发布状态</AdminLabel>
-          <AdminSelect
-            name="status"
-            value={formData.status}
-            onChange={(e) => setField('status', Number(e.target.value) as ActivityStatus)}
-          >
-            <option value={ActivityStatus.DRAFT}>草稿</option>
-            <option value={ActivityStatus.PUBLISHED}>发布</option>
-          </AdminSelect>
-        </div>
+        <AdminCheckbox
+          checked={formData.publishNow}
+          onChange={(checked) => setField('publishNow', checked)}
+        >
+          创建后立即发布
+        </AdminCheckbox>
 
         <div className="flex gap-4">
           <AdminButton type="submit" variant="secondary" disabled={loading} loading={loading}>

@@ -47,13 +47,18 @@ export const AdoptionReview = ({ application, onClose, onSuccess }: AdoptionRevi
             disabled={loading}
             loading={loading && action === 'reject'}
             onClick={() => {
-              setAction('reject');
-              if (action === 'reject') {
-                handleReview(false);
+              if (action !== 'reject') {
+                setAction('reject');
+                return;
               }
+              handleReview(false);
             }}
           >
-            {loading && action === 'reject' ? '处理中...' : '拒绝'}
+            {loading && action === 'reject'
+              ? '处理中...'
+              : action === 'reject'
+                ? '确认拒绝'
+                : '拒绝'}
           </Button>
           <Button
             variant="secondary"

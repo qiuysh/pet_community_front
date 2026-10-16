@@ -107,6 +107,29 @@ export function LogFilter({
         </AdminFilterField>
       )}
 
+      <div className="col-span-full grid min-w-0 grid-cols-2 gap-3 sm:col-span-2">
+        <AdminFilterField label="开始时间" htmlFor="log-filter-start-time">
+          <AdminDateTime
+            id="log-filter-start-time"
+            aria-label="开始时间"
+            granularity="day"
+            size="sm"
+            value={startTime}
+            onChange={onStartTimeChange}
+          />
+        </AdminFilterField>
+        <AdminFilterField label="结束时间" htmlFor="log-filter-end-time">
+          <AdminDateTime
+            id="log-filter-end-time"
+            aria-label="结束时间"
+            granularity="day"
+            size="sm"
+            value={endTime}
+            onChange={onEndTimeChange}
+          />
+        </AdminFilterField>
+      </div>
+
       {showTargetType && (
         <AdminFilterField label="目标类型" htmlFor="log-filter-target-type">
           <AdminSelect
@@ -123,44 +146,6 @@ export function LogFilter({
           </AdminSelect>
         </AdminFilterField>
       )}
-
-      <AdminFilterField label="时间范围" htmlFor="log-filter-start-time" className="sm:col-span-2">
-        <div
-          className={[
-            'flex min-h-10 w-full min-w-0 flex-col overflow-hidden rounded-sm border border-border bg-white',
-            'transition-colors hover:border-secondary/40',
-            'focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20',
-            'sm:flex-row sm:items-stretch',
-          ].join(' ')}
-        >
-          <div className="min-w-0 flex-1 px-1 sm:min-w-[11rem]">
-            <AdminDateTime
-              aria-label="开始时间"
-              granularity="day"
-              size="sm"
-              bare
-              value={startTime}
-              onChange={onStartTimeChange}
-            />
-          </div>
-          <div
-            className="flex shrink-0 items-center justify-center border-y border-border-light px-2 py-1 text-xs text-brown-muted sm:border-x sm:border-y-0 sm:py-0"
-            aria-hidden="true"
-          >
-            至
-          </div>
-          <div className="min-w-0 flex-1 px-1 sm:min-w-[11rem]">
-            <AdminDateTime
-              aria-label="结束时间"
-              granularity="day"
-              size="sm"
-              bare
-              value={endTime}
-              onChange={onEndTimeChange}
-            />
-          </div>
-        </div>
-      </AdminFilterField>
     </AdminFilterBar>
   );
 }

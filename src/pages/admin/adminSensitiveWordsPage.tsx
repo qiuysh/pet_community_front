@@ -126,8 +126,8 @@ export function AdminSensitiveWordsPage() {
   return (
     <div className={adminUi.page}>
       <AdminPageHeader
-        title="敏感词管理"
-        description="管理系统的敏感词列表"
+        title="敏感词库"
+        description="维护内容过滤词表，支持启用与停用"
         actions={
           <AdminButton type="button" variant="secondary" onClick={() => setShowAddModal(true)}>
             添加敏感词

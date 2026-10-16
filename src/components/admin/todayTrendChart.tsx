@@ -25,7 +25,7 @@ export function TodayTrendChart({ userTrend, postTrend, height = 240 }: TodayTre
   });
 
   return (
-    <div className={adminUi.chartCard}>
+    <div className={`${adminUi.chartCard} h-full`}>
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className={adminUi.blockTitle}>近 7 日趋势</h3>
         <span className="shrink-0 text-xs text-brown-muted">用户增长 · 内容发布</span>

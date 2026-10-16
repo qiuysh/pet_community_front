@@ -1,12 +1,14 @@
 import React from 'react';
+import { Heart, MessageCircle, Bookmark, Share2 } from 'lucide-react';
 import { PostInfo } from '../../types/post';
 import { usePostActions } from '../../hooks/usePostActions';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Button } from '../ui/button';
 
 /**
  * 帖子四按钮：点赞 / 评论 / 收藏 / 分享
- * - compact=true：用于 postListPage 首页列表（小而密）
- * - compact=false：用于 postDetailPage 详情（稍大，预留文案空间）
+ * - compact=true：列表卡（ICON_SIZE.action）
+ * - compact=false：详情正文内联（同档 action，间距略大）
  */
 export interface PostActionsProps {
   post: PostInfo;
@@ -21,30 +23,6 @@ export interface PostActionsProps {
   /** 详情页：复用 usePostDetail 的收藏（展示以 post 为准） */
   onFavoriteOverride?: () => void;
 }
-
-const HeartIcon: React.FC<{ filled: boolean }> = ({ filled }) => (
-  <svg viewBox="0 0 24 24" className="w-4 h-4" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
-);
-
-const CommentIcon: React.FC = () => (
-  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  </svg>
-);
-
-const BookmarkIcon: React.FC<{ filled: boolean }> = ({ filled }) => (
-  <svg viewBox="0 0 24 24" className="w-4 h-4" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-  </svg>
-);
-
-const ShareIcon: React.FC = () => (
-  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
-  </svg>
-);
 
 export const PostActions: React.FC<PostActionsProps> = ({
   post,
@@ -65,15 +43,18 @@ export const PostActions: React.FC<PostActionsProps> = ({
   const commentsCount = onCommentOverride ? post.commentsCount : state.commentsCount;
   const sharesCount = onShareOverride ? post.sharesCount : state.sharesCount;
 
+  const iconPx = ICON_SIZE.action;
+  const stroke = iconStroke(iconPx);
+
   const itemClass = [
     'action-item',
-    'min-w-0 h-auto p-0 bg-transparent shadow-none',
+    'inline-flex items-center gap-1.5 min-w-0 h-auto min-h-11 px-1 py-1 bg-transparent shadow-none',
     compact ? 'text-sm' : 'text-base',
   ].join(' ');
 
   return (
     <div
-      className={`post-actions flex items-center gap-5 text-brown-light ${compact ? 'text-sm py-2' : 'text-base py-3'} ${className ?? ''}`}
+      className={`post-actions flex items-center ${compact ? 'justify-around gap-2 text-sm py-2' : 'gap-6 text-base py-3'} text-brown-secondary ${className ?? ''}`}
       role="group"
       aria-label="动态操作"
     >
@@ -83,10 +64,15 @@ export const PostActions: React.FC<PostActionsProps> = ({
         size="sm"
         aria-label="点赞"
         aria-pressed={isLiked}
-        className={`${itemClass} ${isLiked ? 'text-error' : ''}`}
+        className={`${itemClass} ${isLiked ? 'text-primary' : ''}`}
         onClick={onLikeOverride ?? onLike}
       >
-        <HeartIcon filled={isLiked} />
+        <Heart
+          size={iconPx}
+          strokeWidth={stroke}
+          fill={isLiked ? 'currentColor' : 'none'}
+          aria-hidden="true"
+        />
         <span className="tabular-nums">{likesCount}</span>
       </Button>
 
@@ -98,7 +84,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
         className={itemClass}
         onClick={onCommentOverride ?? onComment}
       >
-        <CommentIcon />
+        <MessageCircle size={iconPx} strokeWidth={stroke} aria-hidden="true" />
         <span className="tabular-nums">{commentsCount}</span>
       </Button>
 
@@ -108,10 +94,15 @@ export const PostActions: React.FC<PostActionsProps> = ({
         size="sm"
         aria-label="收藏"
         aria-pressed={isFavorited}
-        className={`${itemClass} ${isFavorited ? 'text-amber-500' : ''}`}
+        className={`${itemClass} ${isFavorited ? 'text-primary' : ''}`}
         onClick={onFavoriteOverride ?? onFavorite}
       >
-        <BookmarkIcon filled={isFavorited} />
+        <Bookmark
+          size={iconPx}
+          strokeWidth={stroke}
+          fill={isFavorited ? 'currentColor' : 'none'}
+          aria-hidden="true"
+        />
         <span className="tabular-nums">{favoritesCount}</span>
       </Button>
 
@@ -123,7 +114,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
         className={itemClass}
         onClick={onShareOverride ?? (() => onShare('copy'))}
       >
-        <ShareIcon />
+        <Share2 size={iconPx} strokeWidth={stroke} aria-hidden="true" />
         <span className="tabular-nums">{sharesCount}</span>
       </Button>
     </div>

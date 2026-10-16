@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useProfileSettings } from '../../hooks/useProfileSettings';
-import { showInfoToast } from '../../utils/toastManager';
 import { SettingsIcon } from '../../components/settings/settingsIcons';
 import { BrandSocialIcon, type BrandSocialPlatform } from '../../components/icons/brandSocialIcons';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
@@ -15,6 +14,7 @@ type TabType = 'profile' | 'password' | 'privacy' | 'devices' | 'bindings';
 
 export function ProfileSettingsPage() {
   const [activeTab, setActiveTab] = useState<TabType>('profile');
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const {
     loading,
     user,
@@ -28,8 +28,11 @@ export function ProfileSettingsPage() {
     confirmPassword, setConfirmPassword,
     privacy, setPrivacy, privacyLoaded, loadPrivacy, handleSavePrivacy,
     devices, devicesLoaded, loadDevices, handleRemoveDevice,
+    thirdPartyLoaded, loadThirdParty,
+    isThirdPartyBound, handleBindThirdParty, handleUnbindThirdParty,
     bindAction, setBindAction,
     handleUpdateProfile,
+    handleAvatarChange,
     handleChangePassword,
     handleBindSubmit,
   } = useProfileSettings();
@@ -41,7 +44,10 @@ export function ProfileSettingsPage() {
     if (activeTab === 'devices' && !devicesLoaded) {
       loadDevices();
     }
-  }, [activeTab, privacyLoaded, devicesLoaded, loadPrivacy, loadDevices]);
+    if (activeTab === 'bindings' && !thirdPartyLoaded) {
+      void loadThirdParty();
+    }
+  }, [activeTab, privacyLoaded, devicesLoaded, thirdPartyLoaded, loadPrivacy, loadDevices, loadThirdParty]);
 
   const tabs: { key: TabType; label: string }[] = [
     { key: 'profile', label: '基本资料' },
@@ -111,10 +117,28 @@ export function ProfileSettingsPage() {
                       className="form-avatar"
                     />
                     <div className="avatar-actions">
-                      <Button type="button" variant="outline" size="sm">
-                        更换头像
+                      <input
+                        ref={avatarInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+                        className="sr-only"
+                        aria-hidden="true"
+                        tabIndex={-1}
+                        onChange={(e) => {
+                          handleAvatarChange(e.target.files?.[0] ?? null);
+                          e.target.value = '';
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={loading}
+                        onClick={() => avatarInputRef.current?.click()}
+                      >
+                        {loading ? '上传中…' : '更换头像'}
                       </Button>
-                      <p className="form-hint">支持 JPG、PNG 格式，小于 2MB</p>
+                      <p className="form-hint">支持 JPG、PNG、WebP 格式，小于 2MB</p>
                     </div>
                   </div>
 
@@ -342,24 +366,33 @@ export function ProfileSettingsPage() {
                     {[
                       {
                         name: '微信',
-                        status: '未绑定',
+                        status: isThirdPartyBound('wechat') ? '已绑定' : '未绑定',
                         color: 'wechat',
-                        action: '去绑定',
-                        onClick: () => showInfoToast('微信绑定暂未开放,敬请期待'),
+                        action: isThirdPartyBound('wechat') ? '解绑' : '去绑定',
+                        onClick: () =>
+                          void (isThirdPartyBound('wechat')
+                            ? handleUnbindThirdParty('wechat')
+                            : handleBindThirdParty('wechat')),
                       },
                       {
                         name: '微博',
-                        status: '未绑定',
+                        status: isThirdPartyBound('weibo') ? '已绑定' : '未绑定',
                         color: 'weibo',
-                        action: '去绑定',
-                        onClick: () => showInfoToast('微博绑定暂未开放,敬请期待'),
+                        action: isThirdPartyBound('weibo') ? '解绑' : '去绑定',
+                        onClick: () =>
+                          void (isThirdPartyBound('weibo')
+                            ? handleUnbindThirdParty('weibo')
+                            : handleBindThirdParty('weibo')),
                       },
                       {
                         name: 'QQ',
-                        status: '未绑定',
+                        status: isThirdPartyBound('qq') ? '已绑定' : '未绑定',
                         color: 'qq',
-                        action: '去绑定',
-                        onClick: () => showInfoToast('QQ 绑定暂未开放,敬请期待'),
+                        action: isThirdPartyBound('qq') ? '解绑' : '去绑定',
+                        onClick: () =>
+                          void (isThirdPartyBound('qq')
+                            ? handleUnbindThirdParty('qq')
+                            : handleBindThirdParty('qq')),
                       },
                       {
                         name: '手机号',

@@ -113,7 +113,7 @@ export function AdminReportPage() {
 
   return (
     <div className={adminUi.page}>
-      <AdminPageHeader title="举报管理" description="处理用户举报，维护社区秩序" />
+      <AdminPageHeader title="举报处理" description="受理用户举报，维护社区秩序" />
 
       <div className="px-6 py-4 border-b border-border-light">
         <ReportStats stats={stats} loading={statsHook.loading} />

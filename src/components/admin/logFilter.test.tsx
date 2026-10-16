@@ -72,6 +72,28 @@ describe('LogFilter', () => {
     expect(screen.queryByRole('button', { name: '重置' })).not.toBeInTheDocument();
   });
 
+  it('开始/结束时间各自独立展示且排在目标类型前', () => {
+    render(<LogFilter {...baseProps} />);
+    expect(screen.getByText('开始时间')).toBeInTheDocument();
+    expect(screen.getByText('结束时间')).toBeInTheDocument();
+    expect(screen.queryByText('时间范围')).not.toBeInTheDocument();
+    expect(screen.queryByText('至')).not.toBeInTheDocument();
+
+    const labels = screen.getAllByText(/开始时间|结束时间|目标类型/).map((el) => el.textContent);
+    expect(labels.indexOf('开始时间')).toBeLessThan(labels.indexOf('目标类型'));
+    expect(labels.indexOf('结束时间')).toBeLessThan(labels.indexOf('目标类型'));
+  });
+
+  it('开始/结束时间同一组并排不换行', () => {
+    render(<LogFilter {...baseProps} />);
+    const startLabel = screen.getByText('开始时间');
+    const endLabel = screen.getByText('结束时间');
+    const group = startLabel.closest('.grid-cols-2');
+    expect(group).toBeTruthy();
+    expect(group?.className).toContain('grid-cols-2');
+    expect(group?.contains(endLabel)).toBe(true);
+  });
+
   it('操作类型下拉项渲染', async () => {
     render(<LogFilter {...baseProps} />);
     fireEvent.click(screen.getByRole('button', { name: /操作类型|全部操作类型/ }));

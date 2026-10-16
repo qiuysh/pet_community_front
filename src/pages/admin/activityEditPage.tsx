@@ -2,8 +2,14 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '../../components/toast';
 import { useAsyncEffect, useAsync } from '../../hooks/useAsync';
-import { getActivityDetail, updateActivity, deleteActivity } from '../../api/activity';
+import {
+  getActivityDetail,
+  updateActivity,
+  deleteActivity,
+  publishActivity,
+} from '../../api/activity';
 import { ActivityType, ActivityStatus, ActivityTypeOptions } from '../../types/activity';
+import { toDateTimeLocal, toRFC3339 } from '../../utils/activityDateTime';
 import {
   AdminDateTime,
   AdminHint,
@@ -13,6 +19,8 @@ import {
   AdminTextarea,
 } from '../../components/admin/adminField';
 import { AdminButton } from '../../components/admin/adminButton';
+import { AdminCheckbox } from '../../components/admin/adminCheckbox';
+import { AdminChip } from '../../components/admin/adminChip';
 import { adminUi } from '../../styles/adminUi';
 
 export const ActivityEditPage = () => {
@@ -20,28 +28,25 @@ export const ActivityEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const toast = useToast();
   const { data: activity } = useAsyncEffect(
-    () => getActivityDetail(parseInt(id!)),
+    () => getActivityDetail(parseInt(id!, 10)),
     [id],
     {
       onSuccess: (data) => {
         setFormData({
           title: data.title,
           description: data.description,
-          type: data.type,
-          cover: data.cover,
-          images: data.images || [],
-          startTime: data.startTime,
-          endTime: data.endTime,
-          registrationDeadline: data.registrationDeadline || '',
-          voteStartTime: data.voteStartTime || '',
-          voteEndTime: data.voteEndTime || '',
+          type: (data.type as ActivityType) || ActivityType.VOTING,
+          cover: data.cover || '',
+          startTime: toDateTimeLocal(data.startTime),
+          endTime: toDateTimeLocal(data.endTime),
           maxParticipants: data.maxParticipants?.toString() || '',
-          maxVotesPerUser: data.maxVotesPerUser?.toString() || '3',
+          maxSubmissions: data.maxSubmissions?.toString() || '1',
+          votesPerDay: data.votesPerDay?.toString() || '10',
           rules: data.rules || '',
           prizes: data.prizes || '',
-          location: data.location || '',
-          status: data.status,
+          requireApproval: !!data.requireApproval,
         });
+        setStatus(data.status);
       },
       onError: (err: unknown) => {
         toast.error((err instanceof Error ? err.message : '') || '加载活动失败');
@@ -51,23 +56,21 @@ export const ActivityEditPage = () => {
   );
   const { loading, run } = useAsync();
   const { loading: deleting, run: runDelete } = useAsync();
+  const { loading: publishing, run: runPublish } = useAsync();
+  const [status, setStatus] = useState<number>(ActivityStatus.DRAFT);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: ActivityType.ONLINE_VOTE,
+    type: ActivityType.VOTING,
     cover: '',
-    images: [] as string[],
     startTime: '',
     endTime: '',
-    registrationDeadline: '',
-    voteStartTime: '',
-    voteEndTime: '',
     maxParticipants: '',
-    maxVotesPerUser: '3',
+    maxSubmissions: '1',
+    votesPerDay: '10',
     rules: '',
     prizes: '',
-    location: '',
-    status: ActivityStatus.DRAFT,
+    requireApproval: false,
   });
 
   const setField = <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {
@@ -101,17 +104,10 @@ export const ActivityEditPage = () => {
       toast.warning('请填写活动标题');
       return;
     }
-
     if (!formData.description.trim()) {
       toast.warning('请填写活动描述');
       return;
     }
-
-    if (!formData.cover) {
-      toast.warning('请上传活动封面');
-      return;
-    }
-
     if (!formData.startTime || !formData.endTime) {
       toast.warning('请选择活动开始和结束时间');
       return;
@@ -119,23 +115,18 @@ export const ActivityEditPage = () => {
 
     await run(
       () =>
-        updateActivity(parseInt(id!), {
+        updateActivity(parseInt(id!, 10), {
           title: formData.title.trim(),
           description: formData.description.trim(),
-          type: formData.type,
-          cover: formData.cover,
-          images: formData.images,
-          startTime: formData.startTime,
-          endTime: formData.endTime,
-          registrationDeadline: formData.registrationDeadline || undefined,
-          voteStartTime: formData.voteStartTime || undefined,
-          voteEndTime: formData.voteEndTime || undefined,
-          maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : undefined,
-          maxVotesPerUser: formData.maxVotesPerUser ? parseInt(formData.maxVotesPerUser) : undefined,
+          cover: formData.cover || undefined,
+          startTime: toRFC3339(formData.startTime),
+          endTime: toRFC3339(formData.endTime),
+          maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants, 10) : 0,
+          maxSubmissions: formData.maxSubmissions ? parseInt(formData.maxSubmissions, 10) : 1,
+          votesPerDay: formData.votesPerDay ? parseInt(formData.votesPerDay, 10) : 10,
           rules: formData.rules.trim() || undefined,
           prizes: formData.prizes.trim() || undefined,
-          location: formData.location.trim() || undefined,
-          status: formData.status,
+          requireApproval: formData.requireApproval,
         }),
       () => {
         toast.success('活动更新成功');
@@ -145,13 +136,24 @@ export const ActivityEditPage = () => {
     );
   };
 
+  const handlePublish = () => {
+    runPublish(
+      () => publishActivity(parseInt(id!, 10)),
+      () => {
+        setStatus(ActivityStatus.PUBLISHED);
+        toast.success('活动已发布');
+      },
+      (err: unknown) => toast.error((err instanceof Error ? err.message : '') || '发布失败'),
+    );
+  };
+
   const handleDelete = () => {
     if (!window.confirm('确定要删除这个活动吗？此操作不可恢复。')) {
       return;
     }
 
     runDelete(
-      () => deleteActivity(parseInt(id!)),
+      () => deleteActivity(parseInt(id!, 10)),
       () => {
         toast.success('活动删除成功');
         navigate('/admin/activities');
@@ -164,13 +166,25 @@ export const ActivityEditPage = () => {
     return <div className="p-6 text-center">加载中…</div>;
   }
 
+  const isDraft = status === ActivityStatus.DRAFT;
+
   return (
     <div className="bg-white rounded-md shadow-card animate-fadeIn p-6">
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className={adminUi.pageTitle}>编辑活动</h1>
-        <AdminButton type="button" variant="danger" onClick={handleDelete} disabled={deleting} loading={deleting}>
-          {deleting ? '删除中…' : '删除活动'}
-        </AdminButton>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h1 className={adminUi.pageTitle}>编辑活动</h1>
+          <AdminChip tone={isDraft ? 'neutral' : 'success'}>{isDraft ? '草稿' : '已发布'}</AdminChip>
+        </div>
+        <div className="flex gap-2">
+          {isDraft && (
+            <AdminButton type="button" variant="secondary" onClick={handlePublish} disabled={publishing} loading={publishing}>
+              {publishing ? '发布中…' : '发布活动'}
+            </AdminButton>
+          )}
+          <AdminButton type="button" variant="danger" onClick={handleDelete} disabled={deleting} loading={deleting}>
+            {deleting ? '删除中…' : '删除活动'}
+          </AdminButton>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -182,22 +196,20 @@ export const ActivityEditPage = () => {
             onChange={(e) => setField('title', e.target.value)}
             placeholder="请输入活动标题…"
             maxLength={100}
+            disabled={!isDraft}
           />
         </div>
 
         <div>
-          <AdminLabel required>活动类型</AdminLabel>
-          <AdminSelect
-            name="type"
-            value={formData.type}
-            onChange={(e) => setField('type', e.target.value as ActivityType)}
-          >
+          <AdminLabel>活动类型</AdminLabel>
+          <AdminSelect name="type" value={formData.type} disabled>
             {ActivityTypeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
           </AdminSelect>
+          <AdminHint>类型创建后不可修改</AdminHint>
         </div>
 
         <div>
@@ -209,35 +221,35 @@ export const ActivityEditPage = () => {
             placeholder="请输入活动描述…"
             rows={4}
             maxLength={500}
+            disabled={!isDraft}
           />
         </div>
 
         <div>
-          <AdminLabel required>活动封面</AdminLabel>
+          <AdminLabel>活动封面</AdminLabel>
           {formData.cover ? (
             <div className="relative inline-block">
               <img src={formData.cover} alt="封面" width={128} height={128} className="w-32 h-32 object-cover rounded-sm" />
-              <AdminButton
-                type="button"
-                variant="danger"
-                size="sm"
-                aria-label="移除封面"
-                onClick={() => setFormData((prev) => ({ ...prev, cover: '' }))}
-                className="!absolute !top-0 !right-0 !h-6 !min-h-6 !w-6 !p-0 !rounded-full"
-              >
-                ×
-              </AdminButton>
+              {isDraft && (
+                <AdminButton
+                  type="button"
+                  variant="danger"
+                  size="sm"
+                  aria-label="移除封面"
+                  onClick={() => setFormData((prev) => ({ ...prev, cover: '' }))}
+                  className="!absolute !top-0 !right-0 !h-6 !min-h-6 !w-6 !p-0 !rounded-full"
+                >
+                  ×
+                </AdminButton>
+              )}
             </div>
           ) : (
-            <label className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-border-light rounded-sm cursor-pointer hover:border-border">
-              <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
-              <div className="text-center text-brown-muted">
-                <svg className="w-8 h-8 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-4-4h6m-6 0v6" />
-                </svg>
-                <span className="text-xs">上传封面</span>
-              </div>
-            </label>
+            isDraft && (
+              <label className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-border-light rounded-sm cursor-pointer hover:border-border">
+                <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
+                <span className="text-xs text-brown-muted">上传封面</span>
+              </label>
+            )
           )}
         </div>
 
@@ -248,6 +260,7 @@ export const ActivityEditPage = () => {
               aria-label="开始时间"
               value={formData.startTime}
               onChange={(value) => setField('startTime', value)}
+              disabled={!isDraft}
             />
           </div>
           <div>
@@ -256,86 +269,59 @@ export const ActivityEditPage = () => {
               aria-label="结束时间"
               value={formData.endTime}
               onChange={(value) => setField('endTime', value)}
+              disabled={!isDraft}
             />
           </div>
         </div>
-
-        {formData.type === ActivityType.ONLINE_VOTE && (
-          <>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <AdminLabel>报名截止时间</AdminLabel>
-                <AdminDateTime
-                  aria-label="报名截止时间"
-                  value={formData.registrationDeadline}
-                  onChange={(value) => setField('registrationDeadline', value)}
-                />
-              </div>
-              <div>
-                <AdminLabel>投票开始时间</AdminLabel>
-                <AdminDateTime
-                  aria-label="投票开始时间"
-                  value={formData.voteStartTime}
-                  onChange={(value) => setField('voteStartTime', value)}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <AdminLabel>投票结束时间</AdminLabel>
-                <AdminDateTime
-                  aria-label="投票结束时间"
-                  value={formData.voteEndTime}
-                  onChange={(value) => setField('voteEndTime', value)}
-                />
-              </div>
-              <div>
-                <AdminLabel>每人最大投票数</AdminLabel>
-                <AdminInput
-                  type="number"
-                  name="maxVotesPerUser"
-                  value={formData.maxVotesPerUser}
-                  onChange={(e) => setField('maxVotesPerUser', e.target.value)}
-                  placeholder="例如 3…"
-                  min={1}
-                  max={10}
-                />
-              </div>
-            </div>
-          </>
-        )}
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <AdminLabel>最大参与人数</AdminLabel>
             <AdminInput
               type="number"
-              name="maxParticipants"
               value={formData.maxParticipants}
               onChange={(e) => setField('maxParticipants', e.target.value)}
-              placeholder="不限…"
-              min={1}
+              min={0}
             />
-            <AdminHint>留空表示不限</AdminHint>
           </div>
           <div>
-            <AdminLabel>活动地点</AdminLabel>
+            <AdminLabel>每人每日票数</AdminLabel>
             <AdminInput
-              name="location"
-              value={formData.location}
-              onChange={(e) => setField('location', e.target.value)}
-              placeholder="请输入活动地点…"
+              type="number"
+              value={formData.votesPerDay}
+              onChange={(e) => setField('votesPerDay', e.target.value)}
+              min={1}
+              max={50}
             />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <AdminLabel>每人作品上限</AdminLabel>
+            <AdminInput
+              type="number"
+              value={formData.maxSubmissions}
+              onChange={(e) => setField('maxSubmissions', e.target.value)}
+              min={1}
+              max={10}
+            />
+          </div>
+          <div className="flex items-end pb-2">
+            <AdminCheckbox
+              checked={formData.requireApproval}
+              onChange={(checked) => setField('requireApproval', checked)}
+            >
+              报名需审核
+            </AdminCheckbox>
           </div>
         </div>
 
         <div>
           <AdminLabel>活动规则</AdminLabel>
           <AdminTextarea
-            name="rules"
             value={formData.rules}
             onChange={(e) => setField('rules', e.target.value)}
-            placeholder="请输入活动规则…"
             rows={3}
           />
         </div>
@@ -343,35 +329,32 @@ export const ActivityEditPage = () => {
         <div>
           <AdminLabel>奖品设置</AdminLabel>
           <AdminTextarea
-            name="prizes"
             value={formData.prizes}
             onChange={(e) => setField('prizes', e.target.value)}
-            placeholder="请输入奖品设置…"
             rows={3}
           />
         </div>
 
-        <div>
-          <AdminLabel>发布状态</AdminLabel>
-          <AdminSelect
-            name="status"
-            value={formData.status}
-            onChange={(e) => setField('status', Number(e.target.value) as ActivityStatus)}
-          >
-            <option value={ActivityStatus.DRAFT}>草稿</option>
-            <option value={ActivityStatus.PUBLISHED}>发布</option>
-            <option value={ActivityStatus.ONGOING}>进行中</option>
-            <option value={ActivityStatus.ENDED}>已结束</option>
-            <option value={ActivityStatus.CANCELLED}>已取消</option>
-          </AdminSelect>
-        </div>
-
         <div className="flex gap-4">
           <AdminButton type="submit" variant="secondary" disabled={loading} loading={loading}>
-            {loading ? '提交中…' : '更新活动'}
+            {loading ? '保存中…' : '保存修改'}
           </AdminButton>
           <AdminButton type="button" variant="outline" onClick={() => navigate('/admin/activities')}>
-            取消
+            返回列表
+          </AdminButton>
+          <AdminButton
+            type="button"
+            variant="outline"
+            onClick={() => navigate(`/admin/activities/${id}/registrations`)}
+          >
+            报名审核
+          </AdminButton>
+          <AdminButton
+            type="button"
+            variant="outline"
+            onClick={() => navigate(`/admin/activities/${id}/vote`)}
+          >
+            评选管理
           </AdminButton>
         </div>
       </form>

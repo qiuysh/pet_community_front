@@ -1,100 +1,91 @@
-// 活动类型枚举
+/** 与后端 types.ActivityCreateRequest oneof 对齐 */
 export enum ActivityType {
-  ONLINE_VOTE = 'online_vote',        // 线上投票活动
-  OFFLINE_EVENT = 'offline_event',    // 线下活动
-  ADOPTION = 'adoption',              // 领养活动
+  VOTING = 'voting',
+  CONTEST = 'contest',
+  COLLECTION = 'collection',
 }
 
-// 活动状态枚举
+/** 与后端 activities.status 对齐：0 草稿，1 已发布 */
 export enum ActivityStatus {
-  DRAFT = 0,        // 草稿
-  PUBLISHED = 1,    // 已发布
-  ONGOING = 2,      // 进行中
-  ENDED = 3,        // 已结束
-  CANCELLED = 4,    // 已取消
+  DRAFT = 0,
+  PUBLISHED = 1,
 }
 
-// 报名状态枚举
+/** 前台/管理列表 status 查询（仓库字符串筛选） */
+export type ActivityListStatusFilter = 'active' | 'upcoming' | 'ended' | 'draft' | 'published';
+
 export enum RegistrationStatus {
-  PENDING = 0,      // 待审核
-  APPROVED = 1,     // 已通过
-  REJECTED = 2,     // 已拒绝
+  PENDING = 0,
+  APPROVED = 1,
+  REJECTED = 2,
 }
 
-// 作品状态枚举
 export enum SubmissionStatus {
-  PENDING = 0,      // 待审核
-  APPROVED = 1,     // 已通过
-  REJECTED = 2,     // 已拒绝
+  PENDING = 0,
+  APPROVED = 1,
+  REJECTED = 2,
 }
 
-// 活动信息接口
 export interface ActivityInfo {
   id: number;
   title: string;
   description: string;
-  type: ActivityType;
+  type: ActivityType | string;
   cover: string;
-  images?: string[];
+  status: ActivityStatus | number;
   startTime: string;
   endTime: string;
-  registrationDeadline?: string;
-  voteStartTime?: string;
-  voteEndTime?: string;
-  maxParticipants?: number;
-  currentParticipants: number;
-  maxVotesPerUser?: number;
-  status: ActivityStatus;
   rules?: string;
   prizes?: string;
-  location?: string;
-  latitude?: number;
-  longitude?: number;
-  organizerId: number;
-  organizerName: string;
-  organizerAvatar?: string;
+  maxParticipants?: number;
+  maxSubmissions?: number;
+  votesPerDay?: number;
+  requireApproval?: boolean;
   createdAt: string;
   updatedAt: string;
+  participantsCount: number;
+  submissionsCount: number;
   isRegistered?: boolean;
-  isSubmitted?: boolean;
-  hasVoted?: boolean;
+  hasSubmitted?: boolean;
 }
 
-// 活动创建请求
 export interface ActivityCreateRequest {
   title: string;
   description: string;
-  type: ActivityType;
-  cover: string;
-  images?: string[];
+  type: ActivityType | string;
+  cover?: string;
   startTime: string;
   endTime: string;
-  registrationDeadline?: string;
-  voteStartTime?: string;
-  voteEndTime?: string;
-  maxParticipants?: number;
-  maxVotesPerUser?: number;
   rules?: string;
   prizes?: string;
-  location?: string;
-  latitude?: number;
-  longitude?: number;
-  status?: ActivityStatus;
+  maxParticipants?: number;
+  maxSubmissions?: number;
+  votesPerDay?: number;
+  requireApproval?: boolean;
 }
 
-// 活动更新请求
-export interface ActivityUpdateRequest extends Partial<ActivityCreateRequest> {}
+export interface ActivityUpdateRequest {
+  title?: string;
+  description?: string;
+  cover?: string;
+  startTime?: string;
+  endTime?: string;
+  rules?: string;
+  prizes?: string;
+  maxParticipants?: number;
+  maxSubmissions?: number;
+  votesPerDay?: number;
+  requireApproval?: boolean;
+}
 
-// 活动列表查询参数
 export interface ActivityListParams {
-  type?: ActivityType;
-  status?: ActivityStatus;
+  type?: ActivityType | string;
+  status?: ActivityListStatusFilter;
   keyword?: string;
   page?: number;
   pageSize?: number;
 }
 
-// 活动列表响应
 export interface ActivityListResponse {
   list: ActivityInfo[];
   total: number;
@@ -102,43 +93,39 @@ export interface ActivityListResponse {
   pageSize: number;
 }
 
-// 报名信息接口
 export interface RegistrationInfo {
   id: number;
   activityId: number;
   userId: number;
   userNickname: string;
   userAvatar: string;
-  content: string;
-  images?: string[];
-  status: RegistrationStatus;
-  reason?: string;
+  status: RegistrationStatus | number;
+  name: string;
+  phone: string;
+  message?: string;
   createdAt: string;
-  updatedAt: string;
 }
 
-// 报名创建请求
 export interface RegistrationCreateRequest {
   activityId: number;
-  content: string;
-  images?: string[];
+  name: string;
+  phone: string;
+  message?: string;
 }
 
-// 报名更新请求
 export interface RegistrationUpdateRequest {
-  content?: string;
-  images?: string[];
+  name?: string;
+  phone?: string;
+  message?: string;
 }
 
-// 报名列表查询参数
 export interface RegistrationListParams {
   activityId: number;
-  status?: RegistrationStatus;
+  status?: RegistrationStatus | number;
   page?: number;
   pageSize?: number;
 }
 
-// 报名列表响应
 export interface RegistrationListResponse {
   list: RegistrationInfo[];
   total: number;
@@ -146,7 +133,6 @@ export interface RegistrationListResponse {
   pageSize: number;
 }
 
-// 作品信息接口
 export interface SubmissionInfo {
   id: number;
   activityId: number;
@@ -155,46 +141,45 @@ export interface SubmissionInfo {
   userAvatar: string;
   title: string;
   description: string;
-  images: string[];
+  type?: string;
+  content?: string;
+  images?: string[];
   video?: string;
   votesCount: number;
   rank?: number;
-  award?: string;
   isAwarded?: boolean;
   awardLevel?: string;
-  status: SubmissionStatus;
+  status: SubmissionStatus | number;
   createdAt: string;
   updatedAt: string;
-  hasVoted?: boolean;
+  isVoted?: boolean;
 }
 
-// 作品创建请求
 export interface SubmissionCreateRequest {
   activityId: number;
   title: string;
-  description: string;
-  images: string[];
-  video?: string;
-}
-
-// 作品更新请求
-export interface SubmissionUpdateRequest {
-  title?: string;
   description?: string;
+  type: 'image' | 'video' | 'text';
+  content?: string;
   images?: string[];
   video?: string;
 }
 
-// 作品列表查询参数
+export interface SubmissionUpdateRequest {
+  title?: string;
+  description?: string;
+  content?: string;
+  images?: string[];
+  video?: string;
+}
+
 export interface SubmissionListParams {
   activityId: number;
-  status?: SubmissionStatus;
   sort?: 'votes' | 'time';
   page?: number;
   pageSize?: number;
 }
 
-// 作品列表响应
 export interface SubmissionListResponse {
   list: SubmissionInfo[];
   total: number;
@@ -202,46 +187,34 @@ export interface SubmissionListResponse {
   pageSize: number;
 }
 
-// 投票请求
 export interface VoteRequest {
   activityId: number;
   submissionId: number;
 }
 
-// 投票响应
 export interface VoteResponse {
   voted: boolean;
   votesCount: number;
   remainingVotes: number;
-  dailyLimit?: number;
-  hourlyLimit?: number;
-  sameSubmissionLimit?: number;
 }
 
-// 投票记录接口
 export interface VoteRecord {
   id: number;
+  userId: number;
   activityId: number;
   submissionId: number;
-  submissionTitle: string;
-  submissionCover: string;
-  userId: number;
   createdAt: string;
 }
 
-// 获奖设置请求
 export interface AwardRequest {
   submissionId: number;
-  award: string;
-  rank: number;
+  awardLevel: 'first' | 'second' | 'third';
 }
 
-// 批量获奖设置请求
 export interface BatchAwardRequest {
   awards: AwardRequest[];
 }
 
-// 评选页面响应
 export interface AwardPageResponse {
   activity: ActivityInfo;
   submissions: SubmissionInfo[];
@@ -252,19 +225,12 @@ export interface AwardPageResponse {
   thirdPrizes?: SubmissionInfo[];
 }
 
-// 发布结果请求
-export interface PublishAwardRequest {
-  activityId: number;
-}
-
-// 发布结果响应
 export interface PublishAwardResponse {
   success: boolean;
   message: string;
   notifiedUsers: number[];
 }
 
-// 活动统计信息
 export interface ActivityStats {
   totalActivities: number;
   ongoingActivities: number;
@@ -273,39 +239,29 @@ export interface ActivityStats {
   totalVotes: number;
 }
 
-// 活动类型选项
 export const ActivityTypeOptions = [
-  { value: ActivityType.ONLINE_VOTE, label: '线上投票活动' },
-  { value: ActivityType.OFFLINE_EVENT, label: '线下活动' },
-  { value: ActivityType.ADOPTION, label: '领养活动' },
+  { value: ActivityType.VOTING, label: '投票评选' },
+  { value: ActivityType.CONTEST, label: '作品征集' },
+  { value: ActivityType.COLLECTION, label: '话题征集' },
 ];
 
-// 活动状态选项
 export const ActivityStatusOptions = [
   { value: ActivityStatus.DRAFT, label: '草稿', color: 'default' },
   { value: ActivityStatus.PUBLISHED, label: '已发布', color: 'blue' },
-  { value: ActivityStatus.ONGOING, label: '进行中', color: 'green' },
-  { value: ActivityStatus.ENDED, label: '已结束', color: 'gray' },
-  { value: ActivityStatus.CANCELLED, label: '已取消', color: 'red' },
 ];
 
-// 报名状态选项
 export const RegistrationStatusOptions = [
   { value: RegistrationStatus.PENDING, label: '待审核', color: 'orange' },
   { value: RegistrationStatus.APPROVED, label: '已通过', color: 'green' },
   { value: RegistrationStatus.REJECTED, label: '已拒绝', color: 'red' },
 ];
 
-// 作品状态选项
 export const SubmissionStatusOptions = [
   { value: SubmissionStatus.PENDING, label: '待审核', color: 'orange' },
   { value: SubmissionStatus.APPROVED, label: '已通过', color: 'green' },
   { value: SubmissionStatus.REJECTED, label: '已拒绝', color: 'red' },
 ];
 
-// ========== 签到相关类型 ==========
-
-// 签到信息接口
 export interface SignInInfo {
   id: number;
   activityId: number;
@@ -317,21 +273,18 @@ export interface SignInInfo {
   createdAt: string;
 }
 
-// 二维码响应接口
 export interface QRCodeResponse {
-  qrCode: string;     // 二维码内容
-  imageUrl?: string;  // 二维码图片URL（base64格式）
-  expires: string;    // 过期时间
+  qrCode: string;
+  imageUrl?: string;
+  expires: string;
 }
 
-// 签到请求接口
 export interface SignInRequest {
   activityId: number;
   qrCode: string;
   signInLocation?: string;
 }
 
-// 签到列表响应接口
 export interface SignInListResponse {
   list: SignInInfo[];
   total: number;
@@ -339,15 +292,11 @@ export interface SignInListResponse {
   pageSize: number;
 }
 
-// 签到统计响应接口
 export interface SignInStatsResponse {
   signInCount: number;
   registrationCount: number;
 }
 
-// ========== 相册相关类型 ==========
-
-// 相册照片信息接口
 export interface AlbumPhotoInfo {
   id: number;
   activityId: number;
@@ -360,14 +309,12 @@ export interface AlbumPhotoInfo {
   createdAt: string;
 }
 
-// 相册照片创建请求接口
 export interface AlbumPhotoCreateRequest {
   activityId: number;
   photoUrl: string;
   description?: string;
 }
 
-// 相册照片列表响应接口
 export interface AlbumPhotoListResponse {
   list: AlbumPhotoInfo[];
   total: number;
@@ -375,24 +322,33 @@ export interface AlbumPhotoListResponse {
   pageSize: number;
 }
 
-// ========== 活动回顾相关类型 ==========
-
-// 活动回顾信息接口
 export interface ActivityReviewInfo {
   id: number;
   activityId: number;
   title: string;
   content: string;
   photos?: string[];
-  publishedAt: string;
-  publishedBy: number;
+  publishedAt?: string;
+  publishedBy?: number;
   createdAt: string;
 }
 
-// 活动回顾创建请求接口
 export interface ActivityReviewCreateRequest {
   activityId: number;
   title: string;
   content: string;
   photos?: string[];
+}
+
+/** 根据发布时间与起止时间推导展示态 */
+export function getActivityDisplayStatus(
+  activity: Pick<ActivityInfo, 'status' | 'startTime' | 'endTime'>,
+): 'draft' | 'upcoming' | 'active' | 'ended' {
+  if (activity.status === ActivityStatus.DRAFT) return 'draft';
+  const now = Date.now();
+  const start = new Date(activity.startTime).getTime();
+  const end = new Date(activity.endTime).getTime();
+  if (!Number.isNaN(start) && now < start) return 'upcoming';
+  if (!Number.isNaN(end) && now > end) return 'ended';
+  return 'active';
 }

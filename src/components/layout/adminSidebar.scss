@@ -10,6 +10,10 @@
     border-bottom: 1px solid $border-light;
   }
 
+  &__group-label {
+    color: $text-muted;
+  }
+
   // 菜单色阶：默认 Ink（冷灰底上可读）→ 悬停略深 + 白底 → 激活青竹
   // 显式写在组件样式中，避免被全局 a 链接主色污染
   &__link {

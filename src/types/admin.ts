@@ -132,13 +132,6 @@ export interface BehaviorLogListResponse {
     total: number;
 }
 
-export interface LogStatsResponse {
-    actionStats: Record<string, number>;
-    dailyStats: { date: string; count: number }[];
-    totalCount: number;
-    todayCount: number;
-}
-
 export interface UpdateSiteConfigRequest {
     siteName: string;
     siteLogo: string;

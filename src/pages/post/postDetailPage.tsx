@@ -16,6 +16,7 @@ import { Dropdown } from '../../components/ui/dropdown';
 import { Modal } from '../../components/ui/modal';
 import { Spinner } from '../../components/ui/spinner';
 import { FilterChip } from '../../components/ui/filterChip';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import './postDetailPage.scss';
 
 const COMMENT_INPUT_ID = 'post-detail-comment-input';
@@ -113,7 +114,7 @@ export const PostDetailPage = () => {
           onClick={() => navigate(-1)}
           aria-label="返回"
         >
-          <ChevronLeft size={24} aria-hidden="true" />
+          <ChevronLeft size={ICON_SIZE.nav} strokeWidth={iconStroke(ICON_SIZE.nav)} aria-hidden="true" />
         </Button>
         <span className="title">动态详情</span>
         <Dropdown
@@ -121,7 +122,7 @@ export const PostDetailPage = () => {
           className="more-wrapper"
           trigger={
             <Button type="button" variant="ghost" size="sm" className="more-btn" aria-label="更多操作">
-              <MoreHorizontal size={20} aria-hidden="true" />
+              <MoreHorizontal size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
             </Button>
           }
           items={moreMenuItems}
@@ -174,7 +175,12 @@ export const PostDetailPage = () => {
           </div>
         )}
 
-        {post.location && <div className="post-location"><MapPin size={14} aria-hidden="true" /> <span>{post.location}</span></div>}
+        {post.location && (
+          <div className="post-location">
+            <MapPin size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
+            <span>{post.location}</span>
+          </div>
+        )}
 
         <PostActions
           post={{ ...post, commentsCount: commentsTotal }}
@@ -255,7 +261,13 @@ export const PostDetailPage = () => {
                     className={`like-btn ${comment.isLiked ? 'active' : ''}`}
                     onClick={() => onCommentLike(comment.id)}
                   >
-                    <Heart size={14} fill={comment.isLiked ? 'currentColor' : 'none'} aria-hidden="true" /> <span>{comment.likesCount}</span>
+                    <Heart
+                      size={ICON_SIZE.inline}
+                      strokeWidth={iconStroke(ICON_SIZE.inline)}
+                      fill={comment.isLiked ? 'currentColor' : 'none'}
+                      aria-hidden="true"
+                    />{' '}
+                    <span>{comment.likesCount}</span>
                   </Button>
                   <Button
                     type="button"
@@ -296,7 +308,13 @@ export const PostDetailPage = () => {
                               className={`like-btn ${reply.isLiked ? 'active' : ''}`}
                               onClick={() => onCommentLike(reply.id)}
                             >
-                              <Heart size={14} fill={reply.isLiked ? 'currentColor' : 'none'} aria-hidden="true" /> <span>{reply.likesCount}</span>
+                              <Heart
+                                size={ICON_SIZE.inline}
+                                strokeWidth={iconStroke(ICON_SIZE.inline)}
+                                fill={reply.isLiked ? 'currentColor' : 'none'}
+                                aria-hidden="true"
+                              />{' '}
+                              <span>{reply.likesCount}</span>
                             </Button>
                             <Button
                               type="button"

@@ -49,6 +49,16 @@ export interface UploadPetAlbumPhotoResponse {
   url: string;
 }
 
+/** 上传宠物头像（multipart field=file，≤2MB） */
+export const uploadPetAvatar = async (file: File): Promise<UploadPetAlbumPhotoResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return await post<UploadPetAlbumPhotoResponse>('/api/v1/pets/upload-avatar', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    skipTransform: true,
+  } as any);
+};
+
 /** 上传宠物相册图片（multipart field=file，≤5MB） */
 export const uploadPetAlbumPhoto = async (file: File): Promise<UploadPetAlbumPhotoResponse> => {
   const formData = new FormData();
@@ -116,6 +126,16 @@ export const getLostPetList = async (params: LostPetListParams): Promise<LostPet
 
 export const getLostPetDetail = async (id: number): Promise<LostPetInfo> => {
   return await get<LostPetInfo>(`/api/v1/lost-pets/${id}`);
+};
+
+/** 上传寻宠启事图片（multipart field=file，≤5MB） */
+export const uploadLostPetPhoto = async (file: File): Promise<UploadPetAlbumPhotoResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return await post<UploadPetAlbumPhotoResponse>('/api/v1/lost-pets/upload-photo', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    skipTransform: true,
+  } as any);
 };
 
 export const createLostPet = async (data: LostPetCreateRequest): Promise<LostPetInfo> => {

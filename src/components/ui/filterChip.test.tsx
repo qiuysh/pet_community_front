@@ -12,7 +12,10 @@ describe('FilterChip', () => {
 
   it('applies active primary styles', () => {
     render(<FilterChip active>选中</FilterChip>);
-    expect(screen.getByRole('button')).toHaveClass('bg-primary');
+    const btn = screen.getByRole('button');
+    expect(btn).toHaveClass('bg-primary');
+    expect(btn).toHaveClass('active');
+    expect(btn).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('applies secondary tone when active', () => {
@@ -22,5 +25,10 @@ describe('FilterChip', () => {
       </FilterChip>
     );
     expect(screen.getByRole('button')).toHaveClass('bg-secondary');
+  });
+
+  it('inactive chip has aria-pressed false', () => {
+    render(<FilterChip>未选中</FilterChip>);
+    expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'false');
   });
 });

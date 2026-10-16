@@ -13,6 +13,7 @@ export type DateTimePickerGranularity = 'day' | 'minute';
 export type DateTimePickerTone = 'primary' | 'secondary';
 
 export interface DateTimePickerProps {
+  id?: string;
   value?: string;
   onChange?: (value: string) => void;
   /** day=仅日期；minute=日期+时间（默认） */
@@ -90,6 +91,7 @@ const sizeTrigger: Record<'md' | 'sm', string> = {
 };
 
 export function DateTimePicker({
+  id,
   value = '',
   onChange,
   granularity = 'minute',
@@ -108,6 +110,7 @@ export function DateTimePicker({
 
   return (
     <DatePicker
+      id={id}
       aria-label={ariaLabel}
       granularity={granularity}
       hourCycle={hourCycle}

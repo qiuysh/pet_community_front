@@ -150,8 +150,8 @@ export function AdminFrontUserPage() {
   return (
     <div className={adminUi.page}>
       <AdminPageHeader
-        title="用户管理"
-        description="管理平台的所有用户账号"
+        title="社区用户"
+        description="查看与治理前台注册用户，支持封禁与解封"
         actions={
           selectedUsers.length > 0 ? (
             <AdminButton

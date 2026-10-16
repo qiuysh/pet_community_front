@@ -55,6 +55,16 @@ export const updateProfile = async (data: UserProfileUpdateRequest): Promise<Use
   return await put<UserInfo>('/api/v1/user/profile', data);
 };
 
+/** 上传用户头像（multipart field=file，≤2MB），成功后返回更新后的用户资料 */
+export const uploadAvatar = async (file: File): Promise<UserInfo> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return await post<UserInfo>('/api/v1/user/avatar', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    skipTransform: true,
+  } as any);
+};
+
 export const changePassword = async (data: PasswordChangeRequest): Promise<void> => {
   return await put<void>('/api/v1/user/password', data);
 };
@@ -85,6 +95,28 @@ export const thirdPartyLogin = async (data: ThirdPartyLoginRequest): Promise<Thi
 
 export const thirdPartyBind = async (data: ThirdPartyBindRequest): Promise<UserLoginResponse> => {
   return await post<UserLoginResponse>('/api/v1/auth/third-party-bind', data);
+};
+
+export interface ThirdPartyAccountInfo {
+  platform: string;
+  nickname: string;
+  avatar: string;
+  createdAt: string;
+}
+
+export const listThirdPartyAccounts = async (): Promise<ThirdPartyAccountInfo[]> => {
+  return await get<ThirdPartyAccountInfo[]>('/api/v1/user/third-party');
+};
+
+export const bindThirdPartyAccount = async (
+  platform: 'wechat' | 'weibo' | 'qq',
+  code: string,
+): Promise<void> => {
+  return await post<void>('/api/v1/user/third-party/bind', { platform, code });
+};
+
+export const unbindThirdPartyAccount = async (platform: string): Promise<void> => {
+  return await del<void>(`/api/v1/user/third-party/${encodeURIComponent(platform)}`);
 };
 
 export const getPrivacySettings = async (): Promise<PrivacySettings> => {

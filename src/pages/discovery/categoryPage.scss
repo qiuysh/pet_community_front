@@ -138,28 +138,62 @@
         .filter-chip {
           display: inline-flex;
           align-items: center;
-          gap: 5px;
-          padding: 7px 14px;
+          gap: 8px;
+          padding: 8px 14px;
+          min-height: 40px;
           background: $background-soft;
-          border: 1px solid transparent;
-          border-radius: 18px;
+          border: 1.5px solid $border-light;
+          border-radius: 999px;
           font-size: $font-size-base;
+          line-height: 1.2;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease,
+            color 0.2s ease,
+            box-shadow 0.2s ease;
           color: $text-secondary;
-          font-weight: 400;
+          font-weight: 500;
+
+          svg,
+          .filter-pet-icon,
+          .filter-post-icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+          }
 
           &:hover {
             background: $background-muted;
+            border-color: rgba($primary-color, 0.35);
             color: $text-primary;
           }
 
-          &.active {
-            background: linear-gradient(135deg, $primary-color, $primary-dark);
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 2px 8px rgba($primary-color, 0.25);
-            font-weight: 500;
+          &:focus-visible {
+            outline: 2px solid $primary-color;
+            outline-offset: 2px;
+          }
+
+          // 覆盖 FilterChip 默认实心 primary，改用描边+浅底，选中更清晰
+          &.active,
+          &[aria-pressed='true'] {
+            background: $primary-soft;
+            background-image: none;
+            color: $primary-dark;
+            border-color: $primary-color;
+            box-shadow: 0 0 0 1px rgba($primary-color, 0.2);
+            font-weight: 600;
+
+            svg {
+              color: $primary-dark;
+              stroke: $primary-dark;
+            }
+
+            &:hover {
+              background: mix(white, $primary-soft, 20%);
+              color: $primary-dark;
+              border-color: $primary-dark;
+            }
           }
         }
       }
@@ -426,21 +460,24 @@
         .action-item {
           display: flex;
           align-items: center;
-          gap: 5px;
-          font-size: 13px;
+          gap: 6px;
+          min-height: 44px;
+          font-size: $font-size-base;
           color: $text-secondary;
-          transition: all 0.2s ease;
+          transition: color 0.2s ease, transform 0.2s ease;
           cursor: default;
 
           svg {
             flex-shrink: 0;
+            width: 20px;
+            height: 20px;
           }
 
           &:hover {
             color: $primary-color;
 
             svg {
-              transform: scale(1.1);
+              transform: scale(1.06);
             }
           }
 
@@ -569,10 +606,19 @@
         .filter-chips {
           display: flex;
           flex-wrap: wrap;
+          gap: 8px;
 
           .filter-chip {
-            padding: 6px 12px;
+            padding: 8px 12px;
+            min-height: 40px;
             font-size: $font-size-sm;
+
+            svg,
+            .filter-pet-icon,
+            .filter-post-icon {
+              width: 20px;
+              height: 20px;
+            }
           }
         }
       }

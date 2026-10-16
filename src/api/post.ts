@@ -118,6 +118,10 @@ export const getMyFavorites = async (page = 1, pageSize = 10): Promise<PostListR
   return await get<PostListResponse>('/api/v1/favorites', { params: { page, pageSize } });
 };
 
+export const getMyLikes = async (page = 1, pageSize = 10): Promise<PostListResponse> => {
+  return await get<PostListResponse>('/api/v1/likes', { params: { page, pageSize } });
+};
+
 export const createReport = async (data: ReportCreateRequest): Promise<ReportInfo> => {
   return await post<ReportInfo>('/api/v1/posts/reports', data);
 };

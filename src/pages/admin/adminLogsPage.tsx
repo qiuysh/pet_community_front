@@ -5,7 +5,6 @@ import type { UserBehaviorLog, AdminOperationLog } from '../../types/admin';
 import { showErrorToast } from '../../utils/toastManager';
 import { LogFilter } from '../../components/admin/logFilter';
 import { LogExport } from '../../components/admin/logExport';
-import { LogStats } from '../../components/admin/logStats';
 import { Pagination } from '../../components/admin/pagination';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
@@ -182,134 +181,125 @@ export function AdminLogsPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className={adminUi.page}>
-                <AdminPageHeader
-                    title="日志管理"
-                    description="查看用户行为日志和系统操作日志"
-                    tabs={
-                        <AdminTabs
-                            aria-label="日志类型"
-                            items={[
-                                { key: 'behavior', label: '行为日志' },
-                                { key: 'security', label: '安全审计' },
-                                { key: 'operation', label: '操作日志' },
-                            ]}
-                            selectedKey={logType}
-                            onSelectionChange={(key) => {
-                                setLogType(key as LogType);
-                                setCurrentPage(1);
-                            }}
-                        />
-                    }
-                    actions={
-                        <LogExport
-                            userId={userId}
-                            actionType={actionType}
-                            targetType={targetType}
-                            startTime={startTime}
-                            endTime={endTime}
-                        />
-                    }
-                />
-
-                <div className={adminUi.filterSection}>
-                    <LogFilter
-                        logType={logType}
+        <div className={adminUi.page}>
+            <AdminPageHeader
+                title="日志审计"
+                description="查询用户行为、安全审计与管理员操作记录"
+                tabs={
+                    <AdminTabs
+                        aria-label="日志类型"
+                        items={[
+                            { key: 'behavior', label: '行为日志' },
+                            { key: 'security', label: '安全审计' },
+                            { key: 'operation', label: '操作日志' },
+                        ]}
+                        selectedKey={logType}
+                        onSelectionChange={(key) => {
+                            setLogType(key as LogType);
+                            setCurrentPage(1);
+                        }}
+                    />
+                }
+                actions={
+                    <LogExport
                         userId={userId}
                         actionType={actionType}
                         targetType={targetType}
                         startTime={startTime}
                         endTime={endTime}
-                        onUserIdChange={handleUserIdChange}
-                        onActionTypeChange={handleActionTypeChange}
-                        onTargetTypeChange={handleTargetTypeChange}
-                        onStartTimeChange={handleStartTimeChange}
-                        onEndTimeChange={handleEndTimeChange}
                     />
-                </div>
+                }
+            />
 
-                <div className="px-6 pt-2">
-                    {loading ? (
-                        <AdminTable.Status>
-                            <div className="mb-2 flex justify-center animate-pulse text-brown-light">
-                                <PawPrint size={32} aria-hidden="true" />
-                            </div>
-                            <p>加载中…</p>
-                        </AdminTable.Status>
-                    ) : getCurrentLogs().length === 0 ? (
-                        <AdminTable.Status>
-                            <div className="mb-2 flex justify-center text-brown-light">
-                                <ClipboardList size={40} aria-hidden="true" />
-                            </div>
-                            <p>暂无日志数据</p>
-                        </AdminTable.Status>
-                    ) : (
-                        <AdminTable aria-label="日志列表">
-                            <AdminTable.Header>
-                                <AdminTable.Column isRowHeader>ID</AdminTable.Column>
-                                <AdminTable.Column>用户ID</AdminTable.Column>
-                                <AdminTable.Column>操作类型</AdminTable.Column>
-                                <AdminTable.Column>目标类型</AdminTable.Column>
-                                <AdminTable.Column>操作详情</AdminTable.Column>
-                                <AdminTable.Column>IP地址</AdminTable.Column>
-                                <AdminTable.Column>设备</AdminTable.Column>
-                                <AdminTable.Column>操作时间</AdminTable.Column>
-                            </AdminTable.Header>
-                            <AdminTable.Body>
-                                {getCurrentLogs().map((log) => (
-                                    <AdminTable.Row key={log.id} id={String(log.id)}>
-                                        <AdminTable.Cell className="whitespace-nowrap font-mono">#{log.id}</AdminTable.Cell>
-                                        <AdminTable.Cell className="whitespace-nowrap">
-                                            <AdminChip tone="neutral">{log.actorId || '-'}</AdminChip>
-                                        </AdminTable.Cell>
-                                        <AdminTable.Cell className="whitespace-nowrap">
-                                            <AdminChip tone={getActionTone(log.actionKey)}>
-                                                {getActionLabel(log.actionKey)}
-                                            </AdminChip>
-                                        </AdminTable.Cell>
-                                        <AdminTable.Cell className="whitespace-nowrap">
-                                            <AdminChip tone="neutral">
-                                                {getTargetLabel(log.targetType || '-')}
-                                            </AdminChip>
-                                        </AdminTable.Cell>
-                                        <AdminTable.Cell>
-                                            <div className="max-w-xs truncate text-brown-secondary" title={log.detailText}>
-                                                {log.detailText}
-                                            </div>
-                                        </AdminTable.Cell>
-                                        <AdminTable.Cell className="whitespace-nowrap font-mono text-brown-muted">
-                                            {log.ip || '-'}
-                                        </AdminTable.Cell>
-                                        <AdminTable.Cell className="whitespace-nowrap text-brown-muted">
-                                            {log.device}
-                                        </AdminTable.Cell>
-                                        <AdminTable.Cell className="whitespace-nowrap text-brown-muted">
-                                            {log.createdAt}
-                                        </AdminTable.Cell>
-                                    </AdminTable.Row>
-                                ))}
-                            </AdminTable.Body>
-                        </AdminTable>
-                    )}
-                </div>
+            <div className={adminUi.filterSection}>
+                <LogFilter
+                    logType={logType}
+                    userId={userId}
+                    actionType={actionType}
+                    targetType={targetType}
+                    startTime={startTime}
+                    endTime={endTime}
+                    onUserIdChange={handleUserIdChange}
+                    onActionTypeChange={handleActionTypeChange}
+                    onTargetTypeChange={handleTargetTypeChange}
+                    onStartTimeChange={handleStartTimeChange}
+                    onEndTimeChange={handleEndTimeChange}
+                />
+            </div>
 
-                {totalPages > 1 && (
-                    <Pagination
-                        currentPage={currentPage}
-                        total={total}
-                        pageSize={pageSize}
-                        onPageChange={handlePageChange}
-                    />
+            <div className="px-6 pt-2">
+                {loading ? (
+                    <AdminTable.Status>
+                        <div className="mb-2 flex justify-center animate-pulse text-brown-light">
+                            <PawPrint size={32} aria-hidden="true" />
+                        </div>
+                        <p>加载中…</p>
+                    </AdminTable.Status>
+                ) : getCurrentLogs().length === 0 ? (
+                    <AdminTable.Status>
+                        <div className="mb-2 flex justify-center text-brown-light">
+                            <ClipboardList size={40} aria-hidden="true" />
+                        </div>
+                        <p>暂无日志数据</p>
+                    </AdminTable.Status>
+                ) : (
+                    <AdminTable aria-label="日志列表">
+                        <AdminTable.Header>
+                            <AdminTable.Column isRowHeader>ID</AdminTable.Column>
+                            <AdminTable.Column>用户ID</AdminTable.Column>
+                            <AdminTable.Column>操作类型</AdminTable.Column>
+                            <AdminTable.Column>目标类型</AdminTable.Column>
+                            <AdminTable.Column>操作详情</AdminTable.Column>
+                            <AdminTable.Column>IP地址</AdminTable.Column>
+                            <AdminTable.Column>设备</AdminTable.Column>
+                            <AdminTable.Column>操作时间</AdminTable.Column>
+                        </AdminTable.Header>
+                        <AdminTable.Body>
+                            {getCurrentLogs().map((log) => (
+                                <AdminTable.Row key={log.id} id={String(log.id)}>
+                                    <AdminTable.Cell className="whitespace-nowrap font-mono">#{log.id}</AdminTable.Cell>
+                                    <AdminTable.Cell className="whitespace-nowrap">
+                                        <AdminChip tone="neutral">{log.actorId || '-'}</AdminChip>
+                                    </AdminTable.Cell>
+                                    <AdminTable.Cell className="whitespace-nowrap">
+                                        <AdminChip tone={getActionTone(log.actionKey)}>
+                                            {getActionLabel(log.actionKey)}
+                                        </AdminChip>
+                                    </AdminTable.Cell>
+                                    <AdminTable.Cell className="whitespace-nowrap">
+                                        <AdminChip tone="neutral">
+                                            {getTargetLabel(log.targetType || '-')}
+                                        </AdminChip>
+                                    </AdminTable.Cell>
+                                    <AdminTable.Cell>
+                                        <div className="max-w-xs truncate text-brown-secondary" title={log.detailText}>
+                                            {log.detailText}
+                                        </div>
+                                    </AdminTable.Cell>
+                                    <AdminTable.Cell className="whitespace-nowrap font-mono text-brown-muted">
+                                        {log.ip || '-'}
+                                    </AdminTable.Cell>
+                                    <AdminTable.Cell className="whitespace-nowrap text-brown-muted">
+                                        {log.device}
+                                    </AdminTable.Cell>
+                                    <AdminTable.Cell className="whitespace-nowrap text-brown-muted">
+                                        {log.createdAt}
+                                    </AdminTable.Cell>
+                                </AdminTable.Row>
+                            ))}
+                        </AdminTable.Body>
+                    </AdminTable>
                 )}
             </div>
 
-            <LogStats
-                userId={userId}
-                actionType={actionType}
-                startTime={startTime}
-                endTime={endTime}
-            />
+            {totalPages > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    total={total}
+                    pageSize={pageSize}
+                    onPageChange={handlePageChange}
+                />
+            )}
         </div>
     );
 }

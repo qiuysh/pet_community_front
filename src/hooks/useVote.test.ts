@@ -58,17 +58,15 @@ describe('useVote', () => {
   });
 
   it('cancel 成功时应显示取消成功提示', async () => {
-    const result = { voted: false, votesCount: 9, remainingVotes: 10 };
-    cancelVoteMock.mockResolvedValue(result);
+    cancelVoteMock.mockResolvedValue(undefined);
 
     const { result: hook } = renderHook(() => useVote());
 
-    let response;
     await act(async () => {
-      response = await hook.current.cancel(1, 2);
+      await hook.current.cancel(2);
     });
 
-    expect(response).toEqual(result);
+    expect(cancelVoteMock).toHaveBeenCalledWith(2);
     expect(toastSuccess).toHaveBeenCalledWith('取消投票成功');
   });
 

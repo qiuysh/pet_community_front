@@ -20,7 +20,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, [location.pathname, setSidebarCollapsed]);
 
   return (
-    <div className="min-h-screen bg-cream lg:flex">
+    <div className="flex h-dvh max-h-dvh overflow-hidden bg-cream">
       <a
         href="#admin-main"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-secondary focus:text-white focus:rounded-sm"
@@ -40,9 +40,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       <AdminSidebar />
 
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+      {/* 顶栏固定；仅 main 区域纵向滚动 */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <AdminHeader />
-        <main id="admin-main" className="flex-1">
+        <main id="admin-main" className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
           <div className="p-4 sm:p-6">{children}</div>
         </main>
       </div>

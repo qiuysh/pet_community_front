@@ -91,8 +91,8 @@ export function AdminSettingsPage() {
   return (
     <div className={adminUi.page}>
       <AdminPageHeader
-        title="系统设置"
-        description="管理系统的各项配置"
+        title="站点配置"
+        description="配置站点信息与内容审核规则"
         tabs={
           <AdminTabs
             aria-label="系统设置分区"

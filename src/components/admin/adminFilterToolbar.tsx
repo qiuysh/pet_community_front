@@ -1,7 +1,7 @@
 /**
  * 后台列表筛选栏（扁平，与 page 卡一体）：
  * - 固定枚举 / 动态列表 → AdminSelect
- * - 分区 Tabs → 放 AdminPageHeader，勿塞进本栏
+ * - 分区 Tabs → 放 AdminPageHeader（独占一行，勿与主操作挤在右上角）
  * - 网格统一用 adminUi.filterFields
  */
 import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
@@ -15,13 +15,14 @@ function joinClass(...parts: Array<string | false | undefined>) {
 export interface AdminPageHeaderProps {
   title: string;
   description?: string;
-  /** 分区 Tabs（与主操作同行，不占筛选行） */
+  /** 分区 Tabs（标题行下方独占一行） */
   tabs?: ReactNode;
+  /** 主操作按钮（标题行右侧） */
   actions?: ReactNode;
   className?: string;
 }
 
-/** 统一页头：标题 / Tabs / 主操作 */
+/** 统一页头：标题 + 主操作；有 Tabs 时另起一行 */
 export function AdminPageHeader({
   title,
   description,
@@ -29,20 +30,16 @@ export function AdminPageHeader({
   actions,
   className = '',
 }: AdminPageHeaderProps) {
-  const right = tabs || actions ? (
-    <div className={adminUi.pageHeaderActions}>
-      {tabs}
-      {actions}
-    </div>
-  ) : null;
-
   return (
     <div className={joinClass(adminUi.pageHeader, className)}>
-      <div className="min-w-0">
-        <h1 className={adminUi.pageTitle}>{title}</h1>
-        {description ? <p className={adminUi.pageDesc}>{description}</p> : null}
+      <div className={adminUi.pageHeaderTop}>
+        <div className="min-w-0">
+          <h1 className={adminUi.pageTitle}>{title}</h1>
+          {description ? <p className={adminUi.pageDesc}>{description}</p> : null}
+        </div>
+        {actions ? <div className={adminUi.pageHeaderActions}>{actions}</div> : null}
       </div>
-      {right}
+      {tabs ? <div className={adminUi.pageHeaderTabs}>{tabs}</div> : null}
     </div>
   );
 }

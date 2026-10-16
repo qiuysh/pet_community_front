@@ -96,6 +96,7 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
           activityId: activity.id,
           title: title.trim(),
           description: description.trim(),
+          type: video ? 'video' : 'image',
           images,
           video: video || undefined,
         }),

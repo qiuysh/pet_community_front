@@ -222,14 +222,14 @@ export function AdminNotificationPage() {
   return (
     <div className={adminUi.page}>
       <AdminPageHeader
-        title="通知管理"
-        description="管理系统通知和公告"
+        title="通知公告"
+        description="发布系统通知与站点公告"
         tabs={
           <AdminTabs
-            aria-label="通知管理分区"
+            aria-label="通知公告分区"
             items={[
               { key: 'notification', label: '系统通知' },
-              { key: 'announcement', label: '公告管理' },
+              { key: 'announcement', label: '公告' },
             ]}
             selectedKey={activeTab}
             onSelectionChange={(key) => setActiveTab(key as TabType)}

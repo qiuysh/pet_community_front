@@ -14,6 +14,7 @@ import {
   deleteGrowthRecord,
   updatePet,
 } from '../api/pet';
+import { getPostList } from '../api/post';
 import { useUserStore } from '../stores/userStore';
 import { useAsync, useAsyncEffect } from './useAsync';
 import { showErrorToast, showSuccessToast } from '../utils/toastManager';
@@ -23,6 +24,7 @@ import {
   PetGrowthRecordInfo,
   PetGrowthRecordCreateRequest,
 } from '../types/pet';
+import type { PostInfo } from '../types/post';
 
 export type PetDetailTab = 'album' | 'growth' | 'posts';
 
@@ -88,6 +90,17 @@ export function usePetDetail() {
     { onError: (err) => console.error('获取成长记录失败', err) },
   );
   const growthRecords: PetGrowthRecordInfo[] = growthHook.data?.list ?? [];
+
+  const relatedPostsHook = useAsyncEffect(
+    async () => {
+      if (!pet?.id || activeTab !== 'posts') return undefined;
+      return await getPostList({ petId: pet.id, page: 1, pageSize: 20 });
+    },
+    [pet?.id, activeTab],
+    { onError: (err) => console.error('获取相关帖子失败', err) },
+  );
+  const relatedPosts: PostInfo[] = relatedPostsHook.data?.list ?? [];
+  const relatedPostsTotal = relatedPostsHook.data?.total ?? 0;
 
   const isOwner = !!(user && pet && user.id === pet.userId);
 
@@ -262,6 +275,9 @@ export function usePetDetail() {
     loading: petHook.loading,
     album,
     growthRecords,
+    relatedPosts,
+    relatedPostsTotal,
+    relatedPostsLoading: relatedPostsHook.loading,
     activeTab,
     setActiveTab,
     isOwner,

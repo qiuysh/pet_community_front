@@ -35,8 +35,8 @@ describe('TodoAggregate', () => {
     const data = {
       total: 5,
       items: [
-        { key: 'review', label: '内容审核', count: 3, link: '/admin/review' },
-        { key: 'applications', label: '领养申请', count: 2, link: '/admin/adopts' },
+        { key: 'review', label: '内容审核', count: 3, link: '/admin/reviews' },
+        { key: 'registrations', label: '待审活动报名', count: 2, link: '/admin/activities?focus=registrations' },
       ],
     };
     render(
@@ -45,27 +45,27 @@ describe('TodoAggregate', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText('内容审核')).toBeInTheDocument();
-    expect(screen.getByText('领养申请')).toBeInTheDocument();
+    expect(screen.getByText('待审活动报名')).toBeInTheDocument();
     expect(screen.getByText('共 5 项')).toBeInTheDocument();
   });
 
   it('待办项使用 Link 指向对应路由', () => {
     const data = {
       total: 1,
-      items: [{ key: 'review', label: '内容审核', count: 1, link: '/admin/review' }],
+      items: [{ key: 'review', label: '内容审核', count: 1, link: '/admin/reviews' }],
     };
     render(
       <MemoryRouter>
         <TodoAggregate data={data} />
       </MemoryRouter>,
     );
-    expect(screen.getByRole('link', { name: /内容审核/ })).toHaveAttribute('href', '/admin/review');
+    expect(screen.getByRole('link', { name: /内容审核/ })).toHaveAttribute('href', '/admin/reviews');
   });
 
   it('count=0 时不显示 badge', () => {
     const data = {
       total: 0,
-      items: [{ key: 'review', label: '内容审核', count: 0, link: '/admin/review' }],
+      items: [{ key: 'review', label: '内容审核', count: 0, link: '/admin/reviews' }],
     };
     render(
       <MemoryRouter>

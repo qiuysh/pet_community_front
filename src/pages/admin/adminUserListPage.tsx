@@ -75,11 +75,11 @@ export function AdminUserListPage() {
   return (
     <div className={adminUi.page}>
       <AdminPageHeader
-        title="运营人员管理"
-        description="管理系统的所有运营人员账号"
+        title="后台账号"
+        description="管理运营后台登录账号与角色权限"
         actions={
           <AdminButton type="button" variant="secondary" onClick={() => navigate('/admin/users/create')}>
-            添加运营人员
+            新建账号
           </AdminButton>
         }
       />
@@ -123,7 +123,7 @@ export function AdminUserListPage() {
             <p>暂无数据</p>
           </AdminTable.Status>
         ) : (
-          <AdminTable aria-label="运营人员列表">
+          <AdminTable aria-label="后台账号列表">
             <AdminTable.Header>
               <AdminTable.Column isRowHeader>用户名</AdminTable.Column>
               <AdminTable.Column>邮箱</AdminTable.Column>

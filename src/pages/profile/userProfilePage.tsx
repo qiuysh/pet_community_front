@@ -4,6 +4,10 @@ import { useUserStore } from '../../stores/userStore';
 import { getPublicProfile } from '../../api/user';
 import { blockApi } from '../../api/social';
 import { useFollowState } from '../../hooks/useFollowState';
+import {
+  useUserProfileContent,
+  type ProfileContentTab,
+} from '../../hooks/useUserProfileContent';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { MapPin, Clock, PawPrint, Heart, MessageCircle, Send, Ban, UserPlus, UserCheck, MoreVertical } from 'lucide-react';
 import { Button } from '../../components/ui/button';
@@ -11,6 +15,9 @@ import { Card } from '../../components/ui/card';
 import { Tabs } from '../../components/ui/tabs';
 import { Avatar } from '../../components/ui/avatar';
 import { Dropdown } from '../../components/ui/dropdown';
+import { Skeleton } from '../../components/ui/skeleton';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { getPetTypeIcon } from '../../types/pet';
 import type { PublicUserProfile } from '../../types/user';
 
 export function UserProfilePage() {
@@ -26,6 +33,22 @@ export function UserProfilePage() {
   const targetIdForFollow = id && !isOwnProfile ? Number(id) : undefined;
   const { status: followStatus, acting: followActing, follow, unfollow, setSecret } =
     useFollowState(targetIdForFollow);
+
+  const profileUserId = id ? Number(id) : user?.id;
+  const {
+    activeTab,
+    setActiveTab,
+    page,
+    setPage,
+    loading: contentLoading,
+    posts,
+    pets,
+    totalPages,
+  } = useUserProfileContent({
+    profileUserId:
+      profileUserId && !Number.isNaN(profileUserId) ? profileUserId : undefined,
+    isOwnProfile: !!isOwnProfile,
+  });
 
   useEffect(() => {
     if (isOwnProfile && !user) {
@@ -94,8 +117,12 @@ export function UserProfilePage() {
   const profileTabItems = [
     { key: 'posts', title: '帖子' },
     { key: 'pets', title: '宠物' },
-    { key: 'favorites', title: '收藏' },
-    { key: 'likes', title: '点赞' },
+    ...(isOwnProfile
+      ? [
+          { key: 'favorites', title: '收藏' },
+          { key: 'likes', title: '点赞' },
+        ]
+      : []),
   ];
 
   return (
@@ -110,6 +137,7 @@ export function UserProfilePage() {
           <div className="flex flex-col items-center gap-3 p-4 sm:flex-row sm:items-end sm:gap-5 sm:p-6">
             <div className="h-20 w-20 shrink-0 rounded-full bg-white p-1 shadow-soft sm:h-24 sm:w-24 md:h-28 md:w-28">
               <Avatar
+                src={displayUser?.avatar}
                 name={displayUser?.nickname || '宠友'}
                 className="!size-full h-full w-full bg-primary text-2xl font-bold text-white sm:text-3xl"
               />
@@ -320,38 +348,137 @@ export function UserProfilePage() {
               listOnly
               stretch
               items={profileTabItems}
-              defaultSelectedKey="posts"
+              selectedKey={activeTab}
+              onSelectionChange={(key) => setActiveTab(key as ProfileContentTab)}
               aria-label="个人主页内容分类"
             />
           </div>
         </Card>
 
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Card key={i} hoverable className="rounded-xl shadow-card" padding="none">
-              <div className="aspect-square bg-linear-to-br from-muted to-soft flex items-center justify-center">
-                <PawPrint className="text-brown-light" size={48} aria-hidden="true" />
+        <div className="mt-6">
+          {contentLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Card key={i} className="rounded-xl shadow-card" padding="none">
+                  <Skeleton className="aspect-square w-full rounded-none" />
+                  <div className="p-4 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : activeTab === 'pets' ? (
+            pets.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {pets.map((pet) => {
+                  const PetIcon = getPetTypeIcon(pet.petType);
+                  return (
+                    <Link key={pet.id} to={`/pets/${pet.id}`}>
+                      <Card hoverable className="rounded-xl shadow-card h-full" padding="none">
+                        <div className="aspect-square bg-linear-to-br from-primary-soft to-primary-light/20 flex items-center justify-center overflow-hidden">
+                          {pet.avatar ? (
+                            <img src={pet.avatar} alt={pet.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <PetIcon className="text-brown-light" size={48} aria-hidden="true" />
+                          )}
+                        </div>
+                        <div className="p-4">
+                          <p className="text-sm font-medium text-brown truncate">{pet.name}</p>
+                          <p className="text-xs text-brown-muted mt-1 truncate">
+                            {pet.breedName || '未知品种'}
+                          </p>
+                        </div>
+                      </Card>
+                    </Link>
+                  );
+                })}
               </div>
-              <div className="p-4">
-                <p className="text-sm text-brown line-clamp-2">我家毛孩子今天又调皮了...</p>
-                <div className="flex items-center justify-between mt-3 text-xs text-brown-muted">
-                  <span className="flex items-center gap-1">
-                    <Heart size={14} aria-hidden="true" />
-                    <span>128</span>
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MessageCircle size={14} aria-hidden="true" />
-                    <span>24</span>
-                  </span>
-                </div>
-              </div>
-            </Card>
-          ))}
+            ) : (
+              <div className="py-12 text-center text-brown-muted text-sm">暂无宠物档案</div>
+            )
+          ) : posts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {posts.map((post) => {
+                const cover = post.images?.[0];
+                return (
+                  <Link key={post.id} to={`/posts/${post.id}`}>
+                    <Card hoverable className="rounded-xl shadow-card h-full" padding="none">
+                      <div className="aspect-square bg-linear-to-br from-muted to-soft flex items-center justify-center overflow-hidden">
+                        {cover ? (
+                          <img src={cover} alt="" className="w-full h-full object-cover" />
+                        ) : post.video ? (
+                          <video src={post.video} className="w-full h-full object-cover" muted />
+                        ) : (
+                          <PawPrint className="text-brown-light" size={48} aria-hidden="true" />
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <p className="text-sm text-brown line-clamp-2">
+                          {post.content || '分享了一条动态'}
+                        </p>
+                        <div className="flex items-center justify-between mt-3 text-xs text-brown-muted">
+                          <span className="flex items-center gap-1">
+                            <Heart
+                              size={ICON_SIZE.inline}
+                              strokeWidth={iconStroke(ICON_SIZE.inline)}
+                              aria-hidden="true"
+                            />
+                            <span>{post.likesCount}</span>
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MessageCircle
+                              size={ICON_SIZE.inline}
+                              strokeWidth={iconStroke(ICON_SIZE.inline)}
+                              aria-hidden="true"
+                            />
+                            <span>{post.commentsCount}</span>
+                          </span>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="py-12 text-center text-brown-muted text-sm">
+              {activeTab === 'favorites'
+                ? '暂无收藏'
+                : activeTab === 'likes'
+                  ? '暂无点赞'
+                  : '暂无动态'}
+            </div>
+          )}
         </div>
 
-        <div className="mt-8 mb-12 text-center">
-          <p className="text-brown-muted text-sm">暂无更多内容</p>
-        </div>
+        {totalPages > 1 && (
+          <div className="mt-6 flex justify-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => setPage(page - 1)}
+            >
+              上一页
+            </Button>
+            <span className="text-sm text-brown-muted self-center">
+              {page} / {totalPages}
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages}
+              onClick={() => setPage(page + 1)}
+            >
+              下一页
+            </Button>
+          </div>
+        )}
+
+        <div className="mt-8 mb-12" />
       </div>
     </div>
   );

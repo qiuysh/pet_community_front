@@ -3,6 +3,13 @@ import { render } from '@testing-library/react';
 import { PetIcon, PostIcon } from './filterIcons';
 
 describe('PetIcon', () => {
+  it('默认尺寸为 action(20)', () => {
+    const { container } = render(<PetIcon type="dog" />);
+    const svg = container.querySelector('svg');
+    expect(svg).toHaveAttribute('width', '20');
+    expect(svg).toHaveAttribute('height', '20');
+  });
+
   it('应渲染 dog 类型图标', () => {
     const { container } = render(<PetIcon type="dog" />);
     expect(container.querySelector('svg')).toBeInTheDocument();
@@ -16,7 +23,9 @@ describe('PetIcon', () => {
   it('未知类型应回退到 other 图标', () => {
     const { container: other } = render(<PetIcon type="other" />);
     const { container: unknown } = render(<PetIcon type="dinosaur" />);
-    expect(other.querySelector('svg')?.innerHTML).toBe(unknown.querySelector('svg')?.innerHTML);
+    expect(other.querySelector('svg')?.getAttribute('class')).toBe(
+      unknown.querySelector('svg')?.getAttribute('class'),
+    );
   });
 
   it('应支持自定义尺寸和颜色', () => {

@@ -3,7 +3,7 @@ import { Phone, Lock, Send } from 'lucide-react';
 import { useAdoptDetail } from '../../hooks/useAdoptDetail';
 import { useUserStore } from '../../stores/userStore';
 import { maskContact } from '../../utils/contactPrivacy';
-import { PetType, AdoptionStatus, PetGender } from '../../types/adopt';
+import { PetType, AdoptionStatus, PetGender, ApplicationStatus } from '../../types/adopt';
 import { AdoptionApplyForm } from '../../components/adopt/adoptionApplyForm';
 import { AdoptionReview } from '../../components/adopt/adoptionReview';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
@@ -12,20 +12,22 @@ import { Card } from '../../components/ui/card';
 
 export const AdoptDetailPage = () => {
   const navigate = useNavigate();
-  const { user, isLoggedIn } = useUserStore();
+  const { isLoggedIn } = useUserStore();
   const {
     adopt,
     loading,
+    isOwner,
+    applications,
+    appsLoading,
     showApplyForm,
     setShowApplyForm,
     showReviewModal,
     setShowReviewModal,
     currentApplication,
+    openReview,
     handleApplySuccess,
     handleReviewSuccess,
   } = useAdoptDetail();
-
-  const isOwner = !!user && !!adopt && user.id === adopt.userId;
   // §4.11：联系方式不对游客明文；登录用户可见，或优先引导站内私信（A8-03）。
   // 后端已对游客脱敏下发；前端再兜底脱敏。
   const contactVisible = isLoggedIn || isOwner;
@@ -188,7 +190,59 @@ export const AdoptDetailPage = () => {
           </div>
         </Card>
 
-        {adopt.status === AdoptionStatus.PENDING && (
+        {isOwner && (
+          <Card>
+            <h2 className="text-base font-medium text-brown mb-3">领养申请</h2>
+            {appsLoading ? (
+              <p className="text-sm text-brown-muted">加载中…</p>
+            ) : applications.length === 0 ? (
+              <p className="text-sm text-brown-muted">暂无申请</p>
+            ) : (
+              <ul className="space-y-3">
+                {applications.map((app) => (
+                  <li
+                    key={app.id}
+                    className="flex items-start justify-between gap-3 rounded-lg bg-cream p-3"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={app.userAvatar || getDefaultUserAvatar()}
+                          alt=""
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
+                        <span className="text-sm font-medium text-brown truncate">
+                          {app.userNickname}
+                        </span>
+                        <span className="text-xs text-brown-muted shrink-0">
+                          {app.status === ApplicationStatus.PENDING
+                            ? '待审核'
+                            : app.status === ApplicationStatus.APPROVED
+                              ? '已通过'
+                              : '已拒绝'}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm text-brown-secondary line-clamp-3">
+                        {app.applicationInfo}
+                      </p>
+                    </div>
+                    {app.status === ApplicationStatus.PENDING && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => openReview(app)}
+                      >
+                        审核
+                      </Button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        )}
+
+        {adopt.status === AdoptionStatus.PENDING && !isOwner && (
           <Card>
             <Button block size="lg" onClick={() => setShowApplyForm(true)}>
               申请领养

@@ -14,7 +14,7 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-border-light bg-white px-4 shadow-card sm:px-6">
+    <header className="z-30 flex h-16 shrink-0 items-center justify-between border-b border-border-light bg-white px-4 shadow-card sm:px-6">
       <Button
         type="button"
         variant="ghost"

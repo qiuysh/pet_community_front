@@ -66,7 +66,7 @@ describe('VoteButton', () => {
   });
 
   it('点击取消投票按钮应恢复未投票状态', async () => {
-    cancelVoteMock.mockResolvedValue({ voted: false, votesCount: 9 });
+    cancelVoteMock.mockResolvedValue(undefined);
     const onVoteSuccess = vi.fn();
 
     render(
@@ -85,6 +85,7 @@ describe('VoteButton', () => {
       expect(screen.getByRole('button', { name: /投票/i })).toBeInTheDocument();
     });
 
+    expect(cancelVoteMock).toHaveBeenCalledWith(2);
     expect(screen.getByText('9 票')).toBeInTheDocument();
     expect(screen.queryByText('已投票')).not.toBeInTheDocument();
     expect(toastSuccess).toHaveBeenCalledWith('取消投票成功');

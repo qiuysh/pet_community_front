@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   updateProfile,
+  uploadAvatar,
   changePassword,
   bindPhone,
   bindEmail,
@@ -10,10 +11,14 @@ import {
   updatePrivacySettings,
   getDevices,
   removeDevice,
+  listThirdPartyAccounts,
+  bindThirdPartyAccount,
+  unbindThirdPartyAccount,
+  type ThirdPartyAccountInfo,
 } from '../api/user';
 import { useUserStore } from '../stores/userStore';
 import { useAsync } from './useAsync';
-import { showSuccessToast, showErrorToast } from '../utils/toastManager';
+import { showSuccessToast, showErrorToast, showInfoToast } from '../utils/toastManager';
 import {
   UserProfileUpdateRequest,
   PasswordChangeRequest,
@@ -22,6 +27,22 @@ import {
   DeviceInfo,
 } from '../types/user';
 import { VerificationChannel, VerificationMode } from '../components/profile/verificationCodeModal';
+
+type SocialPlatform = 'wechat' | 'weibo' | 'qq';
+
+const DEMO_OAUTH_KEY = (platform: string) => `pet_demo_oauth_${platform}`;
+
+function getOrCreateDemoOAuthCode(platform: string): string {
+  try {
+    const existing = localStorage.getItem(DEMO_OAUTH_KEY(platform));
+    if (existing) return existing;
+    const code = `demo_${platform}_${crypto.randomUUID?.() ?? `${Date.now()}_${Math.random().toString(36).slice(2)}`}`;
+    localStorage.setItem(DEMO_OAUTH_KEY(platform), code);
+    return code;
+  } catch {
+    return `demo_${platform}_${Date.now()}`;
+  }
+}
 
 export type BindActionState = {
   channel: VerificationChannel;
@@ -62,6 +83,8 @@ export function useProfileSettings() {
   const [privacyLoaded, setPrivacyLoaded] = useState(false);
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
   const [devicesLoaded, setDevicesLoaded] = useState(false);
+  const [thirdPartyAccounts, setThirdPartyAccounts] = useState<ThirdPartyAccountInfo[]>([]);
+  const [thirdPartyLoaded, setThirdPartyLoaded] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -117,6 +140,51 @@ export function useProfileSettings() {
     }
   };
 
+  const loadThirdParty = useCallback(async () => {
+    try {
+      const list = await listThirdPartyAccounts();
+      setThirdPartyAccounts(Array.isArray(list) ? list : []);
+      setThirdPartyLoaded(true);
+    } catch {
+      showErrorToast('获取第三方绑定失败');
+    }
+  }, []);
+
+  const handleBindThirdParty = async (platform: SocialPlatform) => {
+    const labels = { wechat: '微信', weibo: '微博', qq: 'QQ' } as const;
+    if (
+      !window.confirm(
+        `当前为演示模式：将模拟绑定${labels[platform]}（未接入真实 OAuth）。是否继续？`,
+      )
+    ) {
+      return;
+    }
+    showInfoToast(`正在绑定${labels[platform]}…`);
+    try {
+      const code = getOrCreateDemoOAuthCode(platform);
+      await bindThirdPartyAccount(platform, code);
+      showSuccessToast(`${labels[platform]}已绑定`);
+      await loadThirdParty();
+    } catch (err) {
+      showErrorToast((err as Error).message || '绑定失败');
+    }
+  };
+
+  const handleUnbindThirdParty = async (platform: SocialPlatform) => {
+    const labels = { wechat: '微信', weibo: '微博', qq: 'QQ' } as const;
+    if (!window.confirm(`确定解绑${labels[platform]}？`)) return;
+    try {
+      await unbindThirdPartyAccount(platform);
+      showSuccessToast('已解绑');
+      await loadThirdParty();
+    } catch (err) {
+      showErrorToast((err as Error).message || '解绑失败');
+    }
+  };
+
+  const isThirdPartyBound = (platform: SocialPlatform) =>
+    thirdPartyAccounts.some((a) => a.platform === platform);
+
   const handleUpdateProfile = () => {
     const data: UserProfileUpdateRequest = {
       nickname: nickname || undefined,
@@ -132,6 +200,27 @@ export function useProfileSettings() {
         showSuccessToast('资料更新成功');
       },
       (err: unknown) => showErrorToast((err as Error).message || '更新失败'),
+    );
+  };
+
+  const handleAvatarChange = (file: File | null) => {
+    if (!file) return;
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!allowed.includes(file.type) && !/\.(jpe?g|png|webp)$/i.test(file.name)) {
+      showErrorToast('仅支持 JPG、PNG、WebP 格式');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      showErrorToast('头像大小不能超过 2MB');
+      return;
+    }
+    run(
+      () => uploadAvatar(file),
+      (updated) => {
+        useUserStore.getState().setUser(updated);
+        showSuccessToast('头像已更新');
+      },
+      (err: unknown) => showErrorToast((err as Error).message || '头像上传失败'),
     );
   };
 
@@ -205,8 +294,11 @@ export function useProfileSettings() {
     confirmPassword, setConfirmPassword,
     privacy, setPrivacy, privacyLoaded, loadPrivacy, handleSavePrivacy,
     devices, devicesLoaded, loadDevices, handleRemoveDevice,
+    thirdPartyAccounts, thirdPartyLoaded, loadThirdParty,
+    isThirdPartyBound, handleBindThirdParty, handleUnbindThirdParty,
     bindAction, setBindAction,
     handleUpdateProfile,
+    handleAvatarChange,
     handleChangePassword,
     handleBindSubmit,
   };

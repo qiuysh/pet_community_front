@@ -15,6 +15,9 @@ export function PetDetailPage() {
     loading,
     album,
     growthRecords,
+    relatedPosts,
+    relatedPostsTotal,
+    relatedPostsLoading,
     activeTab,
     setActiveTab,
     isOwner,
@@ -82,7 +85,7 @@ export function PetDetailPage() {
       title: (
         <>
           相关帖子
-          <span className="ml-1 text-brown-muted">(0)</span>
+          <span className="ml-1 text-brown-muted">({relatedPostsTotal})</span>
         </>
       ),
     },
@@ -183,12 +186,37 @@ export function PetDetailPage() {
 
           {activeTab === 'posts' && (
             <Card className="rounded-xl shadow-sm">
-              <div className="text-center py-12">
-                <div className="mb-3 flex justify-center text-brown-light">
-                  <FileText size={32} aria-hidden="true" />
+              {relatedPostsLoading ? (
+                <div className="py-12 flex justify-center">
+                  <Spinner />
                 </div>
-                <p className="text-brown-muted">暂无相关帖子</p>
-              </div>
+              ) : relatedPosts.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="mb-3 flex justify-center text-brown-light">
+                    <FileText size={32} aria-hidden="true" />
+                  </div>
+                  <p className="text-brown-muted">暂无相关帖子</p>
+                </div>
+              ) : (
+                <ul className="divide-y divide-border-light">
+                  {relatedPosts.map((post) => (
+                    <li key={post.id}>
+                      <Link
+                        to={`/posts/${post.id}`}
+                        className="block px-4 py-3 hover:bg-cream transition-colors"
+                      >
+                        <p className="text-sm text-brown line-clamp-2">
+                          {post.content || '分享了一条动态'}
+                        </p>
+                        <div className="mt-2 flex gap-3 text-xs text-brown-muted">
+                          <span>{post.likesCount} 赞</span>
+                          <span>{post.commentsCount} 评论</span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </Card>
           )}
         </div>

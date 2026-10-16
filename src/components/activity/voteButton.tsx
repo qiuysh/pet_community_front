@@ -24,27 +24,30 @@ export const VoteButton = ({
   const [voted, setVoted] = useState(hasVoted);
   const [count, setCount] = useState(votesCount);
 
-  const handleVote = () => run(
-    () => voteForSubmission({ activityId, submissionId }),
-    (result) => {
-      setVoted(result.voted);
-      setCount(result.votesCount);
-      toast.success(`投票成功，今日剩余票数：${result.remainingVotes}`);
-      onVoteSuccess?.({ voted: result.voted, votesCount: result.votesCount });
-    },
-    (err: unknown) => toast.error((err as Error).message || '投票失败，请稍后重试'),
-  );
+  const handleVote = () =>
+    run(
+      () => voteForSubmission({ activityId, submissionId }),
+      (result) => {
+        setVoted(result.voted);
+        setCount(result.votesCount);
+        toast.success(`投票成功，今日剩余票数：${result.remainingVotes}`);
+        onVoteSuccess?.({ voted: result.voted, votesCount: result.votesCount });
+      },
+      (err: unknown) => toast.error((err as Error).message || '投票失败，请稍后重试'),
+    );
 
-  const handleCancelVote = () => run(
-    () => cancelVote(activityId, submissionId),
-    (result) => {
-      setVoted(result.voted);
-      setCount(result.votesCount);
-      toast.success('取消投票成功');
-      onVoteSuccess?.({ voted: result.voted, votesCount: result.votesCount });
-    },
-    (err: unknown) => toast.error((err as Error).message || '取消投票失败，请稍后重试'),
-  );
+  const handleCancelVote = () =>
+    run(
+      () => cancelVote(submissionId),
+      () => {
+        const nextCount = Math.max(0, count - 1);
+        setVoted(false);
+        setCount(nextCount);
+        toast.success('取消投票成功');
+        onVoteSuccess?.({ voted: false, votesCount: nextCount });
+      },
+      (err: unknown) => toast.error((err as Error).message || '取消投票失败，请稍后重试'),
+    );
 
   return (
     <div className="flex items-center gap-2">

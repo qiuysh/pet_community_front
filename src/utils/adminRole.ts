@@ -33,6 +33,7 @@ const menuRoles: Record<string, AdminRoleKey[]> = {
   settings: ['super_admin', 'content_admin'],
   'sensitive-words': ['super_admin', 'content_admin'],
   logs: ['super_admin', 'data_admin', 'service'],
+  activities: ['super_admin', 'content_admin'],
   reviews: ['super_admin', 'content_admin', 'service'],
   reports: ['super_admin', 'content_admin', 'service'],
   notifications: ['super_admin', 'content_admin', 'service'],

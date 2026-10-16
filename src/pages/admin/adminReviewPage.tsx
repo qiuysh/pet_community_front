@@ -255,17 +255,8 @@ export function AdminReviewPage() {
                       </span>
                     </AdminButton>
                   </AdminTable.Cell>
-                  <AdminTable.Cell className="whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={item.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${item.username}`}
-                        alt={item.username}
-                        width={24}
-                        height={24}
-                        className="h-6 w-6 rounded-full bg-soft object-cover"
-                      />
-                      <span className="text-brown-secondary">{item.username}</span>
-                    </div>
+                  <AdminTable.Cell className="whitespace-nowrap text-brown-secondary">
+                    {item.username}
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap text-brown-muted">
                     {new Date(item.createdAt).toLocaleString()}

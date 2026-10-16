@@ -69,6 +69,7 @@ export function AdminSelect({ invalid = false, className = '', children, ...rest
 }
 
 export interface AdminDateTimeProps {
+  id?: string;
   value?: string;
   onChange?: (value: string) => void;
   granularity?: DateTimePickerGranularity;
@@ -84,6 +85,7 @@ export interface AdminDateTimeProps {
 
 /** 后台日期/时间：HeroUI DatePicker，禁止原生 datetime-local */
 export function AdminDateTime({
+  id,
   value = '',
   onChange,
   granularity = 'minute',
@@ -97,6 +99,7 @@ export function AdminDateTime({
 }: AdminDateTimeProps) {
   return (
     <DateTimePicker
+      id={id}
       value={value}
       onChange={onChange}
       granularity={granularity}

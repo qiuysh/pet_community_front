@@ -2,7 +2,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTopicDetail } from '../../hooks/useTopicDetail';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { AdBanner } from '../../components/ad/AdBanner';
-import { ChevronLeft, Heart, MessageCircle } from 'lucide-react';
+import { ShareSheet } from '../../components/post/shareSheet';
+import { ChevronLeft, Heart, MessageCircle, Share2, UserPlus, UserCheck } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -21,6 +22,12 @@ export const TopicDetailPage = () => {
     totalPages,
     page,
     setPage,
+    participating,
+    toggleParticipate,
+    shareOpen,
+    setShareOpen,
+    shareUrl,
+    openShare,
   } = useTopicDetail(id);
 
   if (loadingTopic || !topic) {
@@ -58,6 +65,40 @@ export const TopicDetailPage = () => {
           <p className="topic-desc">{topic.description || '暂无描述'}</p>
           <div className="topic-stats">
             <span>{topic.postsCount} 条动态</span>
+            <span>{topic.participantsCount} 人参与</span>
+          </div>
+          <div className="topic-actions flex flex-wrap gap-2 mt-3">
+            <Button
+              type="button"
+              size="sm"
+              variant={topic.isParticipated ? 'outline' : 'primary'}
+              disabled={participating}
+              onClick={() => void toggleParticipate()}
+            >
+              {topic.isParticipated ? (
+                <>
+                  <UserCheck size={14} aria-hidden="true" />
+                  已参与
+                </>
+              ) : (
+                <>
+                  <UserPlus size={14} aria-hidden="true" />
+                  参与话题
+                </>
+              )}
+            </Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => void openShare()}>
+              <Share2 size={14} aria-hidden="true" />
+              分享
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => navigate(`/posts/create?topicId=${topic.id}`)}
+            >
+              发动态
+            </Button>
           </div>
         </div>
       </Card>
@@ -132,6 +173,13 @@ export const TopicDetailPage = () => {
           </div>
         )}
       </div>
+
+      <ShareSheet
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        postUrl={shareUrl}
+        postTitle={topic.name}
+      />
     </div>
   );
 };

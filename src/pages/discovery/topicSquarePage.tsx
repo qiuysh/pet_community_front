@@ -5,6 +5,7 @@ import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Skeleton } from '../../components/ui/skeleton';
+import { ICON_SIZE } from '../../styles/iconSize';
 import './topicSquarePage.scss';
 
 export const TopicSquarePage = () => {
@@ -81,7 +82,7 @@ export const TopicSquarePage = () => {
                 <Link key={cat.id} to={`/category/${cat.id}`} className="category-card-link">
                   <Card hoverable padding="md" className="category-card h-full">
                     <div className="category-icon-wrap">
-                      <CategoryIcon categoryName={cat.name} size={28} color="currentColor" />
+                      <CategoryIcon categoryName={cat.name} size={ICON_SIZE.feature} color="currentColor" />
                     </div>
                     <div className="category-name">{cat.name}</div>
                     <div className="category-desc">{cat.description}</div>

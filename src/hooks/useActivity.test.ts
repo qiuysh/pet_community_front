@@ -82,10 +82,10 @@ describe('useActivity', () => {
     const data = {
       title: '新活动',
       description: '活动描述',
-      type: ActivityType.ONLINE_VOTE,
+      type: ActivityType.VOTING,
       cover: 'cover.jpg',
-      startTime: '2026-07-23 00:00:00',
-      endTime: '2026-07-30 00:00:00',
+      startTime: '2026-07-23T00:00:00Z',
+      endTime: '2026-07-30T00:00:00Z',
     };
 
     let response;
@@ -120,6 +120,7 @@ describe('useActivity', () => {
       activityId: 1,
       title: '我的作品',
       description: '作品描述',
+      type: 'image' as const,
       images: ['img1.jpg'],
     };
 

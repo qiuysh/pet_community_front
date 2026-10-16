@@ -31,22 +31,25 @@ export function Switch({
       isDisabled={disabled}
       onChange={onChange}
       aria-label={ariaLabel}
-      className={['inline-flex items-center', className].filter(Boolean).join(' ')}
+      className={['group inline-flex items-center', className].filter(Boolean).join(' ')}
     >
-      <HeroSwitch.Control
-        className={[
-          'h-7 w-12 rounded-full bg-border transition-colors',
-          'data-[selected=true]:bg-secondary',
-          'data-[focus-visible=true]:outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-secondary/30',
-        ].join(' ')}
-      >
-        <HeroSwitch.Thumb
+      {/* Content = 可点击的 SwitchButton；缺省则无法切换 */}
+      <HeroSwitch.Content className="inline-flex cursor-pointer items-center outline-none">
+        <HeroSwitch.Control
           className={[
-            'size-5 rounded-full bg-white shadow-sm transition-transform',
-            'translate-x-1 data-[selected=true]:translate-x-6',
+            'h-7 w-12 rounded-full bg-border transition-colors',
+            'group-data-[selected=true]:bg-secondary',
+            'group-data-[focus-visible=true]:ring-2 group-data-[focus-visible=true]:ring-secondary/30',
           ].join(' ')}
-        />
-      </HeroSwitch.Control>
+        >
+          <HeroSwitch.Thumb
+            className={[
+              'size-5 rounded-full bg-white shadow-sm transition-transform',
+              'translate-x-1 group-data-[selected=true]:translate-x-6',
+            ].join(' ')}
+          />
+        </HeroSwitch.Control>
+      </HeroSwitch.Content>
     </HeroSwitch>
   );
 }
