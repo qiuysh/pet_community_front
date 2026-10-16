@@ -49,6 +49,7 @@ export function AdminAdPage() {
     const [positionName, setPositionName] = useState('');
     const [positionLocation, setPositionLocation] = useState('home_banner');
     const [positionSize, setPositionSize] = useState('');
+    const [positionStatus, setPositionStatus] = useState(1);
 
     // 广告位列表：广告位 Tab 展示；广告投放 Tab 用于筛选下拉
     const positionsHook = useAsyncEffect<PositionsResult>(
@@ -140,12 +141,18 @@ export function AdminAdPage() {
             return;
         }
         try {
-            await createAdPosition({ name: positionName, location: positionLocation, size: positionSize, status: 1 });
+            await createAdPosition({
+                name: positionName,
+                location: positionLocation,
+                size: positionSize,
+                status: positionStatus,
+            });
             showSuccessToast('广告位创建成功');
             setShowPositionModal(false);
             setPositionName('');
             setPositionLocation('home_banner');
             setPositionSize('');
+            setPositionStatus(1);
             positionsHook.refetch();
         } catch (err) {
             showErrorToast((err as Error).message || '创建失败');
@@ -163,13 +170,19 @@ export function AdminAdPage() {
             return;
         }
         try {
-            await updateAdPosition(editingPosition.id, { name: positionName, location: positionLocation, size: positionSize });
+            await updateAdPosition(editingPosition.id, {
+                name: positionName,
+                location: positionLocation,
+                size: positionSize,
+                status: positionStatus,
+            });
             showSuccessToast('广告位更新成功');
             setShowPositionModal(false);
             setEditingPosition(null);
             setPositionName('');
             setPositionLocation('home_banner');
             setPositionSize('');
+            setPositionStatus(1);
             positionsHook.refetch();
         } catch (err) {
             showErrorToast((err as Error).message || '更新失败');
@@ -193,11 +206,13 @@ export function AdminAdPage() {
             setPositionName(position.name);
             setPositionLocation(position.location);
             setPositionSize(position.size);
+            setPositionStatus(position.status === 0 ? 0 : 1);
         } else {
             setEditingPosition(null);
             setPositionName('');
             setPositionLocation('home_banner');
             setPositionSize('');
+            setPositionStatus(1);
         }
         setShowPositionModal(true);
     };
@@ -254,15 +269,15 @@ export function AdminAdPage() {
                             <AdminSelect
                                 id="ad-position-filter"
                                 name="positionId"
-                                value={positionFilter}
+                                value={positionFilter ? String(positionFilter) : ''}
                                 onChange={(e) => {
-                                    setPositionFilter(Number(e.target.value));
+                                    setPositionFilter(Number(e.target.value) || 0);
                                     setCurrentPage(1);
                                 }}
                             >
-                                <option value={0}>全部广告位</option>
+                                <option value="">全部广告位</option>
                                 {positions.map((p) => (
-                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                    <option key={p.id} value={String(p.id)}>{p.name}</option>
                                 ))}
                             </AdminSelect>
                         </AdminFilterField>
@@ -270,7 +285,7 @@ export function AdminAdPage() {
                             <AdminSelect
                                 id="ad-status-filter"
                                 name="adStatus"
-                                value={adStatusFilter}
+                                value={String(adStatusFilter)}
                                 onChange={(e) => {
                                     setAdStatusFilter(Number(e.target.value));
                                     setCurrentPage(1);
@@ -278,7 +293,7 @@ export function AdminAdPage() {
                             >
                                 <option value={-1}>全部状态</option>
                                 {Object.entries(AdStatusMap).map(([key, label]) => (
-                                    <option key={key} value={Number(key)}>{label}</option>
+                                    <option key={key} value={key}>{label}</option>
                                 ))}
                             </AdminSelect>
                         </AdminFilterField>
@@ -326,6 +341,17 @@ export function AdminAdPage() {
                                             placeholder="如: 750x300"
                                         />
                                     </div>
+                                </div>
+                                <div>
+                                    <AdminLabel required>状态</AdminLabel>
+                                    <AdminSelect
+                                        aria-label="广告位状态"
+                                        value={String(positionStatus)}
+                                        onChange={(e) => setPositionStatus(Number(e.target.value))}
+                                    >
+                                        <option value="1">启用</option>
+                                        <option value="0">禁用</option>
+                                    </AdminSelect>
                                 </div>
                                 <div className="flex gap-3">
                                     <AdminButton

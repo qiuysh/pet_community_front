@@ -25,7 +25,12 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
   const [positions, setPositions] = useState<AdPosition[]>([]);
 
   useAsyncEffect(() => getAdPositionList({ page: 1, page_size: 100 }), [], {
-    onSuccess: (res) => setPositions(res.list.filter((p) => p.status === 1)),
+    onSuccess: (res) => {
+      const list = res.list ?? [];
+      // 仅可选启用中的广告位；若全部被误禁用则仍展示并标注，避免下拉空白
+      const enabled = list.filter((p) => p.status === 1);
+      setPositions(enabled.length > 0 ? enabled : list);
+    },
     onError: (err) => showErrorToast((err as Error).message || '获取广告位列表失败'),
   });
 
@@ -118,14 +123,25 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
 
           <div>
             <AdminLabel required>广告位</AdminLabel>
-            <AdminSelect value={positionId} onChange={(e) => setPositionId(Number(e.target.value))}>
-              <option value={0}>请选择广告位</option>
+            <AdminSelect
+              aria-label="广告位"
+              value={positionId ? String(positionId) : ''}
+              onChange={(e) => setPositionId(Number(e.target.value) || 0)}
+            >
+              <option value="">请选择广告位</option>
               {positions.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} ({AdLocationMap[p.location as keyof typeof AdLocationMap]})
+                <option key={p.id} value={String(p.id)} disabled={p.status !== 1}>
+                  {p.name}（{AdLocationMap[p.location as keyof typeof AdLocationMap] || p.location}
+                  {p.status !== 1 ? ' · 已禁用' : ''}）
                 </option>
               ))}
             </AdminSelect>
+            {positions.length === 0 && (
+              <AdminHint>暂无广告位，请先在「广告位」中创建并启用</AdminHint>
+            )}
+            {positions.length > 0 && positions.every((p) => p.status !== 1) && (
+              <AdminHint>广告位均已禁用，请先在「广告位」中重新启用</AdminHint>
+            )}
           </div>
         </div>
 
