@@ -51,7 +51,16 @@ export function Modal({
       <HeroModal.Backdrop isDismissable={dismissable} variant="blur">
         <HeroModal.Container size={sizeMap[size]} placement="center">
           <HeroModal.Dialog className={['rounded-md shadow-medium bg-white', className].join(' ')}>
-            <HeroModal.CloseTrigger aria-label="关闭" />
+            <HeroModal.CloseTrigger
+              aria-label="关闭"
+              className={[
+                // HeroUI 默认 text-muted 映射到本项目浅灰底色，X 几乎看不见
+                '!bg-transparent !text-brown-secondary',
+                'hover:!bg-soft hover:!text-brown',
+                'data-[hovered=true]:!bg-soft data-[hovered=true]:!text-brown',
+                'focus-visible:!ring-2 focus-visible:!ring-primary/30',
+              ].join(' ')}
+            />
             {title ? (
               <HeroModal.Header>
                 <HeroModal.Heading className="text-brown text-lg font-semibold">

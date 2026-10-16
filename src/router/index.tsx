@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { createBrowserRouter, type RouteObject } from 'react-router-dom';
+import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
 import { AdminLayout, UserLayout, ProtectedRoute, AdminProtectedRoute } from '../components/layout';
+import { DocumentTitleSync } from '../components/documentTitleSync';
 import { lazyDefault, lazyNamed, PageSuspense } from './lazyPage';
 
 // —— 社区前台（懒加载）——
@@ -169,7 +170,16 @@ function bare(page: ReactNode, protectedRoute = false) {
   return protectedRoute ? <ProtectedRoute>{inner}</ProtectedRoute> : inner;
 }
 
-const routes: RouteObject[] = [
+function RootShell() {
+  return (
+    <>
+      <DocumentTitleSync />
+      <Outlet />
+    </>
+  );
+}
+
+const appRoutes: RouteObject[] = [
   { path: '/login', element: bare(<LoginPage />) },
   { path: '/register', element: bare(<RegisterPage />) },
   { path: '/reset-password', element: bare(<ResetPasswordPage />) },
@@ -246,6 +256,13 @@ const routes: RouteObject[] = [
   { path: '/admin/activities/:id/registrations', element: withAdmin(<ActivityRegistrationsPage />) },
   { path: '/admin/activities/:id/vote', element: withAdmin(<ActivityVotePage />) },
   { path: '/admin/ads', element: withAdmin(<AdminAdPage />) },
+];
+
+const routes: RouteObject[] = [
+  {
+    element: <RootShell />,
+    children: appRoutes,
+  },
 ];
 
 export const router = createBrowserRouter(routes);

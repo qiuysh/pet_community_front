@@ -50,7 +50,7 @@ export { Checkbox } from './checkbox';
 export type { CheckboxProps } from './checkbox';
 
 export { Switch } from './switch';
-export type { SwitchProps } from './switch';
+export type { SwitchProps, SwitchTone } from './switch';
 
 export { Radio, RadioGroup } from './radio';
 export type { RadioProps, RadioGroupProps, RadioVariant } from './radio';

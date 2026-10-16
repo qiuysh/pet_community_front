@@ -34,6 +34,7 @@ export function AdminSwitch({
       disabled={disabled}
       aria-label={ariaLabel}
       className={className}
+      tone="secondary"
     />
   );
 }

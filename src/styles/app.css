@@ -122,6 +122,20 @@
   .button.button--primary[data-hovered="true"] {
     box-shadow: var(--shadow-brand-hover);
   }
+
+  /*
+   * HeroUI CloseButton 默认 text-muted → 本项目 --muted 是浅灰底色（#e6eaed），
+   * 白底上 X 几乎看不见，悬停 bg-default-hover 后更糊。强制用正文灰阶。
+   */
+  .close-button.close-button--default {
+    background-color: transparent;
+    color: var(--color-brown-secondary);
+  }
+  .close-button.close-button--default:hover,
+  .close-button.close-button--default[data-hovered="true"] {
+    background-color: var(--color-soft);
+    color: var(--color-brown);
+  }
 }
 
 /* Tailwind v3 → v4 渐变类名兼容（存量页面） */
