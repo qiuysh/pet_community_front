@@ -31,20 +31,22 @@ export async function getCsrfToken(page: Page): Promise<string> {
 /** 带 CSRF + Bearer 的 request（token 在 localStorage，APIRequestContext 不会自动带） */
 export async function apiWrite(
     page: Page,
-    method: 'post' | 'put' | 'delete',
+    method: 'get' | 'post' | 'put' | 'delete',
     url: string,
     options?: Parameters<Page['request']['post']>[1],
 ): Promise<APIResponse> {
-    const csrf = await getCsrfToken(page);
     const token = await page.evaluate(
         () => localStorage.getItem('user_token') || sessionStorage.getItem('user_token') || '',
     );
     const headers: Record<string, string> = {
         ...((options?.headers as Record<string, string> | undefined) || {}),
-        'X-CSRF-Token': csrf,
     };
     if (token) {
         headers.Authorization = `Bearer ${token}`;
+    }
+    // GET 为安全方法，后端不校验 CSRF，无需附加 token
+    if (method !== 'get') {
+        headers['X-CSRF-Token'] = await getCsrfToken(page);
     }
     return page.request[method](url, { ...options, headers });
 }
