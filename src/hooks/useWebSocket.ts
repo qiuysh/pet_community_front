@@ -1,12 +1,15 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useUserStore } from '../stores/userStore';
 
+/** 与后端 service.MessagePayload JSON 字段对齐 */
 interface MessagePayload {
-  ToID: number;
-  FromID: number;
-  Content: string;
-  Type: string;
-  Timestamp: string;
+  id?: number;
+  toId: number;
+  fromId: number;
+  content: string;
+  type: string;
+  mediaUrl?: string;
+  duration?: number;
 }
 
 type MessageCallback = (message: MessagePayload) => void;

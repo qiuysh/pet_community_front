@@ -62,6 +62,11 @@ export default defineConfig({
         target: 'http://localhost:8083',
         changeOrigin: true,
       },
+      // 上传文件由后端 r.Static("/uploads", ...) 提供，开发环境需一并代理
+      '/uploads': {
+        target: 'http://localhost:8083',
+        changeOrigin: true,
+      },
     },
   },
 });

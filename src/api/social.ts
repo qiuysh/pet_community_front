@@ -1,5 +1,6 @@
 import { get, post, put, del } from './axios'
 import type { FollowStatus } from '../types/user'
+import type { ChatMessage, MessagePage, SendMessagePayload, UploadMediaResult } from '../types/social'
 
 export const followApi = {
   followUser: (targetId: number, options?: { secret?: boolean }) =>
@@ -27,18 +28,40 @@ export const blockApi = {
 }
 
 export const messageApi = {
-  sendMessage: (data: { toId: number; content: string; type?: string }) =>
-    post('/api/v1/social/messages/send', data),
+  sendMessage: (data: SendMessagePayload) =>
+    post<ChatMessage>('/api/v1/social/messages/send', data),
   getConversations: (params?: { page?: number; pageSize?: number }) =>
     get('/api/v1/social/messages/conversations', { params }),
   getMessages: (conversationId: number, params?: { page?: number; pageSize?: number }) =>
-    get(`/api/v1/social/messages/${conversationId}`, { params }),
+    get<MessagePage>(`/api/v1/social/messages/${conversationId}`, { params }),
   markAsRead: (conversationId: number) =>
     post(`/api/v1/social/messages/${conversationId}/read`),
   deleteConversation: (conversationId: number) =>
     del(`/api/v1/social/messages/${conversationId}`),
-  searchMessages: (conversationId: number, keyword: string) =>
-    get(`/api/v1/social/messages/${conversationId}/search`, { params: { keyword } }),
+  searchMessages: (
+    conversationId: number,
+    keyword: string,
+    params?: { page?: number; pageSize?: number },
+  ) =>
+    get<MessagePage>(`/api/v1/social/messages/${conversationId}/search`, {
+      params: { keyword, ...params },
+    }),
+  /** 上传私信图片（multipart field=file，≤2MB） */
+  uploadMessageImage: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return post<UploadMediaResult>('/api/v1/social/messages/upload/image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  /** 上传私信语音（multipart field=file，≤10MB） */
+  uploadMessageVoice: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return post<UploadMediaResult>('/api/v1/social/messages/upload/voice', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
   recallMessage: (msgId: number) =>
     post(`/api/v1/social/messages/recall/${msgId}`),
   getUnreadCount: () => get('/api/v1/social/messages/unread/count'),

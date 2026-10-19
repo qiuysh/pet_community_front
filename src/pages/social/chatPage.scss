@@ -3,6 +3,7 @@
 .chat-page {
   display: flex;
   flex-direction: column;
+  position: relative;
   height: 100vh;
   height: 100dvh;
   background-color: $background-color;
@@ -56,8 +57,17 @@
     }
   }
 
+  .chat-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
   .messages-container {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     padding: 16px;
 
@@ -188,6 +198,435 @@
         color: $primary-color;
       }
     }
+  }
+}
+
+// ============================================
+// 媒体消息（图片 / 语音）
+// ============================================
+.chat-page {
+  .message-item {
+    &.pending {
+      opacity: 0.72;
+    }
+
+    &.highlighted {
+      .message-content,
+      .image-bubble,
+      .voice-bubble {
+        animation: messageFlash 2.5s ease;
+      }
+    }
+
+    .image-bubble {
+      position: relative;
+      display: block;
+      padding: 0;
+      border: none;
+      background: none;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: zoom-in;
+      line-height: 0;
+
+      img {
+        display: block;
+        max-width: 200px;
+        max-height: 260px;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+    }
+
+    .bubble-pending {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba($text-primary, 0.35);
+      border-radius: 12px;
+    }
+  }
+}
+
+.voice-bubble {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+  padding: 8px 12px;
+  border-radius: 16px 16px 16px 4px;
+  background-color: $background-white;
+  box-shadow: $shadow-card;
+
+  &--mine {
+    background-color: $primary-color;
+    border-radius: 16px 16px 4px 16px;
+  }
+
+  .voice-play-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background-color: $primary-soft;
+    color: $primary-dark;
+    cursor: pointer;
+
+    .voice-bubble--mine & {
+      background-color: rgba(255, 255, 255, 0.24);
+      color: $background-white;
+    }
+  }
+
+  .voice-progress {
+    position: relative;
+    flex: 1;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    border-radius: 2px;
+    background-color: $border-color;
+    overflow: hidden;
+
+    .voice-bubble--mine & {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  .voice-progress__input {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    appearance: none;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .voice-progress__bar {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 3px;
+    transform: translateY(-50%);
+    background-color: $primary-color;
+    transition: width 0.15s linear;
+    pointer-events: none;
+
+    .voice-bubble--mine & {
+      background-color: $background-white;
+    }
+  }
+
+  .voice-duration {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: $text-secondary;
+
+    .voice-bubble--mine & {
+      color: $background-white;
+    }
+  }
+}
+
+@keyframes messageFlash {
+  0%,
+  100% {
+    box-shadow: none;
+  }
+  20% {
+    box-shadow: 0 0 0 3px $primary-light;
+  }
+}
+
+// ============================================
+// 输入区扩展：图片 / 录音
+// ============================================
+.chat-page {
+  .input-area {
+    position: relative;
+
+    .message-input {
+      margin: 0 8px;
+    }
+
+    .composer-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 44px;
+      flex-shrink: 0;
+      border: none;
+      background: none;
+      color: $text-secondary;
+      cursor: pointer;
+
+      &:disabled {
+        color: $text-light;
+        cursor: not-allowed;
+      }
+    }
+
+    .voice-btn {
+      touch-action: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+
+      &.is-recording {
+        color: $error-color;
+        background-color: $error-background;
+        border-radius: 50%;
+      }
+    }
+
+    .recording-hint {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: calc(100% + 6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background-color: $background-white;
+      box-shadow: $shadow-soft;
+      font-size: 13px;
+      color: $text-secondary;
+    }
+
+    .recording-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: $error-color;
+      animation: recordingPulse 1s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes recordingPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+// ============================================
+// 搜索
+// ============================================
+.chat-page {
+  .chat-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background-color: $background-white;
+    box-shadow: $shadow-card;
+    flex-shrink: 0;
+
+    .back-btn,
+    .chat-search-bar__cancel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      border: none;
+      background: none;
+      color: $text-primary;
+      cursor: pointer;
+    }
+
+    .chat-search-bar__cancel {
+      color: $text-secondary;
+    }
+
+    .chat-search-bar__input {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+    }
+  }
+}
+
+.chat-search-results {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  overflow-y: auto;
+  padding-bottom: 16px;
+  background-color: $background-white;
+  box-shadow: $shadow-medium;
+
+  &__skeletons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  &__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 40px 16px;
+    font-size: 14px;
+    color: $text-muted;
+  }
+
+  &__head {
+    padding: 8px 16px;
+    font-size: 12px;
+    color: $text-muted;
+    border-bottom: 1px solid $border-light;
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__more {
+    padding: 12px;
+    text-align: center;
+  }
+}
+
+.search-result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid $border-light;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $background-soft;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: $text-muted;
+  }
+
+  &__from {
+    font-weight: 600;
+    color: $text-secondary;
+  }
+
+  &__text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: $text-primary;
+    word-break: break-word;
+  }
+}
+
+.search-highlight {
+  padding: 0 1px;
+  border-radius: 2px;
+  background-color: $primary-soft;
+  color: $primary-dark;
+}
+
+// ============================================
+// 图片预览 / 大图
+// ============================================
+.chat-image-preview__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  img {
+    max-width: 100%;
+    max-height: 60vh;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+}
+
+.chat-image-preview__tip {
+  font-size: 12px;
+  color: $text-muted;
+}
+
+.chat-image-preview__footer {
+  display: flex;
+  gap: 12px;
+}
+
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba($text-primary, 0.9);
+}
+
+.image-lightbox__toolbar {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.image-lightbox__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.16);
+  color: $background-white;
+  cursor: pointer;
+}
+
+.image-lightbox__image {
+  max-width: 92vw;
+  max-height: 86vh;
+  border-radius: 8px;
+  object-fit: contain;
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
+
+  &.zoomed {
+    transform: scale(2);
+    cursor: zoom-out;
   }
 }
 
