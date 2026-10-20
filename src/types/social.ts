@@ -9,7 +9,7 @@ export interface ChatMessage {
   toId: number;
   content: string;
   type: MessageType | string;
-  /** 图片/语音地址（相对路径 /uploads/...） */
+  /** 图片/语音地址：本地存储为 /api/v1/uploads/...，对象存储为完整 https 地址 */
   mediaUrl?: string;
   /** 语音时长（秒），非语音为 0 */
   duration?: number;

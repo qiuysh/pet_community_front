@@ -58,12 +58,8 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
     proxy: {
+      // 含上传文件静态路由 /api/v1/uploads（后端 storage.local.base_url 默认值）
       '/api': {
-        target: 'http://localhost:8083',
-        changeOrigin: true,
-      },
-      // 上传文件由后端 r.Static("/uploads", ...) 提供，开发环境需一并代理
-      '/uploads': {
         target: 'http://localhost:8083',
         changeOrigin: true,
       },
