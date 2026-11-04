@@ -57,6 +57,15 @@
       flex-shrink: 0;
     }
 
+    // 后台配置了站点 Logo 时替换内置图标
+    .logo-img {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      border-radius: $border-radius-sm;
+      object-fit: contain;
+    }
+
     .logo-text {
       white-space: nowrap;
     }
@@ -356,6 +365,51 @@
       padding: $spacing-sm;
       // 底部导航 + 安全区 + FAB 余量，避免内容被遮挡
       padding-bottom: calc(var(--user-tab-bar-offset) + 60px + #{$spacing-md});
+    }
+  }
+}
+
+// ============================================
+// Site Footer (站点描述 + ICP 备案号)
+// ============================================
+
+.site-footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-lg $spacing-lg calc(#{$spacing-lg} + var(--user-safe-bottom));
+  background: $background-white;
+  border-top: 1px solid $border-light;
+  color: $text-muted;
+  font-size: $font-size-xs;
+  line-height: 1.7;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    // 底部导航覆盖在固定层，页脚需让出高度否则被遮挡
+    padding: $spacing-md $spacing-sm calc(var(--user-tab-bar-offset) + #{$spacing-md});
+  }
+
+  .site-footer-desc {
+    margin: 0 0 $spacing-xs;
+  }
+
+  .site-footer-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    margin: 0;
+  }
+
+  .site-footer-icp {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: $primary-color;
     }
   }
 }

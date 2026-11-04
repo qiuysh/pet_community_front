@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { useVerificationCode } from '../../hooks/useVerificationCode';
 import { showErrorToast } from '../../utils/toastManager';
 import {
@@ -18,6 +20,7 @@ import { Spinner } from '../../components/ui/spinner';
 import { BrandSocialIcon } from '../../components/icons/brandSocialIcons';
 
 export function LoginPage() {
+  const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
   const [loginType, setLoginType] = useState<'password' | 'code'>('password');
   const [account, setAccount] = useState(() => getRememberedUserAccount());
   const [password, setPassword] = useState('');
@@ -69,7 +72,7 @@ export function LoginPage() {
           <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
             <Heart className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-xl font-bold text-brown">欢迎来到宠物社区</h1>
+          <h1 className="text-xl font-bold text-brown">欢迎来到{siteName}</h1>
           <p className="text-sm text-brown-secondary mt-1">登录您的账号，与宠友分享快乐</p>
         </div>
 

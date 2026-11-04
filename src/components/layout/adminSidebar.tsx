@@ -2,6 +2,8 @@ import { ReactNode, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLayoutStore } from '../../stores/layoutStore';
 import { useAdminStore } from '../../stores/adminStore';
+import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { canAccessAdminMenu, readRoleFromAdminToken } from '../../utils/adminRole';
 import './adminSidebar.scss';
 
@@ -173,6 +175,7 @@ export function AdminSidebar() {
   const admin = useAdminStore((s) => s.admin);
   const token = useAdminStore((s) => s.token);
   const adminRole = admin?.role || readRoleFromAdminToken(token);
+  const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
 
   const visibleGroups = useMemo(
     () =>
@@ -233,7 +236,7 @@ export function AdminSidebar() {
               </svg>
             </div>
             <div className="min-w-0 leading-tight">
-              <span className="block truncate text-base font-semibold tracking-tight text-brown">宠物社区</span>
+              <span className="block truncate text-base font-semibold tracking-tight text-brown">{siteName}</span>
               <span className="block text-[11px] font-medium text-brown-muted">运营管理台</span>
             </div>
           </Link>

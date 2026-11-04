@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { TEST_USERS, clearAuth, loginAsUser, dualSessions, apiWrite } from './fixtures/auth';
+import {
+    clearAuth,
+    loginAsUser,
+    dualSessions,
+    apiWrite,
+    getMyProfile,
+} from './fixtures/auth';
 
 test.describe('Phase3 - 关注功能', () => {
     test.beforeEach(async ({ page }) => {
@@ -264,9 +270,12 @@ test.describe('Phase3 - 通知功能', () => {
             await viewer.goto('/notifications');
             await viewer.waitForTimeout(1500);
 
-            // 4. 断言：通知列表含 user1 昵称"萌宠小达人"（关注通知触发者）
+            // 4. 断言：通知列表含 actor 昵称（关注通知触发者）
+            //    昵称取接口实时值——seed 昵称会被历史用例改写，写死"萌宠小达人"会恒失败
             //    通知可能异步投递，用 expect.toContainText 的 timeout 重试
-            await expect(viewer.locator('body')).toContainText('萌宠小达人', { timeout: 15_000 });
+            const { nickname } = await getMyProfile(actor);
+            expect(nickname, '读取 actor 昵称失败').not.toBe('');
+            await expect(viewer.locator('body')).toContainText(nickname, { timeout: 15_000 });
         } finally {
             await cleanup();
         }

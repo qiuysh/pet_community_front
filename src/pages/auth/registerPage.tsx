@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useVerificationCode } from '../../hooks/useVerificationCode';
+import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { showErrorToast } from '../../utils/toastManager';
 import { UserRegisterRequest } from '../../types/user';
 import { UserPlus } from 'lucide-react';
@@ -13,6 +15,7 @@ import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 
 export function RegisterPage() {
+  const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
   const [registerType, setRegisterType] = useState<'phone' | 'email'>('phone');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -79,7 +82,7 @@ export function RegisterPage() {
           <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
             <UserPlus className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-xl font-bold text-brown">加入宠物社区</h1>
+          <h1 className="text-xl font-bold text-brown">加入{siteName}</h1>
           <p className="text-sm text-brown-muted mt-1">创建账号，开启你的宠物之旅</p>
         </div>
 

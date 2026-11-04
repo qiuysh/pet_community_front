@@ -1,5 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../stores/userStore';
+import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../ui/avatar';
 import { Button } from '../ui/button';
@@ -9,6 +11,9 @@ export function UserHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isLoggedIn, user, logout } = useUserStore();
+  // 站点名称 / Logo 由后台「站点配置」维护，未配置时用默认站点名 + 内置图标
+  const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
+  const siteLogo = useSiteConfigStore((state) => state.siteLogo);
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -23,16 +28,20 @@ export function UserHeader() {
   return (
     <header className="user-header">
       <div className="header-content">
-        <Link to="/" className="logo" aria-label="宠物社区首页">
-          <svg className="logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="11" cy="4" r="2.5" />
-            <circle cx="18" cy="8" r="2" />
-            <circle cx="4" cy="8" r="2" />
-            <circle cx="6" cy="14" r="1.8" />
-            <circle cx="16" cy="14" r="1.8" />
-            <path d="M11 7c-3 0-5 2-5 5 0 3 2 5 5 5s5-2 5-5-2-5-5-5z" />
-          </svg>
-          <span className="logo-text">宠物社区</span>
+        <Link to="/" className="logo" aria-label={`${siteName}首页`}>
+          {siteLogo ? (
+            <img className="logo-img" src={siteLogo} alt="" width={28} height={28} />
+          ) : (
+            <svg className="logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="11" cy="4" r="2.5" />
+              <circle cx="18" cy="8" r="2" />
+              <circle cx="4" cy="8" r="2" />
+              <circle cx="6" cy="14" r="1.8" />
+              <circle cx="16" cy="14" r="1.8" />
+              <path d="M11 7c-3 0-5 2-5 5 0 3 2 5 5 5s5-2 5-5-2-5-5-5z" />
+            </svg>
+          )}
+          <span className="logo-text">{siteName}</span>
         </Link>
 
         <nav className="header-nav" aria-label="主导航">

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { UserHeader } from './userHeader';
 import { UserTabBar } from './userTabBar';
+import { SiteFooter } from './siteFooter';
 import './userLayout.scss';
 
 interface UserLayoutProps {
@@ -17,6 +18,7 @@ export function UserLayout({ children }: UserLayoutProps) {
           {children}
         </div>
       </main>
+      <SiteFooter />
       <UserTabBar />
     </div>
   );

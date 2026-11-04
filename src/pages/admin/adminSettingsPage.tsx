@@ -8,6 +8,7 @@ import { AdminSwitch } from '../../components/admin/adminSwitch';
 import { AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { adminUi } from '../../styles/adminUi';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
+import { applySiteConfig } from '../../stores/siteConfigStore';
 
 type TabType = 'site' | 'audit';
 const SETTINGS_TABS = ['site', 'audit'] as const;
@@ -73,6 +74,8 @@ export function AdminSettingsPage() {
     const success = await handleUpdateSiteConfig(siteForm);
     setIsSaving(false);
     if (success) {
+      // 同步全局站点配置：页签标题 / Header / 侧栏站点名立即刷新，无需重载
+      applySiteConfig(siteForm);
       setError('网站配置更新成功');
       setTimeout(() => setError(null), 3000);
     }

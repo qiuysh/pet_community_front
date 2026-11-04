@@ -74,12 +74,8 @@ export interface UpdateAdminStatusRequest {
 }
 
 // System Settings Types
-export interface SiteConfig {
-    siteName: string;
-    siteLogo: string;
-    siteDescription: string;
-    siteICP: string;
-}
+// SiteConfig 与前台公开接口同构，定义在 types/site.ts，此处转出以保持既有引用路径
+export type { SiteConfig } from './site';
 
 export interface AuditConfig {
     autoAuditEnabled: boolean;

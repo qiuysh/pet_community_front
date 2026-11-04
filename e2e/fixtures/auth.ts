@@ -51,6 +51,75 @@ export async function apiWrite(
     return page.request[method](url, { ...options, headers });
 }
 
+/**
+ * 读取当前登录用户的资料。
+ *
+ * seed 昵称会被历史用例改写（如 user1 已被改成「e2e昵称xxxx」），
+ * 任何按昵称断言/构造请求的地方都应以接口实时返回为准，不能写死 TEST_USERS 里的昵称。
+ */
+export async function getMyProfile(page: Page): Promise<{ id: number; nickname: string }> {
+    const res = await apiWrite(page, 'get', '/api/v1/user/profile');
+    const body = (await res.json().catch(() => ({}))) as {
+        data?: { id?: number; nickname?: string };
+    };
+    return {
+        id: Number(body?.data?.id ?? 0),
+        nickname: String(body?.data?.nickname ?? ''),
+    };
+}
+
+export interface NotificationItem {
+    id?: number;
+    type?: string;
+    triggerType?: string;
+    triggerId?: number;
+    triggerUserId?: number;
+}
+
+export interface NotificationFilter {
+    triggerUserId?: number;
+    type?: string;
+    triggerId?: number;
+}
+
+/** 拉取当前用户最近的通知列表 */
+export async function listNotifications(
+    page: Page,
+    pageSize = 50,
+): Promise<NotificationItem[]> {
+    const res = await apiWrite(page, 'get', `/api/v1/notifications?page=1&page_size=${pageSize}`);
+    const body = (await res.json().catch(() => ({}))) as { data?: { list?: NotificationItem[] } };
+    return body?.data?.list ?? [];
+}
+
+/**
+ * 按条件统计通知条数（按 userId / type / triggerId，不依赖页面昵称文案）。
+ *
+ * 建议带上 triggerId 精确定位：列表有分页上限，只按 triggerUserId 统计在历史数据很多时
+ * 会整页饱和，导致「新增通知」判断不出来。
+ */
+export async function countNotifications(
+    page: Page,
+    filter: NotificationFilter = {},
+): Promise<number> {
+    const list = await listNotifications(page);
+    return list.filter((item) => {
+        if (
+            filter.triggerUserId !== undefined &&
+            Number(item.triggerUserId) !== filter.triggerUserId
+        ) {
+            return false;
+        }
+        if (filter.type !== undefined && item.type !== filter.type) {
+            return false;
+        }
+        if (filter.triggerId !== undefined && Number(item.triggerId) !== filter.triggerId) {
+            return false;
+        }
+        return true;
+    }).length;
+}
+
 export const TEST_USERS = {
     user1: {
         account: '13800138001',

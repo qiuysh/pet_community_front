@@ -46,8 +46,13 @@ test.describe('Phase4 补充 - 话题创建（V-T5）', () => {
         await page.goto('/topics/create');
 
         const levelTip = page.getByText(/创建话题需达到/);
+        const nameInput = page.getByPlaceholder('如：橘猫减肥打卡');
         const submitBtn = page.getByRole('button', { name: '提交创建申请' });
-        const blocked = await levelTip.isVisible().catch(() => false);
+
+        // 门禁提示与可填表单互斥，必须等二者其一渲染完成再分支：
+        // 否则页面还在加载时会误判为「已达 Lv5」，转去 fill 一个 disabled 的输入框而超时
+        await expect(levelTip.or(nameInput).first()).toBeVisible({ timeout: 15_000 });
+        const blocked = await levelTip.isVisible();
 
         if (blocked) {
             // 未达 Lv5：应给出等级门禁提示，且提交按钮禁用

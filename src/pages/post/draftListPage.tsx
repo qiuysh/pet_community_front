@@ -95,7 +95,7 @@ export function DraftListPage() {
                   更新于 {draft.updatedAt || draft.createdAt}
                 </p>
               </div>
-              <div className="flex flex-col gap-2 shrink-0">
+              <div className="flex flex-row gap-1 shrink-0">
                 <Button
                   type="button"
                   variant="ghost"

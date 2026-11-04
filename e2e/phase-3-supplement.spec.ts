@@ -1,5 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
-import { TEST_USERS, clearAuth, loginAsUser, dualSessions, apiWrite } from './fixtures/auth';
+import {
+    clearAuth,
+    loginAsUser,
+    dualSessions,
+    apiWrite,
+    getMyProfile,
+    countNotifications,
+    type NotificationFilter,
+} from './fixtures/auth';
 
 /**
  * Phase3 补充用例（跨账号场景为主）：
@@ -12,7 +20,6 @@ import { TEST_USERS, clearAuth, loginAsUser, dualSessions, apiWrite } from './fi
  * 跨账号统一沿用 V-N4-01 的「actor 调 API 触发 + viewer 用 UI 验证」范式（dualSessions）。
  */
 
-const ACTOR_NICKNAME = TEST_USERS.user1.nickname; // 萌宠小达人
 const VIEWER_ID = 2; // user2：铲屎官小王
 
 /** 通过接口创建一条动态，返回动态 ID（用于构造点赞/评论/@ 行为） */
@@ -35,11 +42,20 @@ async function getUnreadCount(page: Page): Promise<number> {
     return Number(obj.count ?? obj.unreadCount ?? obj.unread ?? 0);
 }
 
-/** 统计通知列表中「actor 昵称」出现的次数，用于判断通知是否新增 */
-async function countActorNotifications(page: Page): Promise<number> {
-    await page.goto('/notifications');
-    await page.waitForTimeout(1_500);
-    return page.getByText(ACTOR_NICKNAME).count();
+/**
+ * 统计 viewer 通知列表中由 actor 触发的条数，用于判断通知是否新增。
+ *
+ * 按 actor 的 userId 统计而非页面上的昵称文案：seed 昵称会被历史用例改写
+ * （如 user1 已被改成「e2e昵称xxxx」），按昵称计数会恒为 0。
+ */
+async function countActorNotifications(
+    actor: Page,
+    viewer: Page,
+    extra: Omit<NotificationFilter, 'triggerUserId'> = {},
+): Promise<number> {
+    const { id } = await getMyProfile(actor);
+    expect(id, '读取 actor 资料失败').toBeGreaterThan(0);
+    return countNotifications(viewer, { triggerUserId: id, ...extra });
 }
 
 test.describe('Phase3 补充 - 通知生成（V-N1/N2/N3/N4-03）', () => {
@@ -47,13 +63,15 @@ test.describe('Phase3 补充 - 通知生成（V-N1/N2/N3/N4-03）', () => {
         const { actor, viewer, cleanup } = await dualSessions(browser);
         try {
             const postId = await createPostViaApi(viewer, `e2e点赞通知_${Date.now()}`);
-            const before = await countActorNotifications(viewer);
+            // 按「触发人 + 类型 + 该条动态」精确定位，避免历史通知刷满分页后判断不出来
+            const filter = { type: 'like', triggerId: postId };
+            const before = await countActorNotifications(actor, viewer, filter);
 
             const likeRes = await apiWrite(actor, 'post', `/api/v1/posts/${postId}/like`);
             expect(likeRes.ok(), `点赞失败: ${likeRes.status()}`).toBeTruthy();
 
             await viewer.waitForTimeout(2_000);
-            const after = await countActorNotifications(viewer);
+            const after = await countActorNotifications(actor, viewer, filter);
             expect(after, '点赞后作者通知数应增加').toBeGreaterThan(before);
 
             // 还原：取消点赞
@@ -67,7 +85,8 @@ test.describe('Phase3 补充 - 通知生成（V-N1/N2/N3/N4-03）', () => {
         const { actor, viewer, cleanup } = await dualSessions(browser);
         try {
             const postId = await createPostViaApi(viewer, `e2e评论通知_${Date.now()}`);
-            const before = await countActorNotifications(viewer);
+            const filter = { type: 'comment', triggerId: postId };
+            const before = await countActorNotifications(actor, viewer, filter);
 
             const commentRes = await apiWrite(actor, 'post', `/api/v1/posts/${postId}/comments`, {
                 data: { postId, content: `e2e评论_${Date.now()}` },
@@ -75,7 +94,7 @@ test.describe('Phase3 补充 - 通知生成（V-N1/N2/N3/N4-03）', () => {
             expect(commentRes.ok(), `评论失败: ${commentRes.status()}`).toBeTruthy();
 
             await viewer.waitForTimeout(2_000);
-            const after = await countActorNotifications(viewer);
+            const after = await countActorNotifications(actor, viewer, filter);
             expect(after, '评论后作者通知数应增加').toBeGreaterThan(before);
         } finally {
             await cleanup();
@@ -85,16 +104,16 @@ test.describe('Phase3 补充 - 通知生成（V-N1/N2/N3/N4-03）', () => {
     test('V-N3-01 - @他人后对方收到 @通知', async ({ browser }) => {
         const { actor, viewer, cleanup } = await dualSessions(browser);
         try {
-            const before = await countActorNotifications(viewer);
-
-            // 后端按 `@昵称` 解析被 @ 用户（notification_service.ParseAtUsers）
-            await createPostViaApi(
-                actor,
-                `@${TEST_USERS.user2.nickname} e2e@通知_${Date.now()}`,
-            );
+            // 后端按 `@昵称` 解析被 @ 用户（notification_service.ParseAtUsers），
+            // 昵称必须用接口实时值：seed 昵称会被历史用例改写，写死则解析不到被 @ 人
+            const { nickname } = await getMyProfile(viewer);
+            expect(nickname, '读取 viewer 昵称失败').not.toBe('');
+            const postId = await createPostViaApi(actor, `@${nickname} e2e@通知_${Date.now()}`);
+            const filter = { type: 'at', triggerId: postId };
+            const before = await countActorNotifications(actor, viewer, filter);
 
             await viewer.waitForTimeout(2_000);
-            const after = await countActorNotifications(viewer);
+            const after = await countActorNotifications(actor, viewer, filter);
             expect(after, '被 @ 后通知数应增加').toBeGreaterThan(before);
         } finally {
             await cleanup();
@@ -108,7 +127,7 @@ test.describe('Phase3 补充 - 通知生成（V-N1/N2/N3/N4-03）', () => {
             await apiWrite(actor, 'delete', `/api/v1/social/follow/${VIEWER_ID}`);
             await actor.waitForTimeout(500);
 
-            const before = await countActorNotifications(viewer);
+            const before = await countActorNotifications(actor, viewer, { type: 'follow' });
 
             const secretRes = await apiWrite(actor, 'post', `/api/v1/social/follow/${VIEWER_ID}`, {
                 data: { secret: true },
@@ -116,7 +135,7 @@ test.describe('Phase3 补充 - 通知生成（V-N1/N2/N3/N4-03）', () => {
             expect(secretRes.ok(), `悄悄关注失败: ${secretRes.status()}`).toBeTruthy();
 
             await viewer.waitForTimeout(2_000);
-            const after = await countActorNotifications(viewer);
+            const after = await countActorNotifications(actor, viewer, { type: 'follow' });
             expect(after, '悄悄关注不应产生通知').toBe(before);
 
             // 还原关注状态

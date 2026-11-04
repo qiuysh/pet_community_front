@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStore } from '../../stores/adminStore';
+import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { validators, validateForm } from '../../utils/validators';
 import {
   getRememberedAdminUsername,
@@ -14,6 +16,7 @@ import { adminUi } from '../../styles/adminUi';
 
 export function AdminLoginPage() {
   const navigate = useNavigate();
+  const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
   const [username, setUsername] = useState(() => getRememberedAdminUsername());
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(
@@ -76,7 +79,7 @@ export function AdminLoginPage() {
               />
             </svg>
           </div>
-          <h1 className={adminUi.pageTitle}>宠物社区管理后台</h1>
+          <h1 className={adminUi.pageTitle}>{siteName}管理后台</h1>
           <p className="text-brown-secondary mt-2">请登录您的管理员账号</p>
         </div>
 

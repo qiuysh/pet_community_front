@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { clearAuth, loginAsUser } from './fixtures/auth';
+import { testImage } from './fixtures/media';
 
 /**
  * Phase5 补充用例：活动报名/作品/投票结果断言（A3/A4/A5）、领养发布与申请闭环（A8）。
@@ -100,6 +101,17 @@ test.describe('Phase5 补充 - 领养闭环（V-A8）', () => {
         await loginAsUser(page);
         await page.goto('/adopts/create');
 
+        // 「宠物照片*」为必填，且上传完成前提交会被前端直接拦下（useAdoptCreate 在 uploading 时 return）
+        const uploadPromise = page.waitForResponse(
+            (r) => r.request().method() === 'POST' && r.url().includes('/adopts/upload-photo'),
+            { timeout: 20_000 },
+        );
+        await page.locator('#photo-upload').setInputFiles(testImage('e2e-adopt.png'));
+        const uploadResp = await uploadPromise;
+        expect(uploadResp.ok(), `领养照片上传失败: ${uploadResp.status()}`).toBeTruthy();
+        await expect(page.getByText('已选择 1 张照片')).toBeVisible({ timeout: 15_000 });
+        await expect(page.getByText(/上传中/)).toHaveCount(0, { timeout: 15_000 });
+
         await page.getByPlaceholder('请填写宠物名称').fill(`e2e领养${Date.now() % 100000}`);
         await page
             .getByPlaceholder('请详细描述宠物的情况、性格特点等')
@@ -113,7 +125,8 @@ test.describe('Phase5 补充 - 领养闭环（V-A8）', () => {
         );
         await page.getByRole('button', { name: /^发布$/ }).click();
         const postResp = await postPromise;
-        expect(postResp.ok(), `发布领养失败: ${postResp.status()}`).toBeTruthy();
+        const postBody = await postResp.text().catch(() => '');
+        expect(postResp.ok(), `发布领养失败: ${postResp.status()} ${postBody}`).toBeTruthy();
     });
 
     test('V-A8-05 - 申请领养并提交申请', async ({ page }) => {
