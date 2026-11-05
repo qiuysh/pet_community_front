@@ -31,7 +31,7 @@
   box-shadow: $shadow-soft;
 
   .header-content {
-    max-width: 1200px;
+    max-width: $content-max;
     margin: 0 auto;
     height: var(--user-header-height);
     padding: 0 $spacing-md;
@@ -357,7 +357,7 @@
   background: $background-color;
 
   .user-content {
-    max-width: 1200px;
+    max-width: $content-max;
     margin: 0 auto;
     padding: $spacing-lg;
 
@@ -374,7 +374,7 @@
 // ============================================
 
 .site-footer {
-  max-width: 1200px;
+  max-width: $content-max;
   margin: 0 auto;
   padding: $spacing-lg $spacing-lg calc(#{$spacing-lg} + var(--user-safe-bottom));
   background: $background-white;

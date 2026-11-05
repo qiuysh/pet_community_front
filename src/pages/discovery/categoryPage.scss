@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .category-page {
+  @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
   padding-bottom: $spacing-2xl;
@@ -263,6 +264,7 @@
     padding: 0 $spacing-md;
 
     .post-card {
+      position: relative;
       background: $background-white;
       border-radius: $border-radius-base;
       margin-bottom: $spacing-sm;
@@ -276,6 +278,24 @@
       &:hover {
         box-shadow: $shadow-hover;
         transform: translateY(-2px);
+      }
+
+      // 拉伸链接：覆盖整张卡片，空白处点击进入详情
+      .stretched-link {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: $z-index-base;
+        overflow: hidden;
+        text-indent: -9999px;
+
+        &:focus-visible {
+          outline: 2px solid $primary-color;
+          outline-offset: -4px;
+          border-radius: $border-radius-sm;
+        }
       }
 
       // 用户信息
@@ -421,21 +441,25 @@
       }
 
       // 操作栏
-      .post-actions {
+      .post-card-actions {
         display: flex;
-        gap: $spacing-lg;
+        justify-content: space-around;
+        gap: $spacing-sm;
         padding-top: $spacing-sm;
         border-top: 1px solid $divider-color;
 
+        // 可交互按钮需高于 stretched-link
         .action-item {
-          display: flex;
+          position: relative;
+          z-index: $z-index-raised;
+          display: inline-flex;
           align-items: center;
           gap: 6px;
           min-height: 44px;
           font-size: $font-size-sm;
           color: $text-secondary;
-          transition: color $duration-base ease, transform $duration-base ease;
-          cursor: default;
+          transition: color $duration-base ease;
+          cursor: pointer;
 
           svg {
             flex-shrink: 0;
@@ -445,18 +469,6 @@
 
           &:hover {
             color: $primary-color;
-
-            svg {
-              transform: scale(1.06);
-            }
-          }
-
-          &.like-action.liked {
-            color: $primary-color;
-
-            svg {
-              fill: $primary-color;
-            }
           }
         }
       }
@@ -614,8 +626,8 @@
           }
         }
 
-        .post-actions {
-          gap: $spacing-md;
+        .post-card-actions {
+          gap: $spacing-xs;
         }
       }
     }

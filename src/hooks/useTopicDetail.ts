@@ -87,22 +87,33 @@ export function useTopicDetail(id?: string | number, defaultPageSize = 10) {
     }
   };
 
-  const openShare = async () => {
+  /**
+   * 打开分享面板：只生成本地链接，不发请求（与帖子详情一致，选平台后才上报）
+   */
+  const openShare = () => {
     if (!topicId) return;
-    try {
-      const res = await shareTopic(topicId);
-      const path = res.shareUrl || `/topics/${topicId}`;
-      const full =
-        path.startsWith('http') ? path : `${window.location.origin}${path.startsWith('/') ? '' : '/'}${path}`;
-      setShareUrl(full);
-      setShareOpen(true);
-    } catch (err) {
-      // 接口失败时仍可用本地链接分享
-      setShareUrl(`${window.location.origin}/topics/${topicId}`);
-      setShareOpen(true);
-      console.error(err);
-    }
+    setShareUrl(`${window.location.origin}/topics/${topicId}`);
+    setShareOpen(true);
   };
+
+  /**
+   * 分享面板内选定平台后上报：累加分享数并通知后端记录 platform
+   */
+  const onShare = useCallback(
+    async (platform: string) => {
+      if (!topicId) return;
+      const prev = topic?.sharesCount ?? 0;
+      setTopic((p) => (p ? { ...p, sharesCount: p.sharesCount + 1 } : p));
+      try {
+        await shareTopic(topicId, platform);
+        toast.success('分享成功');
+      } catch (err) {
+        setTopic((p) => (p ? { ...p, sharesCount: prev } : p));
+        toast.error((err as Error).message || '分享失败');
+      }
+    },
+    [topicId, topic?.sharesCount, toast],
+  );
 
   return {
     topic,
@@ -119,5 +130,6 @@ export function useTopicDetail(id?: string | number, defaultPageSize = 10) {
     setShareOpen,
     shareUrl,
     openShare,
+    onShare,
   };
 }

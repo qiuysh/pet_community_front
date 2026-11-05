@@ -54,7 +54,7 @@ export const ActivityDetailPage = () => {
           alt={activity.title}
           className="w-full h-48 object-cover"
         />
-        <div className="px-4 py-4">
+        <div className="page-shell py-4">
           <h1 className="text-xl font-bold text-brown mb-2">{activity.title}</h1>
           <p className="text-brown-muted mb-3">{activity.description}</p>
 
@@ -128,7 +128,7 @@ export const ActivityDetailPage = () => {
         />
       </div>
 
-      <div className="px-4 py-4">
+      <div className="page-shell py-4">
         {activeTab === 'detail' && (
           <Card>
             {activity.rules && (

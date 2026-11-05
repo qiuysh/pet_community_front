@@ -155,7 +155,7 @@ export function UserProfilePage() {
         <div className="absolute bottom-5 left-10 w-48 h-48 bg-white/60 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
       </div>
 
-      <div className="mx-auto max-w-5xl px-3 sm:px-4 -mt-16">
+      <div className="page-shell -mt-16">
         <Card className="rounded-xl shadow-card animate-fadeIn" padding="none">
           <div className="flex flex-col items-center gap-3 p-4 sm:flex-row sm:items-end sm:gap-5 sm:p-6">
             <div className="h-20 w-20 shrink-0 rounded-full bg-white p-1 shadow-soft sm:h-24 sm:w-24 md:h-28 md:w-28">

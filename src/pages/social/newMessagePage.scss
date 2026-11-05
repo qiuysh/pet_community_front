@@ -1,6 +1,7 @@
 @import '../../styles/variables';
 
 .new-message-page {
+  @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
   display: flex;

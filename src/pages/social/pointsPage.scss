@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .points-page {
+  @extend %page-shell;
   min-height: 100vh;
   background-color: $background-color;
 
@@ -242,9 +243,4 @@
   }
 }
 
-@media (min-width: 768px) {
-  .points-page {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-}
+// 宽度统一由 %page-shell 提供（见 styles/_variables.scss）

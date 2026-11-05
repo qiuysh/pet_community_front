@@ -2,9 +2,9 @@ import type { ReactNode } from 'react';
 
 type ChangeType = 'up' | 'down' | 'flat';
 
-/** 与 DashboardCard / 趋势卡同一套白底卡片壳 */
+/** 与 DashboardCard / 趋势卡同一套白底卡片壳（flex-1 使同排卡片等高，内容随高度均布） */
 const panelShell =
-  'min-w-0 w-full rounded-md border border-border-light/60 !bg-white p-5 shadow-card';
+  'min-w-0 w-full flex flex-1 flex-col rounded-md border border-border-light/60 !bg-white p-5 shadow-card';
 
 export interface CompactMetric {
   key: string;
@@ -42,11 +42,11 @@ export function DashboardInteractionPanel({
 
   return (
     <div className={panelShell}>
-      <div className="grid grid-cols-1 divide-y divide-border-light md:grid-cols-2 md:divide-x md:divide-y-0">
+      <div className="grid flex-1 grid-cols-1 divide-y divide-border-light md:grid-cols-2 md:divide-x md:divide-y-0">
         {groups.map((group) => (
-          <div key={group.title} className="min-w-0 p-1 md:px-5 md:first:pl-0 md:last:pr-0">
+          <div key={group.title} className="flex min-w-0 flex-col p-1 md:px-5 md:first:pl-0 md:last:pr-0">
             <p className="mb-3 text-xs font-medium tracking-wide text-brown-muted">{group.title}</p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+            <div className="grid flex-1 grid-cols-2 content-between gap-x-4 gap-y-4">
               {group.items.map((item) => (
                 <div key={item.key} className="min-w-0">
                   <div className="flex items-center gap-1.5 text-xs text-brown-muted">
@@ -89,11 +89,11 @@ interface StockGroup {
 export function DashboardStockPanel({ groups }: { groups: StockGroup[] }) {
   return (
     <div className={panelShell}>
-      <div className="grid grid-cols-1 divide-y divide-border-light sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      <div className="grid flex-1 grid-cols-1 divide-y divide-border-light sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {groups.map((group) => (
-          <div key={group.title} className="min-w-0 py-4 first:pt-0 last:pb-0 sm:px-5 sm:py-0 sm:first:pl-0 sm:last:pr-0">
+          <div key={group.title} className="flex min-w-0 flex-col py-4 first:pt-0 last:pb-0 sm:px-5 sm:py-0 sm:first:pl-0 sm:last:pr-0">
             <p className="mb-3 text-xs font-medium tracking-wide text-brown-muted">{group.title}</p>
-            <dl className="space-y-3">
+            <dl className="flex flex-1 flex-col justify-between gap-3">
               {group.items.map((item) => (
                 <div key={item.key} className="flex items-baseline justify-between gap-3">
                   <dt className="min-w-0 truncate text-sm text-brown-secondary">{item.label}</dt>

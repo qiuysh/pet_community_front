@@ -15,7 +15,7 @@ export function PetListPage() {
 
   return (
     <div className="min-h-screen bg-cream">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="page-shell py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-brown">宠物广场</h1>

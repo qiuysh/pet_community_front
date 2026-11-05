@@ -142,7 +142,7 @@ export function AdminDashboardPage() {
         aria-label="互动与存量"
         className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6"
       >
-        <div className="min-w-0">
+        <div className="flex min-w-0 flex-col">
           <h2 className={`${adminUi.sectionTitle} mb-3`}>今日互动与活动</h2>
           <DashboardInteractionPanel
             interaction={[
@@ -184,7 +184,7 @@ export function AdminDashboardPage() {
             ]}
           />
         </div>
-        <div className="min-w-0">
+        <div className="flex min-w-0 flex-col">
           <h2 className={`${adminUi.sectionTitle} mb-3`}>业务存量</h2>
           <DashboardStockPanel
             groups={[

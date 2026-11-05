@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .notification-list-page {
+  @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
   padding-bottom: 80px;

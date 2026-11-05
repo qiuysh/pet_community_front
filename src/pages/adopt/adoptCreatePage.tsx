@@ -30,7 +30,7 @@ export const AdoptCreatePage = () => {
   return (
     <div className="bg-cream min-h-screen pb-6">
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
-        <div className="px-4 py-3 flex items-center justify-between">
+        <div className="page-shell py-3 flex items-center justify-between">
           <h1 className="text-xl font-bold text-brown">发布领养</h1>
           <Button size="sm" disabled={loading} loading={loading} onClick={handleSubmit}>
             {loading ? '发布中' : '发布'}
@@ -38,7 +38,7 @@ export const AdoptCreatePage = () => {
         </div>
       </div>
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="page-shell py-4 space-y-4">
         <Card>
           <h2 className="text-base font-medium text-brown mb-4">基本信息</h2>
           <div className="space-y-3">

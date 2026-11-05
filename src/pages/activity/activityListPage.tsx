@@ -24,7 +24,7 @@ export const ActivityListPage = () => {
   return (
     <div className="bg-cream min-h-screen pb-6">
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
-        <div className="px-4 py-3">
+        <div className="page-shell py-3">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-bold text-brown">活动中心</h1>
           </div>
@@ -79,7 +79,7 @@ export const ActivityListPage = () => {
         </div>
       </div>
 
-      <div className="px-4 py-4">
+      <div className="page-shell py-4">
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (

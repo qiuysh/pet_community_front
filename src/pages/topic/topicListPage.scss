@@ -1,9 +1,7 @@
 @import '../../styles/variables.scss';
 
 .topic-list-page {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 16px;
+  @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
 
@@ -138,11 +136,6 @@
 }
 
 @media (min-width: 768px) {
-  .topic-list-page {
-    max-width: 720px;
-    padding: 20px;
-  }
-
   .topic-list-page .topic-header {
     padding: 20px;
   }
@@ -179,11 +172,6 @@
 }
 
 @media (min-width: 1024px) {
-  .topic-list-page {
-    max-width: 800px;
-    padding: 24px;
-  }
-
   .topic-list-page .topic-header {
     padding: 24px;
   }
@@ -236,10 +224,6 @@
 }
 
 @media (min-width: 1280px) {
-  .topic-list-page {
-    max-width: 900px;
-  }
-
   .topic-list-page .topic-list .topic-card {
     gap: 28px;
   }

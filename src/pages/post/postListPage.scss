@@ -1,17 +1,9 @@
 @import '../../styles/variables';
 
 .post-list-page {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 16px;
+  @extend %page-shell;
   min-height: auto;
   background: $background-color;
-
-  @media (max-width: 768px) {
-    // 外壳 .user-content 已有水平内边距，避免双重收窄
-    padding: 0;
-    max-width: none;
-  }
 
   .post-list-header {
     display: flex;
@@ -346,11 +338,6 @@
 }
 
 @media (min-width: 768px) {
-  .post-list-page {
-    max-width: 720px;
-    padding: 20px;
-  }
-
   .post-list-page .post-card .post-content {
     font-size: $font-size-large;
     line-height: 1.7;
@@ -371,11 +358,6 @@
 }
 
 @media (min-width: 1024px) {
-  .post-list-page {
-    max-width: 800px;
-    padding: 24px;
-  }
-
   .post-list-page .post-list {
     gap: 16px;
   }
@@ -407,10 +389,6 @@
 }
 
 @media (min-width: 1280px) {
-  .post-list-page {
-    max-width: 900px;
-  }
-
   .post-list-page .post-card {
     padding: 24px;
   }

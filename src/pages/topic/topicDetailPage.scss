@@ -237,13 +237,13 @@
   .topic-detail-page .detail-header {
     padding: 16px 20px;
     margin: 0 auto;
-    max-width: 720px;
+    max-width: $page-max-read;
   }
 
   .topic-detail-page .topic-info-card {
     padding: 24px;
     margin: 0 auto 12px;
-    max-width: 720px;
+    max-width: $page-max-read;
     gap: 20px;
   }
 
@@ -264,7 +264,7 @@
   .topic-detail-page .posts-section {
     padding: 20px;
     margin: 0 auto;
-    max-width: 720px;
+    max-width: $page-max-read;
   }
 
   .topic-detail-page .posts-section .section-title {
@@ -299,12 +299,10 @@
 
 @media (min-width: 1024px) {
   .topic-detail-page .detail-header {
-    max-width: 800px;
     padding: 16px 24px;
   }
 
   .topic-detail-page .topic-info-card {
-    max-width: 800px;
     padding: 28px;
     gap: 24px;
   }
@@ -324,7 +322,6 @@
   }
 
   .topic-detail-page .posts-section {
-    max-width: 800px;
     padding: 24px;
   }
 
@@ -378,12 +375,7 @@
 }
 
 @media (min-width: 1280px) {
-  .topic-detail-page .detail-header {
-    max-width: 900px;
-  }
-
   .topic-detail-page .topic-info-card {
-    max-width: 900px;
     gap: 28px;
   }
 
@@ -394,10 +386,6 @@
 
   .topic-detail-page .topic-info-card .topic-meta .topic-name {
     font-size: 26px;
-  }
-
-  .topic-detail-page .posts-section {
-    max-width: 900px;
   }
 
   .topic-detail-page .posts-section .posts-list .post-card .post-header .avatar {

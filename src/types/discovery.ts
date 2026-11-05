@@ -61,6 +61,8 @@ export interface TopicDetailInfo {
   description: string;
   cover: string;
   postsCount: number;
+  /** 分享数（用户选择分享平台后累加） */
+  sharesCount: number;
   status: number;
   participantsCount: number;
   isParticipated: boolean;

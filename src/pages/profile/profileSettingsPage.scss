@@ -6,9 +6,8 @@
 }
 
 .settings-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: $spacing-xl $spacing-md;
+  @extend %page-shell;
+  padding: $spacing-xl 0;
 
   .page-title {
     font-size: $font-size-2xl;
@@ -587,7 +586,7 @@
 
 @media (max-width: 768px) {
   .settings-container {
-    padding: $spacing-md $spacing-sm;
+    padding: $spacing-md 0;
 
     .page-title {
       font-size: $font-size-xl;

@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .topic-square-page {
+  @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
   padding-bottom: $spacing-2xl;

@@ -455,13 +455,13 @@
   .post-detail-page .post-content-wrapper {
     padding: 20px;
     margin: 0 auto 12px;
-    max-width: 720px;
+    max-width: $page-max-read;
   }
 
   .post-detail-page .comments-section {
     padding: 20px;
     margin: 0 auto;
-    max-width: 720px;
+    max-width: $page-max-read;
   }
 
   .post-detail-page .post-content-wrapper .post-header {
@@ -499,12 +499,10 @@
   }
 
   .post-detail-page .post-content-wrapper {
-    max-width: 800px;
     padding: 24px;
   }
 
   .post-detail-page .comments-section {
-    max-width: 800px;
     padding: 24px;
   }
 
@@ -541,14 +539,6 @@
 }
 
 @media (min-width: 1280px) {
-  .post-detail-page .post-content-wrapper {
-    max-width: 900px;
-  }
-
-  .post-detail-page .comments-section {
-    max-width: 900px;
-  }
-
   .post-detail-page .post-content-wrapper .post-header {
     gap: 24px;
   }

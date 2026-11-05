@@ -637,7 +637,7 @@
 
 @media (min-width: 768px) {
   .chat-page {
-    max-width: 600px;
+    max-width: $page-max-read;
     margin: 0 auto;
     border-left: 1px solid $background-muted;
     border-right: 1px solid $background-muted;

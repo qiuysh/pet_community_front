@@ -522,13 +522,13 @@
   .post-editor-page .editor-header {
     padding: 16px 20px;
     margin: 0 auto;
-    max-width: 720px;
+    max-width: $page-max-read;
   }
 
   .post-editor-page .editor-body {
     padding: 20px;
     margin: 12px auto;
-    max-width: 720px;
+    max-width: $page-max-read;
   }
 
   .post-editor-page .editor-body .content-input {
@@ -539,7 +539,7 @@
 
   .post-editor-page .editor-footer {
     padding: 16px 20px;
-    max-width: 720px;
+    max-width: $page-max-read;
     left: 50%;
     transform: translateX(-50%);
     border-radius: $border-radius-sm $border-radius-sm 0 0;
@@ -558,12 +558,10 @@
   }
 
   .post-editor-page .editor-header {
-    max-width: 800px;
     padding: 16px 24px;
   }
 
   .post-editor-page .editor-body {
-    max-width: 800px;
     padding: 24px;
     margin: 16px auto;
   }
@@ -620,10 +618,6 @@
     font-size: 13px;
   }
 
-  .post-editor-page .editor-footer {
-    max-width: 800px;
-  }
-
   .post-editor-page .editor-footer .draft-btn {
     padding: 14px;
     font-size: $font-size-large;
@@ -631,18 +625,6 @@
 }
 
 @media (min-width: 1280px) {
-  .post-editor-page .editor-header {
-    max-width: 900px;
-  }
-
-  .post-editor-page .editor-body {
-    max-width: 900px;
-  }
-
-  .post-editor-page .editor-footer {
-    max-width: 900px;
-  }
-
   .post-editor-page .editor-body .content-input {
     font-size: 18px;
     line-height: 1.9;

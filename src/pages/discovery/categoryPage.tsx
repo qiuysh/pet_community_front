@@ -3,28 +3,18 @@ import { useCategory } from '../../hooks/useCategory';
 import { PetIcon, PostIcon } from '../../components/discovery/filterIcons';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Heart, MessageCircle, Share2, ArrowLeft, Play, Image, Search } from 'lucide-react';
+import { ArrowLeft, Play, Image, Search } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
 import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Spinner } from '../../components/ui/spinner';
+import { PostActions } from '../../components/post/postActions';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
-import { formatCount } from '../../utils/format';
+import type { PostInfo } from '../../types/post';
+import type { RecommendPostInfo } from '../../types/discovery';
 import './categoryPage.scss';
-
-const LikeIcon = ({ active, size = ICON_SIZE.action }: { active?: boolean; size?: number }) => (
-  <Heart size={size} strokeWidth={iconStroke(size)} fill={active ? 'currentColor' : 'none'} aria-hidden="true" />
-);
-
-const CommentIcon = ({ size = ICON_SIZE.action }: { size?: number }) => (
-  <MessageCircle size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
-);
-
-const ShareIcon = ({ size = ICON_SIZE.action }: { size?: number }) => (
-  <Share2 size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
-);
 
 const ArrowLeftIcon = ({ size = ICON_SIZE.nav }: { size?: number }) => (
   <ArrowLeft size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
@@ -37,6 +27,17 @@ const PlayIcon = () => (
 const ImageIcon = ({ size = ICON_SIZE.feature }: { size?: number }) => (
   <Image size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
 );
+
+/**
+ * 分类卡的帖子模型缺少收藏/可见性/状态字段，补默认值后复用 PostActions，
+ * 保证点赞/评论/分享与首页、详情页行为一致。
+ */
+const toPostInfo = (post: RecommendPostInfo): PostInfo => ({
+  ...post,
+  favoritesCount: 0,
+  visibility: 0,
+  status: 1,
+});
 
 export const CategoryPage = () => {
   const {
@@ -191,7 +192,13 @@ export const CategoryPage = () => {
           />
         )}
         {posts.map((post) => (
-          <Link key={post.id} to={`/posts/${post.id}`} className="post-card">
+          <div key={post.id} className="post-card">
+            {/* 拉伸链接：卡片空白处点击进入详情；操作按钮浮在其上 */}
+            <Link
+              to={`/posts/${post.id}`}
+              className="stretched-link"
+              aria-label={`查看 ${post.userNickname} 的动态详情`}
+            />
             <div className="post-user">
               <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="post-avatar" />
               <div className="post-user-info">
@@ -220,21 +227,13 @@ export const CategoryPage = () => {
                 </div>
               </div>
             )}
-            <div className="post-actions tabular-nums">
-              <span className={`action-item like-action ${post.isLiked ? 'liked' : ''}`}>
-                <LikeIcon active={post.isLiked} />
-                <span>{formatCount(post.likesCount)}</span>
-              </span>
-              <span className="action-item">
-                <CommentIcon />
-                <span>{formatCount(post.commentsCount)}</span>
-              </span>
-              <span className="action-item">
-                <ShareIcon />
-                <span>{formatCount(post.sharesCount)}</span>
-              </span>
-            </div>
-          </Link>
+            <PostActions
+              post={toPostInfo(post)}
+              compact
+              items={['like', 'comment', 'share']}
+              className="post-card-actions"
+            />
+          </div>
         ))}
       </div>
 

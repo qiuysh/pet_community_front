@@ -97,7 +97,7 @@ export function PetDetailPage() {
     <div className="min-h-screen bg-soft">
       <div className="bg-primary-soft h-64" />
 
-      <div className="max-w-4xl mx-auto px-4 -mt-24">
+      <div className="page-shell -mt-24">
         <Card className="rounded-xl shadow-sm" padding="none">
           <div className="p-6 flex items-end gap-6">
             <div className="w-32 h-32 rounded-full bg-white p-1 shadow-lg overflow-hidden">

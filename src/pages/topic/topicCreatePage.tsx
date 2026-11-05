@@ -64,13 +64,13 @@ export function TopicCreatePage() {
   return (
     <div className="min-h-screen bg-cream pb-10">
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-2">
+        <div className="page-shell py-3 flex items-center gap-2">
           <BackButton className="-ml-2" />
           <h1 className="text-lg font-semibold text-brown">创建话题</h1>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-4">
+      <div className="page-shell py-4">
         {/* 等级门禁提示（T5-01：须 Lv5+） */}
         {levelBlocked && (
           <Card className="mb-4 rounded-xl border border-secondary/30 bg-secondary-soft/40 p-4">

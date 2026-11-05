@@ -30,6 +30,7 @@ export const TopicDetailPage = () => {
     setShareOpen,
     shareUrl,
     openShare,
+    onShare,
   } = useTopicDetail(id);
 
   if (loadingTopic || !topic) {
@@ -87,9 +88,9 @@ export const TopicDetailPage = () => {
                 </>
               )}
             </Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => void openShare()}>
+            <Button type="button" size="sm" variant="outline" onClick={openShare}>
               <Share2 size={14} aria-hidden="true" />
-              分享
+              分享{topic.sharesCount > 0 ? ` ${topic.sharesCount}` : ''}
             </Button>
             <Button
               type="button"
@@ -179,6 +180,7 @@ export const TopicDetailPage = () => {
         onClose={() => setShareOpen(false)}
         postUrl={shareUrl}
         postTitle={topic.name}
+        onShare={(platform) => void onShare(platform)}
       />
     </div>
   );

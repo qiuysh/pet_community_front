@@ -84,13 +84,13 @@ export function LostPetDetailPage() {
   return (
     <div className="min-h-screen bg-cream pb-10">
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-2">
+        <div className="page-shell py-3 flex items-center gap-2">
           <BackButton className="-ml-2" />
           <h1 className="text-lg font-semibold text-brown">寻宠详情</h1>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
+      <div className="page-shell py-4 space-y-4">
         <Card className="rounded-xl shadow-card p-5">
           <div className="flex justify-between items-start gap-3">
             <h2 className="text-xl font-bold text-brown">{item.petName}</h2>
