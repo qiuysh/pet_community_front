@@ -27,8 +27,45 @@ import {
   DeviceInfo,
 } from '../types/user';
 import { VerificationChannel, VerificationMode } from '../components/profile/verificationCodeModal';
+import type { FormErrors } from './useFormErrors';
+
+/** 资料 tab 的脏值只看这 5 个可编辑字段（头像上传即时生效，不参与判定） */
+function profileFormKey(source: {
+  nickname?: string | null;
+  signature?: string | null;
+  gender?: number | null;
+  location?: string | null;
+  petYears?: string | null;
+}): string {
+  return JSON.stringify([
+    source.nickname ?? '',
+    source.signature ?? '',
+    source.gender ?? 0,
+    source.location ?? '',
+    source.petYears ?? '',
+  ]);
+}
+
+/** 隐私 tab 的三个开关值快照 */
+function privacyFormKey(settings: PrivacySettings): string {
+  return JSON.stringify([
+    settings.postVisibility,
+    settings.commentPermission,
+    settings.messagePermission,
+  ]);
+}
 
 type SocialPlatform = 'wechat' | 'weibo' | 'qq';
+
+type ProfileField = 'nickname' | 'oldPassword' | 'newPassword' | 'confirmPassword';
+
+type PasswordField = Extract<ProfileField, 'oldPassword' | 'newPassword' | 'confirmPassword'>;
+
+const focusField = (field: ProfileField) => {
+  requestAnimationFrame(() => {
+    document.querySelector<HTMLElement>(`[name="${field}"]`)?.focus();
+  });
+};
 
 const DEMO_OAUTH_KEY = (platform: string) => `pet_demo_oauth_${platform}`;
 
@@ -74,6 +111,16 @@ export function useProfileSettings() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<FormErrors<ProfileField>>({});
+
+  const clearFieldError = useCallback((field: ProfileField) => {
+    setFieldErrors((prev) => {
+      if (prev[field] === undefined) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }, []);
 
   const [privacy, setPrivacy] = useState<PrivacySettings>({
     postVisibility: 0,
@@ -86,6 +133,10 @@ export function useProfileSettings() {
   const [thirdPartyAccounts, setThirdPartyAccounts] = useState<ThirdPartyAccountInfo[]>([]);
   const [thirdPartyLoaded, setThirdPartyLoaded] = useState(false);
 
+  // 脏值基线：字段加载/保存成功时刷新，用于「未保存就离开」提醒（按 tab 维度判定）
+  const [profileSnapshot, setProfileSnapshot] = useState('');
+  const [privacySnapshot, setPrivacySnapshot] = useState('');
+
   useEffect(() => {
     if (!user) {
       fetchProfile();
@@ -95,6 +146,7 @@ export function useProfileSettings() {
       setGender(user.gender || 0);
       setLocation(user.location || '');
       setPetYears(user.petYears || '');
+      setProfileSnapshot(profileFormKey(user));
     }
   }, [user, fetchProfile]);
 
@@ -102,6 +154,7 @@ export function useProfileSettings() {
     try {
       const settings = await getPrivacySettings();
       setPrivacy(settings);
+      setPrivacySnapshot(privacyFormKey(settings));
       setPrivacyLoaded(true);
     } catch {
       showErrorToast('获取隐私设置失败');
@@ -123,6 +176,7 @@ export function useProfileSettings() {
       () => updatePrivacySettings(privacy),
       (updated) => {
         setPrivacy(updated);
+        setPrivacySnapshot(privacyFormKey(updated));
         showSuccessToast('隐私设置已保存');
       },
       (err: unknown) => showErrorToast((err as Error).message || '保存失败'),
@@ -130,7 +184,6 @@ export function useProfileSettings() {
   };
 
   const handleRemoveDevice = async (deviceId: string) => {
-    if (!window.confirm('确定将该设备下线？')) return;
     try {
       await removeDevice(deviceId);
       setDevices((prev) => prev.filter((d) => d.deviceId !== deviceId));
@@ -171,8 +224,6 @@ export function useProfileSettings() {
   };
 
   const handleUnbindThirdParty = async (platform: SocialPlatform) => {
-    const labels = { wechat: '微信', weibo: '微博', qq: 'QQ' } as const;
-    if (!window.confirm(`确定解绑${labels[platform]}？`)) return;
     try {
       await unbindThirdPartyAccount(platform);
       showSuccessToast('已解绑');
@@ -186,6 +237,12 @@ export function useProfileSettings() {
     thirdPartyAccounts.some((a) => a.platform === platform);
 
   const handleUpdateProfile = () => {
+    if (!nickname.trim()) {
+      setFieldErrors({ nickname: '请输入昵称' });
+      focusField('nickname');
+      return;
+    }
+    setFieldErrors({});
     const data: UserProfileUpdateRequest = {
       nickname: nickname || undefined,
       signature: signature || undefined,
@@ -225,22 +282,24 @@ export function useProfileSettings() {
   };
 
   const handleChangePassword = () => {
+    const next: FormErrors<PasswordField> = {};
     if (!oldPassword) {
-      showErrorToast('请输入原密码');
-      return;
+      next.oldPassword = '请输入原密码';
     }
     if (!newPassword) {
-      showErrorToast('请输入新密码');
-      return;
-    }
-    if (newPassword.length < 6) {
-      showErrorToast('新密码至少6位');
-      return;
+      next.newPassword = '请输入新密码';
+    } else if (newPassword.length < 6) {
+      next.newPassword = '新密码至少 6 位';
     }
     if (newPassword !== confirmPassword) {
-      showErrorToast('两次密码输入不一致');
+      next.confirmPassword = '两次密码输入不一致';
+    }
+    if (Object.keys(next).length > 0) {
+      setFieldErrors(next);
+      focusField(Object.keys(next)[0] as PasswordField);
       return;
     }
+    setFieldErrors({});
 
     const data: PasswordChangeRequest = { oldPassword, newPassword };
     run(
@@ -281,8 +340,21 @@ export function useProfileSettings() {
     }
   };
 
+  /**
+   * 各 tab 是否存在未保存修改：profile / privacy 与加载时的快照比对，
+   * password 以「有输入即脏」判定；devices / bindings 的操作即时生效，无未保存状态。
+   */
+  const dirtyTabs = {
+    profile:
+      profileSnapshot !== '' &&
+      profileFormKey({ nickname, signature, gender, location, petYears }) !== profileSnapshot,
+    password: Boolean(oldPassword || newPassword || confirmPassword),
+    privacy: privacyLoaded && privacyFormKey(privacy) !== privacySnapshot,
+  };
+
   return {
     loading,
+    dirtyTabs,
     user,
     nickname, setNickname,
     signature, setSignature,
@@ -292,6 +364,7 @@ export function useProfileSettings() {
     oldPassword, setOldPassword,
     newPassword, setNewPassword,
     confirmPassword, setConfirmPassword,
+    fieldErrors, clearFieldError,
     privacy, setPrivacy, privacyLoaded, loadPrivacy, handleSavePrivacy,
     devices, devicesLoaded, loadDevices, handleRemoveDevice,
     thirdPartyAccounts, thirdPartyLoaded, loadThirdParty,

@@ -5,7 +5,9 @@ import { useUserStore } from '../../stores/userStore';
 import { useToast } from '../../components/toast';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { useAsync, useAsyncEffect } from '../../hooks/useAsync';
+import { useConfirm } from '../../hooks/useConfirm';
 import { Button } from '../ui/button';
+import { EmptyState } from '../ui/emptyState';
 import { FieldLabel, Input, Textarea } from '../ui/input';
 import { Modal } from '../ui/modal';
 import { Spinner } from '../ui/spinner';
@@ -40,6 +42,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
   );
   const { loading: uploading, run: runUpload } = useAsync();
   const { run: runDelete } = useAsync();
+  const { confirm, confirmDialog } = useConfirm();
 
   const handleUpload = () => {
     if (!uploadData.photoUrl) {
@@ -59,7 +62,13 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
     );
   };
 
-  const handleDelete = (photoId: number) => {
+  const handleDelete = async (photoId: number) => {
+    const confirmed = await confirm({
+      title: '删除这张照片？',
+      description: '照片将从活动相册中移除，删除后无法恢复。',
+      confirmText: '删除',
+    });
+    if (!confirmed) return;
     runDelete(
       () => deleteAlbumPhoto(activityId, photoId),
       () => {
@@ -82,7 +91,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
   if (loading) {
     return (
       <div className="py-8 flex justify-center">
-        <Spinner label="加载中..." />
+        <Spinner label="加载中…" />
       </div>
     );
   }
@@ -99,12 +108,13 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
       </div>
 
       {photos.length === 0 ? (
-        <div className="py-8 text-center text-brown-muted">暂无照片</div>
+        <EmptyState compact title="暂无照片" />
       ) : (
         <div className="grid grid-cols-3 gap-4">
           {photos.map((photo) => (
             <div key={photo.id} className="relative">
               <img
+                decoding="async"
                 src={photo.photoUrl}
                 alt={photo.description || '活动照片'}
                 className="w-full h-32 object-cover rounded-lg"
@@ -114,6 +124,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
               )}
               <div className="mt-1 flex items-center gap-1">
                 <img
+                  decoding="async"
                   src={photo.userAvatar || getDefaultUserAvatar()}
                   alt=""
                   className="w-4 h-4 rounded-full"
@@ -174,25 +185,35 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
       >
         <div className="space-y-4">
           <div>
-            <FieldLabel>照片URL</FieldLabel>
+            <FieldLabel htmlFor="album-photo-url">照片URL</FieldLabel>
             <Input
-              type="text"
+              id="album-photo-url"
+              name="photoUrl"
+              type="url"
+              inputMode="url"
+              autoComplete="off"
+              spellCheck={false}
               value={uploadData.photoUrl}
               onChange={(e) => setUploadData({ ...uploadData, photoUrl: e.target.value })}
-              placeholder="请输入照片URL"
+              placeholder="请输入照片 URL…"
             />
           </div>
           <div>
-            <FieldLabel>照片描述</FieldLabel>
+            <FieldLabel htmlFor="album-photo-desc">照片描述</FieldLabel>
             <Textarea
+              id="album-photo-desc"
+              name="photoDescription"
               value={uploadData.description}
               onChange={(e) => setUploadData({ ...uploadData, description: e.target.value })}
-              placeholder="照片描述（可选）"
+              placeholder="照片描述（可选）…"
               rows={3}
+              maxLength={100}
             />
           </div>
         </div>
       </Modal>
+
+      {confirmDialog}
     </div>
   );
 };

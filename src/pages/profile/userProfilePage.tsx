@@ -4,6 +4,7 @@ import { useUserStore } from '../../stores/userStore';
 import { getPublicProfile } from '../../api/user';
 import { blockApi } from '../../api/social';
 import { useFollowState } from '../../hooks/useFollowState';
+import { useConfirm } from '../../hooks/useConfirm';
 import {
   useUserProfileContent,
   type ProfileContentTab,
@@ -19,6 +20,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { getPetTypeIcon } from '../../types/pet';
 import type { PublicUserProfile } from '../../types/user';
+import { formatCount } from '../../utils/format';
 
 export function UserProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +35,7 @@ export function UserProfilePage() {
   const targetIdForFollow = id && !isOwnProfile ? Number(id) : undefined;
   const { status: followStatus, acting: followActing, follow, unfollow, setSecret } =
     useFollowState(targetIdForFollow);
+  const { confirm, confirmDialog } = useConfirm();
 
   const profileUserId = id ? Number(id) : user?.id;
   const {
@@ -85,6 +88,10 @@ export function UserProfilePage() {
   const postsCount = publicProfile?.postsCount ?? 0;
   const followingCount = publicProfile?.followingCount ?? 0;
   const followersCount = publicProfile?.followersCount ?? 0;
+  // 关系列表页所需用户 ID：他人主页取路由参数，本人主页取登录用户
+  const relationUserId = id ?? (user ? String(user.id) : null);
+  const relationCellClass =
+    'flex flex-col items-center justify-center gap-0.5 px-2 py-3 transition-colors hover:bg-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30';
 
   const handleStartConversation = () => {
     if (!id) return;
@@ -94,12 +101,28 @@ export function UserProfilePage() {
     );
   };
 
+  const handleUnfollow = async () => {
+    const confirmed = await confirm({
+      title: '取消关注？',
+      description: `取消关注后，${displayUser?.nickname || '对方'}的新动态不会再出现在你的关注列表。`,
+      confirmText: '取消关注',
+      tone: 'primary',
+    });
+    if (confirmed) await unfollow();
+  };
+
   const handleBlock = async () => {
     if (!id || !isLoggedIn) {
       navigate('/login');
       return;
     }
-    if (!window.confirm('拉黑后双方将无法互看动态、评论与私信，并自动取消关注。确定拉黑？')) {
+    if (
+      !(await confirm({
+        title: '拉黑该用户？',
+        description: '拉黑后双方将无法互看动态、评论与私信，并自动取消关注。',
+        confirmText: '拉黑',
+      }))
+    ) {
       return;
     }
     setBlocking(true);
@@ -160,7 +183,7 @@ export function UserProfilePage() {
                 )}
               </h1>
               <p className="mt-1 line-clamp-2 text-sm text-brown-muted sm:text-base">
-                {displayUser?.signature || '这个人很懒，什么都没留下...'}
+                {displayUser?.signature || '这个人很懒，什么都没留下…'}
               </p>
               {(displayUser?.location || displayUser?.petYears) && (
                 <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-brown-secondary sm:justify-start">
@@ -193,32 +216,44 @@ export function UserProfilePage() {
               </span>
               <span className="text-xs text-brown-muted">帖子</span>
             </div>
-            <button
-              type="button"
-              className="flex flex-col items-center justify-center gap-0.5 border-x border-border-light px-2 py-3 transition-colors hover:bg-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30"
-              onClick={() => {
-                const targetId = id || user?.id;
-                if (targetId) navigate(`/follow/${targetId}/following`);
-              }}
-            >
-              <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
-                {followingCount}
-              </span>
-              <span className="text-xs text-brown-muted">关注</span>
-            </button>
-            <button
-              type="button"
-              className="flex flex-col items-center justify-center gap-0.5 px-2 py-3 transition-colors hover:bg-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30"
-              onClick={() => {
-                const targetId = id || user?.id;
-                if (targetId) navigate(`/follow/${targetId}/followers`);
-              }}
-            >
-              <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
-                {followersCount}
-              </span>
-              <span className="text-xs text-brown-muted">粉丝</span>
-            </button>
+            {relationUserId ? (
+              <Link
+                to={`/follow/${relationUserId}/following`}
+                className={`${relationCellClass} border-x border-border-light`}
+                aria-label="查看关注列表"
+              >
+                <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+                  {formatCount(followingCount)}
+                </span>
+                <span className="text-xs text-brown-muted">关注</span>
+              </Link>
+            ) : (
+              <div className={`${relationCellClass} border-x border-border-light`}>
+                <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+                  {formatCount(followingCount)}
+                </span>
+                <span className="text-xs text-brown-muted">关注</span>
+              </div>
+            )}
+            {relationUserId ? (
+              <Link
+                to={`/follow/${relationUserId}/followers`}
+                className={relationCellClass}
+                aria-label="查看粉丝列表"
+              >
+                <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+                  {formatCount(followersCount)}
+                </span>
+                <span className="text-xs text-brown-muted">粉丝</span>
+              </Link>
+            ) : (
+              <div className={relationCellClass}>
+                <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+                  {formatCount(followersCount)}
+                </span>
+                <span className="text-xs text-brown-muted">粉丝</span>
+              </div>
+            )}
           </div>
 
           {/* 操作入口：与昵称分离，避免挤成一团 */}
@@ -281,7 +316,7 @@ export function UserProfilePage() {
                         if (key === 'public') void setSecret(false);
                         else if (key === 'secret') void setSecret(true);
                         else if (key === 'unfollow') {
-                          if (window.confirm('确认取消关注？')) void unfollow();
+                          void handleUnfollow();
                         }
                       }}
                     />
@@ -378,7 +413,7 @@ export function UserProfilePage() {
                       <Card hoverable className="rounded-xl shadow-card h-full" padding="none">
                         <div className="aspect-square bg-linear-to-br from-primary-soft to-primary-light/20 flex items-center justify-center overflow-hidden">
                           {pet.avatar ? (
-                            <img src={pet.avatar} alt={pet.name} className="w-full h-full object-cover" />
+                            <img src={pet.avatar} alt={pet.name} className="w-full h-full object-cover" decoding="async" />
                           ) : (
                             <PetIcon className="text-brown-light" size={48} aria-hidden="true" />
                           )}
@@ -406,7 +441,7 @@ export function UserProfilePage() {
                     <Card hoverable className="rounded-xl shadow-card h-full" padding="none">
                       <div className="aspect-square bg-linear-to-br from-muted to-soft flex items-center justify-center overflow-hidden">
                         {cover ? (
-                          <img src={cover} alt="" className="w-full h-full object-cover" />
+                          <img src={cover} alt="" className="w-full h-full object-cover" decoding="async" />
                         ) : post.video ? (
                           <video src={post.video} className="w-full h-full object-cover" muted />
                         ) : (
@@ -480,6 +515,8 @@ export function UserProfilePage() {
 
         <div className="mt-8 mb-12" />
       </div>
+
+      {confirmDialog}
     </div>
   );
 }

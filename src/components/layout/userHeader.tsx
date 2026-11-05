@@ -4,7 +4,7 @@ import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../ui/avatar';
-import { Button } from '../ui/button';
+import { Button, buttonClass } from '../ui/button';
 import { Dropdown } from '../ui/dropdown';
 
 export function UserHeader() {
@@ -30,7 +30,7 @@ export function UserHeader() {
       <div className="header-content">
         <Link to="/" className="logo" aria-label={`${siteName}首页`}>
           {siteLogo ? (
-            <img className="logo-img" src={siteLogo} alt="" width={28} height={28} />
+            <img className="logo-img" src={siteLogo} alt="" width={28} height={28} decoding="async" />
           ) : (
             <svg className="logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="11" cy="4" r="2.5" />
@@ -104,11 +104,11 @@ export function UserHeader() {
             </div>
           ) : (
             <div className="auth-buttons flex items-center gap-2">
-              <Link to="/login">
-                <Button variant="ghost" size="sm">登录</Button>
+              <Link to="/login" className={buttonClass({ variant: 'ghost', size: 'sm' })}>
+                登录
               </Link>
-              <Link to="/register">
-                <Button variant="primary" size="sm">注册</Button>
+              <Link to="/register" className={buttonClass({ variant: 'primary', size: 'sm' })}>
+                注册
               </Link>
             </div>
           )}

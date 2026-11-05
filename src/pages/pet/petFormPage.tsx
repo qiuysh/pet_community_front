@@ -1,12 +1,14 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+
 import { usePetForm } from '../../hooks/usePetForm';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { PetTypeOptions, GenderOptions, getPetTypeIcon } from '../../types/pet';
+import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Checkbox } from '../../components/ui/checkbox';
-import { FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
+import { FieldError, FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
 import { Radio, RadioGroup } from '../../components/ui/radio';
 
 export function PetFormPage() {
@@ -18,35 +20,37 @@ export function PetFormPage() {
     uploadingAvatar,
     breeds,
     formData,
+    errors,
     updateField,
     handleAvatarUpload,
     handleSubmit,
   } = usePetForm();
 
+  const isDirty =
+    formData.name.trim().length > 0 ||
+    (formData.bio ?? '').trim().length > 0 ||
+    (formData.personality ?? '').trim().length > 0 ||
+    (formData.avatar ?? '').trim().length > 0;
+  const unsavedDialog = useUnsavedChanges(isDirty && !loading, {
+    message: '宠物档案尚未保存，离开后填写的内容将丢失。',
+  });
+
   return (
     <div className="min-h-screen bg-cream">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="flex items-center gap-4 mb-6">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="p-2 min-w-0 h-auto"
-            aria-label="返回"
-          >
-            <ChevronLeft className="w-5 h-5 text-brown-secondary" />
-          </Button>
+          <BackButton />
           <h1 className="text-2xl font-bold text-brown">
             {isEdit ? '编辑宠物档案' : '创建宠物档案'}
           </h1>
         </div>
 
         <Card className="space-y-6" padding="lg">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             <div className="flex items-center gap-6">
               <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/10 to-primary-dark/10 flex items-center justify-center text-brown overflow-hidden">
                 {formData.avatar ? (
-                  <img src={formData.avatar} alt="" className="w-full h-full object-cover" />
+                  <img src={formData.avatar} alt="" className="w-full h-full object-cover" decoding="async" />
                 ) : (
                   (() => {
                     const PetIcon = getPetTypeIcon(formData.petType);
@@ -103,18 +107,26 @@ export function PetFormPage() {
             </div>
 
             <div>
-              <FieldLabel>宠物名称</FieldLabel>
+              <FieldLabel htmlFor="pet-name" required>宠物名称</FieldLabel>
               <Input
+                id="pet-name"
+                name="name"
+                autoComplete="off"
                 value={formData.name}
                 onChange={(e) => updateField('name', e.target.value)}
-                placeholder="给你的毛孩子起个名字吧"
+                placeholder="给你的毛孩子起个名字吧…"
                 maxLength={20}
+                invalid={!!errors.name}
+                aria-describedby={errors.name ? 'pet-name-error' : undefined}
               />
+              <FieldError id="pet-name-error">{errors.name}</FieldError>
             </div>
 
             <div>
-              <FieldLabel>品种</FieldLabel>
+              <FieldLabel htmlFor="pet-breed">品种</FieldLabel>
               <Select
+                id="pet-breed"
+                name="breedId"
                 value={formData.breedId || ''}
                 onChange={(e) => {
                   const breedId = parseInt(e.target.value) || 0;
@@ -150,14 +162,22 @@ export function PetFormPage() {
                 </RadioGroup>
               </div>
               <div>
-                <FieldLabel>体重 (kg)</FieldLabel>
+                <FieldLabel htmlFor="pet-weight">体重 (kg)</FieldLabel>
                 <Input
+                  id="pet-weight"
+                  name="weight"
                   type="number"
+                  inputMode="decimal"
                   step="0.1"
+                  min="0"
+                  max="200"
                   value={formData.weight || ''}
                   onChange={(e) => updateField('weight', parseFloat(e.target.value) || 0)}
                   placeholder="0.0"
+                  invalid={!!errors.weight}
+                  aria-describedby={errors.weight ? 'pet-weight-error' : undefined}
                 />
+                <FieldError id="pet-weight-error">{errors.weight}</FieldError>
               </div>
             </div>
 
@@ -179,22 +199,27 @@ export function PetFormPage() {
             </div>
 
             <div>
-              <FieldLabel>性格特点</FieldLabel>
+              <FieldLabel htmlFor="pet-personality">性格特点</FieldLabel>
               <Input
+                id="pet-personality"
+                name="personality"
+                autoComplete="off"
                 value={formData.personality}
                 onChange={(e) => updateField('personality', e.target.value)}
-                placeholder="例如：活泼、粘人、贪吃..."
+                placeholder="例如：活泼、粘人、贪吃…"
                 maxLength={100}
               />
             </div>
 
             <div>
-              <FieldLabel>简介</FieldLabel>
+              <FieldLabel htmlFor="pet-bio">简介</FieldLabel>
               <Textarea
+                id="pet-bio"
+                name="bio"
                 value={formData.bio}
                 onChange={(e) => updateField('bio', e.target.value)}
                 rows={4}
-                placeholder="介绍一下你的毛孩子吧..."
+                placeholder="介绍一下你的毛孩子吧…"
                 maxLength={500}
               />
             </div>
@@ -208,13 +233,15 @@ export function PetFormPage() {
               >
                 取消
               </Button>
-              <Button type="submit" className="flex-1" disabled={loading}>
-                {loading ? '保存中...' : isEdit ? '保存修改' : '创建档案'}
+              <Button type="submit" className="flex-1" disabled={loading} loading={loading}>
+                {loading ? '保存中' : isEdit ? '保存修改' : '创建档案'}
               </Button>
             </div>
           </form>
         </Card>
       </div>
+
+      {unsavedDialog}
     </div>
   );
 }

@@ -43,10 +43,12 @@
         border-radius: 50%;
         background-color: $background-muted;
         margin-right: 10px;
+        flex-shrink: 0;
+        object-fit: cover;
       }
 
       .user-name {
-        font-size: 16px;
+        font-size: $font-size-large;
         font-weight: 600;
         color: $text-primary;
       }
@@ -69,6 +71,7 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 16px;
 
     .loading {
@@ -116,13 +119,13 @@
 
         .message-content {
           padding: 12px 16px;
-          font-size: 15px;
+          font-size: $font-size-base;
           line-height: 1.5;
           word-break: break-word;
         }
 
         .message-time {
-          font-size: 12px;
+          font-size: $font-size-xs;
           color: $text-muted;
           margin-top: 4px;
           padding: 0 4px;
@@ -167,7 +170,7 @@
       padding: 10px 16px;
       border-radius: 20px;
       border: 1px solid $border-color;
-      font-size: 15px;
+      font-size: $font-size-base;
       resize: none;
       outline: none;
       margin: 0 10px;
@@ -303,7 +306,7 @@
   .voice-progress__input {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: $z-index-base;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -323,7 +326,7 @@
     height: 3px;
     transform: translateY(-50%);
     background-color: $primary-color;
-    transition: width 0.15s linear;
+    transition: width $duration-fast linear;
     pointer-events: none;
 
     .voice-bubble--mine & {
@@ -333,7 +336,7 @@
 
   .voice-duration {
     flex-shrink: 0;
-    font-size: 12px;
+    font-size: $font-size-xs;
     color: $text-secondary;
 
     .voice-bubble--mine & {
@@ -472,8 +475,9 @@
 .chat-search-results {
   position: absolute;
   inset: 0;
-  z-index: 20;
+  z-index: $z-index-dropdown;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding-bottom: 16px;
   background-color: $background-white;
   box-shadow: $shadow-medium;
@@ -491,13 +495,13 @@
     align-items: center;
     gap: 12px;
     padding: 40px 16px;
-    font-size: 14px;
+    font-size: $font-size-sm;
     color: $text-muted;
   }
 
   &__head {
     padding: 8px 16px;
-    font-size: 12px;
+    font-size: $font-size-xs;
     color: $text-muted;
     border-bottom: 1px solid $border-light;
   }
@@ -534,7 +538,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
+    font-size: $font-size-xs;
     color: $text-muted;
   }
 
@@ -544,7 +548,7 @@
   }
 
   &__text {
-    font-size: 14px;
+    font-size: $font-size-sm;
     line-height: 1.5;
     color: $text-primary;
     word-break: break-word;
@@ -576,7 +580,7 @@
 }
 
 .chat-image-preview__tip {
-  font-size: 12px;
+  font-size: $font-size-xs;
   color: $text-muted;
 }
 
@@ -588,7 +592,8 @@
 .image-lightbox {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: $z-index-modal;
+  overscroll-behavior: contain;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -622,7 +627,7 @@
   border-radius: 8px;
   object-fit: contain;
   cursor: zoom-in;
-  transition: transform 0.2s ease;
+  transition: transform $duration-base ease;
 
   &.zoomed {
     transform: scale(2);

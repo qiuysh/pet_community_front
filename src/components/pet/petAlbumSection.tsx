@@ -4,7 +4,8 @@ import type { PetAlbumInfo } from '../../types/pet';
 import { getPetTypeIcon } from '../../types/pet';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { Modal } from '../ui/modal';
+import { ConfirmDialog } from '../ui/confirmDialog';
+import { EmptyState } from '../ui/emptyState';
 
 interface PetAlbumSectionProps {
   album: PetAlbumInfo[];
@@ -147,10 +148,21 @@ export function PetAlbumSection({
                   setDragId(null);
                   setOverId(null);
                 }}
-                className={`group relative aspect-square bg-muted rounded-lg overflow-hidden transition-all ${
+                onKeyDown={(e) => {
+                  if (!isOwner) return;
+                  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+                  const target = album[index + (e.key === 'ArrowLeft' ? -1 : 1)];
+                  if (!target) return;
+                  e.preventDefault();
+                  moveItem(item.id, target.id);
+                }}
+                tabIndex={isOwner ? 0 : undefined}
+                role={isOwner ? 'button' : undefined}
+                aria-label={isOwner ? `${item.title || `照片 ${index + 1}`}，第 ${index + 1} 项，可用左右方向键调整顺序` : undefined}
+                className={`group relative aspect-square bg-muted rounded-lg overflow-hidden transition-[opacity,transform] ${
                   isDragging ? 'opacity-50 scale-95' : ''
                 } ${isOver ? 'ring-2 ring-primary ring-offset-1' : ''} ${
-                  isOwner ? 'cursor-grab active:cursor-grabbing' : ''
+                  isOwner ? 'cursor-grab active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2' : ''
                 }`}
               >
                 {item.imageUrl ? (
@@ -166,6 +178,7 @@ export function PetAlbumSection({
                     />
                   ) : (
                     <img
+                      decoding="async"
                       src={item.imageUrl}
                       alt={item.title || `照片 ${index + 1}`}
                       className="w-full h-full object-cover pointer-events-none"
@@ -226,47 +239,27 @@ export function PetAlbumSection({
           })}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <div className="mb-3 flex justify-center text-brown-light">
-            <Camera size={32} aria-hidden="true" />
-          </div>
-          <p className="text-brown-muted">暂无相册内容</p>
-          {isOwner && (
-            <p className="text-sm text-brown-muted mt-2">
-              照片每次最多 9 张（≤5MB）；视频 MP4（≤1 分钟 / 50MB）
-            </p>
-          )}
-        </div>
+        <EmptyState
+          compact
+          icon={<Camera size={32} />}
+          title="暂无相册内容"
+          description={isOwner ? '照片每次最多 9 张（≤5MB）；视频 MP4（≤1 分钟 / 50MB）' : undefined}
+        />
       )}
 
-      <Modal
+      <ConfirmDialog
         open={confirmId !== null}
-        onClose={() => setConfirmId(null)}
-        title="删除相册项"
-        size="sm"
-        footer={
-          <div className="flex gap-3 w-full">
-            <Button type="button" variant="outline" className="flex-1" onClick={() => setConfirmId(null)}>
-              取消
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              className="flex-1"
-              onClick={() => {
-                if (confirmId !== null) {
-                  onDelete(confirmId);
-                  setConfirmId(null);
-                }
-              }}
-            >
-              删除
-            </Button>
-          </div>
-        }
-      >
-        <p className="text-sm text-brown-muted">确定删除吗？此操作不可恢复。</p>
-      </Modal>
+        title="删除这张相册内容？"
+        description="删除后该照片或视频将从相册中移除，无法恢复。"
+        confirmText="删除"
+        onConfirm={() => {
+          if (confirmId !== null) {
+            onDelete(confirmId);
+            setConfirmId(null);
+          }
+        }}
+        onCancel={() => setConfirmId(null)}
+      />
     </Card>
   );
 }

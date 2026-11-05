@@ -1,8 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, RefreshCw, Bell, ChevronLeft } from 'lucide-react';
+import { Heart, MessageCircle, RefreshCw, Bell } from 'lucide-react';
 import { useNotificationList } from '../../hooks/useNotificationList';
+import { useConfirm } from '../../hooks/useConfirm';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
 import './notificationListPage.scss';
 
@@ -17,6 +20,18 @@ const NotificationListPage: React.FC = () => {
     markAsRead,
     markAllAsRead,
   } = useNotificationList();
+  const { confirm, confirmDialog } = useConfirm();
+
+  const handleMarkAllRead = async () => {
+    const confirmed = await confirm({
+      title: '全部标为已读？',
+      description: `当前列表共 ${total} 条通知，未读标记将被一次性清除，该操作无法撤销。`,
+      confirmText: '全部已读',
+      tone: 'primary',
+    });
+    if (!confirmed) return;
+    markAllAsRead();
+  };
 
   const handleNotificationClick = (notification: typeof notifications[0]) => {
     if (!notification.isRead) {
@@ -67,15 +82,15 @@ const NotificationListPage: React.FC = () => {
 
   return (
     <div className="notification-list-page">
-      <div className="page-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">通知</h1>
-        <Button type="button" variant="ghost" size="sm" className="action-btn" onClick={markAllAsRead}>
-          全部已读
-        </Button>
-      </div>
+      <PageHeader
+        title="通知"
+        fallbackTo="/"
+        right={
+          <Button type="button" variant="ghost" size="sm" className="shrink-0 text-primary" onClick={handleMarkAllRead}>
+            全部已读
+          </Button>
+        }
+      />
 
       {loading && notifications.length === 0 ? (
         <div className="notification-list">
@@ -91,28 +106,26 @@ const NotificationListPage: React.FC = () => {
           ))}
         </div>
       ) : notifications.length === 0 ? (
-        <div className="empty">
-          <Bell size={64} color="var(--color-ink-light)" strokeWidth={1.5} />
-          <p>暂无通知</p>
-        </div>
+        <EmptyState icon={<Bell size={56} strokeWidth={1.5} />} title="暂无通知" />
       ) : (
         <div className="notification-list">
           {notifications.map((notification) => (
-            <div
+            <button
+              type="button"
               key={notification.id}
               className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
               onClick={() => handleNotificationClick(notification)}
             >
-              <div className="notification-icon">{getIcon(notification.type)}</div>
-              <div className="notification-content">
-                <div className="notification-title">{notification.title}</div>
-                <div className="notification-desc">{notification.content}</div>
-                <div className="notification-time">{formatTime(notification.createdAt)}</div>
-              </div>
+              <span className="notification-icon">{getIcon(notification.type)}</span>
+              <span className="notification-content">
+                <span className="notification-title">{notification.title}</span>
+                <span className="notification-desc">{notification.content}</span>
+                <span className="notification-time">{formatTime(notification.createdAt)}</span>
+              </span>
               {!notification.isRead && (
-                <div className="unread-dot" />
+                <span className="unread-dot" />
               )}
-            </div>
+            </button>
           ))}
         </div>
       )}
@@ -124,6 +137,8 @@ const NotificationListPage: React.FC = () => {
           </Button>
         </div>
       )}
+
+      {confirmDialog}
     </div>
   );
 };

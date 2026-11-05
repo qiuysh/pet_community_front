@@ -9,6 +9,7 @@ import { AdoptionReview } from '../../components/adopt/adoptionReview';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 
 export const AdoptDetailPage = () => {
   const navigate = useNavigate();
@@ -95,6 +96,7 @@ export const AdoptDetailPage = () => {
       {adopt.photos && adopt.photos.length > 0 && (
         <div className="bg-white">
           <img
+            decoding="async"
             src={adopt.photos[0]}
             alt={adopt.petName}
             className="w-full h-64 object-cover"
@@ -151,6 +153,7 @@ export const AdoptDetailPage = () => {
         <Card>
           <div className="flex items-center gap-3">
             <img
+              decoding="async"
               src={adopt.userAvatar || getDefaultUserAvatar()}
               alt={adopt.userNickname}
               className="w-10 h-10 rounded-full"
@@ -196,7 +199,7 @@ export const AdoptDetailPage = () => {
             {appsLoading ? (
               <p className="text-sm text-brown-muted">加载中…</p>
             ) : applications.length === 0 ? (
-              <p className="text-sm text-brown-muted">暂无申请</p>
+              <EmptyState compact title="暂无申请" />
             ) : (
               <ul className="space-y-3">
                 {applications.map((app) => (
@@ -207,6 +210,7 @@ export const AdoptDetailPage = () => {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <img
+                          decoding="async"
                           src={app.userAvatar || getDefaultUserAvatar()}
                           alt=""
                           className="h-8 w-8 rounded-full object-cover"

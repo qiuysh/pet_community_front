@@ -36,14 +36,20 @@ export const AdBanner: React.FC<AdBannerProps> = ({ location, limit = 1, classNa
 
   return (
     <div className={`ad-banner space-y-2 ${className ?? ''}`} role="region" aria-label="广告">
-      {visibleAds.map((ad) => (
-        <AdBannerItem key={ad.id} ad={ad} />
+      {visibleAds.map((ad, index) => (
+        <AdBannerItem key={ad.id} ad={ad} eager={index === 0} />
       ))}
     </div>
   );
 };
 
-const AdBannerItem: React.FC<{ ad: Advertisement }> = ({ ad }) => {
+interface AdBannerItemProps {
+  ad: Advertisement;
+  /** 首条广告通常在首屏，需立即加载以免拖慢 LCP；其余懒加载 */
+  eager?: boolean;
+}
+
+const AdBannerItem: React.FC<AdBannerItemProps> = ({ ad, eager = false }) => {
   // useRef 防御 StrictMode 双调用导致 PV 重复上报
   const viewedRef = useRef(false);
 
@@ -62,7 +68,9 @@ const AdBannerItem: React.FC<{ ad: Advertisement }> = ({ ad }) => {
       <img
         src={ad.imageUrl}
         alt={ad.title}
-        loading="lazy"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchPriority={eager ? 'high' : 'auto'}
+        decoding="async"
         className="w-full h-auto object-cover block"
       />
       <div className="absolute left-0 bottom-0 right-0 flex items-center gap-2 px-3 py-2 bg-gradient-to-t from-black/60 to-transparent">

@@ -1,10 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
 import { useBlockedList } from '../../hooks/useBlockedList';
+import { useConfirm } from '../../hooks/useConfirm';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
 import './followListPage.scss';
 
@@ -28,22 +30,27 @@ function UserListSkeleton() {
 const BlockedListPage: React.FC = () => {
   const navigate = useNavigate();
   const { users, loading, total, page, setPage, handleUnblock } = useBlockedList();
+  const { confirm, confirmDialog } = useConfirm();
+
+  const handleUnblockWithConfirm = async (targetId: number, nickname: string) => {
+    const confirmed = await confirm({
+      title: '取消拉黑？',
+      description: `取消拉黑后，你和${nickname || '该用户'}将恢复互看动态、评论与私信的能力。`,
+      confirmText: '取消拉黑',
+      tone: 'primary',
+    });
+    if (confirmed) await handleUnblock(targetId);
+  };
 
   return (
     <div className="follow-list-page">
-      <div className="page-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">黑名单</h1>
-        <div className="placeholder" />
-      </div>
+      <PageHeader title="黑名单" fallbackTo="/profile" />
 
       <div className="user-list">
         {loading && users.length === 0 ? (
           <UserListSkeleton />
         ) : users.length === 0 ? (
-          <div className="empty">暂无拉黑用户</div>
+          <EmptyState compact title="暂无拉黑用户" />
         ) : (
           users.map((user) => {
             const id = user.userId ?? user.id;
@@ -70,7 +77,7 @@ const BlockedListPage: React.FC = () => {
                   size="sm"
                   variant="outline"
                   className="follow-btn following"
-                  onClick={() => handleUnblock(id)}
+                  onClick={() => handleUnblockWithConfirm(id, user.nickname)}
                 >
                   取消拉黑
                 </Button>
@@ -87,6 +94,8 @@ const BlockedListPage: React.FC = () => {
           </Button>
         </div>
       )}
+
+      {confirmDialog}
     </div>
   );
 };

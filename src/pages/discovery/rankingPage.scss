@@ -12,7 +12,7 @@
     text-align: center;
 
     h1 {
-      font-size: 24px;
+      font-size: $font-size-xl;
       margin-bottom: 16px;
     }
 
@@ -27,9 +27,9 @@
         border: none;
         border-radius: $border-radius-base;
         color: $background-white;
-        font-size: 14px;
+        font-size: $font-size-sm;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: background-color $duration-base, color $duration-base;
 
         &.active {
           background: white;
@@ -65,7 +65,7 @@
 
       .section-title {
         font-weight: 600;
-        font-size: 16px;
+        font-size: $font-size-large;
       }
     }
 
@@ -92,7 +92,7 @@
           border-radius: 50%;
           background: $border-color;
           color: $text-secondary;
-          font-size: 14px;
+          font-size: $font-size-sm;
           font-weight: 600;
           display: flex;
           align-items: center;
@@ -142,7 +142,7 @@
             }
 
             .post-content {
-              font-size: 14px;
+              font-size: $font-size-sm;
               line-height: 1.4;
               display: -webkit-box;
               -webkit-line-clamp: 2;
@@ -158,14 +158,14 @@
             margin-top: 6px;
 
             .stat-item {
-              font-size: 12px;
+              font-size: $font-size-xs;
               color: $text-muted;
             }
           }
         }
 
         .hot-score {
-          font-size: 12px;
+          font-size: $font-size-xs;
           color: $primary-color;
           margin-left: 8px;
         }
@@ -191,7 +191,7 @@
           .stats {
             display: flex;
             gap: 12px;
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
           }
         }
@@ -207,7 +207,7 @@
           }
 
           .topic-desc {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
           }
         }
@@ -219,7 +219,7 @@
           gap: 2px;
 
           span {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
           }
         }

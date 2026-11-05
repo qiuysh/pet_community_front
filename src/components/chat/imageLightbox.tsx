@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ZoomIn, ZoomOut } from 'lucide-react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 export interface ImageLightboxProps {
   open: boolean;
@@ -12,6 +13,7 @@ export interface ImageLightboxProps {
 /** 聊天图片大图查看（1x/2x 缩放，Esc / 点击遮罩关闭） */
 export function ImageLightbox({ open, src, alt = '图片消息', onClose }: ImageLightboxProps) {
   const [zoomed, setZoomed] = useState(false);
+  const trapRef = useFocusTrap<HTMLDivElement>(open && !!src);
 
   useEffect(() => {
     if (!open) {
@@ -38,6 +40,8 @@ export function ImageLightbox({ open, src, alt = '图片消息', onClose }: Imag
       role="dialog"
       aria-modal="true"
       aria-label="图片预览"
+      tabIndex={-1}
+      ref={trapRef}
       onClick={onClose}
     >
       <div className="image-lightbox__toolbar" onClick={(event) => event.stopPropagation()}>
@@ -59,6 +63,7 @@ export function ImageLightbox({ open, src, alt = '图片消息', onClose }: Imag
         </button>
       </div>
       <img
+        decoding="async"
         className={`image-lightbox__image${zoomed ? ' zoomed' : ''}`}
         src={src}
         alt={alt}

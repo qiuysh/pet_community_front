@@ -42,7 +42,7 @@
       position: absolute;
       top: $spacing-md;
       left: $spacing-md;
-      z-index: 2;
+      z-index: $z-index-raised;
 
       a {
         display: flex;
@@ -53,7 +53,7 @@
         border-radius: $border-radius-sm;
         background: rgba(white, 0.2);
         color: white;
-        transition: all 0.2s ease;
+        transition: background-color $duration-base ease, transform $duration-base ease;
 
         &:hover {
           background: rgba(white, 0.35);
@@ -64,7 +64,7 @@
 
     .hero-content {
       position: relative;
-      z-index: 1;
+      z-index: $z-index-base;
       text-align: center;
       padding-top: $spacing-sm;
 
@@ -93,7 +93,7 @@
       }
 
       .hero-desc {
-        font-size: $font-size-base;
+        font-size: $font-size-sm;
         opacity: 0.85;
         font-weight: 400;
         max-width: 280px;
@@ -144,14 +144,14 @@
           background: $background-soft;
           border: 1.5px solid $border-light;
           border-radius: 999px;
-          font-size: $font-size-base;
+          font-size: $font-size-sm;
           line-height: 1.2;
           cursor: pointer;
           transition:
-            background-color 0.2s ease,
-            border-color 0.2s ease,
-            color 0.2s ease,
-            box-shadow 0.2s ease;
+            background-color $duration-base ease,
+            border-color $duration-base ease,
+            color $duration-base ease,
+            box-shadow $duration-base ease;
           color: $text-secondary;
           font-weight: 500;
 
@@ -211,13 +211,13 @@
 
           .sort-tab {
             padding: 6px 14px;
-            font-size: $font-size-sm;
+            font-size: $font-size-base;
             font-weight: 500;
             color: $text-secondary;
             background: transparent;
             border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: color $duration-base ease;
             position: relative;
 
             &::after {
@@ -230,7 +230,7 @@
               height: 2px;
               background: $primary-color;
               border-radius: 1px;
-              transition: width 0.2s ease;
+              transition: width $duration-base ease;
             }
 
             &:hover {
@@ -262,36 +262,6 @@
   .posts-list {
     padding: 0 $spacing-md;
 
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: $spacing-2xl $spacing-md;
-      color: $text-muted;
-      text-align: center;
-
-      .empty-spinner {
-        width: 32px;
-        height: 32px;
-        border: 3px solid $border-light;
-        border-top-color: $primary-color;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin-bottom: $spacing-sm;
-      }
-
-      span {
-        font-size: $font-size-base;
-      }
-
-      .empty-hint {
-        font-size: $font-size-xs;
-        margin-top: $spacing-xs;
-        color: $text-light;
-      }
-    }
-
     .post-card {
       background: $background-white;
       border-radius: $border-radius-base;
@@ -300,7 +270,7 @@
       text-decoration: none;
       color: inherit;
       box-shadow: $shadow-card;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: box-shadow $duration-slow cubic-bezier(0.4, 0, 0.2, 1), transform $duration-slow cubic-bezier(0.4, 0, 0.2, 1);
       display: block;
 
       &:hover {
@@ -330,13 +300,13 @@
 
           .post-nickname {
             font-weight: 600;
-            font-size: $font-size-base;
+            font-size: $font-size-sm;
             color: $text-primary;
             display: block;
           }
 
           .post-time {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             display: block;
           }
@@ -345,7 +315,7 @@
 
       // 内容
       .post-content {
-        font-size: $font-size-base;
+        font-size: $font-size-sm;
         line-height: 1.65;
         margin-bottom: $spacing-sm;
         color: $text-primary;
@@ -436,7 +406,7 @@
           align-items: center;
           justify-content: center;
           background: rgba($text-primary, 0.3);
-          transition: background 0.2s ease;
+          transition: background $duration-base ease;
 
           svg {
             width: 48px;
@@ -462,9 +432,9 @@
           align-items: center;
           gap: 6px;
           min-height: 44px;
-          font-size: $font-size-base;
+          font-size: $font-size-sm;
           color: $text-secondary;
-          transition: color 0.2s ease, transform 0.2s ease;
+          transition: color $duration-base ease, transform $duration-base ease;
           cursor: default;
 
           svg {
@@ -508,10 +478,10 @@
       background: $background-white;
       border: 1px solid $border-color;
       border-radius: $border-radius-sm;
-      font-size: $font-size-base;
+      font-size: $font-size-sm;
       cursor: pointer;
       color: $text-secondary;
-      transition: all 0.2s ease;
+      transition: background-color $duration-base ease, border-color $duration-base ease, color $duration-base ease;
       font-weight: 500;
 
       &:disabled {
@@ -534,7 +504,7 @@
       padding: 8px 16px;
       background: $background-soft;
       border-radius: $border-radius-sm;
-      font-size: $font-size-sm;
+      font-size: $font-size-base;
 
       .page-current {
         font-weight: 600;
@@ -588,7 +558,7 @@
         }
 
         .hero-desc {
-          font-size: $font-size-sm;
+          font-size: $font-size-base;
         }
       }
     }
@@ -611,7 +581,7 @@
           .filter-chip {
             padding: 8px 12px;
             min-height: 40px;
-            font-size: $font-size-sm;
+            font-size: $font-size-base;
 
             svg,
             .filter-pet-icon,
@@ -656,7 +626,7 @@
 
       .page-btn {
         padding: 8px 14px;
-        font-size: $font-size-sm;
+        font-size: $font-size-base;
       }
 
       .page-indicator {

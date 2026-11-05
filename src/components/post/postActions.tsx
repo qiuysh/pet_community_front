@@ -3,6 +3,7 @@ import { Heart, MessageCircle, Bookmark, Share2 } from 'lucide-react';
 import { PostInfo } from '../../types/post';
 import { usePostActions } from '../../hooks/usePostActions';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { formatCount } from '../../utils/format';
 import { Button } from '../ui/button';
 
 /**
@@ -73,7 +74,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
           fill={isLiked ? 'currentColor' : 'none'}
           aria-hidden="true"
         />
-        <span className="tabular-nums">{likesCount}</span>
+        <span className="tabular-nums">{formatCount(likesCount)}</span>
       </Button>
 
       <Button
@@ -85,7 +86,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
         onClick={onCommentOverride ?? onComment}
       >
         <MessageCircle size={iconPx} strokeWidth={stroke} aria-hidden="true" />
-        <span className="tabular-nums">{commentsCount}</span>
+        <span className="tabular-nums">{formatCount(commentsCount)}</span>
       </Button>
 
       <Button
@@ -103,7 +104,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
           fill={isFavorited ? 'currentColor' : 'none'}
           aria-hidden="true"
         />
-        <span className="tabular-nums">{favoritesCount}</span>
+        <span className="tabular-nums">{formatCount(favoritesCount)}</span>
       </Button>
 
       <Button
@@ -115,7 +116,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
         onClick={onShareOverride ?? (() => onShare('copy'))}
       >
         <Share2 size={iconPx} strokeWidth={stroke} aria-hidden="true" />
-        <span className="tabular-nums">{sharesCount}</span>
+        <span className="tabular-nums">{formatCount(sharesCount)}</span>
       </Button>
     </div>
   );

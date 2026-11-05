@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { AdoptInfo, PetType, AdoptionStatus } from '../../types/adopt';
+import { formatCount } from '../../utils/format';
 
 interface AdoptCardProps {
   adopt: AdoptInfo;
@@ -43,6 +44,7 @@ export const AdoptCard = ({ adopt }: AdoptCardProps) => {
       <div className="flex">
         {adopt.photos && adopt.photos.length > 0 && (
           <img
+            decoding="async"
             src={adopt.photos[0]}
             alt={adopt.petName}
             className="w-24 h-24 object-cover"
@@ -56,7 +58,7 @@ export const AdoptCard = ({ adopt }: AdoptCardProps) => {
                 {getStatusLabel(adopt.status)}
               </span>
             </div>
-            <span className="text-xs text-brown-muted">{adopt.applicationCount} 人申请</span>
+            <span className="text-xs text-brown-muted tabular-nums">{formatCount(adopt.applicationCount)} 人申请</span>
           </div>
           <div className="flex items-center gap-2 mb-2 text-sm text-brown-muted">
             <span>{getPetTypeLabel(adopt.petType)}</span>

@@ -134,13 +134,15 @@ describe('AdoptionReview', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('通过按钮调用审核接口', async () => {
+  it('通过按钮需二次确认后才调用审核接口', async () => {
     vi.mocked(reviewApplication).mockResolvedValue({} as any);
     const onSuccess = vi.fn();
     renderWithToast(
       <AdoptionReview application={baseApplication} onClose={() => {}} onSuccess={onSuccess} />
     );
     fireEvent.click(screen.getByRole('button', { name: '通过' }));
+    expect(reviewApplication).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '确认通过' }));
     await waitFor(() => {
       expect(reviewApplication).toHaveBeenCalled();
       expect(onSuccess).toHaveBeenCalled();
@@ -163,6 +165,7 @@ describe('AdoptionReview', () => {
       <AdoptionReview application={baseApplication} onClose={() => {}} onSuccess={onSuccess} />
     );
     fireEvent.click(screen.getByRole('button', { name: '通过' }));
+    fireEvent.click(screen.getByRole('button', { name: '确认通过' }));
     await waitFor(() => {
       expect(onSuccess).not.toHaveBeenCalled();
     });
@@ -189,7 +192,7 @@ describe('AdoptionAgreement', () => {
       <AdoptionAgreement application={baseApplication} onClose={() => {}} onSuccess={() => {}} />
     );
     expect(screen.getByRole('checkbox')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('请输入您的姓名作为电子签名')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('请输入您的姓名作为电子签名…')).toBeInTheDocument();
   });
 
   it('未勾选时签署按钮禁用', () => {
@@ -214,7 +217,7 @@ describe('AdoptionAgreement', () => {
       <AdoptionAgreement application={baseApplication} onClose={() => {}} onSuccess={onSuccess} />
     );
     fireEvent.click(screen.getByRole('checkbox'));
-    fireEvent.change(screen.getByPlaceholderText('请输入您的姓名作为电子签名'), { target: { value: '张三' } });
+    fireEvent.change(screen.getByPlaceholderText('请输入您的姓名作为电子签名…'), { target: { value: '张三' } });
     fireEvent.click(screen.getByRole('button', { name: '确认签署' }));
     await waitFor(() => {
       expect(signAgreement).toHaveBeenCalled();
@@ -229,7 +232,7 @@ describe('AdoptionAgreement', () => {
       <AdoptionAgreement application={baseApplication} onClose={() => {}} onSuccess={onSuccess} />
     );
     fireEvent.click(screen.getByRole('checkbox'));
-    fireEvent.change(screen.getByPlaceholderText('请输入您的姓名作为电子签名'), { target: { value: '张三' } });
+    fireEvent.change(screen.getByPlaceholderText('请输入您的姓名作为电子签名…'), { target: { value: '张三' } });
     fireEvent.click(screen.getByRole('button', { name: '确认签署' }));
     await waitFor(() => {
       expect(onSuccess).not.toHaveBeenCalled();

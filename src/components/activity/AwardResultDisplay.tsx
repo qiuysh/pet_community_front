@@ -31,7 +31,7 @@ export const AwardResultDisplay = ({ firstPrize, secondPrizes, thirdPrizes }: Aw
           </div>
           <div className="flex items-center gap-3 p-2 bg-error/10 rounded">
             {firstPrize.images && firstPrize.images.length > 0 && (
-              <img src={firstPrize.images[0]} alt={firstPrize.title} className="w-16 h-16 object-cover rounded" />
+              <img src={firstPrize.images[0]} alt={firstPrize.title} className="w-16 h-16 object-cover rounded" decoding="async" />
             )}
             <div className="flex-1 min-w-0">
               <p className="font-medium text-brown truncate">{firstPrize.title}</p>
@@ -53,7 +53,7 @@ export const AwardResultDisplay = ({ firstPrize, secondPrizes, thirdPrizes }: Aw
             {secondPrizes.map(submission => (
               <div key={submission.id} className="flex items-center gap-3 p-2 bg-warning/15 rounded-sm">
                 {submission.images && submission.images.length > 0 && (
-                  <img src={submission.images[0]} alt={submission.title} className="w-12 h-12 object-cover rounded" />
+                  <img src={submission.images[0]} alt={submission.title} className="w-12 h-12 object-cover rounded" decoding="async" />
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-brown truncate">{submission.title}</p>
@@ -77,7 +77,7 @@ export const AwardResultDisplay = ({ firstPrize, secondPrizes, thirdPrizes }: Aw
             {thirdPrizes.map(submission => (
               <div key={submission.id} className="flex items-center gap-3 p-2 bg-warning/10 rounded-sm">
                 {submission.images && submission.images.length > 0 && (
-                  <img src={submission.images[0]} alt={submission.title} className="w-10 h-10 object-cover rounded" />
+                  <img src={submission.images[0]} alt={submission.title} className="w-10 h-10 object-cover rounded" decoding="async" />
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-brown truncate">{submission.title}</p>

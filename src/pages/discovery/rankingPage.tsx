@@ -6,6 +6,7 @@ import { Avatar } from '../../components/ui/avatar';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { formatCount } from '../../utils/format';
 import './rankingPage.scss';
 
 const metaIconProps = {
@@ -77,10 +78,10 @@ export const RankingPage = () => {
                       </div>
                       <div className="post-content">{post.content}</div>
                     </Link>
-                    <div className="post-stats">
-                      <span className="stat-item flex items-center gap-1"><Heart {...metaIconProps} /><span>{post.likesCount}</span></span>
-                      <span className="stat-item flex items-center gap-1"><MessageCircle {...metaIconProps} /><span>{post.commentsCount}</span></span>
-                      <span className="stat-item flex items-center gap-1"><ArrowUpRight {...metaIconProps} /><span>{post.sharesCount}</span></span>
+                    <div className="post-stats tabular-nums">
+                      <span className="stat-item flex items-center gap-1"><Heart {...metaIconProps} /><span>{formatCount(post.likesCount)}</span></span>
+                      <span className="stat-item flex items-center gap-1"><MessageCircle {...metaIconProps} /><span>{formatCount(post.commentsCount)}</span></span>
+                      <span className="stat-item flex items-center gap-1"><ArrowUpRight {...metaIconProps} /><span>{formatCount(post.sharesCount)}</span></span>
                     </div>
                   </div>
                   <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{post.hotScore}</span></span>
@@ -102,9 +103,9 @@ export const RankingPage = () => {
                   <Avatar src={user.avatar || getDefaultUserAvatar()} name={user.nickname} className="avatar" />
                   <div className="user-info">
                     <div className="nickname">{user.nickname}</div>
-                    <div className="stats">
-                      <span>{user.followersCount}粉丝</span>
-                      <span>{user.postsCount}动态</span>
+                    <div className="stats tabular-nums">
+                      <span>{formatCount(user.followersCount)}粉丝</span>
+                      <span>{formatCount(user.postsCount)}动态</span>
                     </div>
                   </div>
                   <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{user.hotScore}</span></span>
@@ -127,8 +128,8 @@ export const RankingPage = () => {
                     <div className="topic-name">{topic.name}</div>
                     <div className="topic-desc">{topic.description}</div>
                   </div>
-                  <div className="topic-stats">
-                    <span>{topic.postsCount}帖子</span>
+                  <div className="topic-stats tabular-nums">
+                    <span>{formatCount(topic.postsCount)}帖子</span>
                     <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{topic.hotScore}</span></span>
                   </div>
                 </Link>

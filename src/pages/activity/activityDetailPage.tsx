@@ -3,9 +3,11 @@ import { useActivityDetail } from '../../hooks/useActivityDetail';
 import { ActivityType } from '../../types/activity';
 import { RegistrationForm, SubmissionUploader, VoteButton } from '../../components/activity';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Clock, Users, Check, Trophy, X } from 'lucide-react';
+import { Clock, Users, Check, Trophy } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
+import { Modal } from '../../components/ui/modal';
 import { Tabs } from '../../components/ui/tabs';
 
 export const ActivityDetailPage = () => {
@@ -47,6 +49,7 @@ export const ActivityDetailPage = () => {
     <div className="bg-cream min-h-screen pb-6">
       <div className="bg-white">
         <img
+          decoding="async"
           src={activity.cover || '/default-activity-cover.png'}
           alt={activity.title}
           className="w-full h-48 object-cover"
@@ -89,7 +92,13 @@ export const ActivityDetailPage = () => {
               <Button
                 variant="secondary"
                 className="flex-1"
-                onClick={() => setShowSubmissionForm(true)}
+                onClick={() => {
+                  if (!isLoggedIn) {
+                    navigate('/login');
+                    return;
+                  }
+                  setShowSubmissionForm(true);
+                }}
               >
                 提交作品
               </Button>
@@ -146,12 +155,13 @@ export const ActivityDetailPage = () => {
         {activeTab === 'submissions' && (
           <div>
             {submissions.length === 0 ? (
-              <div className="py-8 text-center text-brown-muted">暂无作品</div>
+              <EmptyState compact title="暂无作品" />
             ) : (
               <div className="grid grid-cols-2 gap-4">
                 {submissions.map((submission) => (
                   <Card key={submission.id} padding="none">
                     <img
+                      decoding="async"
                       src={submission.images?.[0] || '/default-submission.png'}
                       alt={submission.title}
                       className="w-full h-32 object-cover"
@@ -162,6 +172,7 @@ export const ActivityDetailPage = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
                           <img
+                            decoding="async"
                             src={submission.userAvatar || getDefaultUserAvatar()}
                             alt=""
                             className="w-5 h-5 rounded-full"
@@ -193,47 +204,23 @@ export const ActivityDetailPage = () => {
         )}
       </div>
 
-      {showRegistrationForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overscroll-contain">
-          <Card className="w-full max-w-md max-h-[min(90dvh,40rem)] overflow-y-auto overscroll-contain" padding="none">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h3 className="text-lg font-medium text-brown">活动报名</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label="关闭"
-                onClick={() => setShowRegistrationForm(false)}
-              >
-                <X size={20} aria-hidden="true" />
-              </Button>
-            </div>
-            <div className="p-4">
-              <RegistrationForm activity={activity} onSuccess={handleRefresh} />
-            </div>
-          </Card>
-        </div>
-      )}
+      <Modal
+        open={showRegistrationForm}
+        onClose={() => setShowRegistrationForm(false)}
+        title="活动报名"
+        size="md"
+      >
+        <RegistrationForm activity={activity} onSuccess={handleRefresh} />
+      </Modal>
 
-      {showSubmissionForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overscroll-contain">
-          <Card className="w-full max-w-md max-h-[min(90dvh,40rem)] overflow-y-auto overscroll-contain" padding="none">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h3 className="text-lg font-medium text-brown">提交作品</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label="关闭"
-                onClick={() => setShowSubmissionForm(false)}
-              >
-                <X size={20} aria-hidden="true" />
-              </Button>
-            </div>
-            <div className="p-4">
-              <SubmissionUploader activity={activity} onSuccess={handleRefresh} />
-            </div>
-          </Card>
-        </div>
-      )}
+      <Modal
+        open={showSubmissionForm}
+        onClose={() => setShowSubmissionForm(false)}
+        title="提交作品"
+        size="md"
+      >
+        <SubmissionUploader activity={activity} onSuccess={handleRefresh} />
+      </Modal>
     </div>
   );
 };

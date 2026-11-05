@@ -38,7 +38,7 @@ export function ChatImagePreview({
       }
     >
       <div className="chat-image-preview__body">
-        {src ? <img src={src} alt="待发送的图片" /> : null}
+        {src ? <img src={src} alt="待发送的图片" decoding="async" /> : null}
         <p className="chat-image-preview__tip">图片将以上述内容发送（≤2MB）</p>
       </div>
     </Modal>

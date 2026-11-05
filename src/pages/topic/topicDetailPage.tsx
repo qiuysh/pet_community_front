@@ -3,10 +3,12 @@ import { useTopicDetail } from '../../hooks/useTopicDetail';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { ShareSheet } from '../../components/post/shareSheet';
-import { ChevronLeft, Heart, MessageCircle, Share2, UserPlus, UserCheck } from 'lucide-react';
+import { Heart, MessageCircle, Share2, UserPlus, UserCheck } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
+import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
 import './topicDetailPage.scss';
 
@@ -46,16 +48,14 @@ export const TopicDetailPage = () => {
   return (
     <div className="topic-detail-page">
       <div className="detail-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
+        <BackButton />
         <span className="title">话题详情</span>
       </div>
 
       <Card padding="none" className="topic-info-card">
         <div className="topic-cover">
           {topic.cover ? (
-            <img src={topic.cover} alt={topic.name} />
+            <img src={topic.cover} alt={topic.name} decoding="async" />
           ) : (
             <div className="cover-placeholder">#</div>
           )}
@@ -126,7 +126,7 @@ export const TopicDetailPage = () => {
               ))}
             </>
           )}
-          {!loadingPosts && posts.length === 0 && <div className="empty">暂无相关动态</div>}
+          {!loadingPosts && posts.length === 0 && <EmptyState title="暂无相关动态" />}
 
           {posts.map((post) => (
             <Link key={post.id} to={`/posts/${post.id}`} className="post-card">
@@ -142,7 +142,7 @@ export const TopicDetailPage = () => {
                 <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                   {post.images.slice(0, 9).map((img, idx) => (
                     <div key={idx} className="post-image">
-                      <img src={img} alt="" />
+                      <img src={img} alt="" decoding="async" />
                     </div>
                   ))}
                 </div>

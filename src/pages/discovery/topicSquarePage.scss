@@ -37,7 +37,7 @@
 
     .header-content {
       position: relative;
-      z-index: 1;
+      z-index: $z-index-base;
 
       h1 {
         font-size: $font-size-2xl;
@@ -47,7 +47,7 @@
       }
 
       p {
-        font-size: $font-size-base;
+        font-size: $font-size-sm;
         opacity: 0.9;
         font-weight: 400;
       }
@@ -55,7 +55,7 @@
 
     .create-topic-btn {
       position: relative;
-      z-index: 1;
+      z-index: $z-index-base;
       margin-top: $spacing-md;
       border-color: rgba(255, 255, 255, 0.8);
       color: white;
@@ -72,7 +72,7 @@
     text-align: center;
     padding: $spacing-2xl;
     color: $text-muted;
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
   }
 
   .section {
@@ -109,7 +109,7 @@
         text-align: center;
         text-decoration: none;
         color: $text-primary;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: box-shadow $duration-slow cubic-bezier(0.4, 0, 0.2, 1), transform $duration-slow cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: $shadow-card;
         position: relative;
         overflow: hidden;
@@ -123,7 +123,7 @@
           height: 3px;
           background: linear-gradient(90deg, $primary-color, $primary-light);
           opacity: 0;
-          transition: opacity 0.25s ease;
+          transition: opacity $duration-slow ease;
         }
 
         &:hover {
@@ -145,7 +145,7 @@
           align-items: center;
           justify-content: center;
           color: $primary-color;
-          transition: all 0.25s ease;
+          transition: background-color $duration-slow ease, color $duration-slow ease, transform $duration-slow ease;
         }
 
         &:hover .category-icon-wrap {
@@ -156,7 +156,7 @@
 
         .category-name {
           font-weight: 600;
-          font-size: $font-size-sm;
+          font-size: $font-size-base;
           margin-bottom: 4px;
           color: $text-primary;
         }
@@ -186,9 +186,9 @@
         background: $background-white;
         border-radius: 20px;
         text-decoration: none;
-        font-size: $font-size-base;
+        font-size: $font-size-sm;
         border: 1px solid $border-light;
-        transition: all 0.2s ease;
+        transition: border-color $duration-base ease, box-shadow $duration-base ease, transform $duration-base ease;
         color: $text-secondary;
 
         &:hover {
@@ -204,7 +204,7 @@
         }
 
         &.medium {
-          font-size: $font-size-sm;
+          font-size: $font-size-base;
           padding: 9px 16px;
           font-weight: 500;
         }
@@ -275,19 +275,12 @@
       padding: $spacing-xs;
       box-shadow: $shadow-card;
 
-      .hot-topic-empty {
-        padding: $spacing-lg $spacing-sm;
-        text-align: center;
-        color: $text-muted;
-        font-size: $font-size-sm;
-      }
-
       .hot-topic-item {
         display: flex;
         align-items: center;
         padding: $spacing-sm $spacing-xs;
         border-radius: $border-radius-sm;
-        transition: background 0.2s ease;
+        transition: background $duration-base ease;
         cursor: pointer;
         text-decoration: none;
         color: inherit;
@@ -365,13 +358,13 @@
 
           .topic-name {
             font-weight: 500;
-            font-size: $font-size-base;
+            font-size: $font-size-sm;
             color: $text-primary;
             margin-bottom: 2px;
           }
 
           .topic-desc {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             white-space: nowrap;
             overflow: hidden;
@@ -387,7 +380,7 @@
           margin-left: $spacing-xs;
 
           .posts-count {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             white-space: nowrap;
           }
@@ -395,9 +388,9 @@
 
         .topic-arrow {
           color: $text-light;
-          font-size: $font-size-base;
+          font-size: $font-size-sm;
           flex-shrink: 0;
-          transition: transform 0.2s ease;
+          transition: transform $duration-base ease;
         }
 
         &:hover .topic-arrow {

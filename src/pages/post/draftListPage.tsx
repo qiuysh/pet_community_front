@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Trash2, FileEdit } from 'lucide-react';
+import { Trash2, FileEdit } from 'lucide-react';
 import { getDraftList, deleteDraft } from '../../api/post';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { DraftInfo } from '../../types/post';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
+import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
-import { Modal } from '../../components/ui/modal';
+import { ConfirmDialog } from '../../components/ui/confirmDialog';
 import { Spinner } from '../../components/ui/spinner';
 import { Skeleton } from '../../components/ui/skeleton';
 
@@ -53,16 +54,7 @@ export function DraftListPage() {
     <div className="min-h-screen bg-cream">
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="p-2 -ml-2 text-brown"
-            onClick={() => navigate(-1)}
-            aria-label="返回"
-          >
-            <ChevronLeft size={22} />
-          </Button>
+          <BackButton className="-ml-2" />
           <h1 className="text-lg font-semibold text-brown">草稿箱</h1>
           <Link to="/posts/create" className="text-sm text-primary font-medium">
             写动态
@@ -73,7 +65,7 @@ export function DraftListPage() {
       <div className="max-w-3xl mx-auto px-4 py-4 space-y-3">
         {loading && drafts.length === 0 ? (
           <div className="py-12 flex flex-col items-center gap-4">
-            <Spinner label="加载中..." />
+            <Spinner label="加载中…" />
             {[1, 2, 3].map((i) => (
               <Card key={i} className="w-full">
                 <Skeleton className="h-4 w-full mb-2" />
@@ -130,27 +122,15 @@ export function DraftListPage() {
         )}
       </div>
 
-      <Modal
+      <ConfirmDialog
         open={deleteTarget !== null}
-        onClose={() => !deleting && setDeleteTarget(null)}
-        title="删除草稿"
-        size="sm"
-        dismissable={!deleting}
-        footer={
-          <>
-            <Button variant="ghost" disabled={deleting} onClick={() => setDeleteTarget(null)}>取消</Button>
-            <Button
-              variant="danger"
-              loading={deleting}
-              onClick={() => deleteTarget !== null && handleDelete(deleteTarget)}
-            >
-              删除
-            </Button>
-          </>
-        }
-      >
-        确定删除该草稿？此操作不可撤销。
-      </Modal>
+        title="删除草稿？"
+        description="删除后草稿内容将永久丢失，无法恢复。"
+        confirmText="删除"
+        loading={deleting}
+        onConfirm={() => deleteTarget !== null && handleDelete(deleteTarget)}
+        onCancel={() => !deleting && setDeleteTarget(null)}
+      />
     </div>
   );
 }

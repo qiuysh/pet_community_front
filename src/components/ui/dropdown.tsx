@@ -78,7 +78,7 @@ export function Dropdown({
         aria-label={resolved.ariaLabel}
         isDisabled={resolved.isDisabled}
         className={[
-          'inline-flex items-center justify-center rounded-sm outline-none',
+          'inline-flex items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
           resolved.className,
           className,
         ]

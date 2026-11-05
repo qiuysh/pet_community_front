@@ -1,12 +1,15 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useSearch } from '../../hooks/useSearch';
+import { useConfirm } from '../../hooks/useConfirm';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Search, X, Heart, MessageCircle } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Input } from '../../components/ui/input';
 import { Skeleton } from '../../components/ui/skeleton';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { formatCount } from '../../utils/format';
 import './searchPage.scss';
 
 const metaIconProps = {
@@ -34,6 +37,16 @@ export const SearchPage = () => {
     handleClearHistory,
     handleHotKeywordClick,
   } = useSearch();
+  const { confirm, confirmDialog } = useConfirm();
+
+  const handleClearHistoryWithConfirm = async () => {
+    const confirmed = await confirm({
+      title: '清空搜索历史？',
+      description: '全部搜索记录将被清除，清除后无法恢复。',
+      confirmText: '清空',
+    });
+    if (confirmed) handleClearHistory();
+  };
 
   return (
     <div className="search-page">
@@ -44,7 +57,7 @@ export const SearchPage = () => {
             type="text"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="搜索用户、帖子、话题..."
+            placeholder="搜索用户、帖子、话题…"
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             aria-label="搜索"
             className="search-field"
@@ -68,15 +81,16 @@ export const SearchPage = () => {
             </div>
             <div className="hot-keywords">
               {hotKeywords.map((kw, index) => (
-                <div
+                <button
+                  type="button"
                   key={kw.id}
                   className="hot-keyword-item"
                   onClick={() => handleHotKeywordClick(kw.keyword)}
                 >
                   <span className={`rank ${index < 3 ? 'top' : ''}`}>{kw.rank}</span>
                   <span className="keyword">{kw.keyword}</span>
-                  <span className="count">{kw.searchCount}次</span>
-                </div>
+                  <span className="count tabular-nums">{formatCount(kw.searchCount)}次</span>
+                </button>
               ))}
             </div>
           </div>
@@ -85,7 +99,7 @@ export const SearchPage = () => {
             <div className="section-header">
               <span>搜索历史</span>
               {history.length > 0 && (
-                <Button type="button" variant="ghost" size="sm" className="clear-btn" onClick={handleClearHistory}>
+                <Button type="button" variant="ghost" size="sm" className="clear-btn" onClick={handleClearHistoryWithConfirm}>
                   清空
                 </Button>
               )}
@@ -95,9 +109,13 @@ export const SearchPage = () => {
                 {history.map((item) => (
                   <div key={item.id} className="history-item">
                     <span className="history-icon" aria-hidden="true"><Search {...metaIconProps} /></span>
-                    <span className="history-keyword" onClick={() => setKeyword(item.keyword)}>
+                    <button
+                      type="button"
+                      className="history-keyword"
+                      onClick={() => setKeyword(item.keyword)}
+                    >
                       {item.keyword}
-                    </span>
+                    </button>
                     <Button type="button" variant="ghost" size="sm" className="delete-btn" onClick={() => handleDeleteHistory(item.id)} aria-label="删除历史">
                       <X {...metaIconProps} />
                     </Button>
@@ -105,7 +123,7 @@ export const SearchPage = () => {
                 ))}
               </div>
             ) : (
-              <div className="empty">暂无搜索历史</div>
+              <EmptyState compact title="暂无搜索历史" />
             )}
           </div>
         </div>
@@ -136,7 +154,7 @@ export const SearchPage = () => {
                       <Avatar src={user.avatar || getDefaultUserAvatar()} name={user.nickname} className="avatar" />
                       <div className="user-info">
                         <div className="nickname">{user.nickname}</div>
-                        <div className="followers">{user.followersCount} 粉丝</div>
+                        <div className="followers tabular-nums">{formatCount(user.followersCount)} 粉丝</div>
                       </div>
                     </Link>
                   ))}
@@ -160,19 +178,19 @@ export const SearchPage = () => {
                         <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                           {post.images.slice(0, 9).map((img, idx) => (
                             <div key={idx} className="post-image">
-                              <img src={img} alt="" loading="lazy" />
+                              <img src={img} alt="" loading="lazy" decoding="async" />
                             </div>
                           ))}
                         </div>
                       )}
-                      <div className="post-meta">
+                      <div className="post-meta tabular-nums">
                         <span className="action-item">
                           <Heart {...metaIconProps} />
-                          <span className="count">{post.likesCount}</span>
+                          <span className="count">{formatCount(post.likesCount)}</span>
                         </span>
                         <span className="action-item">
                           <MessageCircle {...metaIconProps} />
-                          <span className="count">{post.commentsCount}</span>
+                          <span className="count">{formatCount(post.commentsCount)}</span>
                         </span>
                       </div>
                     </Link>
@@ -189,19 +207,21 @@ export const SearchPage = () => {
                         <div className="topic-name">{topic.name}</div>
                         <div className="topic-desc">{topic.description}</div>
                       </div>
-                      <span className="posts-count">{topic.postsCount}帖子</span>
+                      <span className="posts-count tabular-nums">{formatCount(topic.postsCount)}帖子</span>
                     </Link>
                   ))}
                 </div>
               )}
 
               {result.users.length === 0 && result.posts.length === 0 && result.topics.length === 0 && (
-                <div className="empty">没有找到相关结果</div>
+                <EmptyState title="没有找到相关结果" />
               )}
             </>
           )}
         </div>
       )}
+
+      {confirmDialog}
     </div>
   );
 };

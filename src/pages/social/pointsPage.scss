@@ -4,37 +4,6 @@
   min-height: 100vh;
   background-color: $background-color;
 
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background-color: $background-white;
-    box-shadow: $shadow-card;
-
-    .back-btn {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      color: $text-primary;
-      cursor: pointer;
-    }
-
-    .page-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: $text-primary;
-    }
-
-    .placeholder {
-      width: 40px;
-    }
-  }
-
   .level-card {
     margin: 16px;
     padding: 20px;
@@ -51,7 +20,7 @@
         padding: 4px 12px;
         background-color: rgba($background-white, 0.2);
         border-radius: 20px;
-        font-size: 14px;
+        font-size: $font-size-sm;
         font-weight: 600;
         margin-right: 10px;
       }
@@ -72,7 +41,7 @@
       }
 
       .points-label {
-        font-size: 14px;
+        font-size: $font-size-sm;
         opacity: 0.8;
       }
     }
@@ -87,13 +56,13 @@
         height: 100%;
         background-color: $background-white;
         border-radius: 4px;
-        transition: width 0.3s;
+        transition: width $duration-emphasized;
       }
     }
 
     .progress-text {
       text-align: right;
-      font-size: 12px;
+      font-size: $font-size-xs;
       margin-top: 8px;
       opacity: 0.8;
     }
@@ -110,13 +79,13 @@
       flex: 1;
       padding: 12px 0;
       text-align: center;
-      font-size: 15px;
+      font-size: $font-size-base;
       color: $text-secondary;
       background: none;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background-color $duration-base, color $duration-base;
 
       &.active {
         background-color: $primary-color;
@@ -129,11 +98,6 @@
     padding: 16px;
 
     .loading,
-    .empty {
-      text-align: center;
-      padding: 40px;
-      color: $text-muted;
-    }
 
     .records-list {
       .record-item {
@@ -159,19 +123,19 @@
           flex: 1;
 
           .record-desc {
-            font-size: 15px;
+            font-size: $font-size-base;
             color: $text-primary;
           }
 
           .record-time {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             margin-top: 4px;
           }
         }
 
         .record-points {
-          font-size: 16px;
+          font-size: $font-size-large;
           font-weight: 600;
 
           &.gain {
@@ -209,13 +173,13 @@
           flex: 1;
 
           .rule-name {
-            font-size: 15px;
+            font-size: $font-size-base;
             color: $text-primary;
             font-weight: 600;
           }
 
           .rule-limit {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             margin-top: 4px;
           }
@@ -253,13 +217,13 @@
           flex: 1;
 
           .benefit-name {
-            font-size: 15px;
+            font-size: $font-size-base;
             color: $text-primary;
             font-weight: 600;
           }
 
           .benefit-desc {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             margin-top: 4px;
           }
@@ -269,7 +233,7 @@
           padding: 4px 10px;
           background-color: $warning-color;
           color: $background-white;
-          font-size: 12px;
+          font-size: $font-size-xs;
           font-weight: 600;
           border-radius: 10px;
         }

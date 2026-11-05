@@ -74,13 +74,14 @@ $border-radius-base: 16px;
 $border-radius-lg: 20px;
 $border-radius-xl: 24px;
 
-$font-size-xs: 12px;
-$font-size-base: 14px;
-$font-size-sm: 15px;
-$font-size-large: 16px;
-$font-size-title: 20px;
-$font-size-xl: 24px;
-$font-size-2xl: 28px;
+// 字号阶梯（必须逐级递增，否则命名会误导：xs < sm < base < large < title < xl < 2xl）
+$font-size-xs: 12px; // 辅助说明、计数单位
+$font-size-sm: 14px; // 次要正文、密集列表
+$font-size-base: 15px; // 正文基准
+$font-size-large: 16px; // 强调正文、卡片标题
+$font-size-title: 20px; // 页面/区块标题
+$font-size-xl: 24px; // 首屏大标题
+$font-size-2xl: 28px; // 数据大数、营销标题
 
 $spacing-xs: 8px;
 $spacing-sm: 12px;
@@ -99,3 +100,25 @@ $shadow-card: 0 2px 16px rgba(43, 47, 51, 0.04), 0 4px 8px rgba(43, 47, 51, 0.03
 $shadow-hover: 0 6px 24px rgba(43, 47, 51, 0.08), 0 8px 12px rgba(43, 47, 51, 0.05);
 $shadow-brand: 0 4px 16px rgba(240, 120, 90, 0.28);
 $shadow-brand-hover: 0 6px 22px rgba(240, 120, 90, 0.34);
+
+// ============================================
+// 层级（z-index）：按角色取值，仅用于必须脱离文档流的元素，禁止裸数字
+// ============================================
+$z-index-base: 1; // 卡内浮层：图片、角标、渐变遮罩
+$z-index-raised: 2; // 卡内第二层：悬停遮罩上方的按钮/标签
+$z-index-sticky: 10; // 页内 sticky 头、悬浮工具条
+$z-index-dropdown: 20; // 下拉、浮层、搜索结果面板
+$z-index-nav: 100; // 全局导航（顶栏 / 底部 tab）
+$z-index-overlay: 200; // 抽屉、局部遮罩
+$z-index-modal: 1000; // 全屏弹层（图片预览等）
+$z-index-toast: 9999; // 全局提示，永远在最上
+
+// ============================================
+// 动效（时长 / 缓动）：交互反馈 0.15–0.3s，超过 0.3s 会显得拖沓
+// ============================================
+$duration-fast: 0.15s; // hover / 按下反馈
+$duration-base: 0.2s; // 常规状态切换（颜色、背景）
+$duration-slow: 0.25s; // 阴影、位移、展开
+$duration-emphasized: 0.3s; // 需要被注意到的过渡
+$ease-standard: ease;
+$ease-emphasized: cubic-bezier(0.4, 0, 0.2, 1);

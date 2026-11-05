@@ -3,7 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { createPet, updatePet, getPetDetail, getPetBreeds, uploadPetAvatar } from '../api/pet';
 import { useAsync } from './useAsync';
 import { showSuccessToast, showErrorToast } from '../utils/toastManager';
+import type { FormErrors } from './useFormErrors';
 import { PetCreateRequest, PetBreedInfo } from '../types/pet';
+
+type PetFormField = 'name' | 'weight' | 'personality' | 'bio';
 
 /**
  * 宠物创建/编辑表单 hook
@@ -25,6 +28,7 @@ export function usePetForm() {
   const { run: runBreeds } = useAsync();
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [breeds, setBreeds] = useState<PetBreedInfo[]>([]);
+  const [errors, setErrors] = useState<FormErrors<PetFormField>>({});
   const [formData, setFormData] = useState<PetCreateRequest>({
     name: '',
     petType: 1,
@@ -80,10 +84,22 @@ export function usePetForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const next: FormErrors<PetFormField> = {};
     if (!formData.name.trim()) {
-      showErrorToast('请输入宠物名称');
+      next.name = '请输入宠物名称';
+    }
+    const weight = formData.weight ?? 0;
+    if (weight < 0 || weight > 200) {
+      next.weight = '体重需在 0-200 kg 之间';
+    }
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
+      const form = e.currentTarget as HTMLFormElement;
+      const first = (Object.keys(next) as PetFormField[])[0];
+      requestAnimationFrame(() => form.querySelector<HTMLElement>(`[name="${first}"]`)?.focus());
       return;
     }
+    setErrors({});
 
     run(
       async () => {
@@ -109,6 +125,13 @@ export function usePetForm() {
 
   const updateField = (field: keyof PetCreateRequest, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    if (field in errors) {
+      setErrors(prev => {
+        const next = { ...prev };
+        delete next[field as PetFormField];
+        return next;
+      });
+    }
   };
 
   const handleAvatarUpload = async (file: File | null) => {
@@ -140,6 +163,7 @@ export function usePetForm() {
     uploadingAvatar,
     breeds,
     formData,
+    errors,
     updateField,
     handleAvatarUpload,
     handleSubmit,

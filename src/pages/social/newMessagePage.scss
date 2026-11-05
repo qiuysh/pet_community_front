@@ -6,36 +6,6 @@
   display: flex;
   flex-direction: column;
 
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: $background-white;
-    border-bottom: 1px solid $border-color;
-
-    .back-btn {
-      background: transparent;
-      border: none;
-      padding: 4px;
-      cursor: pointer;
-      color: $text-secondary;
-      display: flex;
-      align-items: center;
-    }
-
-    .page-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: $text-primary;
-      margin: 0;
-    }
-
-    .placeholder {
-      width: 24px;
-    }
-  }
-
   .follow-list-section {
     padding: 16px;
 
@@ -46,31 +16,6 @@
     }
 
     .loading,
-    .empty {
-      text-align: center;
-      color: $text-muted;
-      padding: 48px 16px;
-      font-size: 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-
-      .explore-btn {
-        margin-top: 8px;
-        padding: 8px 16px;
-        background: $primary-color;
-        color: $background-white;
-        border: none;
-        border-radius: $border-radius-xs;
-        font-size: 13px;
-        cursor: pointer;
-
-        &:hover {
-          background: $primary-dark;
-        }
-      }
-    }
 
     .follow-list {
       display: flex;
@@ -88,7 +33,7 @@
       border-radius: $border-radius-sm;
       cursor: pointer;
       text-align: left;
-      transition: box-shadow 0.15s;
+      transition: box-shadow $duration-fast;
 
       &:hover {
         box-shadow: $shadow-card;
@@ -109,13 +54,13 @@
         min-width: 0;
 
         .user-name {
-          font-size: 14px;
+          font-size: $font-size-sm;
           font-weight: 500;
           color: $text-primary;
         }
 
         .user-sig {
-          font-size: 12px;
+          font-size: $font-size-xs;
           color: $text-muted;
           margin-top: 2px;
           white-space: nowrap;
@@ -144,7 +89,7 @@
       padding: 12px;
 
       .target-label {
-        font-size: 12px;
+        font-size: $font-size-xs;
         color: $text-muted;
         margin-bottom: 6px;
       }
@@ -163,7 +108,7 @@
 
         .remove-mark {
           color: $text-light;
-          font-size: 16px;
+          font-size: $font-size-large;
           line-height: 1;
         }
 
@@ -180,13 +125,18 @@
       border: 1px solid $border-color;
       border-radius: $border-radius-sm;
       background: $background-white;
-      font-size: 14px;
+      font-size: $font-size-sm;
       color: $text-primary;
       resize: vertical;
       font-family: inherit;
       outline: none;
 
       &:focus {
+        border-color: $primary-color;
+      }
+
+      // 键盘聚焦才画环，鼠标点入只变色（避免每次点击都闪一圈）
+      &:focus-visible {
         border-color: $primary-color;
         box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
       }
@@ -202,7 +152,7 @@
       justify-content: flex-end;
 
       .char-count {
-        font-size: 12px;
+        font-size: $font-size-xs;
         color: $text-light;
       }
     }
@@ -218,10 +168,10 @@
       color: $background-white;
       border: none;
       border-radius: $border-radius-sm;
-      font-size: 15px;
+      font-size: $font-size-base;
       font-weight: 500;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background $duration-fast;
 
       &:hover:not(:disabled) {
         background: $primary-dark;

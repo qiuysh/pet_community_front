@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Search } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { useChat } from '../../hooks/useChat';
 import { useMessageSearch } from '../../hooks/useMessageSearch';
+import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
 import { ChatComposer } from '../../components/chat/chatComposer';
@@ -11,6 +12,8 @@ import { ChatSearchBar } from '../../components/chat/chatSearchBar';
 import { ChatSearchResults } from '../../components/chat/chatSearchResults';
 import { ChatImagePreview } from '../../components/chat/chatImagePreview';
 import { ImageLightbox } from '../../components/chat/imageLightbox';
+import { getPublicProfile } from '../../api/user';
+import { getUserAvatar } from '../../utils/avatarUtils';
 import { showInfoToast } from '../../utils/toastManager';
 import './chatPage.scss';
 
@@ -29,13 +32,14 @@ const ChatPage: React.FC = () => {
     conversationId: string;
     targetUserId: string;
   }>();
-  const navigate = useNavigate();
   const currentUserId = parseInt(localStorage.getItem('user_id') || '0');
+  const peerUserId = parseInt(targetUserId || '0');
 
-  const chat = useChat(parseInt(conversationId || '0'), parseInt(targetUserId || '0'));
+  const chat = useChat(parseInt(conversationId || '0'), peerUserId);
   const search = useMessageSearch(parseInt(conversationId || '0'));
   const resetSearch = search.reset;
 
+  const [peer, setPeer] = useState<{ nickname: string; avatar: string } | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [locatingId, setLocatingId] = useState<number | null>(null);
   const [preview, setPreview] = useState<ImagePreviewState | null>(null);
@@ -63,6 +67,27 @@ const ChatPage: React.FC = () => {
       }
     };
   }, []);
+
+  // 拉取对方公开资料，用于会话头部头像与昵称；失败时保留占位，不阻塞聊天
+  useEffect(() => {
+    let cancelled = false;
+    if (!peerUserId) {
+      setPeer(null);
+      return;
+    }
+    getPublicProfile(peerUserId)
+      .then((profile) => {
+        if (!cancelled) {
+          setPeer({ nickname: profile.nickname, avatar: profile.avatar });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setPeer(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [peerUserId]);
 
   const openSearch = () => setSearchOpen(true);
 
@@ -104,18 +129,10 @@ const ChatPage: React.FC = () => {
         />
       ) : (
         <div className="chat-header">
-          <Button
-            type="button"
-            variant="ghost"
-            className="back-btn"
-            onClick={() => navigate(-1)}
-            aria-label="返回"
-          >
-            <ChevronLeft size={24} aria-hidden="true" />
-          </Button>
-          <Link to={`/profile/${targetUserId}`} className="user-info">
-            <div className="user-avatar" />
-            <span className="user-name">对方用户</span>
+          <BackButton />
+          <Link to={`/profile/${peerUserId}`} className="user-info">
+            <img className="user-avatar" src={getUserAvatar(peer?.avatar)} alt="" decoding="async" />
+            <span className="user-name">{peer?.nickname || '宠友'}</span>
           </Link>
           <Button
             type="button"

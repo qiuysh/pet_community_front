@@ -38,7 +38,12 @@ export function ChatSearchResults({
   if (status === 'idle') return null;
 
   return (
-    <div className="chat-search-results" role="dialog" aria-label="消息搜索结果">
+    <div
+      className="chat-search-results"
+      role="region"
+      aria-label="消息搜索结果"
+      aria-busy={status === 'loading' || status === 'debouncing'}
+    >
       {(status === 'debouncing' || status === 'loading') && (
         <div className="chat-search-results__skeletons">
           {[1, 2, 3].map((i) => (
@@ -48,7 +53,7 @@ export function ChatSearchResults({
       )}
 
       {status === 'error' && (
-        <div className="chat-search-results__state">
+        <div className="chat-search-results__state" role="status">
           <p>{error || '搜索失败，请稍后重试'}</p>
           <Button variant="outline" size="sm" onClick={onRetry}>
             重试
@@ -57,7 +62,7 @@ export function ChatSearchResults({
       )}
 
       {status === 'empty' && (
-        <div className="chat-search-results__state">
+        <div className="chat-search-results__state" role="status">
           <p>没有找到相关消息</p>
         </div>
       )}

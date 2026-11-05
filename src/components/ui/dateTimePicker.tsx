@@ -156,6 +156,7 @@ export function DateTimePicker({
                 className={[
                   sizeTrigger[size],
                   'inline-flex items-center justify-center rounded-sm text-brown-muted transition-colors',
+                  'focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none',
                   tone === 'secondary'
                     ? 'hover:bg-secondary-soft hover:text-secondary-dark'
                     : 'hover:bg-soft hover:text-brown',
@@ -167,7 +168,7 @@ export function DateTimePicker({
             </DateField.Suffix>
           </DateField.Group>
 
-          <DatePicker.Popover className="z-50 flex flex-col gap-3 rounded-sm border border-border-light bg-white p-3 shadow-hover">
+          <DatePicker.Popover className="z-50 flex flex-col gap-3 rounded-sm border border-border-light bg-white p-3 shadow-hover overscroll-contain">
             <Calendar aria-label={ariaLabel}>
               <Calendar.Header className="mb-2 flex items-center gap-1">
                 <Calendar.YearPickerTrigger className="flex flex-1 items-center gap-1 text-sm font-medium text-brown">

@@ -27,7 +27,7 @@
   padding-top: var(--user-safe-top);
   background: $background-white;
   border-bottom: 1px solid $border-light;
-  z-index: 100;
+  z-index: $z-index-nav;
   box-shadow: $shadow-soft;
 
   .header-content {
@@ -92,11 +92,11 @@
 
     .nav-item {
       color: $text-primary;
-      font-size: $font-size-base;
+      font-size: $font-size-sm;
       font-weight: 500;
       padding: $spacing-sm $spacing-md;
       border-radius: $border-radius-sm;
-      transition: color 0.2s ease, background-color 0.2s ease;
+      transition: color $duration-base ease, background-color $duration-base ease;
       position: relative;
 
       &:hover {
@@ -156,7 +156,7 @@
         justify-content: center;
         color: $text-secondary;
         border-radius: $border-radius-sm;
-        transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+        transition: color $duration-base ease, background-color $duration-base ease, transform $duration-base ease;
 
         &:hover {
           color: $primary-color;
@@ -186,7 +186,7 @@
           border-radius: 50%;
           object-fit: cover;
           border: 2px solid $border-light;
-          transition: border-color 0.2s;
+          transition: border-color $duration-base;
 
           &:hover {
             border-color: $primary-color;
@@ -212,7 +212,7 @@
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid $border-light;
-            transition: border-color 0.2s ease, transform 0.2s ease;
+            transition: border-color $duration-base ease, transform $duration-base ease;
           }
 
           &:hover .user-avatar {
@@ -233,7 +233,7 @@
           padding: $spacing-xs;
           // 由 React state 控制显示，仅负责进入动画
           animation: fadeIn 0.2s ease-out;
-          z-index: 200;
+          z-index: $z-index-overlay;
           overscroll-behavior: contain;
         }
 
@@ -243,9 +243,9 @@
           gap: $spacing-sm;
           padding: $spacing-sm $spacing-md;
           color: $text-primary;
-          font-size: $font-size-base;
+          font-size: $font-size-sm;
           border-radius: $border-radius-sm;
-          transition: color 0.2s ease, background-color 0.2s ease;
+          transition: color $duration-base ease, background-color $duration-base ease;
           text-decoration: none;
           width: 100%;
           border: none;
@@ -297,7 +297,7 @@
       color: $text-secondary;
       font-size: $font-size-xs;
       cursor: pointer;
-      transition: border-color 0.2s ease, color 0.2s ease;
+      transition: border-color $duration-base ease, color $duration-base ease;
 
       &:hover {
         border-color: $error-color;
@@ -313,9 +313,9 @@
       .register-btn {
         padding: $spacing-sm $spacing-md;
         border-radius: $border-radius-base;
-        font-size: $font-size-base;
+        font-size: $font-size-sm;
         font-weight: 500;
-        transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        transition: color $duration-base ease, background-color $duration-base ease, border-color $duration-base ease, transform $duration-base ease, box-shadow $duration-base ease;
       }
 
       .login-btn {
@@ -405,7 +405,7 @@
   .site-footer-icp {
     color: inherit;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color $duration-base ease;
 
     &:hover,
     &:focus-visible {
@@ -424,7 +424,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: $z-index-nav;
   height: var(--user-tab-bar-offset);
   padding: 0 $spacing-sm var(--user-safe-bottom);
   background: $background-white;
@@ -454,7 +454,7 @@
     min-height: 44px;
     color: $text-muted;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color $duration-base ease;
     padding: 6px 2px;
     position: relative;
     -webkit-tap-highlight-color: transparent;
@@ -469,7 +469,7 @@
       svg {
         width: 22px;
         height: 22px;
-        transition: transform 0.2s ease, stroke-width 0.2s ease;
+        transition: transform $duration-base ease, stroke-width $duration-base ease;
       }
     }
 
@@ -481,7 +481,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      transition: font-weight 0.2s ease;
+      transition: font-weight $duration-base ease;
     }
 
     &:hover,
@@ -524,7 +524,7 @@
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    z-index: 1;
+    z-index: $z-index-base;
     -webkit-tap-highlight-color: transparent;
 
     .create-post-icon {
@@ -536,7 +536,7 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 14px rgba($primary-color, 0.35);
-      transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      transition: background-color $duration-base ease, transform $duration-base ease, box-shadow $duration-base ease;
 
       svg {
         stroke: white;

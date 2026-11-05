@@ -49,6 +49,7 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
     >
       <div className="relative">
         <img
+          decoding="async"
           src={activity.cover || '/default-activity-cover.png'}
           alt={activity.title}
           className="w-full h-40 object-cover rounded-t-md"

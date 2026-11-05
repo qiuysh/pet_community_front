@@ -75,7 +75,7 @@ html {
 }
 
 body {
-  font-size: $font-size-base;
+  font-size: $font-size-sm;
   min-height: 100vh;
   min-height: 100dvh;
   background-color: $background-color;
@@ -100,7 +100,7 @@ h1 { font-size: $font-size-2xl; letter-spacing: -0.02em; }
 h2 { font-size: $font-size-xl; letter-spacing: -0.01em; }
 h3 { font-size: $font-size-title; }
 h4 { font-size: $font-size-large; }
-h5 { font-size: $font-size-base; }
+h5 { font-size: $font-size-sm; }
 h6 { font-size: $font-size-xs; }
 
 p {
@@ -113,7 +113,7 @@ p {
   :where(a) {
     color: $primary-color;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color $duration-base ease;
   }
 
   :where(a):hover {
@@ -155,6 +155,7 @@ html {
 // ============================================
 
 // 移除默认 outline 仅在 :focus-visible 时显示自定义焦点环
+// 注意：这里不要设置 border-radius，否则聚焦瞬间会把药丸/大圆角控件压成 4px（形状跳变）
 :focus {
   outline: none;
 }
@@ -162,7 +163,6 @@ html {
 :focus-visible {
   outline: 2px solid $primary-color;
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 // Skip link 跳到主要内容
@@ -170,14 +170,14 @@ html {
   position: absolute;
   top: -100px;
   left: 0;
-  z-index: 9999;
+  z-index: $z-index-toast;
   padding: $spacing-sm $spacing-md;
   background: $primary-color;
   color: $background-white;
   border-radius: 0 0 $border-radius-sm 0;
   text-decoration: none;
   font-weight: 500;
-  transition: top 0.2s ease;
+  transition: top $duration-base ease;
 
   &:focus-visible {
     top: 0;

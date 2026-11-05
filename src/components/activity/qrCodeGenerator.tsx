@@ -51,7 +51,7 @@ export const QRCodeGenerator = ({ activityId, onRefresh }: QRCodeGeneratorProps)
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-8">
-        <Spinner label="生成二维码中..." />
+        <Spinner label="生成二维码中…" />
       </div>
     );
   }

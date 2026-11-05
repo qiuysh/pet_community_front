@@ -3,13 +3,15 @@ import { useCategory } from '../../hooks/useCategory';
 import { PetIcon, PostIcon } from '../../components/discovery/filterIcons';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Heart, MessageCircle, Share2, ArrowLeft, Play, Image } from 'lucide-react';
+import { Heart, MessageCircle, Share2, ArrowLeft, Play, Image, Search } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Spinner } from '../../components/ui/spinner';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { formatCount } from '../../utils/format';
 import './categoryPage.scss';
 
 const LikeIcon = ({ active, size = ICON_SIZE.action }: { active?: boolean; size?: number }) => (
@@ -69,12 +71,6 @@ export const CategoryPage = () => {
     { value: 'video', label: '视频', icon: 'video' },
     { value: 'text', label: '文字', icon: 'text' },
   ];
-
-  const formatCount = (count: number) => {
-    if (count >= 10000) return `${(count / 10000).toFixed(1)}万`;
-    if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
-    return String(count);
-  };
 
   return (
     <div className="category-page">
@@ -183,30 +179,16 @@ export const CategoryPage = () => {
               </div>
             ))}
             <div className="flex justify-center py-2">
-              <Spinner size="sm" label="加载中..." />
+              <Spinner size="sm" label="加载中…" />
             </div>
           </div>
         )}
         {!loading && posts.length === 0 && (
-          <div className="empty-state">
-            <svg
-              width={ICON_SIZE.empty}
-              height={ICON_SIZE.empty}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity="0.3"
-              aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <span>暂无相关内容</span>
-            <p className="empty-hint">换个筛选条件试试吧</p>
-          </div>
+          <EmptyState
+            icon={<Search size={ICON_SIZE.empty} strokeWidth={1.2} className="opacity-30" />}
+            title="暂无相关内容"
+            description="换个筛选条件试试吧"
+          />
         )}
         {posts.map((post) => (
           <Link key={post.id} to={`/posts/${post.id}`} className="post-card">
@@ -222,7 +204,7 @@ export const CategoryPage = () => {
               <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                 {post.images.slice(0, 9).map((img, idx) => (
                   <div key={idx} className="post-image">
-                    <img src={img} alt="" />
+                    <img src={img} alt="" decoding="async" />
                     {post.images!.length > 9 && idx === 8 && (
                       <div className="image-more">+{post.images!.length - 9}</div>
                     )}
@@ -238,7 +220,7 @@ export const CategoryPage = () => {
                 </div>
               </div>
             )}
-            <div className="post-actions">
+            <div className="post-actions tabular-nums">
               <span className={`action-item like-action ${post.isLiked ? 'liked' : ''}`}>
                 <LikeIcon active={post.isLiked} />
                 <span>{formatCount(post.likesCount)}</span>

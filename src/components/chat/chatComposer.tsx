@@ -85,6 +85,17 @@ export function ChatComposer({
     recorder.stop();
   };
 
+  const handleVoiceKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key !== ' ' && event.key !== 'Enter') return;
+    event.preventDefault();
+    if (busy) return;
+    if (recorder.recording) {
+      recorder.stop();
+    } else {
+      void recorder.start();
+    }
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
       event.preventDefault();
@@ -137,11 +148,13 @@ export function ChatComposer({
       <button
         type="button"
         className={`composer-icon-btn voice-btn${recorder.recording ? ' is-recording' : ''}`}
-        aria-label={recorder.recording ? '录音中，松开结束' : '按住录音'}
+        aria-label={recorder.recording ? '结束录音并发送' : '开始录音'}
+        aria-pressed={recorder.recording}
         disabled={busy}
         onPointerDown={handleVoicePointerDown}
         onPointerUp={handleVoicePointerUp}
         onPointerCancel={() => recorder.cancel()}
+        onKeyDown={handleVoiceKeyDown}
         onContextMenu={(event) => event.preventDefault()}
       >
         <Mic size={22} aria-hidden="true" />

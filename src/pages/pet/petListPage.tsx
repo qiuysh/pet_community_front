@@ -2,8 +2,9 @@ import { Link } from 'react-router-dom';
 import { usePetList } from '../../hooks/usePetList';
 import { PetTypeOptions, getPetTypeIcon, PetTypeFallbackIcon } from '../../types/pet';
 import { useUserStore } from '../../stores/userStore';
-import { Button } from '../../components/ui/button';
+import { buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Input } from '../../components/ui/input';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -21,8 +22,8 @@ export function PetListPage() {
             <p className="text-brown-secondary text-sm mt-1">发现可爱的毛孩子们</p>
           </div>
           {isLoggedIn && (
-            <Link to="/pets/create">
-              <Button>+ 发布宠物档案</Button>
+            <Link to="/pets/create" className={buttonClass()}>
+              + 发布宠物档案
             </Link>
           )}
         </div>
@@ -47,7 +48,7 @@ export function PetListPage() {
               <Input
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="搜索宠物名称或品种..."
+                placeholder="搜索宠物名称或品种…"
                 aria-label="搜索宠物"
               />
             </div>
@@ -77,6 +78,7 @@ export function PetListPage() {
                 <div className="aspect-square bg-linear-to-br from-primary-soft to-primary-light/20 relative overflow-hidden">
                   {pet.avatar ? (
                     <img
+                      decoding="async"
                       src={pet.avatar}
                       alt={pet.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -102,20 +104,17 @@ export function PetListPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <div className="mb-4 flex justify-center text-brown-light">
-              <PetTypeFallbackIcon size={64} aria-hidden="true" />
-            </div>
-            <p className="text-brown-secondary">暂无宠物档案</p>
-            {isLoggedIn && (
-              <Link
-                to="/pets/create"
-                className="inline-block mt-4 text-primary hover:text-primary-dark font-medium"
-              >
-                立即创建第一个宠物档案
-              </Link>
-            )}
-          </div>
+          <EmptyState
+            icon={<PetTypeFallbackIcon size={56} />}
+            title="暂无宠物档案"
+            action={
+              isLoggedIn ? (
+                <Link to="/pets/create" className="font-medium text-primary hover:text-primary-dark">
+                  立即创建第一个宠物档案
+                </Link>
+              ) : undefined
+            }
+          />
         )}
       </div>
     </div>

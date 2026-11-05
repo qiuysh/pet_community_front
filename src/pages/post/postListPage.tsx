@@ -8,6 +8,7 @@ import { MapPin, Play } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Avatar } from '../../components/ui/avatar';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -76,7 +77,7 @@ export const PostListPage = () => {
             ))}
           </div>
         )}
-        {!loading && posts.length === 0 && <div className="empty">暂无动态</div>}
+        {!loading && posts.length === 0 && <EmptyState title="暂无动态" />}
         {posts.map((post) => (
           <Card key={post.id} padding="none" className="post-card">
             <article className="post-card-inner">
@@ -103,7 +104,7 @@ export const PostListPage = () => {
                 <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                   {post.images.slice(0, 9).map((img, idx) => (
                     <div key={idx} className="post-image">
-                      <img src={img} alt={`动态配图 ${idx + 1}`} loading="lazy" />
+                      <img src={img} alt={`动态配图 ${idx + 1}`} loading="lazy" decoding="async" />
                     </div>
                   ))}
                 </div>

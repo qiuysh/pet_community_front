@@ -5,79 +5,10 @@
   background: $background-color;
   padding-bottom: 80px;
 
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    background: $background-white;
-    box-shadow: $shadow-card;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-
-    .back-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: none;
-      background: $background-color;
-      color: $text-primary;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      &:active {
-        background: $border-color;
-      }
-    }
-
-    .page-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: $text-primary;
-    }
-
-    .action-btn {
-      padding: 8px 16px;
-      border-radius: 20px;
-      border: none;
-      background: $primary-color;
-      color: $background-white;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      &:active {
-        background: $primary-dark;
-      }
-    }
-
-    .placeholder {
-      width: 40px;
-    }
-  }
-
   .loading {
     text-align: center;
     padding: 40px;
     color: $text-muted;
-  }
-
-  .empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 20px;
-    color: $text-muted;
-
-    p {
-      margin-top: 16px;
-      font-size: 16px;
-    }
   }
 
   .notification-list {
@@ -90,11 +21,21 @@
       margin-bottom: 8px;
       background: $background-white;
       border-radius: 12px;
+      border: none;
+      width: 100%;
+      font: inherit;
+      text-align: left;
+      color: inherit;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background $duration-base, opacity $duration-base;
 
       &:active {
         background: $background-muted;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary-color;
+        outline-offset: 2px;
       }
 
       &.unread {
@@ -120,16 +61,19 @@
       .notification-content {
         flex: 1;
         min-width: 0;
+        display: block;
 
         .notification-title {
-          font-size: 14px;
+          display: block;
+          font-size: $font-size-sm;
           font-weight: 600;
           color: $text-primary;
           margin-bottom: 4px;
         }
 
         .notification-desc {
-          font-size: 14px;
+          display: block;
+          font-size: $font-size-sm;
           color: $text-secondary;
           line-height: 1.5;
           margin-bottom: 8px;
@@ -139,7 +83,8 @@
         }
 
         .notification-time {
-          font-size: 12px;
+          display: block;
+          font-size: $font-size-xs;
           color: $text-muted;
         }
       }
@@ -166,9 +111,9 @@
       border: 1px solid $border-color;
       background: $background-white;
       color: $text-secondary;
-      font-size: 14px;
+      font-size: $font-size-sm;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background-color $duration-base;
 
       &:active {
         background: $background-color;

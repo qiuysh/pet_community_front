@@ -4,10 +4,12 @@ import { PetTypeOptions, getPetTypeIcon, PetTypeFallbackIcon } from '../../types
 import { FileText } from 'lucide-react';
 import { PetAlbumSection } from '../../components/pet/petAlbumSection';
 import { PetGrowthSection } from '../../components/pet/petGrowthSection';
-import { Button } from '../../components/ui/button';
+import { buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
+import { formatCount } from '../../utils/format';
 
 export function PetDetailPage() {
   const {
@@ -37,7 +39,7 @@ export function PetDetailPage() {
       <div className="min-h-screen bg-soft flex items-center justify-center">
         <div className="text-center">
           <Spinner className="mx-auto" />
-          <p className="mt-4 text-brown-muted">加载中...</p>
+          <p className="mt-4 text-brown-muted">加载中…</p>
         </div>
       </div>
     );
@@ -100,7 +102,7 @@ export function PetDetailPage() {
           <div className="p-6 flex items-end gap-6">
             <div className="w-32 h-32 rounded-full bg-white p-1 shadow-lg overflow-hidden">
               {pet.avatar ? (
-                <img src={pet.avatar} alt={pet.name} className="w-full h-full rounded-full object-cover" />
+                <img src={pet.avatar} alt={pet.name} className="w-full h-full rounded-full object-cover" decoding="async" />
               ) : (
                 <div className="w-full h-full rounded-full bg-linear-to-br from-primary/10 to-primary-dark/10 flex items-center justify-center text-brown">
                   {(() => {
@@ -133,10 +135,11 @@ export function PetDetailPage() {
             </div>
             <div className="pb-2 flex gap-3">
               {isOwner && (
-                <Link to={`/pets/${pet.id}/edit`}>
-                  <Button type="button" variant="outline" size="sm" className="rounded-lg">
-                    编辑
-                  </Button>
+                <Link
+                  to={`/pets/${pet.id}/edit`}
+                  className={buttonClass({ variant: 'outline', size: 'sm', className: 'rounded-lg' })}
+                >
+                  编辑
                 </Link>
               )}
             </div>
@@ -191,12 +194,7 @@ export function PetDetailPage() {
                   <Spinner />
                 </div>
               ) : relatedPosts.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="mb-3 flex justify-center text-brown-light">
-                    <FileText size={32} aria-hidden="true" />
-                  </div>
-                  <p className="text-brown-muted">暂无相关帖子</p>
-                </div>
+                <EmptyState compact icon={<FileText size={32} />} title="暂无相关帖子" />
               ) : (
                 <ul className="divide-y divide-border-light">
                   {relatedPosts.map((post) => (
@@ -208,9 +206,9 @@ export function PetDetailPage() {
                         <p className="text-sm text-brown line-clamp-2">
                           {post.content || '分享了一条动态'}
                         </p>
-                        <div className="mt-2 flex gap-3 text-xs text-brown-muted">
-                          <span>{post.likesCount} 赞</span>
-                          <span>{post.commentsCount} 评论</span>
+                        <div className="mt-2 flex gap-3 text-xs text-brown-muted tabular-nums">
+                          <span>{formatCount(post.likesCount)} 赞</span>
+                          <span>{formatCount(post.commentsCount)} 评论</span>
                         </div>
                       </Link>
                     </li>
@@ -241,7 +239,9 @@ export function PetDetailPage() {
               </div>
               <div className="flex justify-between py-2 border-b border-border-light">
                 <span className="text-brown-muted">体重</span>
-                <span className="text-brown">{pet.weight || '未知'} kg</span>
+                <span className="text-brown tabular-nums">
+                  {pet.weight > 0 ? `${pet.weight} kg` : '未知'}
+                </span>
               </div>
               <div className="flex justify-between py-2 border-b border-border-light">
                 <span className="text-brown-muted">是否绝育</span>
@@ -253,7 +253,7 @@ export function PetDetailPage() {
               </div>
               <div className="flex justify-between py-2 border-b border-border-light">
                 <span className="text-brown-muted">浏览量</span>
-                <span className="text-brown">{pet.viewCount}</span>
+                <span className="text-brown tabular-nums">{formatCount(pet.viewCount)}</span>
               </div>
             </div>
           </Card>

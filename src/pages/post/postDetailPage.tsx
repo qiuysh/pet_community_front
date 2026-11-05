@@ -5,15 +5,18 @@ import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { usePostDetail } from '../../hooks/usePostDetail';
 import { usePostComments } from '../../hooks/usePostComments';
 import { ReportReasonOptions } from '../../types/post';
-import { ChevronLeft, MoreHorizontal, MapPin, Heart } from 'lucide-react';
+import { MoreHorizontal, MapPin, Heart } from 'lucide-react';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { ShareSheet } from '../../components/post/shareSheet';
 import { PostActions } from '../../components/post/postActions';
+import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Avatar } from '../../components/ui/avatar';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Textarea } from '../../components/ui/input';
 import { Dropdown } from '../../components/ui/dropdown';
 import { Modal } from '../../components/ui/modal';
+import { ConfirmDialog } from '../../components/ui/confirmDialog';
 import { Spinner } from '../../components/ui/spinner';
 import { FilterChip } from '../../components/ui/filterChip';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
@@ -88,7 +91,7 @@ export const PostDetailPage = () => {
     );
   }
 
-  const shareUrl = `${window.location.origin}/#/post/${post.id}`;
+  const shareUrl = `${window.location.origin}/posts/${post.id}`;
 
   const moreMenuItems = isOwner
     ? [
@@ -106,16 +109,7 @@ export const PostDetailPage = () => {
   return (
     <div className="post-detail-page">
       <div className="detail-header">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="back-btn"
-          onClick={() => navigate(-1)}
-          aria-label="返回"
-        >
-          <ChevronLeft size={ICON_SIZE.nav} strokeWidth={iconStroke(ICON_SIZE.nav)} aria-hidden="true" />
-        </Button>
+        <BackButton size={ICON_SIZE.nav} />
         <span className="title">动态详情</span>
         <Dropdown
           aria-label="更多操作"
@@ -155,7 +149,7 @@ export const PostDetailPage = () => {
           <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
             {post.images.map((img, idx) => (
               <div key={idx} className="image-item">
-                <img src={img} alt="" />
+                <img src={img} alt="" decoding="async" />
               </div>
             ))}
           </div>
@@ -234,7 +228,7 @@ export const PostDetailPage = () => {
         </div>
 
         <div className="comments-list">
-          {comments.length === 0 && <div className="empty">暂无评论，快来抢沙发吧～</div>}
+          {comments.length === 0 && <EmptyState compact title="暂无评论，快来抢沙发吧～" />}
           {comments.map((comment) => (
             <div key={comment.id} className="comment-item">
               <Avatar
@@ -368,20 +362,14 @@ export const PostDetailPage = () => {
         />
       </Modal>
 
-      <Modal
+      <ConfirmDialog
         open={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-        title="删除动态"
-        size="sm"
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => setShowDeleteConfirm(false)}>取消</Button>
-            <Button variant="danger" onClick={handleDelete}>删除</Button>
-          </>
-        }
-      >
-        确定删除这条动态吗？此操作不可撤销。
-      </Modal>
+        title="删除这条动态？"
+        description="删除后动态及其评论将一并移除，无法恢复。"
+        confirmText="删除"
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 };

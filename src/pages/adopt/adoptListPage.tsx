@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useAdoptList } from '../../hooks/useAdoptList';
 import { PetType, AdoptionStatus } from '../../types/adopt';
-import { Button } from '../../components/ui/button';
+import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
+import { formatCount } from '../../utils/format';
 
 export const AdoptListPage = () => {
   const {
@@ -17,7 +19,7 @@ export const AdoptListPage = () => {
     handleTypeChange,
   } = useAdoptList();
 
-  const totalPages = Math.ceil(total / 10);
+  const totalPages = Math.max(1, Math.ceil(total / 10));
 
   const getStatusLabel = (status: AdoptionStatus) => {
     switch (status) {
@@ -68,8 +70,8 @@ export const AdoptListPage = () => {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-bold text-brown">领养中心</h1>
-            <Link to="/adopts/create">
-              <Button size="sm">发布领养</Button>
+            <Link to="/adopts/create" className={buttonClass({ size: 'sm' })}>
+              发布领养
             </Link>
           </div>
 
@@ -116,7 +118,7 @@ export const AdoptListPage = () => {
             ))}
           </div>
         ) : adopts.length === 0 ? (
-          <div className="text-center py-8 text-brown-muted">暂无领养信息</div>
+          <EmptyState compact title="暂无领养信息" />
         ) : (
           <div className="space-y-3 mt-4">
             {adopts.map((adopt) => (
@@ -125,6 +127,7 @@ export const AdoptListPage = () => {
                 <div className="flex">
                   {adopt.photos && adopt.photos.length > 0 && (
                     <img
+                      decoding="async"
                       src={adopt.photos[0]}
                       alt={adopt.petName}
                       className="w-24 h-24 object-cover"
@@ -140,7 +143,7 @@ export const AdoptListPage = () => {
                           {getStatusLabel(adopt.status)}
                         </span>
                       </div>
-                      <span className="text-xs text-brown-muted">{adopt.applicationCount} 人申请</span>
+                      <span className="text-xs text-brown-muted tabular-nums">{formatCount(adopt.applicationCount)} 人申请</span>
                     </div>
                     <div className="flex items-center gap-2 mb-2 text-sm text-brown-muted">
                       <span>{getPetTypeLabel(adopt.petType)}</span>

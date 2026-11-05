@@ -1,13 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
 import { useNotificationSettings } from '../../hooks/useNotificationSettings';
-import { Button } from '../../components/ui/button';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
+import { Switch } from '../../components/ui/switch';
 import './notificationSettingsPage.scss';
 
 const NotificationSettingsPage: React.FC = () => {
-  const navigate = useNavigate();
   const { settings, loading, toggleSetting } = useNotificationSettings();
 
   const settingsList = [
@@ -20,13 +18,7 @@ const NotificationSettingsPage: React.FC = () => {
 
   return (
     <div className="notification-settings-page">
-      <div className="page-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">通知设置</h1>
-        <div className="placeholder" />
-      </div>
+      <PageHeader title="通知设置" fallbackTo="/notifications" />
 
       {loading ? (
         <div className="settings-list">
@@ -43,18 +35,16 @@ const NotificationSettingsPage: React.FC = () => {
       ) : (
         <div className="settings-list">
           {settingsList.map((item) => (
-            <div
-              key={item.key}
-              className="setting-item"
-              onClick={() => toggleSetting(item.key)}
-            >
+            <div key={item.key} className="setting-item">
               <div className="setting-info">
                 <div className="setting-title">{item.title}</div>
                 <div className="setting-desc">{item.description}</div>
               </div>
-              <div className={`toggle-switch ${settings[item.key] === 1 ? 'on' : 'off'}`}>
-                <div className="toggle-thumb" />
-              </div>
+              <Switch
+                checked={settings[item.key] === 1}
+                onChange={() => toggleSetting(item.key)}
+                aria-label={item.title}
+              />
             </div>
           ))}
         </div>

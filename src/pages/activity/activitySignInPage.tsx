@@ -4,6 +4,7 @@ import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { MapPin } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { FieldLabel, Input } from '../../components/ui/input';
 import { Tabs } from '../../components/ui/tabs';
 
@@ -76,28 +77,35 @@ export const ActivitySignInPage = () => {
           <div className="space-y-6">
             <Card>
               <h3 className="text-base font-medium text-brown mb-4">活动签到二维码</h3>
-              <QRCodeGenerator activityId={parseInt(activityId!)} />
+              <QRCodeGenerator activityId={activityId} />
             </Card>
 
             <Card>
               <h3 className="text-base font-medium text-brown mb-4">扫码签到</h3>
               <div className="space-y-4">
                 <div>
-                  <FieldLabel>二维码内容</FieldLabel>
+                  <FieldLabel htmlFor="signin-qr-code">二维码内容</FieldLabel>
                   <Input
+                    id="signin-qr-code"
+                    name="qrCode"
                     type="text"
+                    autoComplete="off"
+                    spellCheck={false}
                     value={scanQRCode}
                     onChange={(e) => setScanQRCode(e.target.value)}
-                    placeholder="扫描二维码或输入二维码内容"
+                    placeholder="扫描二维码或输入二维码内容…"
                   />
                 </div>
                 <div>
-                  <FieldLabel>签到地点（可选）</FieldLabel>
+                  <FieldLabel htmlFor="signin-location">签到地点（可选）</FieldLabel>
                   <Input
+                    id="signin-location"
+                    name="signInLocation"
                     type="text"
+                    autoComplete="off"
                     value={signInLocation}
                     onChange={(e) => setSignInLocation(e.target.value)}
-                    placeholder="输入签到地点"
+                    placeholder="输入签到地点…"
                   />
                 </div>
                 <Button
@@ -118,13 +126,14 @@ export const ActivitySignInPage = () => {
         {activeTab === 'signins' && (
           <div>
             {signInList.length === 0 ? (
-              <div className="py-8 text-center text-brown-muted">暂无签到记录</div>
+              <EmptyState compact title="暂无签到记录" />
             ) : (
               <div className="space-y-3">
                 {signInList.map((record) => (
                   <Card key={record.id} padding="sm">
                     <div className="flex items-center gap-2 mb-2">
                       <img
+                        decoding="async"
                         src={record.userAvatar || getDefaultUserAvatar()}
                         alt=""
                         className="w-8 h-8 rounded-full"

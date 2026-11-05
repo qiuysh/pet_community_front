@@ -1,10 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Phone, Lock, Send } from 'lucide-react';
+import { MapPin, Phone, Lock, Send } from 'lucide-react';
 import { getLostPetDetail, updateLostPetStatus } from '../../api/pet';
 import { useAsyncEffect } from '../../hooks/useAsync';
+import { useConfirm } from '../../hooks/useConfirm';
 import { useUserStore } from '../../stores/userStore';
 import { maskContact } from '../../utils/contactPrivacy';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
+import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Spinner } from '../../components/ui/spinner';
@@ -27,9 +29,17 @@ export function LostPetDetailPage() {
   );
 
   const isOwner = !!user && !!item && user.id === item.userId;
+  const { confirm, confirmDialog } = useConfirm();
 
   const handleMarkFound = async () => {
-    if (!item || !window.confirm('确认标记为已找到？')) return;
+    if (!item) return;
+    const confirmed = await confirm({
+      title: '标记为已找到？',
+      description: '标记后启事状态将变为「已找到」，其他用户不再看到寻宠求助提示。',
+      confirmText: '标记为已找到',
+      tone: 'primary',
+    });
+    if (!confirmed) return;
     try {
       await updateLostPetStatus(item.id, 1);
       setData({ ...item, status: 1 });
@@ -62,7 +72,7 @@ export function LostPetDetailPage() {
         {loading ? (
           <>
             <Spinner />
-            <span>加载中...</span>
+            <span>加载中…</span>
           </>
         ) : (
           '未找到该启事'
@@ -75,15 +85,7 @@ export function LostPetDetailPage() {
     <div className="min-h-screen bg-cream pb-10">
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            className="p-2 -ml-2 min-w-0 h-auto text-brown"
-            onClick={() => navigate(-1)}
-            aria-label="返回"
-          >
-            <ChevronLeft size={22} />
-          </Button>
+          <BackButton className="-ml-2" />
           <h1 className="text-lg font-semibold text-brown">寻宠详情</h1>
         </div>
       </div>
@@ -132,7 +134,7 @@ export function LostPetDetailPage() {
           {item.images?.length > 0 && (
             <div className="mt-4 grid grid-cols-3 gap-2">
               {item.images.map((src, i) => (
-                <img key={i} src={src} alt="" className="rounded-lg aspect-square object-cover w-full" />
+                <img key={i} src={src} alt="" className="rounded-lg aspect-square object-cover w-full" decoding="async" />
               ))}
             </div>
           )}
@@ -144,6 +146,8 @@ export function LostPetDetailPage() {
           </Button>
         )}
       </div>
+
+      {confirmDialog}
     </div>
   );
 }

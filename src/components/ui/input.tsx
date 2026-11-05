@@ -160,8 +160,14 @@ export function Select({
   id,
   tone = 'primary',
   'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
+  'aria-describedby': ariaDescribedBy,
 }: SelectProps) {
   const options = useMemo(() => parseSelectOptions(children), [children]);
+
+  // 外部 FieldLabel 用 htmlFor 关联 Trigger，但 React Aria 还需 aria-labelledby
+  // 才能认定「有可见 label」；FieldLabel 会为 htmlFor 生成 `${htmlFor}-label` 的 id。
+  const resolvedLabelledBy = ariaLabelledBy ?? (ariaLabel ? undefined : id ? `${id}-label` : undefined);
 
   const emitChange = (next: string) => {
     if (!onChange) return;
@@ -183,6 +189,8 @@ export function Select({
       onChange={(key) => emitChange(fromSelectKey(key as string | number | null))}
       isDisabled={disabled}
       aria-label={ariaLabel}
+      aria-labelledby={resolvedLabelledBy}
+      aria-describedby={ariaDescribedBy}
       aria-invalid={invalid || undefined}
       data-invalid={invalid || undefined}
       className={joinClass('w-full min-w-0', className)}
@@ -192,7 +200,7 @@ export function Select({
         className={joinClass(
           'w-full h-10 min-h-10 px-3 border border-border rounded-sm text-sm text-brown bg-white',
           'inline-flex items-center justify-between gap-2 transition-colors shadow-none',
-          'data-[focus-visible=true]:outline-none data-[focus-visible=true]:ring-2',
+          'data-[focus-visible=true]:outline-none data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-primary/40',
           'disabled:bg-muted disabled:text-brown-muted disabled:cursor-not-allowed',
           selectToneHover[tone],
           invalid && 'border-error data-[focus-visible=true]:ring-error/20 data-[focus-visible=true]:border-error',
@@ -234,10 +242,26 @@ export interface FieldLabelProps {
   className?: string;
 }
 
+export interface FieldErrorProps {
+  id?: string;
+  children?: ReactNode;
+}
+
+/** 字段级内联错误；role="alert" 自带 aria-live 播报 */
+export function FieldError({ id, children }: FieldErrorProps) {
+  if (!children) return null;
+  return (
+    <p id={id} role="alert" className="mt-1 text-xs text-error">
+      {children}
+    </p>
+  );
+}
+
 export function FieldLabel({ htmlFor, required, children, className = '' }: FieldLabelProps) {
   return (
     <HeroLabel
       htmlFor={htmlFor}
+      id={htmlFor ? `${htmlFor}-label` : undefined}
       className={joinClass('block text-sm font-medium text-brown-secondary mb-1', className)}
     >
       {children}

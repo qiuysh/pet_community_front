@@ -4,7 +4,7 @@ import { AdoptionApplicationInfo } from '../../types/adopt';
 import { useToast } from '../toast';
 import { useAsync } from '../../hooks/useAsync';
 import { Button } from '../ui/button';
-import { FieldLabel, Textarea } from '../ui/input';
+import { FieldError, FieldLabel, Textarea } from '../ui/input';
 import { Modal } from '../ui/modal';
 
 interface AdoptionApplyFormProps {
@@ -17,12 +17,17 @@ export const AdoptionApplyForm = ({ adoptionId, onClose, onSuccess }: AdoptionAp
   const toast = useToast();
   const { loading, run } = useAsync();
   const [applicationInfo, setApplicationInfo] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = () => {
     if (!applicationInfo.trim()) {
-      toast.error('请填写申请理由');
+      setError('请填写申请理由');
+      requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>('[name="applicationInfo"]')?.focus();
+      });
       return;
     }
+    setError('');
 
     run(
       () => createApplication({
@@ -46,22 +51,33 @@ export const AdoptionApplyForm = ({ adoptionId, onClose, onSuccess }: AdoptionAp
             取消
           </Button>
           <Button className="flex-1" disabled={loading} loading={loading} onClick={handleSubmit}>
-            {loading ? '提交中...' : '提交申请'}
+            {loading ? '提交中' : '提交申请'}
           </Button>
         </>
       }
     >
       <div className="mb-4">
-        <FieldLabel required>申请理由</FieldLabel>
+        <FieldLabel htmlFor="apply-info" required>申请理由</FieldLabel>
         <Textarea
+          id="apply-info"
+          name="applicationInfo"
           value={applicationInfo}
-          onChange={(e) => setApplicationInfo(e.target.value)}
+          onChange={(e) => {
+            setApplicationInfo(e.target.value);
+            if (error) setError('');
+          }}
           rows={6}
-          placeholder="请详细说明您的养宠经验、居住条件、为什么想领养这只宠物等"
+          placeholder="请详细说明您的养宠经验、居住条件、为什么想领养这只宠物等…"
+          invalid={!!error}
+          aria-describedby={error ? 'apply-info-error' : 'apply-info-hint'}
         />
-        <div className="mt-2 text-xs text-brown-muted">
-          建议包含：养宠经验、居住环境、家庭成员、时间安排等信息
-        </div>
+        {error ? (
+          <FieldError id="apply-info-error">{error}</FieldError>
+        ) : (
+          <div id="apply-info-hint" className="mt-2 text-xs text-brown-muted">
+            建议包含：养宠经验、居住环境、家庭成员、时间安排等信息
+          </div>
+        )}
       </div>
 
       <div className="bg-warning/10 rounded-md p-3">

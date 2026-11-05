@@ -4,7 +4,7 @@ import { sendCode } from '../../api/user';
 import { SendCodeRequest } from '../../types/user';
 import { showSuccessToast, showErrorToast } from '../../utils/toastManager';
 import { Button } from '../ui/button';
-import { FieldLabel, Input } from '../ui/input';
+import { FieldError, FieldLabel, Input } from '../ui/input';
 import { Modal } from '../ui/modal';
 
 /**
@@ -98,7 +98,7 @@ export function VerificationCodeModal({
     setSendingCode(true);
     try {
       await sendCode({ account: accountValue, type: CODE_TYPE[channel] });
-      showSuccessToast('验证码已发送,请注意查收');
+      showSuccessToast('验证码已发送，请注意查收');
       setCountdown(60);
     } catch (e) {
       showErrorToast((e as Error)?.message || '验证码发送失败');
@@ -140,12 +140,24 @@ export function VerificationCodeModal({
           <FieldLabel htmlFor="vc-account">{ACCOUNT_LABEL[channel]}</FieldLabel>
           <Input
             id="vc-account"
+            name="account"
+            type={channel === 'phone' ? 'tel' : 'email'}
+            inputMode={channel === 'phone' ? 'tel' : 'email'}
+            autoComplete={channel === 'phone' ? 'tel' : 'email'}
+            autoCapitalize="none"
+            spellCheck={false}
             value={accountValue}
             onChange={(e) => mode === 'bind' && setAccount(e.target.value)}
             disabled={mode === 'unbind' || submitting}
-            placeholder={mode === 'bind' ? `请输入新${ACCOUNT_LABEL[channel]}` : ''}
-            aria-label={ACCOUNT_LABEL[channel]}
+            placeholder={mode === 'bind' ? `请输入新${ACCOUNT_LABEL[channel]}…` : ''}
+            invalid={mode === 'bind' && accountValue.length > 0 && !isAccountValid}
+            aria-describedby={
+              mode === 'bind' && accountValue.length > 0 && !isAccountValid ? 'vc-account-error' : undefined
+            }
           />
+          {mode === 'bind' && accountValue.length > 0 && !isAccountValid ? (
+            <FieldError id="vc-account-error">请输入有效的{ACCOUNT_LABEL[channel]}</FieldError>
+          ) : null}
         </div>
 
         <div>
@@ -153,7 +165,10 @@ export function VerificationCodeModal({
           <div className="flex gap-2">
             <Input
               id="vc-code"
+              name="code"
               inputMode="numeric"
+              autoComplete="one-time-code"
+              spellCheck={false}
               pattern="\d{6}"
               maxLength={6}
               value={code}
@@ -161,7 +176,8 @@ export function VerificationCodeModal({
               disabled={submitting}
               placeholder="6 位数字"
               className="flex-1"
-              aria-label="验证码"
+              invalid={code.length > 0 && !isCodeValid}
+              aria-describedby={code.length > 0 && !isCodeValid ? 'vc-code-error' : undefined}
             />
             <Button
               type="button"
@@ -180,6 +196,9 @@ export function VerificationCodeModal({
               )}
             </Button>
           </div>
+          {code.length > 0 && !isCodeValid ? (
+            <FieldError id="vc-code-error">请输入 6 位数字验证码</FieldError>
+          ) : null}
         </div>
 
         {mode === 'unbind' && (

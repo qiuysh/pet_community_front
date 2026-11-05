@@ -3,6 +3,7 @@ import { ActivityType } from '../../types/activity';
 import { ActivityCard } from '../../components/activity';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
 
@@ -18,7 +19,7 @@ export const ActivityListPage = () => {
     handleStatusChange,
   } = useActivityList();
 
-  const totalPages = Math.ceil(total / 10);
+  const totalPages = Math.max(1, Math.ceil(total / 10));
 
   return (
     <div className="bg-cream min-h-screen pb-6">
@@ -92,7 +93,7 @@ export const ActivityListPage = () => {
             ))}
           </div>
         ) : activities.length === 0 ? (
-          <div className="py-16 text-center text-brown-muted">暂无活动</div>
+          <EmptyState title="暂无活动" />
         ) : (
           <div className="space-y-3">
             {activities.map((activity) => (

@@ -8,6 +8,12 @@ import { ActivityInfo, SignInInfo, SignInStatsResponse } from '../types/activity
 
 export type SignInTab = 'qrcode' | 'signins';
 
+/** 路由参数 → 活动 ID；缺失或非法时返回 0（避免 parseInt 得到 NaN 后传给接口） */
+function parseActivityId(raw?: string): number {
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 0;
+}
+
 /**
  * 活动签到 hook
  *
@@ -21,6 +27,7 @@ export type SignInTab = 'qrcode' | 'signins';
  */
 export function useActivitySignIn() {
   const { id } = useParams<{ id: string }>();
+  const activityId = parseActivityId(id);
   const navigate = useNavigate();
   const { isLoggedIn } = useUserStore();
   const toast = useToast();
@@ -58,25 +65,28 @@ export function useActivitySignIn() {
   );
 
   useEffect(() => {
-    if (!id) return;
+    if (!activityId) {
+      navigate('/activities');
+      return;
+    }
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
-    loadData(parseInt(id));
+    loadData(activityId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isLoggedIn]);
+  }, [activityId, isLoggedIn]);
 
   const handleSignIn = () => {
     if (!scanQRCode) {
       toast.warning('请扫描二维码或输入二维码内容');
       return;
     }
-    if (!id) return;
+    if (!activityId) return;
 
     runSignIn(
-      () => signIn(parseInt(id), {
-        activityId: parseInt(id),
+      () => signIn(activityId, {
+        activityId,
         qrCode: scanQRCode,
         signInLocation: signInLocation || undefined,
       }),
@@ -84,7 +94,7 @@ export function useActivitySignIn() {
         toast.success('签到成功');
         setScanQRCode('');
         setSignInLocation('');
-        loadData(parseInt(id));
+        loadData(activityId);
       },
       (error: unknown) => toast.error((error as Error).message || '签到失败'),
     );
@@ -103,6 +113,6 @@ export function useActivitySignIn() {
     signInLocation,
     setSignInLocation,
     handleSignIn,
-    activityId: id,
+    activityId,
   };
 }

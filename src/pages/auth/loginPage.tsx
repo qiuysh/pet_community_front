@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { useVerificationCode } from '../../hooks/useVerificationCode';
-import { showErrorToast } from '../../utils/toastManager';
 import {
   getRememberedUserAccount,
   isUserRemembered,
@@ -14,7 +14,7 @@ import { Heart } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Checkbox } from '../../components/ui/checkbox';
-import { FieldLabel, Input } from '../../components/ui/input';
+import { FieldError, FieldLabel, Input } from '../../components/ui/input';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 import { BrandSocialIcon } from '../../components/icons/brandSocialIcons';
@@ -28,6 +28,7 @@ export function LoginPage() {
   const [remember, setRemember] = useState(() => isUserRemembered() || !!getRememberedUserAccount());
   const { loading, login, loginWithThirdParty } = useAuth();
   const { countdown, send: sendCodeNow } = useVerificationCode();
+  const { errors, showErrors, clearError, formRef } = useFormErrors(['account', 'password', 'code'] as const);
 
   const handleSendCode = () => {
     sendCodeNow(account, 'login');
@@ -36,16 +37,18 @@ export function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!account) {
-      showErrorToast('请输入手机号或邮箱');
-      return;
+    const next: FormErrors<'account' | 'password' | 'code'> = {};
+    if (!account.trim()) {
+      next.account = '请输入手机号或邮箱';
     }
     if (loginType === 'password' && !password) {
-      showErrorToast('请输入密码');
-      return;
+      next.password = '请输入密码';
     }
-    if (loginType === 'code' && !code) {
-      showErrorToast('请输入验证码');
+    if (loginType === 'code' && !code.trim()) {
+      next.code = '请输入验证码';
+    }
+    if (Object.keys(next).length > 0) {
+      showErrors(next);
       return;
     }
 
@@ -89,7 +92,7 @@ export function LoginPage() {
           />
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} ref={formRef} noValidate>
           <div className="mb-3">
             <FieldLabel htmlFor="login-account">手机号 / 邮箱</FieldLabel>
             <Input
@@ -100,9 +103,15 @@ export function LoginPage() {
               autoCapitalize="none"
               spellCheck={false}
               value={account}
-              onChange={(e) => setAccount(e.target.value)}
+              onChange={(e) => {
+                setAccount(e.target.value);
+                clearError('account');
+              }}
               placeholder="请输入手机号或邮箱…"
+              invalid={!!errors.account}
+              aria-describedby={errors.account ? 'login-account-error' : undefined}
             />
+            <FieldError id="login-account-error">{errors.account}</FieldError>
           </div>
 
           {loginType === 'password' ? (
@@ -114,9 +123,15 @@ export function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  clearError('password');
+                }}
                 placeholder="请输入密码…"
+                invalid={!!errors.password}
+                aria-describedby={errors.password ? 'login-password-error' : undefined}
               />
+              <FieldError id="login-password-error">{errors.password}</FieldError>
             </div>
           ) : (
             <div className="mb-4">
@@ -129,10 +144,15 @@ export function LoginPage() {
                   autoComplete="one-time-code"
                   spellCheck={false}
                   value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  onChange={(e) => {
+                    setCode(e.target.value);
+                    clearError('code');
+                  }}
                   className="min-w-0 flex-1"
                   placeholder="请输入验证码…"
                   maxLength={6}
+                  invalid={!!errors.code}
+                  aria-describedby={errors.code ? 'login-code-error' : undefined}
                 />
                 <Button
                   type="button"
@@ -145,6 +165,7 @@ export function LoginPage() {
                   {countdown > 0 ? `${countdown}s 后重发` : '获取验证码'}
                 </Button>
               </div>
+              <FieldError id="login-code-error">{errors.code}</FieldError>
             </div>
           )}
 

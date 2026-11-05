@@ -3,6 +3,8 @@ import { TrendingUp, Plus, Pencil, Trash2 } from 'lucide-react';
 import type { PetGrowthRecordInfo, PetGrowthRecordCreateRequest } from '../../types/pet';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { DateTimePicker } from '../ui/dateTimePicker';
+import { EmptyState } from '../ui/emptyState';
 import { FilterChip } from '../ui/filterChip';
 import { FieldLabel, Input, Textarea } from '../ui/input';
 import { Modal } from '../ui/modal';
@@ -172,7 +174,7 @@ export function PetGrowthSection({
                 <div className="flex gap-2 mt-3">
                   {record.images.slice(0, 3).map((img, idx) => (
                     <div key={idx} className="w-16 h-16 bg-muted rounded-lg overflow-hidden">
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <img src={img} alt="" className="w-full h-full object-cover" decoding="async" />
                     </div>
                   ))}
                 </div>
@@ -181,15 +183,12 @@ export function PetGrowthSection({
           ))}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <div className="mb-3 flex justify-center text-brown-light">
-            <TrendingUp size={32} aria-hidden="true" />
-          </div>
-          <p className="text-brown-muted">暂无成长记录</p>
-          {isOwner && (
-            <p className="text-sm text-brown-muted mt-2">记录体重、疫苗、驱虫或日常趣事</p>
-          )}
-        </div>
+        <EmptyState
+          compact
+          icon={<TrendingUp size={32} />}
+          title="暂无成长记录"
+          description={isOwner ? '记录体重、疫苗、驱虫或日常趣事' : undefined}
+        />
       )}
 
       <Modal
@@ -209,7 +208,7 @@ export function PetGrowthSection({
               disabled={saving || !form.title.trim()}
               onClick={handleSubmit}
             >
-              {saving ? '保存中...' : '保存'}
+              {saving ? '保存中…' : '保存'}
             </Button>
           </div>
         }
@@ -217,7 +216,7 @@ export function PetGrowthSection({
         <div className="space-y-4">
           <div>
             <FieldLabel>记录类型</FieldLabel>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2" role="group" aria-label="记录类型">
               {RECORD_TYPES.map((t) => (
                 <FilterChip
                   key={t.value}
@@ -231,28 +230,36 @@ export function PetGrowthSection({
           </div>
 
           <div>
-            <FieldLabel>标题</FieldLabel>
+            <FieldLabel htmlFor="growth-title">标题</FieldLabel>
             <Input
+              id="growth-title"
+              name="title"
+              autoComplete="off"
               value={form.title}
               onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
+              placeholder="如：第一次打疫苗…"
               maxLength={100}
             />
           </div>
 
           <div>
             <FieldLabel>日期</FieldLabel>
-            <Input
-              type="date"
+            <DateTimePicker
+              granularity="day"
               value={toDateInput(form.recordDate)}
-              onChange={(e) => setForm((p) => ({ ...p, recordDate: e.target.value }))}
+              onChange={(value) => setForm((p) => ({ ...p, recordDate: value }))}
+              aria-label="记录日期"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <FieldLabel>体重 (kg)</FieldLabel>
+              <FieldLabel htmlFor="growth-weight">体重 (kg)</FieldLabel>
               <Input
+                id="growth-weight"
+                name="weight"
                 type="number"
+                inputMode="decimal"
                 min={0}
                 step={0.1}
                 value={form.weight ?? ''}
@@ -265,9 +272,12 @@ export function PetGrowthSection({
               />
             </div>
             <div>
-              <FieldLabel>身高 (cm)</FieldLabel>
+              <FieldLabel htmlFor="growth-height">身高 (cm)</FieldLabel>
               <Input
+                id="growth-height"
+                name="height"
                 type="number"
+                inputMode="decimal"
                 min={0}
                 step={0.1}
                 value={form.height ?? ''}
@@ -282,12 +292,14 @@ export function PetGrowthSection({
           </div>
 
           <div>
-            <FieldLabel>备注</FieldLabel>
+            <FieldLabel htmlFor="growth-content">备注</FieldLabel>
             <Textarea
+              id="growth-content"
+              name="content"
               value={form.content ?? ''}
               onChange={(e) => setForm((p) => ({ ...p, content: e.target.value }))}
               rows={3}
-              placeholder="症状、疫苗名称、下次提醒等"
+              placeholder="症状、疫苗名称、下次提醒等…"
             />
           </div>
         </div>

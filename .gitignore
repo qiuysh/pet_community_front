@@ -17,3 +17,6 @@ GEMINI.md
 AGENTS.md
 pkg/*
 .mcp.json
+# Windows 保留名误产物：Git Bash 下 `> nul` 会生成真实文件（非设备），sass 校验输出到 nul 同理
+nul
+nul.*

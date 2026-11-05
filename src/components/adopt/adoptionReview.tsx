@@ -55,7 +55,7 @@ export const AdoptionReview = ({ application, onClose, onSuccess }: AdoptionRevi
             }}
           >
             {loading && action === 'reject'
-              ? '处理中...'
+              ? '处理中…'
               : action === 'reject'
                 ? '确认拒绝'
                 : '拒绝'}
@@ -64,10 +64,21 @@ export const AdoptionReview = ({ application, onClose, onSuccess }: AdoptionRevi
             variant="secondary"
             className="flex-1"
             disabled={loading}
-            loading={loading && action !== 'reject'}
-            onClick={() => handleReview(true)}
+            loading={loading && action === 'approve'}
+            onClick={() => {
+              // 通过不可逆：与「拒绝」一致走二次确认，避免误触
+              if (action !== 'approve') {
+                setAction('approve');
+                return;
+              }
+              handleReview(true);
+            }}
           >
-            {loading ? '处理中...' : '通过'}
+            {loading && action === 'approve'
+              ? '处理中…'
+              : action === 'approve'
+                ? '确认通过'
+                : '通过'}
           </Button>
         </>
       }
@@ -90,14 +101,27 @@ export const AdoptionReview = ({ application, onClose, onSuccess }: AdoptionRevi
         </div>
       </div>
 
+      {action === 'approve' && (
+        <div
+          role="status"
+          className="mt-3 rounded-lg bg-primary-soft p-3 text-sm text-brown leading-relaxed"
+        >
+          通过后申请状态将变为「已通过」并通知申请人，宠物同步标记为已领养，该操作不可撤销。
+          请先确认已完成线下沟通与领养条件核对。
+        </div>
+      )}
+
       {action === 'reject' && (
         <div className="mb-2">
-          <FieldLabel>拒绝原因</FieldLabel>
+          <FieldLabel htmlFor="review-reason">拒绝原因</FieldLabel>
           <Textarea
+            id="review-reason"
+            name="rejectReason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={3}
-            placeholder="请填写拒绝原因（可选）"
+            placeholder="请填写拒绝原因（可选）…"
+            maxLength={200}
           />
         </div>
       )}

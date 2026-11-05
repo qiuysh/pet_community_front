@@ -4,15 +4,19 @@ import { useUserStore } from '../../stores/userStore';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
 import { ICON_SIZE } from '../../styles/iconSize';
+import { formatCount } from '../../utils/format';
+import { TOPIC_CREATE_MIN_LEVEL } from '../../utils/topicPolicy';
+import { showInfoToast } from '../../utils/toastManager';
 import './topicSquarePage.scss';
 
 export const TopicSquarePage = () => {
   const { loading, categories, tags, hotTopics } = useTopicSquare();
   const navigate = useNavigate();
   const { user, isLoggedIn } = useUserStore();
-  const canCreateTopic = !!user && (user.level ?? 0) >= 5;
+  const canCreateTopic = !!user && (user.level ?? 0) >= TOPIC_CREATE_MIN_LEVEL;
 
   const getTagSize = (hot: number) => {
     if (hot >= 100) return 'large';
@@ -42,10 +46,16 @@ export const TopicSquarePage = () => {
           size="sm"
           variant="outline"
           className="create-topic-btn"
-          aria-label="创建话题"
+          aria-label={
+            canCreateTopic ? '创建话题' : `创建话题（需 Lv${TOPIC_CREATE_MIN_LEVEL} 及以上）`
+          }
           onClick={() => {
             if (!isLoggedIn) {
               navigate('/login');
+              return;
+            }
+            if (!canCreateTopic) {
+              showInfoToast(`创建话题需达到 Lv${TOPIC_CREATE_MIN_LEVEL}`);
               return;
             }
             navigate('/topics/create');
@@ -105,7 +115,7 @@ export const TopicSquarePage = () => {
                   className={`tag-item ${getTagSize(tag.hot)} ${getTagColorClass(tag.hot)}`}
                 >
                   <span className="tag-name">{tag.name}</span>
-                  <span className="tag-count">{tag.count}</span>
+                  <span className="tag-count tabular-nums">{formatCount(tag.count)}</span>
                 </Link>
               ))}
             </div>
@@ -118,7 +128,7 @@ export const TopicSquarePage = () => {
             </div>
             <div className="hot-topics">
               {hotTopics.length === 0 && (
-                <div className="hot-topic-empty">暂无热门话题</div>
+                <EmptyState compact title="暂无热门话题" />
               )}
               {hotTopics.map((topic, index) => (
                 <Link
@@ -130,7 +140,7 @@ export const TopicSquarePage = () => {
                   <span className={`rank rank-${index + 1}`}>{index + 1}</span>
                   <div className="topic-icon" aria-hidden="true">
                     {topic.cover ? (
-                      <img src={topic.cover} alt="" className="topic-cover-thumb" />
+                      <img src={topic.cover} alt="" className="topic-cover-thumb" decoding="async" />
                     ) : (
                       <span className="topic-cover-fallback">#</span>
                     )}
@@ -140,7 +150,7 @@ export const TopicSquarePage = () => {
                     <div className="topic-desc">{topic.description || '暂无描述'}</div>
                   </div>
                   <div className="topic-meta">
-                    <span className="posts-count">{topic.postsCount} 动态</span>
+                    <span className="posts-count tabular-nums">{formatCount(topic.postsCount)} 动态</span>
                     <span className="topic-arrow" aria-hidden="true">
                       →
                     </span>

@@ -44,13 +44,19 @@ export function Modal({
 
   return (
     <HeroModal state={state}>
-      {/* DialogTrigger 需要可按压子节点；受控场景用隐藏 trigger 满足要求 */}
-      <HeroModal.Trigger className="sr-only" aria-hidden>
+      {/* DialogTrigger 需要可按压子节点；受控场景用隐藏且不可聚焦的 trigger 满足要求。
+          可聚焦元素不能带 aria-hidden，故用 tabIndex=-1 移出 Tab 序列而非 aria-hidden。 */}
+      <HeroModal.Trigger className="sr-only" tabIndex={-1}>
         <span />
       </HeroModal.Trigger>
       <HeroModal.Backdrop isDismissable={dismissable} variant="blur">
         <HeroModal.Container size={sizeMap[size]} placement="center">
-          <HeroModal.Dialog className={['rounded-md shadow-medium bg-white', className].join(' ')}>
+          <HeroModal.Dialog
+            className={[
+              'rounded-md shadow-medium bg-white overscroll-contain',
+              className,
+            ].join(' ')}
+          >
             <HeroModal.CloseTrigger
               aria-label="关闭"
               className={[

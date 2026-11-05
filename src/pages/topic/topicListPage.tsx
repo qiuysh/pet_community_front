@@ -3,6 +3,7 @@ import { useTopicList } from '../../hooks/useTopicList';
 import { useUserStore } from '../../stores/userStore';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Input } from '../../components/ui/input';
 import { Skeleton } from '../../components/ui/skeleton';
 import './topicListPage.scss';
@@ -60,14 +61,14 @@ export const TopicListPage = () => {
             ))}
           </>
         )}
-        {!loading && topics.length === 0 && <div className="empty">暂无话题</div>}
+        {!loading && topics.length === 0 && <EmptyState title="暂无话题" />}
 
         {topics.map((topic) => (
           <Link key={topic.id} to={`/topics/${topic.id}`} className="topic-card-link">
             <Card hoverable padding="none" className="topic-card">
               <div className="topic-cover">
                 {topic.cover ? (
-                  <img src={topic.cover} alt={topic.name} />
+                  <img src={topic.cover} alt={topic.name} decoding="async" />
                 ) : (
                   <div className="cover-placeholder">#</div>
                 )}

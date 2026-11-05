@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronLeft, Send, MessageCircle, UserCircle } from 'lucide-react';
+import { Send, MessageCircle, UserCircle } from 'lucide-react';
 import { useFollows } from '../../hooks/useFollows';
 import { useStartConversation } from '../../hooks/useStartConversation';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Textarea } from '../../components/ui/input';
+import { PageHeader } from '../../components/ui/pageHeader';
 import './newMessagePage.scss';
 
 /**
@@ -45,19 +47,7 @@ const NewMessagePage: React.FC = () => {
 
   return (
     <div className="new-message-page">
-      <div className="page-header">
-        <Button
-          type="button"
-          variant="ghost"
-          className="back-btn"
-          onClick={() => navigate(-1)}
-          aria-label="返回"
-        >
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">发起对话</h1>
-        <div className="placeholder" />
-      </div>
+      <PageHeader title="发起对话" fallbackTo="/messages" />
 
       {!targetUser ? (
         <div className="follow-list-section">
@@ -75,13 +65,15 @@ const NewMessagePage: React.FC = () => {
               ))}
             </div>
           ) : follows.length === 0 ? (
-            <div className="empty">
-              <UserCircle size={64} color="var(--color-ink-light)" strokeWidth={1.5} aria-hidden="true" />
-              <p>暂未关注任何用户</p>
-              <Button type="button" className="explore-btn" onClick={() => navigate('/search')}>
-                去发现宠友
-              </Button>
-            </div>
+            <EmptyState
+              icon={<UserCircle size={56} strokeWidth={1.5} />}
+              title="暂未关注任何用户"
+              action={
+                <Button type="button" onClick={() => navigate('/search')}>
+                  去发现宠友
+                </Button>
+              }
+            />
           ) : (
             <div className="follow-list">
               {follows.map((u) => (
@@ -127,7 +119,7 @@ const NewMessagePage: React.FC = () => {
 
           <Textarea
             className="message-input"
-            placeholder={`给 ${targetUser.nickname} 发条消息吧...`}
+            placeholder={`给 ${targetUser.nickname} 发条消息吧…`}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={5}

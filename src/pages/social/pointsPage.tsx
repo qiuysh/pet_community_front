@@ -1,15 +1,14 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Check, X, Clock, Star } from 'lucide-react';
+import { Check, X, Clock, Star } from 'lucide-react';
 import { usePoints } from '../../hooks/usePoints';
-import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Tabs } from '../../components/ui/tabs';
 import './pointsPage.scss';
 
 const PointsPage: React.FC = () => {
-  const navigate = useNavigate();
   const {
     userLevel,
     records,
@@ -23,13 +22,7 @@ const PointsPage: React.FC = () => {
 
   return (
     <div className="points-page">
-      <div className="page-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">积分中心</h1>
-        <div className="placeholder" />
-      </div>
+      <PageHeader title="积分中心" fallbackTo="/profile" />
 
       {userLevel && (
         <Card className="level-card" padding="md">
@@ -80,7 +73,7 @@ const PointsPage: React.FC = () => {
           </div>
         ) : activeTab === 'records' ? (
           records.length === 0 ? (
-            <div className="empty">暂无积分记录</div>
+            <EmptyState compact title="暂无积分记录" />
           ) : (
             <div className="records-list">
               {records.map((record) => (
@@ -105,7 +98,7 @@ const PointsPage: React.FC = () => {
           )
         ) : activeTab === 'rules' ? (
           rules.length === 0 ? (
-            <div className="empty">暂无积分规则</div>
+            <EmptyState compact title="暂无积分规则" />
           ) : (
             <div className="rules-list">
               {rules.map((rule) => (
@@ -124,7 +117,7 @@ const PointsPage: React.FC = () => {
           )
         ) : (
           benefits.length === 0 ? (
-            <div className="empty">暂无等级权益</div>
+            <EmptyState compact title="暂无等级权益" />
           ) : (
             <div className="benefits-list">
               {benefits.map((benefit) => (

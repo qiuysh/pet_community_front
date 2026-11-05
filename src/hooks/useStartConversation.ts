@@ -12,7 +12,7 @@ import { useAsync } from './useAsync';
  *
  * 用法:
  *   const { start, loading } = useStartConversation();
- *   await start(targetUserId, '你好,在宠友社区看到你的帖子...');
+ *   await start(targetUserId, '你好,在宠友社区看到你的帖子…');
  */
 export function useStartConversation() {
   const navigate = useNavigate();
