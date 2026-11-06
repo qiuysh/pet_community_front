@@ -4,3 +4,4 @@ export { SubmissionUploader } from './submissionUploader';
 export { VoteButton } from './voteButton';
 export { QRCodeGenerator } from './qrCodeGenerator';
 export { ActivityAlbum } from './activityAlbum';
+export { SubmissionEditDialog } from './submissionEditDialog';

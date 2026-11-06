@@ -18,16 +18,18 @@ import {
 import { TodayTrendChart } from '@/components/admin/todayTrendChart';
 import { TodoAggregate } from '@/components/admin/todoAggregate';
 import { AdminButton } from '@/components/admin/adminButton';
+import { EmptyState } from '@/components/ui/emptyState';
 import { getDashboardOverview, getTodoAggregate } from '@/api/admin';
 import { useAsyncEffect } from '@/hooks/useAsync';
 import { adminUi } from '@/styles/adminUi';
 import { dayOverDayChange, formatCount } from '@/utils/dashboardMetrics';
+import { reportError } from '@/utils/errorReport';
 
 // 运营驾驶舱 - 实时概览（今日指标、业务存量、趋势、待办）
 export function AdminDashboardPage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const { loading, data, refetch } = useAsyncEffect(
+  const { loading, data, refetch, error } = useAsyncEffect(
     async () => {
       const [overview, todo] = await Promise.all([
         getDashboardOverview(),
@@ -37,7 +39,7 @@ export function AdminDashboardPage() {
       return { overview, todo };
     },
     [],
-    { onError: (error) => console.error('获取驾驶舱数据失败:', error) },
+    { onError: (err) => reportError('获取驾驶舱数据失败', err) },
   );
 
   useEffect(() => {
@@ -55,6 +57,24 @@ export function AdminDashboardPage() {
       <div className="flex h-64 items-center justify-center" role="status" aria-live="polite">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-secondary border-t-transparent motion-reduce:animate-none" />
         <span className="sr-only">加载中…</span>
+      </div>
+    );
+  }
+
+  // 取数失败时不能渲染成「全 0 面板」：那会让运营误以为当天真的没有数据
+  if (!data && error) {
+    return (
+      <div className="space-y-5">
+        <h1 className={adminUi.pageTitle}>运营驾驶舱</h1>
+        <EmptyState
+          title="驾驶舱数据加载失败"
+          description="可能是网络或服务异常，请重新加载"
+          action={
+            <AdminButton type="button" onClick={handleRefresh}>
+              重新加载
+            </AdminButton>
+          }
+        />
       </div>
     );
   }

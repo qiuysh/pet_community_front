@@ -81,10 +81,13 @@ export const ActivitySignInPage = () => {
             </Card>
 
             <Card>
-              <h3 className="text-base font-medium text-brown mb-4">扫码签到</h3>
+              <h3 className="text-base font-medium text-brown mb-1">输入签到码</h3>
+              <p className="text-xs text-brown-muted mb-4">
+                扫描现场二维码得到签到码后，粘贴到下方完成签到。
+              </p>
               <div className="space-y-4">
                 <div>
-                  <FieldLabel htmlFor="signin-qr-code">二维码内容</FieldLabel>
+                  <FieldLabel htmlFor="signin-qr-code">签到码</FieldLabel>
                   <Input
                     id="signin-qr-code"
                     name="qrCode"
@@ -93,7 +96,7 @@ export const ActivitySignInPage = () => {
                     spellCheck={false}
                     value={scanQRCode}
                     onChange={(e) => setScanQRCode(e.target.value)}
-                    placeholder="扫描二维码或输入二维码内容…"
+                    placeholder="粘贴或输入签到码…"
                   />
                 </div>
                 <div>

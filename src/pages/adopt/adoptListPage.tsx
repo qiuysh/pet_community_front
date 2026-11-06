@@ -70,9 +70,14 @@ export const AdoptListPage = () => {
         <div className="page-shell py-3">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-bold text-brown">领养中心</h1>
-            <Link to="/adopts/create" className={buttonClass({ size: 'sm' })}>
-              发布领养
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/adopts/mine" className={buttonClass({ size: 'sm', variant: 'outline' })}>
+                我的领养
+              </Link>
+              <Link to="/adopts/create" className={buttonClass({ size: 'sm' })}>
+                发布领养
+              </Link>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-2">

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { notificationSettingsApi } from '../api/social';
 import { useAsync } from './useAsync';
 import { showSuccessToast, showErrorToast } from '../utils/toastManager';
+import { reportError } from '../utils/errorReport';
 
 export interface NotificationSettings {
   likeNotify: number;
@@ -43,7 +44,7 @@ export function useNotificationSettings() {
     },
     (error) => {
       showErrorToast('获取通知设置失败');
-      console.error('获取通知设置失败', error);
+      reportError('获取通知设置失败', error);
     },
   );
 
@@ -60,7 +61,7 @@ export function useNotificationSettings() {
       },
       (error) => {
         showErrorToast('更新通知设置失败');
-        console.error('更新通知设置失败', error);
+        reportError('更新通知设置失败', error);
         setSettings(oldSettings);
       },
     );

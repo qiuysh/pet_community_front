@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { messageApi } from '../api/social';
-import type { ChatMessage } from '../types/social';
-import { showErrorToast } from '../utils/toastManager';
+import type { ChatMessage, IncomingChatMessage } from '../types/social';
+import { showErrorToast, showSuccessToast } from '../utils/toastManager';
+import { useUserStore } from '../stores/userStore';
+import { reportError } from '../utils/errorReport';
 
 /** 单页消息条数 */
 const PAGE_SIZE = 100;
@@ -51,6 +53,10 @@ export interface UseChatReturn {
   sendMessage: () => Promise<void>;
   sendImage: (file: File) => Promise<boolean>;
   sendVoice: (blob: Blob, duration: number) => Promise<boolean>;
+  /** 撤回自己 2 分钟内的消息 */
+  recallMessage: (messageId: number) => Promise<void>;
+  /** 接收 WebSocket 推送的新私信 */
+  receiveMessage: (payload: IncomingChatMessage) => void;
 
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   messagesContainerRef: React.RefObject<HTMLDivElement | null>;
@@ -89,7 +95,9 @@ export function useChat(conversationId: number, targetUserId: number): UseChatRe
   /** 每次切会话递增，使进行中的发送不再 settle / 改 sending */
   const sendEpochRef = useRef(0);
 
-  const currentUserId = Number(localStorage.getItem('user_id') || 0);
+  // 当前用户 ID 以登录态 store 为准；乐观消息的 fromId 必须与气泡归属判定同源
+  const { user: currentUser } = useUserStore();
+  const currentUserId = currentUser?.id ?? 0;
 
   const revokeObjectUrl = useCallback((url: string) => {
     if (!objectUrlsRef.current.has(url)) return;
@@ -147,7 +155,7 @@ export function useChat(conversationId: number, targetUserId: number): UseChatRe
         setMessages(sortMessages(res?.list ?? []));
         scrollToBottom(false);
       } catch (error) {
-        if (!cancelled) console.error('获取消息失败', error);
+        if (!cancelled) reportError('获取消息失败', error);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -425,6 +433,58 @@ export function useChat(conversationId: number, targetUserId: number): UseChatRe
     [conversationId, locating, messages],
   );
 
+  /** 撤回自己 2 分钟内的消息：本地先置为已撤回，失败回滚并提示 */
+  const recallMessage = useCallback(async (messageId: number) => {
+    try {
+      await messageApi.recallMessage(messageId);
+      setMessages((prev) =>
+        prev.map((item) =>
+          item.id === messageId ? { ...item, isRecalled: 1, content: '消息已撤回' } : item,
+        ),
+      );
+      showSuccessToast('已撤回');
+    } catch (error) {
+      showErrorToast((error as Error).message || '撤回失败，超过 2 分钟无法撤回');
+    }
+  }, []);
+
+  /**
+   * 接收 WebSocket 推送的新私信。
+   * 只处理当前会话对方发来的消息；按 id 去重（历史加载可能已包含同一条）。
+   */
+  const receiveMessage = useCallback(
+    (payload: IncomingChatMessage) => {
+      if (!payload.id) return;
+      if (payload.fromId === currentUserId) return; // 自己发的已由乐观消息承担
+      const peerId = payload.toId === currentUserId ? payload.fromId : payload.toId;
+      if (targetUserId && peerId !== targetUserId) return;
+
+      setMessages((prev) => {
+        if (prev.some((item) => item.id === payload.id)) return prev;
+        const incoming: ChatMessage = {
+          id: payload.id as number,
+          conversationId,
+          fromId: payload.fromId,
+          toId: payload.toId,
+          content: payload.content,
+          type: payload.type,
+          mediaUrl: payload.mediaUrl,
+          duration: payload.duration,
+          status: 1,
+          isRecalled: 0,
+          createdAt: new Date().toISOString(),
+        };
+        return sortMessages([...prev, incoming]);
+      });
+      scrollToBottom(true);
+      // 会话正打开，收到即已读；失败不影响展示
+      messageApi.markAsRead(conversationId).catch((error) => {
+        console.error('[useChat] 标记已读失败', error);
+      });
+    },
+    [conversationId, currentUserId, targetUserId, scrollToBottom],
+  );
+
   return {
     messages,
     loading,
@@ -434,6 +494,8 @@ export function useChat(conversationId: number, targetUserId: number): UseChatRe
     sendMessage,
     sendImage,
     sendVoice,
+    recallMessage,
+    receiveMessage,
     messagesEndRef,
     messagesContainerRef,
     highlightedMessageId,

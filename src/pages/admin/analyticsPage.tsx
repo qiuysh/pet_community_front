@@ -28,6 +28,7 @@ import { chartTheme } from '../../styles/chartTheme';
 import { AdminSelect } from '../../components/admin/adminField';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { adminUi } from '../../styles/adminUi';
+import { reportError } from '../../utils/errorReport';
 
 type Period = '7d' | '30d' | '90d';
 
@@ -76,7 +77,7 @@ export default function AdminAnalyticsPage() {
       return { userGrowth, content, interaction, comparison, petType, postStatus };
     },
     [period, compareType],
-    { onError: (error) => console.error('获取分析数据失败:', error) },
+    { onError: (err) => reportError('获取分析数据失败', err) },
   );
 
   const userGrowthStats = data?.userGrowth ?? null;
@@ -105,7 +106,7 @@ export default function AdminAnalyticsPage() {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('导出数据失败:', error);
+      reportError('导出数据失败', error, '导出失败，请稍后重试');
     } finally {
       setExportLoading(false);
     }

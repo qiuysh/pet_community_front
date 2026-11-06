@@ -5,6 +5,7 @@ import { useAsync } from './useAsync';
 import { showSuccessToast, showErrorToast } from '../utils/toastManager';
 import type { FormErrors } from './useFormErrors';
 import { PetCreateRequest, PetBreedInfo } from '../types/pet';
+import { reportError } from '../utils/errorReport';
 
 type PetFormField = 'name' | 'weight' | 'personality' | 'bio';
 
@@ -55,7 +56,7 @@ export function usePetForm() {
   const fetchBreeds = (petType: number) => runBreeds(
     () => getPetBreeds(petType),
     (data) => setBreeds(data),
-    (err) => console.error('获取品种列表失败', err),
+    (err) => reportError('获取品种列表失败', err),
   );
 
   const fetchPetDetail = (petId: number) => run(

@@ -13,6 +13,7 @@ import {
   CommentCreateRequest,
   LikeResult,
 } from '../types/post';
+import { reportError } from '../utils/errorReport';
 
 /**
  * 动态评论 hook
@@ -54,7 +55,7 @@ export function usePostComments(postId: number, commentsCount?: number) {
       setComments(res.list);
       setTotalCount(res.total);
     } catch (e) {
-      console.error('加载评论失败', e);
+      reportError('加载评论失败', e);
     } finally {
       setLoading(false);
     }

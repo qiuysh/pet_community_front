@@ -1,88 +1,78 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useUserStore } from '../stores/userStore';
+import type { IncomingChatMessage } from '../types/social';
 
-/** 与后端 service.MessagePayload JSON 字段对齐 */
-interface MessagePayload {
-  id?: number;
-  toId: number;
-  fromId: number;
-  content: string;
-  type: string;
-  mediaUrl?: string;
-  duration?: number;
-}
+type MessageCallback = (message: IncomingChatMessage) => void;
 
-type MessageCallback = (message: MessagePayload) => void;
-
+/**
+ * 私信实时推送。
+ *
+ * 约定：
+ * - 回调放在 ref 里，调用方传内联函数也不会触发重连；
+ * - 卸载时关闭 socket 且不再重连（避免组件已卸载仍反复建连）；
+ * - 断线按指数退避重连（上限 30s），重连成功后退避归零。
+ */
 export function useWebSocket(onMessage?: MessageCallback) {
   const socketRef = useRef<WebSocket | null>(null);
   const { token } = useUserStore();
-  const reconnectRef = useRef<number>(0);
+  const onMessageRef = useRef(onMessage);
+  onMessageRef.current = onMessage;
+
+  const reconnectRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closedRef = useRef(false);
 
   const connect = useCallback(() => {
-    if (!token) return;
+    if (!token || closedRef.current) return;
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.host;
-    const wsUrl = `${protocol}//${host}/ws?token=${token}`;
+    const wsUrl = `${protocol}//${window.location.host}/ws?token=${encodeURIComponent(token)}`;
 
     const socket = new WebSocket(wsUrl);
 
     socket.onopen = () => {
-      console.log('WebSocket connected');
       reconnectRef.current = 0;
     };
 
     socket.onmessage = (event) => {
       try {
-        const message: MessagePayload = JSON.parse(event.data);
-        onMessage?.(message);
+        const message = JSON.parse(event.data) as IncomingChatMessage;
+        onMessageRef.current?.(message);
       } catch (error) {
-        console.error('Failed to parse WebSocket message:', error);
+        console.error('[WebSocket] 消息解析失败', error);
       }
     };
 
     socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error('[WebSocket] 连接异常', error);
     };
 
     socket.onclose = () => {
-      console.log('WebSocket disconnected');
-      reconnectRef.current++;
-      const delay = Math.min(Math.pow(2, reconnectRef.current) * 1000, 30000);
-      setTimeout(connect, delay);
+      if (closedRef.current) return;
+      reconnectRef.current += 1;
+      const delay = Math.min(2 ** reconnectRef.current * 1000, 30000);
+      timerRef.current = setTimeout(connect, delay);
     };
 
     socketRef.current = socket;
-  }, [token, onMessage]);
-
-  const sendMessage = useCallback((content: string, msgType: string = 'text') => {
-    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-      console.warn('WebSocket not connected');
-      return false;
-    }
-
-    try {
-      socketRef.current.send(JSON.stringify({
-        content,
-        type: msgType,
-      }));
-      return true;
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      return false;
-    }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
+    closedRef.current = false;
     connect();
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.close();
+      closedRef.current = true;
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      const socket = socketRef.current;
+      socketRef.current = null;
+      if (socket) {
+        socket.onclose = null; // 主动关闭不触发重连
+        socket.close();
       }
     };
   }, [connect]);
-
-  return { sendMessage };
 }

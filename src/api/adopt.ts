@@ -13,9 +13,6 @@ import {
   AdoptionAgreementRequest,
   AdoptionStatusUpdateRequest,
   AdoptionStats,
-  AdoptionFollowUpRecord,
-  AdoptionFollowUpRequest,
-  AdoptionFollowUpListResponse,
 } from '../types/adopt';
 
 export interface UploadAdoptPhotoResponse {
@@ -118,36 +115,4 @@ export const reviewApplication = async (data: AdoptionReviewRequest): Promise<vo
 // 签署领养协议
 export const signAgreement = async (data: AdoptionAgreementRequest): Promise<void> => {
   return await post<void>('/api/v1/adopts/applications/sign', data);
-};
-
-// ========== 领养回访相关 API ==========
-
-// 获取领养回访记录列表
-export const getFollowUpList = async (
-  applicationId: number,
-  page = 1,
-  pageSize = 10
-): Promise<AdoptionFollowUpListResponse> => {
-  return await get<AdoptionFollowUpListResponse>(
-    `/api/v1/adopts/applications/${applicationId}/follow-ups`,
-    { params: { page, pageSize } }
-  );
-};
-
-// 创建领养回访记录
-export const createFollowUp = async (data: AdoptionFollowUpRequest): Promise<AdoptionFollowUpRecord> => {
-  return await post<AdoptionFollowUpRecord>('/api/v1/adopts/applications/follow-ups', data);
-};
-
-// 更新领养回访记录
-export const updateFollowUp = async (
-  id: number,
-  data: Partial<AdoptionFollowUpRequest>
-): Promise<AdoptionFollowUpRecord> => {
-  return await put<AdoptionFollowUpRecord>(`/api/v1/adopts/applications/follow-ups/${id}`, data);
-};
-
-// 删除领养回访记录
-export const deleteFollowUp = async (id: number): Promise<void> => {
-  return await del<void>(`/api/v1/adopts/applications/follow-ups/${id}`);
 };

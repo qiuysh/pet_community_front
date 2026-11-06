@@ -45,7 +45,8 @@ export function useActivitySignIn() {
       const activityData = await getActivityDetail(activityId);
       setActivity(activityData);
 
-      if (activityData.type !== 'offline_event') {
+      // 后端活动类型枚举：online_vote / online_collect / offline_meet / adopt
+      if (activityData.type !== 'offline_meet') {
         toast.warning('该活动不是线下活动，无法签到');
         navigate(`/activities/${activityId}`);
         return;
@@ -79,7 +80,7 @@ export function useActivitySignIn() {
 
   const handleSignIn = () => {
     if (!scanQRCode) {
-      toast.warning('请扫描二维码或输入二维码内容');
+      toast.warning('请输入现场提供的签到码');
       return;
     }
     if (!activityId) return;

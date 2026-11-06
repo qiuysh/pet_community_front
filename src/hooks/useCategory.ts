@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { getCategoryPosts, getTopicCategories } from '../api/discovery';
 import { useAsyncEffect } from './useAsync';
 import { TopicCategoryInfo, RecommendPostInfo } from '../types/discovery';
+import { reportError } from '../utils/errorReport';
 
 export type CategorySortType = 'latest' | 'hot';
 
@@ -48,7 +49,7 @@ export function useCategory(pageSize = 10) {
       pageSize,
     }),
     [page, petType, postType, sortType, categoryId],
-    { onError: (err) => console.error('加载分类帖子失败', err) },
+    { onError: (err) => reportError('加载分类帖子失败', err) },
   );
   const posts: RecommendPostInfo[] = postsData?.list ?? [];
   const total: number = postsData?.total ?? 0;

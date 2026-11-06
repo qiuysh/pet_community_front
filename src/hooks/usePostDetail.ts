@@ -10,6 +10,7 @@ import {
 } from '../api/post';
 import { useToast } from '../components/toast';
 import { useUserStore } from '../stores/userStore';
+import { useShare } from './useShare';
 import { PostInfo, ReportCreateRequest, LikeResult, FavoriteResult } from '../types/post';
 
 /**
@@ -108,17 +109,17 @@ export function usePostDetail(id?: string | number) {
     }
   }, [post, requireLogin, toast]);
 
-  const onShare = useCallback(async (platform: string) => {
-    if (!post) return;
-    setPost({ ...post, sharesCount: post.sharesCount + 1 });
-    try {
-      await recordPostShare(post.id, { platform });
-      toast.success('分享成功');
-    } catch (e: unknown) {
-      setPost((p) => (p ? { ...p, sharesCount: Math.max(0, p.sharesCount - 1) } : p));
-      toast.error((e as Error).message || '分享失败');
-    }
-  }, [post, toast]);
+  // 分享：与列表/话题同一接缝（打开不发请求，选定平台才上报）
+  const share = useShare({
+    record: (platform) =>
+      post ? recordPostShare(post.id, { platform }) : Promise.resolve(undefined),
+    onCountChange: (delta) =>
+      setPost((p) => (p ? { ...p, sharesCount: Math.max(0, p.sharesCount + delta) } : p)),
+    resolveTarget: () => ({
+      url: `${window.location.origin}/posts/${post?.id ?? postId}`,
+      title: post?.content ?? '',
+    }),
+  });
 
   const onDelete = useCallback(async () => {
     if (!post) return false;
@@ -152,8 +153,8 @@ export function usePostDetail(id?: string | number) {
     setPost,
     onLike,
     onFavorite,
-    onShare,
     onDelete,
     onReport,
+    ...share,
   };
 }

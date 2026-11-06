@@ -10,10 +10,12 @@ import { AdminButton } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
 import { AdminTable } from '../../components/admin/adminTable';
+import { FrontUserDetailDialog } from '../../components/admin/frontUserDetailDialog';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 
 export function AdminFrontUserPage() {
   const [users, setUsers] = useState<FrontUser[]>([]);
+  const [detailUserId, setDetailUserId] = useState<number | null>(null);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(20);
@@ -256,12 +258,21 @@ export function AdminFrontUserPage() {
                     <AdminChip tone={getStatusTone(user.status)}>{getStatusText(user.status)}</AdminChip>
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap">
-                    <UserBanAction
-                      userId={user.id}
-                      userName={user.nickname}
-                      isBanned={user.status === 2}
-                      onSuccess={fetchUserList}
-                    />
+                    <div className="flex items-center gap-2">
+                      <AdminButton
+                        type="button"
+                        variant="outline"
+                        onClick={() => setDetailUserId(user.id)}
+                      >
+                        详情
+                      </AdminButton>
+                      <UserBanAction
+                        userId={user.id}
+                        userName={user.nickname}
+                        isBanned={user.status === 2}
+                        onSuccess={fetchUserList}
+                      />
+                    </div>
                   </AdminTable.Cell>
                 </AdminTable.Row>
               ))}
@@ -335,6 +346,8 @@ export function AdminFrontUserPage() {
           </div>
         </div>
       )}
+
+      <FrontUserDetailDialog userId={detailUserId} onClose={() => setDetailUserId(null)} />
     </div>
   );
 }

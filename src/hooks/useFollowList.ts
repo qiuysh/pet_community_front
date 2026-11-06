@@ -4,6 +4,7 @@ import { useAsyncEffect } from './useAsync';
 import { useUserStore } from '../stores/userStore';
 import { UserInfo } from '../types/user';
 import { showErrorToast, showSuccessToast } from '../utils/toastManager';
+import { reportError } from '../utils/errorReport';
 
 export interface FollowInfo extends UserInfo {
   isFollowed?: boolean;
@@ -45,7 +46,7 @@ export function useFollowList(userId: number, initialType?: string, pageSize = 2
       return userFollowApi.getFollowListByUser(userId, { type: activeTab, page, pageSize }) as Promise<{ list: FollowInfo[]; total: number }>;
     },
     [page, activeTab, userId, pageSize],
-    { onError: (error) => console.error('获取列表失败', error) },
+    { onError: (error) => reportError('获取列表失败', error) },
   );
 
   const users: FollowInfo[] = data?.list ?? [];
@@ -64,7 +65,7 @@ export function useFollowList(userId: number, initialType?: string, pageSize = 2
         showSuccessToast('关注成功');
       }
     } catch (error) {
-      console.error('操作失败', error);
+      reportError('操作失败', error);
       showErrorToast('操作失败');
       // 回滚
       setData(prev => prev ? { ...prev, list: prev.list.map(u => u.id === targetId ? { ...u, isFollowed: isFollowed } : u) } : prev);
@@ -78,7 +79,7 @@ export function useFollowList(userId: number, initialType?: string, pageSize = 2
       await userFollowApi.setSecretFollow(targetId, !isSecret);
       showSuccessToast(!isSecret ? '已设为悄悄关注' : '已设为公开关注');
     } catch (error) {
-      console.error('操作失败', error);
+      reportError('操作失败', error);
       showErrorToast('操作失败');
       setData(prev => prev ? { ...prev, list: prev.list.map(u => u.id === targetId ? { ...u, isSecret } : u) } : prev);
     }

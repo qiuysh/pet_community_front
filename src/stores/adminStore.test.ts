@@ -117,6 +117,24 @@ describe('useAdminStore', () => {
     expect(result.current.isAuthenticated()).toBe(false);
   });
 
+  it('获取公钥失败时不得降级为明文上送口令', async () => {
+    getStoredPublicKeyMock.mockReturnValue('');
+    getPublicKeyMock.mockRejectedValue(new Error('network down'));
+
+    const { useAdminStore } = await import('./adminStore');
+    const { result } = renderHook(() => useAdminStore());
+
+    let success = true;
+    await act(async () => {
+      success = await result.current.login({ username: 'admin', password: 'Admin@123' });
+    });
+
+    expect(success).toBe(false);
+    expect(loginMock).not.toHaveBeenCalled();
+    expect(encryptMock).not.toHaveBeenCalled();
+    expect(result.current.error).toContain('安全组件加载失败');
+  });
+
   it('logout 应清除状态和存储', async () => {
     localStorage.setItem('admin_token', 'admin-token');
     const { useAdminStore } = await import('./adminStore');

@@ -27,9 +27,9 @@ export const TopicDetailPage = () => {
     participating,
     toggleParticipate,
     shareOpen,
-    setShareOpen,
     shareUrl,
     openShare,
+    closeShare,
     onShare,
   } = useTopicDetail(id);
 
@@ -177,7 +177,7 @@ export const TopicDetailPage = () => {
 
       <ShareSheet
         open={shareOpen}
-        onClose={() => setShareOpen(false)}
+        onClose={closeShare}
         postUrl={shareUrl}
         postTitle={topic.name}
         onShare={(platform) => void onShare(platform)}

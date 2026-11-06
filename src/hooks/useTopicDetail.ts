@@ -8,6 +8,7 @@ import {
 } from '../api/discovery';
 import { useToast } from '../components/toast';
 import { useAsyncEffect } from './useAsync';
+import { useShare } from './useShare';
 import { useUserStore } from '../stores/userStore';
 import { PostInfo, PostListResponse } from '../types/post';
 import { TopicDetailInfo } from '../types/discovery';
@@ -22,8 +23,6 @@ export function useTopicDetail(id?: string | number, defaultPageSize = 10) {
   const [topic, setTopic] = useState<TopicDetailInfo | null>(null);
   const [loadingTopic, setLoadingTopic] = useState(true);
   const [participating, setParticipating] = useState(false);
-  const [shareOpen, setShareOpen] = useState(false);
-  const [shareUrl, setShareUrl] = useState('');
   const [page, setPage] = useState(1);
 
   const topicId = id !== undefined ? Number(id) : 0;
@@ -87,33 +86,16 @@ export function useTopicDetail(id?: string | number, defaultPageSize = 10) {
     }
   };
 
-  /**
-   * 打开分享面板：只生成本地链接，不发请求（与帖子详情一致，选平台后才上报）
-   */
-  const openShare = () => {
-    if (!topicId) return;
-    setShareUrl(`${window.location.origin}/topics/${topicId}`);
-    setShareOpen(true);
-  };
-
-  /**
-   * 分享面板内选定平台后上报：累加分享数并通知后端记录 platform
-   */
-  const onShare = useCallback(
-    async (platform: string) => {
-      if (!topicId) return;
-      const prev = topic?.sharesCount ?? 0;
-      setTopic((p) => (p ? { ...p, sharesCount: p.sharesCount + 1 } : p));
-      try {
-        await shareTopic(topicId, platform);
-        toast.success('分享成功');
-      } catch (err) {
-        setTopic((p) => (p ? { ...p, sharesCount: prev } : p));
-        toast.error((err as Error).message || '分享失败');
-      }
-    },
-    [topicId, topic?.sharesCount, toast],
-  );
+  // 分享：打开面板不发请求，选定平台才上报（与帖子分享同一接缝）
+  const share = useShare({
+    record: (platform) => (topicId ? shareTopic(topicId, platform) : Promise.resolve({ shareUrl: '' })),
+    onCountChange: (delta) =>
+      setTopic((p) => (p ? { ...p, sharesCount: Math.max(0, p.sharesCount + delta) } : p)),
+    resolveTarget: () => ({
+      url: `${window.location.origin}/topics/${topicId}`,
+      title: topic?.name ?? '',
+    }),
+  });
 
   return {
     topic,
@@ -126,10 +108,6 @@ export function useTopicDetail(id?: string | number, defaultPageSize = 10) {
     setPage,
     participating,
     toggleParticipate,
-    shareOpen,
-    setShareOpen,
-    shareUrl,
-    openShare,
-    onShare,
+    ...share,
   };
 }

@@ -132,12 +132,6 @@ export interface ThirdPartyLoginRequest {
   code: string;
 }
 
-export interface ThirdPartyBindRequest {
-  platform: string;
-  phone: string;
-  code: string;
-}
-
 export interface ThirdPartyLoginResponse {
   token?: string;
   refreshToken?: string;
@@ -147,18 +141,4 @@ export interface ThirdPartyLoginResponse {
   /** 兼容旧字段：部分流程需绑定手机 */
   needBind?: boolean;
   platform?: string;
-}
-
-export interface UserListParams {
-  keyword?: string;
-  status?: number;
-  page?: number;
-  pageSize?: number;
-}
-
-export interface UserListResponse {
-  list: UserInfo[];
-  total: number;
-  page: number;
-  pageSize: number;
 }

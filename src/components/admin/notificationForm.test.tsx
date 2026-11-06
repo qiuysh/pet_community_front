@@ -111,6 +111,7 @@ describe('NotificationForm', () => {
     renderWithToast(
       <NotificationForm onClose={() => {}} onSuccess={() => {}} />
     );
-    expect(screen.getByText('全部用户')).toBeInTheDocument();
+    // 下拉 option 与触发器都会渲染「全部用户」，用 getAllByText 断言存在
+    expect(screen.getAllByText('全部用户').length).toBeGreaterThan(0);
   });
 });

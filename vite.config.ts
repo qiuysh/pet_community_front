@@ -63,6 +63,12 @@ export default defineConfig({
         target: 'http://localhost:8083',
         changeOrigin: true,
       },
+      // 私信实时推送：WebSocket 需单独代理，否则开发环境连的是 vite 自身
+      '/ws': {
+        target: 'ws://localhost:8083',
+        ws: true,
+        changeOrigin: true,
+      },
     },
   },
 });

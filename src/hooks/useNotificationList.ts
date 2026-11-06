@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { notificationApi } from '../api/social';
 import { useAsyncEffect } from './useAsync';
 import { showErrorToast } from '../utils/toastManager';
+import { reportError } from '../utils/errorReport';
 
 export interface NotificationItem {
   id: number;
@@ -34,7 +35,7 @@ export function useNotificationList(pageSize = 20) {
     [page],
     {
       onError: (error) => {
-        console.error('获取通知列表失败', error);
+        reportError('获取通知列表失败', error);
         showErrorToast('获取通知列表失败');
       },
       onSuccess: (res) => {
@@ -53,7 +54,7 @@ export function useNotificationList(pageSize = 20) {
       await notificationApi.markAsRead(id);
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: 1 } : n));
     } catch (error) {
-      console.error('标记已读失败', error);
+      reportError('标记已读失败', error);
     }
   };
 
@@ -62,7 +63,7 @@ export function useNotificationList(pageSize = 20) {
       await notificationApi.markAllAsRead();
       setNotifications(prev => prev.map(n => ({ ...n, isRead: 1 })));
     } catch (error) {
-      console.error('全部已读失败', error);
+      reportError('全部已读失败', error);
       showErrorToast('全部已读失败');
     }
   };

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { messageApi } from '../api/social';
 import type { ChatMessage, MessageSearchStatus } from '../types/social';
+import { reportError } from '../utils/errorReport';
 
 /** 搜索结果每页条数 */
 const SEARCH_PAGE_SIZE = 20;
@@ -93,7 +94,7 @@ export function useMessageSearch(conversationId: number): UseMessageSearchReturn
         }
       } catch (err) {
         if (seq !== seqRef.current) return;
-        console.error('搜索消息失败', err);
+        reportError('搜索消息失败', err);
         setError('搜索失败，请稍后重试');
         setStatus('error');
       } finally {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Heart, MessageCircle, Bookmark, Share2 } from 'lucide-react';
 import { PostInfo } from '../../types/post';
 import { usePostActions } from '../../hooks/usePostActions';
@@ -47,8 +47,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
   onLikeOverride,
   onFavoriteOverride,
 }) => {
-  const { state, onLike, onFavorite, onShare, onComment } = usePostActions(post);
-  const [shareOpen, setShareOpen] = useState(false);
+  const { state, onLike, onFavorite, onComment, share } = usePostActions(post);
 
   // 详情页传入 override 时以 post 为准，避免与 usePostDetail 双份状态
   const isLiked = onLikeOverride ? !!post.isLiked : state.isLiked;
@@ -135,7 +134,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
             size="sm"
             aria-label="分享"
             className={itemClass}
-            onClick={onShareOverride ?? (() => setShareOpen(true))}
+            onClick={onShareOverride ?? share.openShare}
           >
             <Share2 size={iconPx} strokeWidth={stroke} aria-hidden="true" />
             <span className="tabular-nums">{formatCount(sharesCount)}</span>
@@ -146,11 +145,11 @@ export const PostActions: React.FC<PostActionsProps> = ({
       {/* 默认（列表场景）自带分享面板，与详情页保持一致；override 时由外部渲染 */}
       {!onShareOverride && (
         <ShareSheet
-          open={shareOpen}
-          onClose={() => setShareOpen(false)}
-          postUrl={`${window.location.origin}/posts/${post.id}`}
-          postTitle={post.content}
-          onShare={(platform) => void onShare(platform)}
+          open={share.shareOpen}
+          onClose={share.closeShare}
+          postUrl={share.shareUrl}
+          postTitle={share.shareTitle}
+          onShare={(platform) => void share.onShare(platform)}
         />
       )}
     </>

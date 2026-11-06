@@ -1,9 +1,17 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useActivityDetail } from '../../hooks/useActivityDetail';
+import { useConfirm } from '../../hooks/useConfirm';
 import { ActivityType } from '../../types/activity';
-import { RegistrationForm, SubmissionUploader, VoteButton } from '../../components/activity';
+import {
+  ActivityAlbum,
+  RegistrationForm,
+  SubmissionEditDialog,
+  SubmissionUploader,
+  VoteButton,
+} from '../../components/activity';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Clock, Users, Check, Trophy } from 'lucide-react';
+import { Clock, Users, Check, Trophy, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -12,9 +20,13 @@ import { Tabs } from '../../components/ui/tabs';
 
 export const ActivityDetailPage = () => {
   const navigate = useNavigate();
+  const { confirm, confirmDialog } = useConfirm();
+  const [editingSubmission, setEditingSubmission] = useState(false);
   const {
     activity,
     submissions,
+    review,
+    mySubmission,
     loading,
     refetch,
     isLoggedIn,
@@ -28,6 +40,11 @@ export const ActivityDetailPage = () => {
     isRegistrationOpen,
     isSubmissionOpen,
     isVoteOpen,
+    canCancelRegistration,
+    handleCancelRegistration,
+    handleDeleteSubmission,
+    canceling,
+    deletingSubmission,
   } = useActivityDetail();
 
   const formatTime = (timeStr: string) => {
@@ -104,10 +121,32 @@ export const ActivityDetailPage = () => {
               </Button>
             )}
             {activity.isRegistered && (
-              <span className="text-sm text-secondary-dark flex items-center gap-1">
-                <Check size={12} aria-hidden="true" />
-                <span>已报名</span>
-              </span>
+              <div className="flex flex-1 flex-col gap-1">
+                <span className="text-sm text-secondary-dark flex items-center gap-1">
+                  <Check size={12} aria-hidden="true" />
+                  <span>已报名</span>
+                </span>
+                {canCancelRegistration() && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="self-start px-0 text-brown-muted"
+                    loading={canceling}
+                    disabled={canceling}
+                    onClick={async () => {
+                      const ok = await confirm({
+                        title: '取消报名',
+                        description: '取消后需要重新报名才能参与该活动，确定取消吗？',
+                        confirmText: '取消报名',
+                        tone: 'danger',
+                      });
+                      if (ok) handleCancelRegistration();
+                    }}
+                  >
+                    取消报名
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -124,6 +163,8 @@ export const ActivityDetailPage = () => {
             ...(activity.type === ActivityType.VOTING || activity.type === ActivityType.CONTEST
               ? [{ key: 'submissions', title: '作品展示' }]
               : []),
+            { key: 'album', title: '活动相册' },
+            ...(review ? [{ key: 'review', title: '活动回顾' }] : []),
           ]}
         />
       </div>
@@ -195,12 +236,77 @@ export const ActivityDetailPage = () => {
                           <span>{submission.awardLevel}</span>
                         </div>
                       )}
+                      {mySubmission?.id === submission.id && (
+                        <div className="mt-2 flex items-center gap-3 border-t pt-2">
+                          <button
+                            type="button"
+                            className="text-xs text-brown-secondary flex items-center gap-1"
+                            onClick={() => setEditingSubmission(true)}
+                          >
+                            <Pencil size={12} aria-hidden="true" />
+                            编辑
+                          </button>
+                          <button
+                            type="button"
+                            className="text-xs text-error flex items-center gap-1"
+                            disabled={deletingSubmission}
+                            onClick={async () => {
+                              const ok = await confirm({
+                                title: '撤回作品',
+                                description: '撤回后作品与已有投票都会被移除，且无法恢复。',
+                                confirmText: '撤回',
+                                tone: 'danger',
+                              });
+                              if (ok) handleDeleteSubmission();
+                            }}
+                          >
+                            <Trash2 size={12} aria-hidden="true" />
+                            撤回
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </Card>
                 ))}
               </div>
             )}
           </div>
+        )}
+
+        {activeTab === 'album' && (
+          <ActivityAlbum
+            activityId={activity.id}
+            canUpload={isLoggedIn && !!activity.isRegistered}
+          />
+        )}
+
+        {activeTab === 'review' && (
+          <Card>
+            {review ? (
+              <article className="space-y-3">
+                <h3 className="text-base font-medium text-brown">{review.title}</h3>
+                {review.publishedAt && (
+                  <p className="text-xs text-brown-muted">发布于 {formatTime(review.publishedAt)}</p>
+                )}
+                <p className="text-sm text-brown-secondary whitespace-pre-wrap">{review.content}</p>
+                {review.photos && review.photos.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {review.photos.map((photo, index) => (
+                      <img
+                        key={`${photo}-${index}`}
+                        decoding="async"
+                        src={photo}
+                        alt={`回顾照片 ${index + 1}`}
+                        className="w-full h-24 object-cover rounded"
+                      />
+                    ))}
+                  </div>
+                )}
+              </article>
+            ) : (
+              <EmptyState compact title="暂无活动回顾" />
+            )}
+          </Card>
         )}
       </div>
 
@@ -221,6 +327,18 @@ export const ActivityDetailPage = () => {
       >
         <SubmissionUploader activity={activity} onSuccess={handleRefresh} />
       </Modal>
+
+      {mySubmission && (
+        <SubmissionEditDialog
+          key={mySubmission.id}
+          submission={mySubmission}
+          open={editingSubmission}
+          onClose={() => setEditingSubmission(false)}
+          onSuccess={() => refetch()}
+        />
+      )}
+
+      {confirmDialog}
     </div>
   );
 };

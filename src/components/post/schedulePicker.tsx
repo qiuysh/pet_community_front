@@ -176,7 +176,11 @@ function combineValue(dateStr: string, hour: number, minute: number): string {
   return `${dateStr}T${pad(hour)}:${pad(minute)}`;
 }
 
-function clampToValidRange(dateStr: string, hour: number, minute: number, maxDays: number, minuteStep: number): string {
+/**
+ * 把「日期 + 时 + 分」校正到合法发布区间：
+ * 过去时间 → 取当前时间向上取整；超过 maxDays 上限 → 取上限。导出让发布前的时间校验可被直接测试。
+ */
+export function clampToValidRange(dateStr: string, hour: number, minute: number, maxDays: number, minuteStep: number): string {
   const candidate = new Date(combineValue(dateStr, hour, minute));
   const now = Date.now();
   const maxTime = now + maxDays * 24 * 60 * 60 * 1000;

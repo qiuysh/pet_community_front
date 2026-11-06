@@ -22,6 +22,17 @@ export interface ChatMessage {
   localUrl?: string;
 }
 
+/** WebSocket 推送的新私信（与后端 service.MessagePayload 对齐，无会话/状态字段） */
+export interface IncomingChatMessage {
+  id?: number;
+  toId: number;
+  fromId: number;
+  content: string;
+  type: string;
+  mediaUrl?: string;
+  duration?: number;
+}
+
 /** 分页响应（后端 PageData 为 snake_case） */
 export interface MessagePage {
   list: ChatMessage[];

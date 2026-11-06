@@ -20,24 +20,42 @@ export function BatchReview({ selectedItems, onSuccess, onCancel }: BatchReviewP
   const { loading, run } = useAsync();
 
   const handleSubmit = () => {
+    if (selectedItems.length === 0) {
+      showErrorToast('请选择要审核的记录');
+      return;
+    }
     if (action === 'reject' && !reason.trim()) {
       showErrorToast('请填写拒绝原因');
       return;
     }
 
-    const type = selectedItems[0]?.type;
-    const ids = selectedItems.map((item) => item.id);
+    // 待审列表混排帖子/评论/话题，后端批量接口一次只接受一种类型：
+    // 按 type 分组后逐组提交，避免把评论 ID 当成帖子 ID 处理。
+    const groups = new Map<ReviewContent['type'], number[]>();
+    selectedItems.forEach((item) => {
+      const ids = groups.get(item.type);
+      if (ids) {
+        ids.push(item.id);
+      } else {
+        groups.set(item.type, [item.id]);
+      }
+    });
+    const total = selectedItems.length;
 
     run(
       () =>
-        batchReview({
-          targetType: type || 'post',
-          ids,
-          status: action === 'approve' ? 1 : 2,
-          reason: action === 'reject' ? reason.trim() : undefined,
-        }),
+        Promise.all(
+          Array.from(groups, ([targetType, ids]) =>
+            batchReview({
+              targetType,
+              ids,
+              status: action === 'approve' ? 1 : 2,
+              reason: action === 'reject' ? reason.trim() : undefined,
+            }),
+          ),
+        ),
       () => {
-        showSuccessToast(`已${action === 'approve' ? '通过' : '拒绝'} ${ids.length} 条记录`);
+        showSuccessToast(`已${action === 'approve' ? '通过' : '拒绝'} ${total} 条记录`);
         onSuccess();
       },
       (err) => showErrorToast((err as Error).message || '批量操作失败'),

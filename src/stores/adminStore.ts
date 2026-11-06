@@ -44,14 +44,17 @@ export const useAdminStore = create<AdminStore>((set, get) => ({
           const response = await getPublicKey();
           currentPublicKey = response.publicKey;
           setPublicKey(currentPublicKey);
-        } catch {
-          console.warn('Failed to fetch public key, using unencrypted password');
+        } catch (err) {
+          // 取不到公钥时绝不降级为明文上送：既不会登录成功，还会把口令暴露在链路上
+          console.error('Failed to fetch public key:', err);
+          set({ error: '安全组件加载失败，请检查网络后重试' });
+          return false;
         }
       }
 
       const encryptedData: AdminLoginRequest = {
         username: data.username,
-        password: currentPublicKey ? encrypt(data.password) : data.password,
+        password: encrypt(data.password),
       };
 
       const response = await login(encryptedData);

@@ -75,6 +75,7 @@ const ActivitySignInPage = lazyNamed(
   'ActivitySignInPage',
 );
 const AdoptListPage = lazyNamed(() => import('../pages/adopt/adoptListPage'), 'AdoptListPage');
+const MyAdoptPage = lazyNamed(() => import('../pages/adopt/myAdoptPage'), 'MyAdoptPage');
 const AdoptDetailPage = lazyNamed(
   () => import('../pages/adopt/adoptDetailPage'),
   'AdoptDetailPage',
@@ -239,6 +240,7 @@ const appRoutes: RouteObject[] = [
   { path: '/activities/:id/sign-in', element: bare(<ActivitySignInPage />, true) },
 
   { path: '/adopts', element: withUser(<AdoptListPage />) },
+  { path: '/adopts/mine', element: withUser(<MyAdoptPage />, true) },
   { path: '/adopts/:id', element: withUser(<AdoptDetailPage />) },
   { path: '/adopts/create', element: withUser(<AdoptCreatePage />, true) },
 

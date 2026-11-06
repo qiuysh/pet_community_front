@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Search, Trash2 } from 'lucide-react';
 import { useChat } from '../../hooks/useChat';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import { useConfirm } from '../../hooks/useConfirm';
 import { useMessageSearch } from '../../hooks/useMessageSearch';
 import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
@@ -13,8 +15,11 @@ import { ChatSearchResults } from '../../components/chat/chatSearchResults';
 import { ChatImagePreview } from '../../components/chat/chatImagePreview';
 import { ImageLightbox } from '../../components/chat/imageLightbox';
 import { getPublicProfile } from '../../api/user';
+import { messageApi } from '../../api/social';
+import type { ChatMessage } from '../../types/social';
 import { getUserAvatar } from '../../utils/avatarUtils';
-import { showInfoToast } from '../../utils/toastManager';
+import { showInfoToast, showSuccessToast, showErrorToast } from '../../utils/toastManager';
+import { useUserStore } from '../../stores/userStore';
 import './chatPage.scss';
 
 interface ImagePreviewState {
@@ -27,15 +32,33 @@ interface LightboxState {
   alt: string;
 }
 
+/** 撤回窗口：与后端一致，2 分钟 */
+const RECALL_WINDOW_MS = 2 * 60 * 1000;
+
+/** 仅自己发的、未撤回、非乐观发送中、且 2 分钟内的消息允许撤回 */
+function canRecallMessage(message: ChatMessage): boolean {
+  if (message.isRecalled) return false;
+  if (message.pending) return false;
+  const sentAt = new Date(message.createdAt).getTime();
+  if (Number.isNaN(sentAt)) return false;
+  return Date.now() - sentAt <= RECALL_WINDOW_MS;
+}
+
 const ChatPage: React.FC = () => {
   const { conversationId, targetUserId } = useParams<{
     conversationId: string;
     targetUserId: string;
   }>();
-  const currentUserId = parseInt(localStorage.getItem('user_id') || '0');
+  // 当前用户 ID 以登录态 store 为准（localStorage 从未写入 user_id，读它会恒为 0）
+  const { user: currentUser } = useUserStore();
+  const currentUserId = currentUser?.id ?? 0;
+  const navigate = useNavigate();
+  const { confirm, confirmDialog } = useConfirm();
   const peerUserId = parseInt(targetUserId || '0');
 
   const chat = useChat(parseInt(conversationId || '0'), peerUserId);
+  // 实时私信：对方发来的消息直接追加到当前会话（按 id 去重）
+  useWebSocket(chat.receiveMessage);
   const search = useMessageSearch(parseInt(conversationId || '0'));
   const resetSearch = search.reset;
 
@@ -143,6 +166,30 @@ const ChatPage: React.FC = () => {
           >
             <Search size={22} aria-hidden="true" />
           </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className="back-btn"
+            aria-label="删除会话"
+            onClick={async () => {
+              const ok = await confirm({
+                title: '删除会话',
+                description: '删除后该会话将从你的列表中移除，对方不受影响，历史消息不可恢复。',
+                confirmText: '删除',
+                tone: 'danger',
+              });
+              if (!ok || !conversationId) return;
+              try {
+                await messageApi.deleteConversation(Number(conversationId));
+                showSuccessToast('会话已删除');
+                navigate('/messages');
+              } catch (error) {
+                showErrorToast((error as Error).message || '删除会话失败');
+              }
+            }}
+          >
+            <Trash2 size={20} aria-hidden="true" />
+          </Button>
         </div>
       )}
 
@@ -163,6 +210,8 @@ const ChatPage: React.FC = () => {
                   isMine={msg.fromId === currentUserId}
                   highlighted={chat.highlightedMessageId === msg.id}
                   onPreviewImage={(src, alt) => setLightbox({ src, alt })}
+                  canRecall={msg.fromId === currentUserId && canRecallMessage(msg)}
+                  onRecall={chat.recallMessage}
                 />
               ))}
               <div ref={chat.messagesEndRef} />
@@ -218,6 +267,8 @@ const ChatPage: React.FC = () => {
         alt={lightbox?.alt}
         onClose={() => setLightbox(null)}
       />
+
+      {confirmDialog}
     </div>
   );
 };

@@ -87,18 +87,6 @@ export const notificationSettingsApi = {
   }) => put('/api/v1/social/notification-settings', data),
 }
 
-export const userStatusApi = {
-  getOnlineStatus: (userId: number) => get(`/api/v1/social/status/online/${userId}`),
-  setOnlineStatus: (status: 'online' | 'offline') => post('/api/v1/social/status/online', { status }),
-}
-
-export const likeListApi = {
-  getPostLikes: (postId: number, params?: { page?: number; pageSize?: number }) =>
-    get(`/api/v1/posts/${postId}/likes`, { params }),
-  getCommentLikes: (commentId: number, params?: { page?: number; pageSize?: number }) =>
-    get(`/api/v1/posts/comments/${commentId}/likes`, { params }),
-}
-
 // 通知列表(通知中心页使用)
 export const notificationApi = {
   getNotifications: (params?: { page?: number; pageSize?: number }) =>

@@ -25,6 +25,7 @@ import {
   PetGrowthRecordCreateRequest,
 } from '../types/pet';
 import type { PostInfo } from '../types/post';
+import { reportError } from '../utils/errorReport';
 
 export type PetDetailTab = 'album' | 'growth' | 'posts';
 
@@ -77,7 +78,7 @@ export function usePetDetail() {
       return await getPetAlbum(pet.id);
     },
     [pet?.id],
-    { onError: (err) => console.error('获取相册失败', err) },
+    { onError: (err) => reportError('获取相册失败', err) },
   );
   const album: PetAlbumInfo[] = albumHook.data ?? [];
 
@@ -87,7 +88,7 @@ export function usePetDetail() {
       return await getGrowthRecords(pet.id, 1, 50);
     },
     [pet?.id],
-    { onError: (err) => console.error('获取成长记录失败', err) },
+    { onError: (err) => reportError('获取成长记录失败', err) },
   );
   const growthRecords: PetGrowthRecordInfo[] = growthHook.data?.list ?? [];
 
@@ -97,7 +98,7 @@ export function usePetDetail() {
       return await getPostList({ petId: pet.id, page: 1, pageSize: 20 });
     },
     [pet?.id, activeTab],
-    { onError: (err) => console.error('获取相关帖子失败', err) },
+    { onError: (err) => reportError('获取相关帖子失败', err) },
   );
   const relatedPosts: PostInfo[] = relatedPostsHook.data?.list ?? [];
   const relatedPostsTotal = relatedPostsHook.data?.total ?? 0;

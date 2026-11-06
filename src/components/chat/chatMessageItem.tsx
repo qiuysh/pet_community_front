@@ -8,6 +8,9 @@ export interface ChatMessageItemProps {
   isMine: boolean;
   highlighted?: boolean;
   onPreviewImage: (src: string, alt: string) => void;
+  /** 自己 2 分钟内且未撤回的消息可撤回 */
+  canRecall?: boolean;
+  onRecall?: (messageId: number) => void;
 }
 
 /** 单条消息：文本 / 图片 / 语音 / 已撤回 */
@@ -16,6 +19,8 @@ export function ChatMessageItem({
   isMine,
   highlighted = false,
   onPreviewImage,
+  canRecall = false,
+  onRecall,
 }: ChatMessageItemProps) {
   const mediaSrc = message.mediaUrl || message.localUrl || '';
   const classNames = [
@@ -58,6 +63,15 @@ export function ChatMessageItem({
             <div className="message-content">{message.content}</div>
           )}
           <div className="message-time">{formatChatTime(message.createdAt)}</div>
+          {canRecall && onRecall ? (
+            <button
+              type="button"
+              className="message-recall"
+              onClick={() => onRecall(message.id)}
+            >
+              撤回
+            </button>
+          ) : null}
         </>
       )}
     </div>

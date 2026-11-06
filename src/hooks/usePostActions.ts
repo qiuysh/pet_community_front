@@ -4,6 +4,7 @@ import { togglePostLike, togglePostFavorite, recordPostShare } from '../api/post
 import { useToast } from '../components/toast';
 import { FavoriteResult, LikeResult, PostInfo } from '../types/post';
 import { useUserStore } from '../stores/userStore';
+import { useShare } from './useShare';
 
 /**
  * 帖子列表 / 详情通用的四按钮交互 hook
@@ -93,21 +94,21 @@ export function usePostActions(post: PostInfo) {
     }
   }, [state.isFavorited, post.id, requireLogin]);
 
-  const onShare = useCallback(async (platform = 'copy') => {
-    setState((s) => ({ ...s, sharesCount: s.sharesCount + 1 }));
-    try {
-      await recordPostShare(post.id, { platform });
-      toast.success('分享成功');
-    } catch (e) {
-      setState((s) => ({ ...s, sharesCount: Math.max(0, s.sharesCount - 1) }));
-      toast.error((e as Error).message || '分享失败');
-    }
-  }, [post.id]);
+  // 分享：与详情页/话题共用同一接缝（打开不发请求，选平台才上报）
+  const share = useShare({
+    record: (platform) => recordPostShare(post.id, { platform }),
+    onCountChange: (delta) =>
+      setState((s) => ({ ...s, sharesCount: Math.max(0, s.sharesCount + delta) })),
+    resolveTarget: () => ({
+      url: `${window.location.origin}/posts/${post.id}`,
+      title: post.content,
+    }),
+  });
 
   // 评论：跳转到详情页评论锚点
   const onComment = useCallback(() => {
     navigate(`/posts/${post.id}`, { state: { scrollToComments: true } });
   }, [post.id, navigate]);
 
-  return { state, onLike, onFavorite, onShare, onComment };
+  return { state, onLike, onFavorite, onComment, share };
 }

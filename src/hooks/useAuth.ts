@@ -93,13 +93,13 @@ export function useAuth() {
     [run, navigate],
   );
 
-  /** 演示模式第三方登录：无真实 OAuth，使用本地稳定 code 调用后端模拟接口 */
+  /** 第三方登录：服务端已配置 OAuth 时走真实授权，未配置时会返回明确错误 */
   const loginWithThirdParty = useCallback(
     (platform: 'wechat' | 'weibo' | 'qq') => {
       const labels = { wechat: '微信', weibo: '微博', qq: 'QQ' } as const;
       if (
         !window.confirm(
-          `当前为演示模式：将模拟${labels[platform]}登录（未接入真实 OAuth）。\n同一浏览器再次点击会登录同一演示账号。是否继续？`,
+          `将通过${labels[platform]}登录。\n若服务端未接入该平台的 OAuth，将以演示账号登录（同一浏览器固定同一账号），未开启演示时会提示不可用。是否继续？`,
         )
       ) {
         return Promise.resolve(false);
@@ -115,7 +115,7 @@ export function useAuth() {
           }
           setToken(res.token, res.refreshToken, true, res.deviceId);
           setUser(res.user);
-          showSuccessToast(res.isNewUser ? '演示账号已创建并登录' : '登录成功');
+          showSuccessToast(res.isNewUser ? '账号已创建并登录' : '登录成功');
           navigate(from, { replace: true });
         },
         (err: unknown) => showErrorToast((err as Error).message || '第三方登录失败'),

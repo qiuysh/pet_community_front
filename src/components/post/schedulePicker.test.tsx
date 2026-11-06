@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import {
   SchedulePicker,
+  clampToValidRange,
   getDefaultScheduleTime,
   roundUpToMinuteStep,
   toScheduleValue,
@@ -57,12 +58,14 @@ describe('SchedulePicker', () => {
   });
 
   it('选择过去时间应自动校正到未来', () => {
-    const onChange = vi.fn();
-    render(<SchedulePicker value="2026-10-12T20:00" onChange={onChange} />);
-
-    fireEvent.change(screen.getByLabelText('小时'), { target: { value: '9' } });
-    expect(onChange).toHaveBeenCalled();
-    const next = onChange.mock.calls[0][0] as string;
+    // 直接测校正函数：Select 是 React Aria 自定义 listbox，原生 change 不触发 onChange
+    const next = clampToValidRange('2026-10-12', 9, 0, 7, 5);
     expect(new Date(next).getTime()).toBeGreaterThan(Date.now());
+  });
+
+  it('超过最大可延迟天数时校正到上限', () => {
+    const next = clampToValidRange('2026-10-20', 9, 0, 7, 5);
+    const maxTime = Date.now() + 7 * 24 * 60 * 60 * 1000;
+    expect(new Date(next).getTime()).toBeLessThanOrEqual(maxTime + 5 * 60 * 1000);
   });
 });

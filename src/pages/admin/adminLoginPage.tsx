@@ -136,9 +136,7 @@ export function AdminLoginPage() {
             >
               记住我
             </AdminCheckbox>
-            <a href="#" className="text-sm text-secondary hover:text-secondary-dark font-medium">
-              忘记密码？
-            </a>
+            <span className="text-sm text-brown-muted">忘记密码请联系超级管理员重置</span>
           </div>
 
           {error && (
@@ -155,9 +153,7 @@ export function AdminLoginPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-brown-muted">
             还没有账号？{' '}
-            <a href="#" className="text-secondary hover:text-secondary-dark font-medium">
-              联系管理员
-            </a>
+            <span className="text-secondary">后台账号由超级管理员创建</span>
           </p>
         </div>
       </div>

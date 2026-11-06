@@ -29,7 +29,19 @@ export const PostDetailPage = () => {
   const navigate = useNavigate();
   const { user } = useUserStore();
 
-  const { post, loading: postLoading, onLike, onFavorite, onShare, onDelete, onReport } = usePostDetail(id);
+  const {
+    post,
+    loading: postLoading,
+    onLike,
+    onFavorite,
+    onDelete,
+    onReport,
+    shareOpen,
+    shareUrl,
+    openShare,
+    closeShare,
+    onShare,
+  } = usePostDetail(id);
 
   const {
     comments,
@@ -45,7 +57,6 @@ export const PostDetailPage = () => {
   const [showReport, setShowReport] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportType, setReportType] = useState('');
-  const [shareOpen, setShareOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const focusCommentInput = () => {
@@ -90,8 +101,6 @@ export const PostDetailPage = () => {
       </div>
     );
   }
-
-  const shareUrl = `${window.location.origin}/posts/${post.id}`;
 
   const moreMenuItems = isOwner
     ? [
@@ -181,7 +190,7 @@ export const PostDetailPage = () => {
           onLikeOverride={onLike}
           onFavoriteOverride={onFavorite}
           onCommentOverride={focusCommentInput}
-          onShareOverride={() => setShareOpen(true)}
+          onShareOverride={openShare}
           className="post-detail-actions"
         />
       </div>
@@ -190,7 +199,7 @@ export const PostDetailPage = () => {
 
       <ShareSheet
         open={shareOpen}
-        onClose={() => setShareOpen(false)}
+        onClose={closeShare}
         postUrl={shareUrl}
         postTitle={post.content}
         onShare={(platform) => onShare(platform)}

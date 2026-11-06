@@ -61,7 +61,7 @@ describe('BatchReview', () => {
     renderWithToast(
       <BatchReview selectedItems={baseItems} onSuccess={() => {}} onCancel={() => {}} />
     );
-    fireEvent.click(screen.getByRole('button', { name: '全部拒绝' }));
+    fireEvent.click(screen.getByRole('radio', { name: '全部拒绝' }));
     expect(screen.getByText('拒绝原因')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('请输入拒绝原因，将统一通知所有用户')).toBeInTheDocument();
   });
@@ -71,7 +71,7 @@ describe('BatchReview', () => {
     renderWithToast(
       <BatchReview selectedItems={baseItems} onSuccess={() => {}} onCancel={() => {}} />
     );
-    fireEvent.click(screen.getByRole('button', { name: '全部拒绝' }));
+    fireEvent.click(screen.getByRole('radio', { name: '全部拒绝' }));
     fireEvent.click(screen.getByRole('button', { name: '确认拒绝' }));
     await waitFor(() => {
       expect(batchReview).not.toHaveBeenCalled();
@@ -85,7 +85,7 @@ describe('BatchReview', () => {
     renderWithToast(
       <BatchReview selectedItems={baseItems} onSuccess={onSuccess} onCancel={() => {}} />
     );
-    fireEvent.click(screen.getByRole('button', { name: '全部拒绝' }));
+    fireEvent.click(screen.getByRole('radio', { name: '全部拒绝' }));
     fireEvent.change(screen.getByPlaceholderText('请输入拒绝原因，将统一通知所有用户'), { target: { value: '违规' } });
     fireEvent.click(screen.getByRole('button', { name: '确认拒绝' }));
     await waitFor(() => {
@@ -108,7 +108,7 @@ describe('BatchReview', () => {
     expect(onCancel).toHaveBeenCalled();
   });
 
-  it('无选中项时使用默认 targetType', async () => {
+  it('无选中项时不发请求', async () => {
     vi.mocked(batchReview).mockResolvedValue({} as any);
     const onSuccess = vi.fn();
     renderWithToast(
@@ -116,10 +116,30 @@ describe('BatchReview', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: '确认通过' }));
     await waitFor(() => {
-      expect(batchReview).toHaveBeenCalledWith(expect.objectContaining({
-        targetType: 'post',
-        ids: [],
-      }));
+      expect(batchReview).not.toHaveBeenCalled();
     });
+    expect(onSuccess).not.toHaveBeenCalled();
+  });
+
+  it('混合类型时按 type 分组提交，不把评论 ID 当帖子处理', async () => {
+    vi.mocked(batchReview).mockResolvedValue({} as any);
+    const onSuccess = vi.fn();
+    const mixed: ReviewContent[] = [
+      { id: 1, type: 'post', content: 'p1', userId: 1, username: 'u1', avatar: '', status: 0, createdAt: '2024-01-01' },
+      { id: 2, type: 'comment', content: 'c2', userId: 1, username: 'u1', avatar: '', status: 0, createdAt: '2024-01-01' },
+      { id: 3, type: 'post', content: 'p3', userId: 1, username: 'u1', avatar: '', status: 0, createdAt: '2024-01-01' },
+      { id: 4, type: 'topic', content: 't4', userId: 1, username: 'u1', avatar: '', status: 0, createdAt: '2024-01-01' },
+    ];
+
+    renderWithToast(<BatchReview selectedItems={mixed} onSuccess={onSuccess} onCancel={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: '确认通过' }));
+
+    await waitFor(() => {
+      expect(batchReview).toHaveBeenCalledTimes(3);
+    });
+    expect(batchReview).toHaveBeenCalledWith({ targetType: 'post', ids: [1, 3], status: 1, reason: undefined });
+    expect(batchReview).toHaveBeenCalledWith({ targetType: 'comment', ids: [2], status: 1, reason: undefined });
+    expect(batchReview).toHaveBeenCalledWith({ targetType: 'topic', ids: [4], status: 1, reason: undefined });
+    expect(onSuccess).toHaveBeenCalled();
   });
 });

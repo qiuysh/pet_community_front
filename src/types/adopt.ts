@@ -156,37 +156,6 @@ export interface AdoptionStats {
   totalApplications: number;
 }
 
-// 领养回访记录接口
-export interface AdoptionFollowUpRecord {
-  id: number;
-  applicationId: number;
-  adoptionId: number;
-  userId: number;
-  userNickname: string;
-  content: string;
-  followUpDate: string;
-  petHealthStatus?: string;
-  notes?: string;
-  createdAt: string;
-}
-
-// 创建领养回访记录请求
-export interface AdoptionFollowUpRequest {
-  applicationId: number;
-  content: string;
-  followUpDate: string;
-  petHealthStatus?: string;
-  notes?: string;
-}
-
-// 领养回访记录列表响应
-export interface AdoptionFollowUpListResponse {
-  list: AdoptionFollowUpRecord[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
 // 领养状态选项
 export const AdoptionStatusOptions = [
   { value: AdoptionStatus.PENDING, label: '待领养', color: 'green' },
