@@ -22,6 +22,7 @@ import { Modal } from '../../components/ui/modal';
 import { ConfirmDialog } from '../../components/ui/confirmDialog';
 import { Spinner } from '../../components/ui/spinner';
 import { FilterChip } from '../../components/ui/filterChip';
+import { Textarea } from '../../components/ui/input';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import './postDetailPage.scss';
 

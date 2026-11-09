@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useRanking, RankingPeriod } from '../../hooks/useRanking';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Flame, Heart, MessageCircle, ArrowUpRight } from 'lucide-react';
+import { Flame, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -27,10 +27,11 @@ export const RankingPage = () => {
   return (
     <div className="ranking-page">
       <div className="page-header">
-        <h1 className="flex items-center gap-2">
-          <Flame size={20} aria-hidden="true" />
+        <h1 className="flex items-center justify-center gap-2">
+          <Flame size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
           <span>热门排行</span>
         </h1>
+        <p className="header-subtitle">本周最火帖子、人气宠友和热门话题都在这</p>
         <div className="period-tabs flex flex-wrap gap-2">
           {periods.map((p) => (
             <FilterChip
@@ -81,7 +82,7 @@ export const RankingPage = () => {
                     <div className="post-stats tabular-nums">
                       <span className="stat-item flex items-center gap-1"><Heart {...metaIconProps} /><span>{formatCount(post.likesCount)}</span></span>
                       <span className="stat-item flex items-center gap-1"><MessageCircle {...metaIconProps} /><span>{formatCount(post.commentsCount)}</span></span>
-                      <span className="stat-item flex items-center gap-1"><ArrowUpRight {...metaIconProps} /><span>{formatCount(post.sharesCount)}</span></span>
+                      <span className="stat-item flex items-center gap-1"><Share2 {...metaIconProps} /><span>{formatCount(post.sharesCount)}</span></span>
                     </div>
                   </div>
                   <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{post.hotScore}</span></span>

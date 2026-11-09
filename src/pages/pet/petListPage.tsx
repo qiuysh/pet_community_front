@@ -76,7 +76,7 @@ export function PetListPage() {
                 to={`/pets/${pet.id}`}
                 className="bg-white rounded-md overflow-hidden shadow-card hover:shadow-hover transition-shadow group"
               >
-                <div className="aspect-square bg-linear-to-br from-primary-soft to-primary-light/20 relative overflow-hidden">
+                <div className="aspect-square bg-linear-to-br from-cream to-secondary-soft relative overflow-hidden">
                   {pet.avatar ? (
                     <img
                       decoding="async"

@@ -123,6 +123,69 @@ $page-max-read: 720px; // 仅会话列：聊天（泡泡行宽再长就难读）
   margin-right: auto;
 }
 
+// 页头阅读面（萌宠社区 · 可爱活力）：
+// - 底色：白卡混入少量 secondary-soft（清新），避免 primary-soft 大面积「暧昧粉感」
+// - 顶部条：蜜桃活力细条（情绪/CTA 点缀）
+// - ::before：右上小块蜜桃活力点（实、短、亮），不是大片软桃色暧昧暖晕
+// - 页面 .*-decor：青竹气泡光斑，表达玩具感/清新，与蜜桃分区并置
+// 禁止：大面积 primary-soft / primary-strong 实铺；primary→secondary 混色渐变；暧昧粉感铺底。
+// 显式写 h1/p 色，避免被 global.scss 的 h1/p 深色规则盖掉。
+%page-hero-surface {
+  position: relative;
+  overflow: hidden;
+  // 18% secondary-soft → 微薄荷清新，偏萌宠活力而非蜜桃暧昧
+  background: mix($secondary-soft, $background-white, 18%);
+  color: $text-primary;
+  border-bottom: 1px solid $border-light;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: min(120px, 28vw);
+    height: min(120px, 28vw);
+    right: 6%;
+    top: -18%;
+    border-radius: 50%;
+    pointer-events: none;
+    // 小而亮的活力点，忌大半径低透明软晕
+    background: radial-gradient(
+      circle at center,
+      rgba($primary-color, 0.22) 0%,
+      rgba($primary-light, 0.08) 48%,
+      transparent 70%
+    );
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 3px;
+    z-index: 1;
+    pointer-events: none;
+    // 同色相蜜桃渐变；青竹留给装饰光斑/结构控件，不在此混溶
+    background: linear-gradient(90deg, $primary-strong 0%, $primary-light 100%);
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: $text-primary;
+    text-wrap: balance;
+  }
+
+  p {
+    color: $text-secondary;
+  }
+}
+
+// 兼容旧名（过渡）；新代码请用 %page-hero-surface
+%page-hero-soft {
+  @extend %page-hero-surface;
+}
+
 // 通栏底色占位符：给「自带页面底色 + 用 %page-shell 收窄」的页面用。
 // 根容器被收窄到 1120 后，底色只能铺到 1120，两侧会露出外壳底色形成竖带；
 // 这里用一层 fixed 伪元素把底色铺满视口，内容仍留在列内。

@@ -7,6 +7,7 @@ import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { UserRegisterRequest } from '../../types/user';
 import { UserPlus } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Checkbox } from '../../components/ui/checkbox';
@@ -89,7 +90,12 @@ export function RegisterPage() {
       <Card className="w-full max-w-md" padding="md">
         <div className="text-center mb-5">
           <div className="w-12 h-12 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
-            <UserPlus className="w-6 h-6 text-white" />
+            <UserPlus
+              size={ICON_SIZE.nav}
+              strokeWidth={iconStroke(ICON_SIZE.nav)}
+              className="text-white"
+              aria-hidden="true"
+            />
           </div>
           <h1 className="text-xl font-bold text-brown">加入{siteName}</h1>
           <p className="text-sm text-brown-muted mt-1">创建账号，开启你的宠物之旅</p>

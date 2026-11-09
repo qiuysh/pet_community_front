@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { EyeOff, MoreVertical } from 'lucide-react';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useFollowList } from '../../hooks/useFollowList';
 import { useUserStore } from '../../stores/userStore';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
@@ -192,7 +192,7 @@ const FollowListPage: React.FC = () => {
                           className="secret-toggle"
                           aria-label="更多关注操作"
                         >
-                          <MoreVertical size={16} aria-hidden="true" />
+                          <MoreVertical size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
                         </Button>
                       }
                       items={[

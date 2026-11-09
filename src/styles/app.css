@@ -133,6 +133,51 @@
 
 /* 社区主按钮：蜜桃投影 */
 @layer components {
+  /*
+   * 页头阅读面（与 SCSS %page-hero-surface 对齐）：
+   * 微薄荷清新底 + 顶部蜜桃活力细条 + 右上小块蜜桃点缀；
+   * 青竹气泡光斑由页面装饰层承担。忌大面积 primary-soft 暧昧粉感。
+   * 禁止 primary→secondary 混色渐变。
+   */
+  .page-hero-surface {
+    position: relative;
+    overflow: hidden;
+    /* 18% secondary-soft + 82% white */
+    background: color-mix(in srgb, var(--color-secondary-soft) 18%, #ffffff 82%);
+    color: var(--color-brown);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+  .page-hero-surface::before {
+    content: "";
+    position: absolute;
+    width: min(120px, 28vw);
+    height: min(120px, 28vw);
+    right: 6%;
+    top: -18%;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at center,
+      color-mix(in srgb, var(--color-primary) 22%, transparent) 0%,
+      color-mix(in srgb, var(--color-primary-light) 8%, transparent) 48%,
+      transparent 70%
+    );
+  }
+  .page-hero-surface::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 3px;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      var(--color-primary-strong) 0%,
+      var(--color-primary-light) 100%
+    );
+  }
+
   .button.button--primary {
     box-shadow: var(--shadow-brand);
   }

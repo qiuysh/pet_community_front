@@ -10,7 +10,7 @@ import {
   isUserRemembered,
 } from '../../utils/authStorage';
 import { UserLoginRequest } from '../../types/user';
-import { Heart } from 'lucide-react';
+import { PawPrint } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Checkbox } from '../../components/ui/checkbox';
@@ -18,7 +18,7 @@ import { FieldError, FieldLabel, Input } from '../../components/ui/input';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 import { BrandSocialIcon } from '../../components/icons/brandSocialIcons';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
 export function LoginPage() {
   const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
@@ -68,13 +68,18 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary-light/25 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary-soft/80 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 right-0 h-72 w-72 -translate-y-1/3 translate-x-1/3 rounded-full bg-secondary-soft/90 blur-3xl" />
+      <div className="absolute bottom-0 left-0 h-56 w-56 translate-y-1/3 -translate-x-1/4 rounded-full bg-primary/15 blur-2xl" />
 
       <Card className="w-full max-w-md relative animate-fadeIn" padding="md">
         <div className="text-center mb-5">
           <div className="w-12 h-12 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
-            <Heart className="w-6 h-6 text-white" />
+            <PawPrint
+              size={ICON_SIZE.nav}
+              strokeWidth={iconStroke(ICON_SIZE.nav)}
+              className="text-white"
+              aria-hidden="true"
+            />
           </div>
           <h1 className="text-xl font-bold text-brown">欢迎来到{siteName}</h1>
           <p className="text-sm text-brown-secondary mt-1">登录您的账号，与宠友分享快乐</p>

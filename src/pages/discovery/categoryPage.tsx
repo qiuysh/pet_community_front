@@ -3,7 +3,7 @@ import { useCategory } from '../../hooks/useCategory';
 import { PetIcon, PostIcon } from '../../components/discovery/filterIcons';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { ArrowLeft, Play, Image, Search } from 'lucide-react';
+import { ArrowLeft, Inbox, LayoutGrid, Play } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
@@ -24,8 +24,8 @@ const PlayIcon = () => (
   <Play size={ICON_SIZE.feature} fill="white" stroke="none" aria-hidden="true" />
 );
 
-const ImageIcon = ({ size = ICON_SIZE.feature }: { size?: number }) => (
-  <Image size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
+const FallbackHeroIcon = ({ size = ICON_SIZE.feature }: { size?: number }) => (
+  <LayoutGrid size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
 );
 
 /**
@@ -96,10 +96,10 @@ export const CategoryPage = () => {
           ) : (
             <>
               <div className="hero-icon-wrap hero-icon-default">
-                <ImageIcon />
+                <FallbackHeroIcon />
               </div>
               <h1 className="hero-title">分类浏览</h1>
-              <p className="hero-desc">发现感兴趣的宠物内容</p>
+              <p className="hero-desc">按兴趣逛逛猫狗与更多宠友内容</p>
             </>
           )}
         </div>
@@ -186,7 +186,7 @@ export const CategoryPage = () => {
         )}
         {!loading && posts.length === 0 && (
           <EmptyState
-            icon={<Search size={ICON_SIZE.empty} strokeWidth={1.2} className="opacity-30" />}
+            icon={<Inbox size={ICON_SIZE.empty} strokeWidth={iconStroke(ICON_SIZE.empty)} className="opacity-30" />}
             title="暂无相关内容"
             description="换个筛选条件试试吧"
           />

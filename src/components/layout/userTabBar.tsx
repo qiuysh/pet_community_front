@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Calendar, Home, PawPrint, Plus, Search, User } from 'lucide-react';
+import { Calendar, Compass, HeartHandshake, Home, Plus, User } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
@@ -17,9 +17,11 @@ const navIconProps = {
 
 const tabs: TabItem[] = [
   { path: '/', label: '首页', icon: <Home {...navIconProps} /> },
-  { path: '/discover', label: '发现', icon: <Search {...navIconProps} /> },
+  // Compass：发现；避免与顶栏 Search 语义冲突
+  { path: '/discover', label: '发现', icon: <Compass {...navIconProps} /> },
   { path: '/activities', label: '活动', icon: <Calendar {...navIconProps} /> },
-  { path: '/adopts', label: '领养', icon: <PawPrint {...navIconProps} /> },
+  // HeartHandshake：领养陪伴；与品牌爪印 / 宠物档案区分
+  { path: '/adopts', label: '领养', icon: <HeartHandshake {...navIconProps} /> },
   { path: '/profile', label: '我的', icon: <User {...navIconProps} /> },
 ];
 

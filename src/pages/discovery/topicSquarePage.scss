@@ -7,38 +7,58 @@
   padding-bottom: $spacing-2xl;
 
   .page-header {
-    position: relative;
-    background: linear-gradient(135deg, $primary-strong 0%, $primary-text 100%);
+    @extend %page-hero-surface;
     padding: $spacing-2xl $spacing-md $spacing-xl;
-    color: white;
-    overflow: hidden;
 
     .header-decor {
       position: absolute;
       border-radius: 50%;
-      opacity: 0.15;
-      background: white;
       pointer-events: none;
 
+      // 青竹气泡光斑：玩具感/清新，忌软桃色暧昧晕
       &.decor-1 {
-        width: 160px;
-        height: 160px;
-        top: -60px;
-        right: -40px;
+        width: 132px;
+        height: 132px;
+        top: auto;
+        bottom: -40px;
+        right: 14%;
+        background: radial-gradient(
+          circle,
+          rgba($secondary-color, 0.18) 0%,
+          transparent 68%
+        );
       }
 
       &.decor-2 {
-        width: 100px;
-        height: 100px;
-        bottom: -30px;
-        left: 20px;
-        opacity: 0.1;
+        width: 88px;
+        height: 88px;
+        bottom: -24px;
+        left: 10%;
+        background: radial-gradient(
+          circle,
+          rgba($secondary-light, 0.2) 0%,
+          transparent 70%
+        );
       }
     }
 
     .header-content {
       position: relative;
       z-index: $z-index-base;
+
+      .header-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: $spacing-xs;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: $secondary-soft;
+        color: $secondary-dark;
+        font-size: $font-size-xs;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
 
       h1 {
         font-size: $font-size-2xl;
@@ -49,8 +69,8 @@
 
       p {
         font-size: $font-size-sm;
-        opacity: 0.9;
         font-weight: 400;
+        max-width: 28rem;
       }
     }
 
@@ -58,13 +78,10 @@
       position: relative;
       z-index: $z-index-base;
       margin-top: $spacing-md;
-      border-color: rgba(255, 255, 255, 0.8);
-      color: white;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(4px);
+      box-shadow: $shadow-brand;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.25);
+        box-shadow: $shadow-brand-hover;
       }
     }
   }
@@ -141,11 +158,11 @@
           height: 52px;
           margin: 0 auto $spacing-sm;
           border-radius: $border-radius-lg;
-          background: $primary-soft;
+          background: $secondary-soft;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: $primary-text;
+          color: $secondary-dark;
           transition: background-color $duration-slow ease, color $duration-slow ease, transform $duration-slow ease;
         }
 
@@ -216,9 +233,9 @@
         }
 
         &.tag-hot {
-          background: linear-gradient(135deg, rgba($primary-color, 0.1), rgba($error-color, 0.08));
+          background: $primary-soft;
           color: $primary-text;
-          border-color: rgba($primary-color, 0.2);
+          border-color: rgba($primary-color, 0.28);
 
           .tag-count {
             color: $primary-text;
@@ -226,19 +243,19 @@
         }
 
         &.tag-warm {
-          background: linear-gradient(135deg, rgba($warning-color, 0.12), rgba($primary-color, 0.08));
-          color: darken($warning-color, 20%);
-          border-color: rgba($warning-color, 0.25);
+          background: mix($primary-soft, $background-white, 35%);
+          color: $primary-text;
+          border-color: rgba($primary-color, 0.18);
 
           .tag-count {
-            color: $warning-color;
+            color: $primary-dark;
           }
         }
 
         &.tag-mild {
-          background: linear-gradient(135deg, rgba($secondary-color, 0.1), rgba($info-color, 0.08));
+          background: $secondary-soft;
           color: $secondary-dark;
-          border-color: rgba($secondary-color, 0.25);
+          border-color: rgba($secondary-color, 0.28);
 
           .tag-count {
             color: $secondary-color;
@@ -346,9 +363,7 @@
             object-fit: cover;
           }
 
-          .topic-cover-fallback {
-            font-size: $font-size-large;
-            font-weight: 700;
+          .topic-cover-fallback-icon {
             color: $primary-text;
           }
         }

@@ -8,9 +8,24 @@
   .level-card {
     margin: 16px;
     padding: 20px;
-    background: linear-gradient(135deg, $primary-strong 0%, $primary-text 100%);
+    background: $background-white;
+    border: 1px solid $border-light;
     border-radius: 16px;
-    color: $background-white;
+    color: $text-primary;
+    box-shadow: $shadow-card;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, $primary-strong, $primary-light);
+      pointer-events: none;
+    }
 
     .level-info {
       display: flex;
@@ -19,7 +34,8 @@
 
       .level-badge {
         padding: 4px 12px;
-        background-color: rgba($background-white, 0.2);
+        background-color: $primary-strong;
+        color: $background-white;
         border-radius: 20px;
         font-size: $font-size-sm;
         font-weight: 600;
@@ -29,6 +45,7 @@
       .level-name {
         font-size: 18px;
         font-weight: 600;
+        color: $text-primary;
       }
     }
 
@@ -39,23 +56,25 @@
       .points-value {
         font-size: 48px;
         font-weight: 700;
+        color: $text-primary;
+        font-variant-numeric: tabular-nums;
       }
 
       .points-label {
         font-size: $font-size-sm;
-        opacity: 0.8;
+        color: $text-secondary;
       }
     }
 
     .progress-bar {
       height: 8px;
-      background-color: rgba($background-white, 0.3);
+      background-color: $background-muted;
       border-radius: 4px;
       overflow: hidden;
 
       .progress-fill {
         height: 100%;
-        background-color: $background-white;
+        background-color: $primary-strong;
         border-radius: 4px;
         transition: width $duration-emphasized;
       }
@@ -65,7 +84,8 @@
       text-align: right;
       font-size: $font-size-xs;
       margin-top: 8px;
-      opacity: 0.8;
+      color: $text-muted;
+      font-variant-numeric: tabular-nums;
     }
   }
 

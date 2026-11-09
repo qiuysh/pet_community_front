@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Send, MessageCircle, UserCircle } from 'lucide-react';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useFollows } from '../../hooks/useFollows';
 import { useStartConversation } from '../../hooks/useStartConversation';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
@@ -139,7 +139,7 @@ const NewMessagePage: React.FC = () => {
             disabled={loading || !content.trim()}
             loading={loading}
           >
-            <Send size={16} aria-hidden="true" />
+            <Send size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
             发送
           </Button>
         </div>

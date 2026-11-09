@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, MessageSquare, PawPrint, Search } from 'lucide-react';
+import { Bell, MessageCircle, PawPrint, Search } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { useNavUnreadCounts } from '../../hooks/useNavUnreadCounts';
@@ -102,7 +102,7 @@ export function UserHeader() {
                 className="action-link action-link--secondary"
                 aria-label={messageUnread > 0 ? `私信，${messageUnread}条未读` : '私信'}
               >
-                <MessageSquare {...actionIconProps} />
+                <MessageCircle {...actionIconProps} />
                 <UnreadBadge count={messageUnread} label="未读私信" />
               </Link>
               <Dropdown

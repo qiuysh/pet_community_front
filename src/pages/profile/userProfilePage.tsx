@@ -150,9 +150,15 @@ export function UserProfilePage() {
 
   return (
     <div className="min-h-screen bg-cream">
-      <div className="bg-primary-soft h-48 relative overflow-hidden">
-        <div className="absolute top-10 right-20 w-32 h-32 bg-primary-light/25 rounded-full blur-2xl pointer-events-none" aria-hidden="true" />
-        <div className="absolute bottom-5 left-10 w-48 h-48 bg-white/60 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+      <div className="page-hero-surface h-48">
+        <div
+          className="pointer-events-none absolute -bottom-8 right-[14%] h-32 w-32 rounded-full bg-secondary-soft blur-xl"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute bottom-6 left-[12%] h-16 w-16 rounded-full bg-primary/20 blur-md"
+          aria-hidden="true"
+        />
       </div>
 
       <div className="page-shell -mt-16">
@@ -417,7 +423,7 @@ export function UserProfilePage() {
                   return (
                     <Link key={pet.id} to={`/pets/${pet.id}`}>
                       <Card hoverable className="rounded-xl shadow-card h-full" padding="none">
-                        <div className="aspect-square bg-linear-to-br from-primary-soft to-primary-light/20 flex items-center justify-center overflow-hidden">
+                        <div className="aspect-square bg-linear-to-br from-cream to-secondary-soft flex items-center justify-center overflow-hidden">
                           {pet.avatar ? (
                             <img src={pet.avatar} alt={pet.name} className="w-full h-full object-cover" decoding="async" />
                           ) : (

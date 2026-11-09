@@ -7,41 +7,57 @@
   padding-bottom: 80px;
 
   .page-header {
-    background: linear-gradient(135deg, $primary-strong 0%, $primary-text 100%);
+    @extend %page-hero-surface;
     padding: 24px 16px;
-    color: $background-white;
     text-align: center;
 
     h1 {
       font-size: $font-size-xl;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
+      color: $text-primary;
+
+      svg {
+        color: $primary-text;
+      }
+    }
+
+    .header-subtitle {
+      margin: 0 auto 16px;
+      max-width: 22rem;
+      font-size: $font-size-sm;
+      color: $text-secondary;
     }
 
     .period-tabs {
       display: flex;
       justify-content: center;
-      gap: 16px;
+      gap: 12px;
 
       .period-tab {
         padding: 6px 16px;
-        background: rgba($background-white, 0.2);
-        border: none;
+        background: $background-soft;
+        border: 1px solid $border-color;
         border-radius: $border-radius-base;
-        color: $background-white;
+        color: $text-secondary;
         font-size: $font-size-sm;
         cursor: pointer;
-        transition: background-color $duration-base, color $duration-base;
+        transition: background-color $duration-base, color $duration-base, border-color $duration-base;
 
-        &.active {
-          background: white;
+        &.active,
+        &[aria-pressed='true'] {
+          background: $primary-soft;
+          border-color: $primary-text;
           color: $primary-text;
+          font-weight: 600;
         }
 
         &:hover {
-          background: rgba($background-white, 0.3);
+          border-color: rgba($primary-color, 0.45);
+          color: $primary-text;
 
-          &.active {
-            background: white;
+          &.active,
+          &[aria-pressed='true'] {
+            background: mix($primary-soft, white, 18%);
           }
         }
       }

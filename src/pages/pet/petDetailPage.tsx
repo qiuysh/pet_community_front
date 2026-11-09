@@ -95,7 +95,16 @@ export function PetDetailPage() {
 
   return (
     <div className="min-h-screen bg-soft">
-      <div className="bg-primary-soft h-64" />
+      <div className="page-hero-surface h-64">
+        <div
+          className="pointer-events-none absolute -bottom-10 right-[14%] h-36 w-36 rounded-full bg-secondary-soft blur-xl"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute bottom-8 left-[12%] h-20 w-20 rounded-full bg-primary/20 blur-md"
+          aria-hidden="true"
+        />
+      </div>
 
       <div className="page-shell -mt-24">
         <Card className="rounded-xl shadow-sm" padding="none">
@@ -104,7 +113,7 @@ export function PetDetailPage() {
               {pet.avatar ? (
                 <img src={pet.avatar} alt={pet.name} className="w-full h-full rounded-full object-cover" decoding="async" />
               ) : (
-                <div className="w-full h-full rounded-full bg-linear-to-br from-primary/10 to-primary-dark/10 flex items-center justify-center text-brown">
+                <div className="w-full h-full rounded-full bg-linear-to-br from-cream to-secondary-soft flex items-center justify-center text-brown">
                   {(() => {
                     const PetIcon = getPetTypeIcon(pet.petType);
                     return <PetIcon size={48} aria-hidden="true" />;

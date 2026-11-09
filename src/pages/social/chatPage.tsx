@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Search, Trash2 } from 'lucide-react';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useChat } from '../../hooks/useChat';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { useConfirm } from '../../hooks/useConfirm';
@@ -181,7 +181,7 @@ const ChatPage: React.FC = () => {
             onClick={openSearch}
             aria-label="搜索消息"
           >
-            <Search size={ICON_SIZE.action} aria-hidden="true" />
+            <Search size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
           </Button>
           <Button
             type="button"
@@ -205,7 +205,7 @@ const ChatPage: React.FC = () => {
               }
             }}
           >
-            <Trash2 size={20} aria-hidden="true" />
+            <Trash2 size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
           </Button>
         </div>
       )}

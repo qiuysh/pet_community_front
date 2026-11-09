@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Sparkles, Lock } from 'lucide-react';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { createTopic } from '../../api/discovery';
 import { useUserStore } from '../../stores/userStore';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
@@ -76,7 +76,12 @@ export function TopicCreatePage() {
         {levelBlocked && (
           <Card className="mb-4 rounded-xl border border-secondary/30 bg-secondary-soft/40 p-4">
             <div className="flex items-start gap-3">
-              <Lock size={20} className="mt-0.5 text-secondary" aria-hidden="true" />
+              <Lock
+                size={ICON_SIZE.action}
+                strokeWidth={iconStroke(ICON_SIZE.action)}
+                className="mt-0.5 text-secondary"
+                aria-hidden="true"
+              />
               <div className="text-sm text-brown-secondary">
                 <p className="font-semibold text-brown">等级不足，暂无法创建话题</p>
                 <p className="mt-1">

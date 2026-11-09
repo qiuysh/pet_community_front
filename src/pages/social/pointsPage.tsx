@@ -1,5 +1,6 @@
 import React from 'react';
-import { Check, X, Clock, Star } from 'lucide-react';
+import { Coins, Minus, Plus, Star } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { usePoints } from '../../hooks/usePoints';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -80,9 +81,19 @@ const PointsPage: React.FC = () => {
                 <div key={record.id} className="record-item">
                   <div className="record-icon">
                     {record.points > 0 ? (
-                      <Check size={20} color="var(--color-primary)" />
+                      <Plus
+                        size={ICON_SIZE.action}
+                        strokeWidth={iconStroke(ICON_SIZE.action)}
+                        className="text-primary-text"
+                        aria-hidden="true"
+                      />
                     ) : (
-                      <X size={20} color="var(--color-ink-muted)" />
+                      <Minus
+                        size={ICON_SIZE.action}
+                        strokeWidth={iconStroke(ICON_SIZE.action)}
+                        className="text-brown-muted"
+                        aria-hidden="true"
+                      />
                     )}
                   </div>
                   <div className="record-info">
@@ -104,7 +115,12 @@ const PointsPage: React.FC = () => {
               {rules.map((rule) => (
                 <div key={rule.id} className="rule-item">
                   <div className="rule-icon">
-                    <Clock size={24} color="var(--color-primary)" />
+                    <Coins
+                      size={ICON_SIZE.nav}
+                      strokeWidth={iconStroke(ICON_SIZE.nav)}
+                      className="text-primary-text"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div className="rule-info">
                     <div className="rule-name">{rule.description}</div>
@@ -123,7 +139,12 @@ const PointsPage: React.FC = () => {
               {benefits.map((benefit) => (
                 <div key={benefit.id} className="benefit-item">
                   <div className="benefit-icon">
-                    <Star size={24} color="var(--color-warning)" />
+                    <Star
+                      size={ICON_SIZE.nav}
+                      strokeWidth={iconStroke(ICON_SIZE.nav)}
+                      className="text-warning"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div className="benefit-info">
                     <div className="benefit-name">{benefit.benefitName}</div>

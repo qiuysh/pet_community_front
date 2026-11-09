@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, MessageCircle } from 'lucide-react';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useConversationList } from '../../hooks/useConversationList';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../../components/ui/avatar';
@@ -53,7 +53,7 @@ const MessageListPage: React.FC = () => {
             onClick={handleNewMessage}
             aria-label="新建私信"
           >
-            <Plus size={24} aria-hidden="true" />
+            <Plus size={ICON_SIZE.nav} strokeWidth={iconStroke(ICON_SIZE.nav)} aria-hidden="true" />
           </Button>
         }
       />

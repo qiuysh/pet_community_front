@@ -1,12 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useTopicSquare } from '../../hooks/useTopicSquare';
 import { useUserStore } from '../../stores/userStore';
+import { ChevronRight, Hash, PawPrint } from 'lucide-react';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { formatCount } from '../../utils/format';
 import { TOPIC_CREATE_MIN_LEVEL } from '../../utils/topicPolicy';
 import { showInfoToast } from '../../utils/toastManager';
@@ -37,14 +38,21 @@ export const TopicSquarePage = () => {
         <div className="header-decor decor-1" />
         <div className="header-decor decor-2" />
         <div className="header-content">
+          <span className="header-eyebrow">
+            <PawPrint
+              size={ICON_SIZE.inline}
+              strokeWidth={iconStroke(ICON_SIZE.inline)}
+              aria-hidden="true"
+            />
+            宠友社区
+          </span>
           <h1>话题广场</h1>
-          <p>发现有趣的话题，找到志同道合的朋友</p>
+          <p>逛分类、追热帖，和宠友一起晒日常、聊养宠趣事</p>
         </div>
         {/* 创建话题入口（T5：须 Lv5+，未登录跳登录） */}
         <Button
           type="button"
           size="sm"
-          variant="outline"
           className="create-topic-btn"
           aria-label={
             canCreateTopic ? '创建话题' : `创建话题（需 Lv${TOPIC_CREATE_MIN_LEVEL} 及以上）`
@@ -142,7 +150,12 @@ export const TopicSquarePage = () => {
                     {topic.cover ? (
                       <img src={topic.cover} alt="" className="topic-cover-thumb" decoding="async" />
                     ) : (
-                      <span className="topic-cover-fallback">#</span>
+                      <Hash
+                        size={ICON_SIZE.action}
+                        strokeWidth={iconStroke(ICON_SIZE.action)}
+                        className="topic-cover-fallback-icon"
+                        aria-hidden="true"
+                      />
                     )}
                   </div>
                   <div className="topic-info">
@@ -152,7 +165,7 @@ export const TopicSquarePage = () => {
                   <div className="topic-meta">
                     <span className="posts-count tabular-nums">{formatCount(topic.postsCount)} 动态</span>
                     <span className="topic-arrow" aria-hidden="true">
-                      →
+                      <ChevronRight size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} />
                     </span>
                   </div>
                 </Link>

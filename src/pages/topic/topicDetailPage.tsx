@@ -4,7 +4,7 @@ import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { ShareSheet } from '../../components/post/shareSheet';
 import { Heart, MessageCircle, Share2, UserPlus, UserCheck } from 'lucide-react';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Avatar } from '../../components/ui/avatar';
 import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
@@ -151,11 +151,11 @@ export const TopicDetailPage = () => {
               )}
               <div className="post-actions">
                 <span className="action-item">
-                  <span className="icon"><Heart size={16} fill={post.isLiked ? 'currentColor' : 'none'} aria-hidden="true" /></span>
+                  <span className="icon"><Heart size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} fill={post.isLiked ? 'currentColor' : 'none'} aria-hidden="true" /></span>
                   <span>{post.likesCount}</span>
                 </span>
                 <span className="action-item">
-                  <span className="icon"><MessageCircle size={16} aria-hidden="true" /></span>
+                  <span className="icon"><MessageCircle size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" /></span>
                   <span>{post.commentsCount}</span>
                 </span>
               </div>
