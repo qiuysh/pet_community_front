@@ -143,7 +143,19 @@
       .image-item {
         aspect-ratio: 1;
         overflow: hidden;
-        img { width: 100%; height: 100%; object-fit: cover; }
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: zoom-in;
+        display: block;
+        width: 100%;
+
+        img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+        &:focus-visible {
+          outline: 2px solid $primary-text;
+          outline-offset: 2px;
+        }
       }
     }
 

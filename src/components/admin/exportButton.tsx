@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Download } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { AdminButton } from './adminButton';
 
 interface ExportButtonProps {
@@ -31,9 +33,11 @@ export function ExportButton({ onExport }: ExportButtonProps) {
         aria-label="导出数据"
         aria-expanded={isOpen}
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-        </svg>
+        <Download
+          size={ICON_SIZE.inline}
+          strokeWidth={iconStroke(ICON_SIZE.inline)}
+          aria-hidden="true"
+        />
         <span>导出数据</span>
       </AdminButton>
       {isOpen && (

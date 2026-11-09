@@ -1,10 +1,27 @@
 import { ReactNode, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import {
+  BarChart3,
+  Bell,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Flag,
+  LayoutDashboard,
+  Lock,
+  Megaphone,
+  Settings,
+  ShieldCheck,
+  UserCog,
+  Users,
+} from 'lucide-react';
 import { useLayoutStore } from '../../stores/layoutStore';
 import { useAdminStore } from '../../stores/adminStore';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { canAccessAdminMenu, readRoleFromAdminToken } from '../../utils/adminRole';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import './adminSidebar.scss';
 
 interface MenuItem {
@@ -20,6 +37,19 @@ interface MenuGroup {
   items: MenuItem[];
 }
 
+const menuIconProps = {
+  size: ICON_SIZE.action,
+  strokeWidth: iconStroke(ICON_SIZE.action),
+  'aria-hidden': true as const,
+  className: 'w-5 h-5',
+};
+
+const collapseIconProps = {
+  size: ICON_SIZE.inline,
+  strokeWidth: iconStroke(ICON_SIZE.inline),
+  'aria-hidden': true as const,
+};
+
 /** 侧栏分组与文案对齐规格 Ad0–Ad8，按运营工作流排序 */
 const menuGroups: MenuGroup[] = [
   {
@@ -29,21 +59,13 @@ const menuGroups: MenuGroup[] = [
       {
         key: 'dashboard',
         label: '运营驾驶舱',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 13a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6z" />
-          </svg>
-        ),
+        icon: <LayoutDashboard {...menuIconProps} />,
         path: '/admin/dashboard',
       },
       {
         key: 'analytics',
         label: '分析报表',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-        ),
+        icon: <BarChart3 {...menuIconProps} />,
         path: '/admin/analytics',
       },
     ],
@@ -55,51 +77,31 @@ const menuGroups: MenuGroup[] = [
       {
         key: 'reviews',
         label: '内容审核',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-        ),
+        icon: <ShieldCheck {...menuIconProps} />,
         path: '/admin/reviews',
       },
       {
         key: 'reports',
         label: '举报处理',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
-          </svg>
-        ),
+        icon: <Flag {...menuIconProps} />,
         path: '/admin/reports',
       },
       {
         key: 'activities',
         label: '活动运营',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        ),
+        icon: <Calendar {...menuIconProps} />,
         path: '/admin/activities',
       },
       {
         key: 'ads',
         label: '广告投放',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-          </svg>
-        ),
+        icon: <Megaphone {...menuIconProps} />,
         path: '/admin/ads',
       },
       {
         key: 'notifications',
         label: '通知公告',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
-        ),
+        icon: <Bell {...menuIconProps} />,
         path: '/admin/notifications',
       },
     ],
@@ -111,21 +113,13 @@ const menuGroups: MenuGroup[] = [
       {
         key: 'front-users',
         label: '社区用户',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-        ),
+        icon: <Users {...menuIconProps} />,
         path: '/admin/front-users',
       },
       {
         key: 'users',
         label: '后台账号',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-        ),
+        icon: <UserCog {...menuIconProps} />,
         path: '/admin/users',
       },
     ],
@@ -137,32 +131,19 @@ const menuGroups: MenuGroup[] = [
       {
         key: 'settings',
         label: '站点配置',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        ),
+        icon: <Settings {...menuIconProps} />,
         path: '/admin/settings',
       },
       {
         key: 'sensitive-words',
         label: '敏感词库',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-        ),
+        icon: <Lock {...menuIconProps} />,
         path: '/admin/sensitive-words',
       },
       {
         key: 'logs',
         label: '日志审计',
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        ),
+        icon: <FileText {...menuIconProps} />,
         path: '/admin/logs',
       },
     ],
@@ -231,9 +212,7 @@ export function AdminSidebar() {
             aria-label="运营驾驶舱首页"
           >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-white shadow-card" aria-hidden="true">
-              <svg className="h-5 w-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
+              <ShieldCheck {...menuIconProps} className="h-5 w-5 text-secondary" />
             </div>
             <div className="min-w-0 leading-tight">
               <span className="block truncate text-base font-semibold tracking-tight text-brown">{siteName}</span>
@@ -246,9 +225,7 @@ export function AdminSidebar() {
             className="mx-auto flex h-8 w-8 items-center justify-center rounded-sm bg-white text-secondary shadow-card hover:text-secondary"
             aria-label="运营驾驶舱首页"
           >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
+            <ShieldCheck {...menuIconProps} className="h-5 w-5" />
           </Link>
         )}
       </div>
@@ -306,13 +283,9 @@ export function AdminSidebar() {
         aria-expanded={!sidebarCollapsed}
       >
         {sidebarCollapsed ? (
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+          <ChevronRight {...collapseIconProps} />
         ) : (
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <ChevronLeft {...collapseIconProps} />
         )}
       </button>
     </aside>

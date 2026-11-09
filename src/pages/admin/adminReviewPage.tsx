@@ -10,6 +10,7 @@ import { Pagination } from '../../components/admin/pagination';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
 import { PawPrint, ClipboardList } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { adminUi } from '../../styles/adminUi';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
@@ -139,8 +140,8 @@ export function AdminReviewPage() {
   };
 
   const getTypeChipClass = (type: string) => {
-    if (type === 'comment') return 'bg-info/10 text-info';
-    if (type === 'topic') return 'bg-warning/10 text-warning';
+    if (type === 'comment') return 'bg-info/10 text-info-text';
+    if (type === 'topic') return 'bg-warning/10 text-warning-text';
     return '';
   };
 
@@ -200,14 +201,14 @@ export function AdminReviewPage() {
         {loading ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center animate-pulse text-brown-light">
-              <PawPrint size={32} aria-hidden="true" />
+              <PawPrint size={ICON_SIZE.feature} aria-hidden="true" />
             </div>
             <p>加载中…</p>
           </AdminTable.Status>
         ) : (activeTab === 'pending' ? pendingList : historyList).length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">
-              <ClipboardList size={40} aria-hidden="true" />
+              <ClipboardList size={ICON_SIZE.empty} aria-hidden="true" />
             </div>
             <p>暂无数据</p>
           </AdminTable.Status>
@@ -274,7 +275,12 @@ export function AdminReviewPage() {
                       </AdminButton>
                       <ReviewAction content={item} onSuccess={handleReviewSuccess} />
                       {item.type === 'post' && (
-                        <PostPinAction postId={item.id} onSuccess={handleReviewSuccess} />
+                        <PostPinAction
+                          postId={item.id}
+                          isPinned={item.isPinned}
+                          isFeatured={item.isFeatured}
+                          onSuccess={handleReviewSuccess}
+                        />
                       )}
                     </div>
                   </AdminTable.Cell>

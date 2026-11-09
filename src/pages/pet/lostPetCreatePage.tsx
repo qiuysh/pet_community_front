@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { createLostPet, uploadLostPetPhoto } from '../../api/pet';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
@@ -227,7 +228,7 @@ export function LostPetCreatePage() {
                         aria-label="删除图片"
                         onClick={() => setImages((prev) => prev.filter((_, i) => i !== idx))}
                       >
-                        <X size={14} aria-hidden="true" />
+                        <X size={ICON_SIZE.inline} aria-hidden="true" />
                       </Button>
                     </div>
                   );
@@ -303,7 +304,7 @@ export function LostPetCreatePage() {
             <FieldError id="lost-description-error">{errors.description}</FieldError>
           </div>
           <Button type="submit" block disabled={loading || uploading} loading={loading} className="rounded-xl">
-            {loading ? '提交中' : '发布启事'}
+            {loading ? '提交中…' : '发布启事'}
           </Button>
         </Card>
       </form>

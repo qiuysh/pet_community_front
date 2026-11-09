@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ClipboardList, PawPrint } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { getUserBehaviorLogs, getSecurityAuditLogs, getOperationLogs } from '../../api/admin';
 import type { UserBehaviorLog, AdminOperationLog } from '../../types/admin';
 import { showErrorToast } from '../../utils/toastManager';
@@ -238,7 +239,7 @@ export function AdminLogsPage() {
                 ) : getCurrentLogs().length === 0 ? (
                     <AdminTable.Status>
                         <div className="mb-2 flex justify-center text-brown-light">
-                            <ClipboardList size={40} aria-hidden="true" />
+                            <ClipboardList size={ICON_SIZE.empty} aria-hidden="true" />
                         </div>
                         <p>暂无日志数据</p>
                     </AdminTable.Status>

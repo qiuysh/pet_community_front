@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { pinPost, featurePost } from '../../api/admin';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { useAsync } from '../../hooks/useAsync';
@@ -7,14 +7,32 @@ import { AdminButton } from './adminButton';
 
 interface PostPinActionProps {
   postId: number;
+  /** 服务端当前置顶状态（1=已置顶） */
+  isPinned?: number | boolean;
+  /** 服务端当前精选状态（1=已精选） */
+  isFeatured?: number | boolean;
   onSuccess?: () => void;
 }
 
-/** 内容审核页的置顶/精选操作（I7）：以本地状态记录当前标记，支持再次点击取消。 */
-export function PostPinAction({ postId, onSuccess }: PostPinActionProps) {
-  const [pinned, setPinned] = useState(false);
-  const [featured, setFeatured] = useState(false);
+function toFlag(value: number | boolean | undefined): boolean {
+  return value === true || value === 1;
+}
+
+/** 内容审核页的置顶/精选操作（I7）：以服务端状态为初值，支持再次点击取消。 */
+export function PostPinAction({
+  postId,
+  isPinned = false,
+  isFeatured = false,
+  onSuccess,
+}: PostPinActionProps) {
+  const [pinned, setPinned] = useState(() => toFlag(isPinned));
+  const [featured, setFeatured] = useState(() => toFlag(isFeatured));
   const { loading, run } = useAsync();
+
+  useEffect(() => {
+    setPinned(toFlag(isPinned));
+    setFeatured(toFlag(isFeatured));
+  }, [postId, isPinned, isFeatured]);
 
   const togglePin = () => {
     const value: 0 | 1 = pinned ? 0 : 1;

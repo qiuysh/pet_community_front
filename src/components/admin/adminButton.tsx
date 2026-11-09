@@ -40,7 +40,7 @@ const variantClass: Record<AdminButtonVariant, string> = {
   outline:
     '!h-10 !min-h-10 !px-4 !rounded-sm !shadow-none !border-0 !bg-soft !text-brown-secondary hover:!bg-muted',
   danger:
-    '!h-10 !min-h-10 !px-4 !rounded-sm !shadow-none !bg-error !text-white hover:!bg-error/90',
+    '!h-10 !min-h-10 !px-4 !rounded-sm !shadow-none !bg-error-dark !text-white hover:!bg-error-dark/90',
   ghost:
     '!h-auto !min-h-0 !px-1.5 !py-1 !rounded-none !shadow-none !bg-transparent !border-0 font-medium text-brown-secondary hover:!bg-transparent hover:text-brown',
 };

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { MapPin } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { getLostPetList } from '../../api/pet';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { LostPetInfo } from '../../types/pet';
@@ -61,7 +62,7 @@ export function LostPetListPage() {
                 </div>
                 <p className="text-sm text-brown-muted mt-2 line-clamp-2">{item.description}</p>
                 <div className="flex items-center gap-1 mt-3 text-xs text-brown-secondary">
-                  <MapPin size={12} />
+                  <MapPin size={ICON_SIZE.inline} />
                   <span>{item.lostLocation}</span>
                   <span className="mx-1">·</span>
                   <span>{item.lostTime}</span>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { usePetList } from '../../hooks/usePetList';
 import { PetTypeOptions, getPetTypeIcon, PetTypeFallbackIcon } from '../../types/pet';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { useUserStore } from '../../stores/userStore';
 import { buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -95,8 +96,8 @@ export function PetListPage() {
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-semibold text-brown truncate">{pet.name}</h3>
-                    {pet.gender === 1 && <span className="text-info">♂</span>}
-                    {pet.gender === 2 && <span className="text-error">♀</span>}
+                    {pet.gender === 1 && <span className="text-info-text">♂</span>}
+                    {pet.gender === 2 && <span className="text-error-text">♀</span>}
                   </div>
                   <p className="text-sm text-brown-muted truncate">{pet.breedName || '未知品种'}</p>
                 </div>
@@ -105,7 +106,7 @@ export function PetListPage() {
           </div>
         ) : (
           <EmptyState
-            icon={<PetTypeFallbackIcon size={56} />}
+            icon={<PetTypeFallbackIcon size={ICON_SIZE.empty} />}
             title="暂无宠物档案"
             action={
               isLoggedIn ? (

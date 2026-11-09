@@ -9,7 +9,8 @@ import { VerificationCodeModal } from '../../components/profile/verificationCode
 import { Button } from '../../components/ui/button';
 import { FieldError, FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
 import { Radio, RadioGroup } from '../../components/ui/radio';
-import { Monitor, Smartphone } from 'lucide-react';
+import { Mail, Monitor, Smartphone } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import './profileSettingsPage.scss';
 
 type TabType = 'profile' | 'password' | 'privacy' | 'devices' | 'bindings';
@@ -412,9 +413,9 @@ export function ProfileSettingsPage() {
                           <div key={device.deviceId || device.id} className="device-item">
                             <div className="device-icon">
                               {isMobile ? (
-                                <Smartphone size={22} strokeWidth={1.8} />
+                                <Smartphone size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
                               ) : (
-                                <Monitor size={22} strokeWidth={1.8} />
+                                <Monitor size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
                               )}
                             </div>
                             <div className="device-info">
@@ -547,37 +548,15 @@ const BRAND_BINDING_PLATFORMS: Record<string, BrandSocialPlatform> = {
 const BindingIcon = ({ name }: { name: string }) => {
   const brandPlatform = BRAND_BINDING_PLATFORMS[name];
   if (brandPlatform) {
-    return <BrandSocialIcon platform={brandPlatform} size={20} />;
+    return <BrandSocialIcon platform={brandPlatform} size={ICON_SIZE.action} />;
   }
 
-  const strokeIcons: Record<string, React.ReactElement> = {
-    手机号: (
-      <>
-        <rect x="7" y="2" width="10" height="20" rx="2" />
-        <path d="M12 18h.01" />
-      </>
-    ),
-    邮箱: (
-      <>
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <path d="M3 7l9 6 9-6" />
-      </>
-    ),
-  };
-
+  const Icon = name === '手机号' ? Smartphone : Mail;
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <Icon
+      size={ICON_SIZE.action}
+      strokeWidth={iconStroke(ICON_SIZE.action)}
       aria-hidden="true"
-    >
-      {strokeIcons[name] || strokeIcons['邮箱']}
-    </svg>
+    />
   );
 };

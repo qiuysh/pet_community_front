@@ -51,7 +51,7 @@ export const AdoptionApplyForm = ({ adoptionId, onClose, onSuccess }: AdoptionAp
             取消
           </Button>
           <Button className="flex-1" disabled={loading} loading={loading} onClick={handleSubmit}>
-            {loading ? '提交中' : '提交申请'}
+            {loading ? '提交中…' : '提交申请'}
           </Button>
         </>
       }
@@ -81,7 +81,7 @@ export const AdoptionApplyForm = ({ adoptionId, onClose, onSuccess }: AdoptionAp
       </div>
 
       <div className="bg-warning/10 rounded-md p-3">
-        <div className="text-sm text-warning">
+        <div className="text-sm text-warning-text">
           <div className="font-medium mb-1">温馨提示：</div>
           <div>1. 领养前请确保有稳定住所和时间</div>
           <div>2. 领养后需签署领养协议</div>

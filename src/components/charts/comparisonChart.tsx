@@ -26,7 +26,7 @@ export function ComparisonChart({ data, height = 300 }: ComparisonChartProps) {
     <div className={adminUi.chartCard}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h3 className={adminUi.blockTitle}>{data.title}</h3>
-        <span className={`text-sm font-medium tabular-nums ${parseFloat(changeRate) >= 0 ? 'text-success' : 'text-error'}`}>
+        <span className={`text-sm font-medium tabular-nums ${parseFloat(changeRate) >= 0 ? 'text-success-text' : 'text-error-text'}`}>
           {parseFloat(changeRate) >= 0 ? '+' : ''}{changeRate}%
         </span>
       </div>

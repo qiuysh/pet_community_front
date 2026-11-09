@@ -9,9 +9,9 @@ export type AdminChipTone = 'neutral' | 'secondary' | 'success' | 'warning' | 'd
 const toneClass: Record<AdminChipTone, string> = {
   neutral: 'bg-soft text-brown-secondary',
   secondary: 'bg-secondary-soft text-secondary-dark',
-  success: 'bg-success-soft text-success-dark',
-  warning: 'bg-warning/15 text-warning',
-  danger: 'bg-error/10 text-error',
+  success: 'bg-success-soft text-success-text',
+  warning: 'bg-warning/15 text-warning-text',
+  danger: 'bg-error/10 text-error-text',
 };
 
 export interface AdminChipProps {

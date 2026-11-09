@@ -216,6 +216,10 @@ export interface ReviewContent {
     username: string;
     avatar: string;
     status: number;
+    /** 动态置顶标记：1=已置顶 */
+    isPinned?: number;
+    /** 动态精选标记：1=已精选 */
+    isFeatured?: number;
     createdAt: string;
 }
 

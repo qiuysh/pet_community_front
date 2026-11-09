@@ -134,7 +134,7 @@ export function AdminDashboardPage() {
             value={formatCount(summary?.todayActiveUsers)}
             change={activeChange.change}
             changeType={activeChange.changeType}
-            iconTone="bg-success-soft text-success"
+            iconTone="bg-success-soft text-success-text"
             icon={<Activity className="h-5 w-5" />}
           />
           <DashboardCard
@@ -152,7 +152,7 @@ export function AdminDashboardPage() {
             hint={`今日评论 ${formatCount(summary?.todayComments)}`}
             change={likesChange.change}
             changeType={likesChange.changeType}
-            iconTone="bg-warning/10 text-warning"
+            iconTone="bg-warning/10 text-warning-text"
             icon={<Heart className="h-5 w-5" />}
           />
         </div>

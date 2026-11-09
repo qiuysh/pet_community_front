@@ -61,6 +61,11 @@ export default {
           silver: '#A0A6AD',
           bronze: '#C4895A',
         },
+        brand: {
+          wechat: '#07C160',
+          weibo: '#E6162D',
+          qq: '#12B7F5',
+        },
       },
       fontFamily: {
         sans: ['-apple-system', 'BlinkMacSystemFont', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', 'sans-serif'],

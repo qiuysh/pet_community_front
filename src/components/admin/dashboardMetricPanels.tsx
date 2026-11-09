@@ -17,8 +17,8 @@ export interface CompactMetric {
 }
 
 function changeClass(type?: ChangeType) {
-  if (type === 'up') return 'text-success';
-  if (type === 'down') return 'text-error';
+  if (type === 'up') return 'text-success-text';
+  if (type === 'down') return 'text-error-text';
   return 'text-brown-muted';
 }
 

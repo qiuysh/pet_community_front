@@ -12,6 +12,7 @@ import {
 } from '../../components/activity';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Clock, Users, Check, Trophy, Pencil, Trash2 } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -123,7 +124,7 @@ export const ActivityDetailPage = () => {
             {activity.isRegistered && (
               <div className="flex flex-1 flex-col gap-1">
                 <span className="text-sm text-secondary-dark flex items-center gap-1">
-                  <Check size={12} aria-hidden="true" />
+                  <Check size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
                   <span>已报名</span>
                 </span>
                 {canCancelRegistration() && (
@@ -234,8 +235,8 @@ export const ActivityDetailPage = () => {
                         )}
                       </div>
                       {submission.awardLevel && (
-                        <div className="mt-2 text-xs text-warning flex items-center gap-1">
-                          <Trophy size={12} aria-hidden="true" />
+                        <div className="mt-2 text-xs text-warning-text flex items-center gap-1">
+                          <Trophy size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
                           <span>{submission.awardLevel}</span>
                         </div>
                       )}
@@ -246,12 +247,12 @@ export const ActivityDetailPage = () => {
                             className="text-xs text-brown-secondary flex items-center gap-1"
                             onClick={() => setEditingSubmission(true)}
                           >
-                            <Pencil size={12} aria-hidden="true" />
+                            <Pencil size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
                             编辑
                           </button>
                           <button
                             type="button"
-                            className="text-xs text-error flex items-center gap-1"
+                            className="text-xs text-error-text flex items-center gap-1"
                             disabled={deletingSubmission}
                             onClick={async () => {
                               const ok = await confirm({
@@ -263,7 +264,7 @@ export const ActivityDetailPage = () => {
                               if (ok) handleDeleteSubmission();
                             }}
                           >
-                            <Trash2 size={12} aria-hidden="true" />
+                            <Trash2 size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
                             撤回
                           </button>
                         </div>

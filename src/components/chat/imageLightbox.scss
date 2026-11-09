@@ -1,0 +1,47 @@
+@import '../../styles/variables';
+
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: $z-index-modal;
+  overscroll-behavior: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba($text-primary, 0.9);
+}
+
+.image-lightbox__toolbar {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.image-lightbox__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.16);
+  color: $background-white;
+  cursor: pointer;
+}
+
+.image-lightbox__image {
+  max-width: 92vw;
+  max-height: 86vh;
+  border-radius: 8px;
+  object-fit: contain;
+  cursor: zoom-in;
+  transition: transform $duration-base ease;
+
+  &.zoomed {
+    transform: scale(2);
+    cursor: zoom-out;
+  }
+}

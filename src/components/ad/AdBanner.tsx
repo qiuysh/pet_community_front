@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ExternalLink } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { useActiveAds } from '../../hooks/useActiveAds';
 import { incrementAdView, incrementAdClick } from '../../api/ad';
 import { AdLocation, Advertisement } from '../../types/advertisement';
@@ -79,7 +80,7 @@ const AdBannerItem: React.FC<AdBannerItemProps> = ({ ad, eager = false }) => {
         </span>
         <span className="text-sm text-white truncate flex-1">{ad.title}</span>
         {ad.linkUrl && (
-          <ExternalLink size={14} className="text-white/80 flex-shrink-0" aria-hidden="true" />
+          <ExternalLink size={ICON_SIZE.inline} className="text-white/80 flex-shrink-0" aria-hidden="true" />
         )}
       </div>
     </div>

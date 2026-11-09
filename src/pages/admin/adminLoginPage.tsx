@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ShieldCheck } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useAdminStore } from '../../stores/adminStore';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
@@ -70,14 +72,12 @@ export function AdminLoginPage() {
       <div className="bg-white rounded-md shadow-card w-full max-w-md p-8 relative animate-fadeIn">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-secondary-soft rounded-sm flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-              />
-            </svg>
+            <ShieldCheck
+              size={ICON_SIZE.feature}
+              strokeWidth={iconStroke(ICON_SIZE.feature)}
+              className="text-secondary"
+              aria-hidden="true"
+            />
           </div>
           <h1 className={adminUi.pageTitle}>{siteName}管理后台</h1>
           <p className="text-brown-secondary mt-2">请登录您的管理员账号</p>
@@ -103,7 +103,7 @@ export function AdminLoginPage() {
               spellCheck={false}
               className="h-11 px-4"
             />
-            {errors.username ? <AdminHint className="text-error">{errors.username}</AdminHint> : null}
+            {errors.username ? <AdminHint className="text-error-text">{errors.username}</AdminHint> : null}
           </div>
 
           <div className="mb-6">
@@ -124,7 +124,7 @@ export function AdminLoginPage() {
               name="password"
               className="h-11 px-4"
             />
-            {errors.password ? <AdminHint className="text-error">{errors.password}</AdminHint> : null}
+            {errors.password ? <AdminHint className="text-error-text">{errors.password}</AdminHint> : null}
           </div>
 
           <div className="flex items-center justify-between mb-6">
@@ -140,7 +140,7 @@ export function AdminLoginPage() {
           </div>
 
           {error && (
-            <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error text-sm">
+            <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
               {error}
             </div>
           )}

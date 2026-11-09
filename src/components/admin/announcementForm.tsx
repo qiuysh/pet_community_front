@@ -1,3 +1,5 @@
+import { X } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useState, useEffect } from 'react';
 import type { Announcement, CreateAnnouncementRequest, UpdateAnnouncementRequest } from '../../types/admin';
 import { createAnnouncement, updateAnnouncement } from '../../api/admin';
@@ -86,9 +88,7 @@ export function AnnouncementForm({ announcement, onClose, onSuccess }: Announcem
             {announcement ? '编辑公告' : '发布公告'}
           </h2>
           <AdminButton variant="ghost" type="button" onClick={onClose} aria-label="关闭" className="text-brown-muted hover:text-brown transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
           </AdminButton>
         </div>
 
@@ -156,7 +156,7 @@ export function AnnouncementForm({ announcement, onClose, onSuccess }: Announcem
               取消
             </AdminButton>
             <AdminButton type="submit" variant="secondary" disabled={isSubmitting} loading={isSubmitting}>
-              {isSubmitting ? '提交中...' : announcement ? '保存修改' : '发布公告'}
+              {isSubmitting ? '提交中…' : announcement ? '保存修改' : '发布公告'}
             </AdminButton>
           </div>
         </form>

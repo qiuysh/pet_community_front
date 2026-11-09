@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ZoomIn, ZoomOut } from 'lucide-react';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
+import './imageLightbox.scss';
 
 export interface ImageLightboxProps {
   open: boolean;
@@ -10,7 +11,7 @@ export interface ImageLightboxProps {
   onClose: () => void;
 }
 
-/** 聊天图片大图查看（1x/2x 缩放，Esc / 点击遮罩关闭） */
+/** 图片大图查看（聊天/动态共用；1x/2x 缩放，Esc / 点击遮罩关闭） */
 export function ImageLightbox({ open, src, alt = '图片消息', onClose }: ImageLightboxProps) {
   const [zoomed, setZoomed] = useState(false);
   const trapRef = useFocusTrap<HTMLDivElement>(open && !!src);

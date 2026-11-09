@@ -475,63 +475,6 @@
     }
   }
 
-  // ============================================
-  // 分页
-  // ============================================
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: $spacing-lg $spacing-md;
-    gap: $spacing-sm;
-
-    .page-btn {
-      padding: 10px 18px;
-      background: $background-white;
-      border: 1px solid $border-color;
-      border-radius: $border-radius-sm;
-      font-size: $font-size-sm;
-      cursor: pointer;
-      color: $text-secondary;
-      transition: background-color $duration-base ease, border-color $duration-base ease, color $duration-base ease;
-      font-weight: 500;
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background: $background-muted;
-      }
-
-      &:hover:not(:disabled) {
-        border-color: $primary-text;
-        color: $primary-text;
-        background: rgba($primary-color, 0.05);
-      }
-    }
-
-    .page-indicator {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 8px 16px;
-      background: $background-soft;
-      border-radius: $border-radius-sm;
-      font-size: $font-size-base;
-
-      .page-current {
-        font-weight: 600;
-        color: $primary-text;
-      }
-
-      .page-separator {
-        color: $text-light;
-      }
-
-      .page-total {
-        color: $text-secondary;
-      }
-    }
-  }
 }
 
 // 加载动画
@@ -632,19 +575,5 @@
       }
     }
 
-    .pagination {
-      padding: $spacing-md $spacing-sm;
-      gap: $spacing-xs;
-
-      .page-btn {
-        padding: 8px 14px;
-        font-size: $font-size-base;
-      }
-
-      .page-indicator {
-        padding: 6px 12px;
-        font-size: $font-size-xs;
-      }
-    }
   }
 }

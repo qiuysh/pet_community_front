@@ -8,6 +8,7 @@ import { ReportStats } from '../../components/admin/reportStats';
 import { Pagination } from '../../components/admin/pagination';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { Flag, ClipboardList } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { adminUi } from '../../styles/adminUi';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
@@ -183,7 +184,7 @@ export function AdminReportPage() {
         ) : list.length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">
-              <ClipboardList size={40} aria-hidden="true" />
+              <ClipboardList size={ICON_SIZE.empty} aria-hidden="true" />
             </div>
             <p>暂无举报数据</p>
           </AdminTable.Status>

@@ -5,11 +5,12 @@ import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Input } from '../../components/ui/input';
+import { Pagination } from '../../components/ui/pagination';
 import { Skeleton } from '../../components/ui/skeleton';
 import './topicListPage.scss';
 
 export const TopicListPage = () => {
-  const { topics, loading, total, totalPages, keyword, setKeyword, page, setPage, search } = useTopicList();
+  const { topics, loading, totalPages, keyword, setKeyword, page, setPage, search } = useTopicList();
   const navigate = useNavigate();
   const { user, isLoggedIn } = useUserStore();
   const canCreateTopic = !!user && (user.level ?? 0) >= 5;
@@ -85,17 +86,7 @@ export const TopicListPage = () => {
         ))}
       </div>
 
-      {total > 20 && (
-        <div className="pagination">
-          <Button type="button" variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>
-            上一页
-          </Button>
-          <span>第 {page} 页 / 共 {totalPages} 页</span>
-          <Button type="button" variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
-            下一页
-          </Button>
-        </div>
-      )}
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 };

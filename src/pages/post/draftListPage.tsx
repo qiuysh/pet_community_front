@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, FileEdit } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { getDraftList, deleteDraft } from '../../api/post';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { DraftInfo } from '../../types/post';
@@ -96,17 +97,17 @@ export function DraftListPage() {
                   aria-label="继续编辑"
                   onClick={() => navigate(`/posts/drafts/${draft.id}`)}
                 >
-                  <FileEdit size={18} />
+                  <FileEdit size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
                 </Button>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="p-2 rounded-lg text-red-500"
+                  className="p-2 rounded-lg text-error-text"
                   aria-label="删除草稿"
                   onClick={() => setDeleteTarget(draft.id)}
                 >
-                  <Trash2 size={18} />
+                  <Trash2 size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
                 </Button>
               </div>
             </Card>

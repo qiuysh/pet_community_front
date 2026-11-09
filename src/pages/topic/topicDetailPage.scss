@@ -202,31 +202,6 @@
     }
   }
 
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin-top: 20px;
-
-    button {
-      padding: 8px 16px;
-      border: 1px solid $border-color;
-      background: $background-white;
-      border-radius: $border-radius-xs;
-      cursor: pointer;
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
-    span {
-      color: $text-secondary;
-      font-size: $font-size-sm;
-    }
-  }
 }
 
 @media (min-width: 768px) {
@@ -294,13 +269,6 @@
     max-height: 250px;
   }
 
-  .topic-detail-page .pagination {
-    gap: 20px;
-  }
-
-  .topic-detail-page .pagination button {
-    padding: 10px 20px;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -370,14 +338,6 @@
     font-size: $font-size-sm;
   }
 
-  .topic-detail-page .pagination {
-    gap: 24px;
-  }
-
-  .topic-detail-page .pagination button {
-    padding: 12px 24px;
-    font-size: $font-size-sm;
-  }
 }
 
 @media (min-width: 1280px) {

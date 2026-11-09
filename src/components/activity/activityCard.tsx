@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
+import { Clock } from 'lucide-react';
 import {
   ActivityInfo,
   ActivityType,
   ActivityTypeOptions,
   getActivityDisplayStatus,
 } from '../../types/activity';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
 interface ActivityCardProps {
   activity: ActivityInfo;
@@ -75,14 +77,11 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
 
         <div className="flex items-center justify-between text-xs text-brown-muted">
           <div className="flex items-center gap-1">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <Clock
+              size={ICON_SIZE.inline}
+              strokeWidth={iconStroke(ICON_SIZE.inline)}
+              aria-hidden="true"
+            />
             <span>
               {formatTime(activity.startTime)} - {formatTime(activity.endTime)}
             </span>

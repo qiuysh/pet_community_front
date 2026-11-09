@@ -106,7 +106,7 @@ export const AdStatusMap: Record<number, string> = {
 };
 
 export const AdStatusColorMap: Record<number, string> = {
-    0: 'bg-warning/10 text-warning',
-    1: 'bg-success/10 text-success',
-    2: 'bg-error/10 text-error',
+    0: 'bg-warning/10 text-warning-text',
+    1: 'bg-success/10 text-success-text',
+    2: 'bg-error/10 text-error-text',
 };

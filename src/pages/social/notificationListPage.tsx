@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, RefreshCw, Bell } from 'lucide-react';
+import { AtSign, Bell, Heart, MessageCircle, UserPlus } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useNotificationList } from '../../hooks/useNotificationList';
 import { useConfirm } from '../../hooks/useConfirm';
+import { formatRelativeTime } from '../../utils/format';
 import { Button } from '../../components/ui/button';
 import { EmptyState } from '../../components/ui/emptyState';
 import { PageHeader } from '../../components/ui/pageHeader';
@@ -47,37 +49,23 @@ const NotificationListPage: React.FC = () => {
   };
 
   const getIcon = (type: string) => {
+    const props = {
+      size: ICON_SIZE.nav,
+      strokeWidth: iconStroke(ICON_SIZE.nav),
+      'aria-hidden': true as const,
+    };
     switch (type) {
       case 'like':
-        return <Heart size={24} color="var(--color-primary)" />;
+        return <Heart {...props} className="text-primary" />;
       case 'comment':
-        return <MessageCircle size={24} color="var(--color-secondary)" />;
+        return <MessageCircle {...props} className="text-secondary" />;
       case 'at':
-        return <RefreshCw size={24} color="var(--color-info)" />;
+        return <AtSign {...props} className="text-info" />;
       case 'follow':
-        return (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary-light)" strokeWidth="2" aria-hidden="true">
-            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-          </svg>
-        );
+        return <UserPlus {...props} className="text-secondary-light" />;
       default:
-        return <Bell size={24} color="var(--color-ink-muted)" />;
+        return <Bell {...props} className="text-brown-muted" />;
     }
-  };
-
-  const formatTime = (timeStr: string) => {
-    const date = new Date(timeStr);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return '刚刚';
-    if (minutes < 60) return `${minutes}分钟前`;
-    if (hours < 24) return `${hours}小时前`;
-    if (days < 7) return `${days}天前`;
-    return `${date.getMonth() + 1}/${date.getDate()}`;
   };
 
   return (
@@ -106,7 +94,7 @@ const NotificationListPage: React.FC = () => {
           ))}
         </div>
       ) : notifications.length === 0 ? (
-        <EmptyState icon={<Bell size={56} strokeWidth={1.5} />} title="暂无通知" />
+        <EmptyState icon={<Bell size={ICON_SIZE.empty} strokeWidth={1.5} />} title="暂无通知" />
       ) : (
         <div className="notification-list motion-list">
           {notifications.map((notification) => (
@@ -120,7 +108,9 @@ const NotificationListPage: React.FC = () => {
               <span className="notification-content">
                 <span className="notification-title">{notification.title}</span>
                 <span className="notification-desc">{notification.content}</span>
-                <span className="notification-time">{formatTime(notification.createdAt)}</span>
+                <span className="notification-time" title={notification.createdAt}>
+                  {formatRelativeTime(notification.createdAt)}
+                </span>
               </span>
               {!notification.isRead && (
                 <span className="unread-dot" />

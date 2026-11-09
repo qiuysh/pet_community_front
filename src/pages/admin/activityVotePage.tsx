@@ -82,7 +82,7 @@ export const ActivityVotePage = () => {
   }
 
   if (!awardData) {
-    return <div className="p-6 text-center text-error">评选数据加载失败</div>;
+    return <div className="p-6 text-center text-error-text">评选数据加载失败</div>;
   }
 
   const awardTone = (level?: string) => {

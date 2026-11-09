@@ -178,7 +178,7 @@ export const MyAdoptPage = () => {
                           </button>
                           <button
                             type="button"
-                            className="text-error"
+                            className="text-error-text"
                             onClick={() => handleDeleteAdopt(adopt.id)}
                           >
                             下架
@@ -225,7 +225,7 @@ export const MyAdoptPage = () => {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="px-0 text-error"
+                    className="px-0 text-error-text"
                     onClick={() => handleCancelApplication(application.id)}
                   >
                     取消申请

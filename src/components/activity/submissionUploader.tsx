@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Plus, Video } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useToast } from '../toast';
 import { createSubmission } from '../../api/activity';
 import { uploadMedia } from '../../api/upload';
@@ -205,9 +207,12 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
               className="sr-only"
               aria-label="上传作品图片"
             />
-            <svg className="w-6 h-6 text-brown-light" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+            <Plus
+              size={ICON_SIZE.nav}
+              strokeWidth={iconStroke(ICON_SIZE.nav)}
+              className="text-brown-light"
+              aria-hidden="true"
+            />
           </label>
         )}
         <p className="text-xs text-brown-muted mt-1">
@@ -242,14 +247,12 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
               disabled={loading}
             />
             <div className="text-center text-brown-muted">
-              <svg className="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
+              <Video
+                size={ICON_SIZE.nav}
+                strokeWidth={iconStroke(ICON_SIZE.nav)}
+                className="mx-auto mb-1"
+                aria-hidden="true"
+              />
               <span className="text-xs">{loading ? '上传中…' : '点击上传视频'}</span>
             </div>
           </label>

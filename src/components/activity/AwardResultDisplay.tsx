@@ -25,7 +25,7 @@ export const AwardResultDisplay = ({ firstPrize, secondPrizes, thirdPrizes }: Aw
       {firstPrize && (
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2 py-1 rounded text-xs font-medium bg-error text-white">
+            <span className="px-2 py-1 rounded text-xs font-medium bg-error-dark text-white">
               一等奖
             </span>
           </div>

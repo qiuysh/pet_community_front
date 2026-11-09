@@ -59,7 +59,7 @@ export const QRCodeGenerator = ({ activityId, onRefresh }: QRCodeGeneratorProps)
   if (!qrData) {
     return (
       <div className="flex flex-col items-center justify-center py-8">
-        <div className="text-error">生成二维码失败</div>
+        <div className="text-error-text">生成二维码失败</div>
         <Button type="button" className="mt-2" onClick={refetchQR}>
           重新生成
         </Button>
@@ -84,7 +84,7 @@ export const QRCodeGenerator = ({ activityId, onRefresh }: QRCodeGeneratorProps)
       <div className="mt-4 text-center">
         <div className="text-sm text-brown-muted">
           {isExpired ? (
-            <span className="text-error font-medium">二维码已过期</span>
+            <span className="text-error-text font-medium">二维码已过期</span>
           ) : (
             <span>
               有效期剩余：<span className="font-medium text-primary-text">{remainingTime}秒</span>

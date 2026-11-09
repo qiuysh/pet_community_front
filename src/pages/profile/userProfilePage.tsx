@@ -307,9 +307,9 @@ export function UserProfilePage() {
                           className="min-h-10 rounded-md sm:rounded-full"
                           aria-label="已关注，点击管理"
                         >
-                          <UserCheck size={14} aria-hidden="true" />
+                          <UserCheck size={ICON_SIZE.inline} aria-hidden="true" />
                           {followStatus.isSecret ? '悄悄关注' : '已关注'}
-                          <MoreVertical size={14} aria-hidden="true" />
+                          <MoreVertical size={ICON_SIZE.inline} aria-hidden="true" />
                         </Button>
                       }
                       items={[
@@ -337,9 +337,9 @@ export function UserProfilePage() {
                           className="min-h-10 rounded-md sm:rounded-full"
                           aria-label="关注该用户"
                         >
-                          <UserPlus size={14} aria-hidden="true" />
+                          <UserPlus size={ICON_SIZE.inline} aria-hidden="true" />
                           关注
-                          <MoreVertical size={14} aria-hidden="true" />
+                          <MoreVertical size={ICON_SIZE.inline} aria-hidden="true" />
                         </Button>
                       }
                       items={[
@@ -365,7 +365,7 @@ export function UserProfilePage() {
                   className="min-h-10 rounded-md sm:rounded-full"
                   aria-label={`私信 ${displayUser?.nickname || '该用户'}`}
                 >
-                  <Send size={14} aria-hidden="true" />
+                  <Send size={ICON_SIZE.inline} aria-hidden="true" />
                   私信
                 </Button>
                 <Button
@@ -377,7 +377,7 @@ export function UserProfilePage() {
                   className="min-h-10 rounded-md sm:rounded-full"
                   aria-label={`拉黑 ${displayUser?.nickname || '该用户'}`}
                 >
-                  <Ban size={14} aria-hidden="true" />
+                  <Ban size={ICON_SIZE.inline} aria-hidden="true" />
                   {blocking ? '处理中…' : '拉黑'}
                 </Button>
               </div>

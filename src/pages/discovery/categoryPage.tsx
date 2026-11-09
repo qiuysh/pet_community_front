@@ -5,9 +5,9 @@ import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { ArrowLeft, Play, Image, Search } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
-import { Button } from '../../components/ui/button';
 import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
+import { Pagination } from '../../components/ui/pagination';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Spinner } from '../../components/ui/spinner';
 import { PostActions } from '../../components/post/postActions';
@@ -237,34 +237,7 @@ export const CategoryPage = () => {
         ))}
       </div>
 
-      {/* 分页 */}
-      {totalPages > 1 && (
-        <div className="pagination">
-          <Button
-            type="button"
-            variant="outline"
-            className="page-btn prev-btn"
-            disabled={page <= 1}
-            onClick={() => setPage(page - 1)}
-          >
-            上一页
-          </Button>
-          <div className="page-indicator">
-            <span className="page-current">{page}</span>
-            <span className="page-separator">/</span>
-            <span className="page-total">{totalPages}</span>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            className="page-btn next-btn"
-            disabled={page >= totalPages}
-            onClick={() => setPage(page + 1)}
-          >
-            下一页
-          </Button>
-        </div>
-      )}
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 };

@@ -18,6 +18,7 @@ import { FieldError, FieldLabel, Input } from '../../components/ui/input';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 import { BrandSocialIcon } from '../../components/icons/brandSocialIcons';
+import { ICON_SIZE } from '../../styles/iconSize';
 
 export function LoginPage() {
   const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
@@ -220,9 +221,9 @@ export function LoginPage() {
               aria-label="使用微信登录"
               disabled={loading}
               onClick={() => void loginWithThirdParty('wechat')}
-              className="w-10 h-10 min-w-0 p-0 rounded-full shadow-soft border-0 bg-[#07C160] text-white hover:bg-[#06AD56]"
+              className="w-10 h-10 min-w-0 p-0 rounded-full shadow-soft border-0 bg-brand-wechat text-white hover:brightness-95"
             >
-              <BrandSocialIcon platform="wechat" size={20} />
+              <BrandSocialIcon platform="wechat" size={ICON_SIZE.action} />
             </Button>
             <Button
               type="button"
@@ -230,9 +231,9 @@ export function LoginPage() {
               aria-label="使用微博登录"
               disabled={loading}
               onClick={() => void loginWithThirdParty('weibo')}
-              className="w-10 h-10 min-w-0 p-0 rounded-full shadow-soft border-0 bg-[#E6162D] text-white hover:bg-[#CF1428]"
+              className="w-10 h-10 min-w-0 p-0 rounded-full shadow-soft border-0 bg-brand-weibo text-white hover:brightness-95"
             >
-              <BrandSocialIcon platform="weibo" size={20} />
+              <BrandSocialIcon platform="weibo" size={ICON_SIZE.action} />
             </Button>
             <Button
               type="button"
@@ -240,9 +241,9 @@ export function LoginPage() {
               aria-label="使用 QQ 登录"
               disabled={loading}
               onClick={() => void loginWithThirdParty('qq')}
-              className="w-10 h-10 min-w-0 p-0 rounded-full shadow-soft border-0 bg-[#12B7F5] text-white hover:bg-[#0FA3DB]"
+              className="w-10 h-10 min-w-0 p-0 rounded-full shadow-soft border-0 bg-brand-qq text-white hover:brightness-95"
             >
-              <BrandSocialIcon platform="qq" size={20} />
+              <BrandSocialIcon platform="qq" size={ICON_SIZE.action} />
             </Button>
           </div>
         </div>

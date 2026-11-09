@@ -121,18 +121,6 @@
     }
   }
 
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: $spacing-md;
-    margin-top: 20px;
-
-    span {
-      color: $text-secondary;
-      font-size: $font-size-sm;
-    }
-  }
 }
 
 @media (min-width: 768px) {
@@ -166,9 +154,6 @@
     font-size: $font-size-base;
   }
 
-  .topic-list-page .pagination {
-    gap: 20px;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -218,9 +203,6 @@
     font-size: $font-size-sm;
   }
 
-  .topic-list-page .pagination {
-    gap: 24px;
-  }
 }
 
 @media (min-width: 1280px) {

@@ -6,6 +6,7 @@ import {
   formatDateString,
   formatDateTimeString,
   formatNumber,
+  formatRelativeTime,
 } from './format';
 
 describe('format', () => {
@@ -69,6 +70,34 @@ describe('format', () => {
     it('非法输入返回空串', () => {
       expect(formatDate('not-a-date')).toBe('');
       expect(formatDateTime('')).toBe('');
+    });
+  });
+
+  describe('formatRelativeTime', () => {
+    const now = new Date('2026-11-09T16:00:00');
+
+    it('一分钟内显示刚刚', () => {
+      expect(formatRelativeTime(new Date(now.getTime() - 30_000), now)).toBe('刚刚');
+    });
+
+    it('一小时内显示分钟前', () => {
+      expect(formatRelativeTime(new Date(now.getTime() - 5 * 60_000), now)).toBe('5分钟前');
+    });
+
+    it('一天内显示小时前', () => {
+      expect(formatRelativeTime(new Date(now.getTime() - 3 * 3_600_000), now)).toBe('3小时前');
+    });
+
+    it('七天内显示天前', () => {
+      expect(formatRelativeTime(new Date(now.getTime() - 2 * 86_400_000), now)).toBe('2天前');
+    });
+
+    it('超过七天回退为日期', () => {
+      expect(formatRelativeTime(new Date('2026-10-01T12:00:00'), now)).toBe('2026-10-01');
+    });
+
+    it('非法输入返回空串', () => {
+      expect(formatRelativeTime('bad')).toBe('');
     });
   });
 });

@@ -101,7 +101,7 @@ export function AdoptionFollowUpPanel({
         maxLength={500}
         rows={3}
         aria-label="回访内容"
-        className="w-full rounded-md border border-border bg-white p-3 text-sm text-brown focus:outline-none focus:ring-2 focus:ring-primary/40"
+        className="w-full rounded-md border border-border bg-white p-3 text-sm text-brown focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
       />
 
       <div className="flex flex-wrap items-center gap-2">
@@ -112,7 +112,7 @@ export function AdoptionFollowUpPanel({
               type="button"
               onClick={() => setPhotos((prev) => prev.filter((_, i) => i !== index))}
               aria-label={`删除回访照片 ${index + 1}`}
-              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-error text-xs text-white"
+              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-error-dark text-xs text-white"
             >
               ×
             </button>

@@ -2,6 +2,7 @@ import { useActivitySignIn } from '../../hooks/useActivitySignIn';
 import { QRCodeGenerator } from '../../components/activity/qrCodeGenerator';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { MapPin } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -151,7 +152,7 @@ export const ActivitySignInPage = () => {
                     </div>
                     {record.signInLocation && (
                       <div className="text-xs text-brown-muted mt-1 flex items-center gap-1">
-                        <MapPin size={12} aria-hidden="true" />
+                        <MapPin size={ICON_SIZE.inline} aria-hidden="true" />
                         <span>{record.signInLocation}</span>
                       </div>
                     )}

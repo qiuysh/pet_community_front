@@ -3,6 +3,7 @@ import { getAdStats } from '../../api/admin';
 import { showErrorToast } from '../../utils/toastManager';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { BarChart3, Eye, Pointer, TrendingUp } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 
 interface AdStatsProps {
     startDate?: string;
@@ -41,7 +42,7 @@ export function AdStats({ startDate, endDate }: AdStatsProps) {
             <div className="bg-white rounded-md shadow-card p-6">
                 <div className="text-center py-12">
                     <div className="mb-2 flex justify-center text-brown-light">
-                        <BarChart3 size={40} aria-hidden="true" />
+                        <BarChart3 size={ICON_SIZE.empty} aria-hidden="true" />
                     </div>
                     <p className="text-brown-muted">暂无统计数据</p>
                 </div>
@@ -70,9 +71,9 @@ export function AdStats({ startDate, endDate }: AdStatsProps) {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-brown-muted mb-1">总点击量</p>
-                            <p className="text-2xl font-bold text-success">{stats.totalClicks.toLocaleString()}</p>
+                            <p className="text-2xl font-bold text-success-text">{stats.totalClicks.toLocaleString()}</p>
                         </div>
-                        <div className="w-12 h-12 bg-success/10 rounded-md flex items-center justify-center text-success">
+                        <div className="w-12 h-12 bg-success/10 rounded-md flex items-center justify-center text-success-text">
                             <Pointer size={20} aria-hidden="true" />
                         </div>
                     </div>
@@ -82,9 +83,9 @@ export function AdStats({ startDate, endDate }: AdStatsProps) {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-brown-muted mb-1">点击率 (CTR)</p>
-                            <p className="text-2xl font-bold text-info">{stats.ctr.toFixed(2)}%</p>
+                            <p className="text-2xl font-bold text-info-text">{stats.ctr.toFixed(2)}%</p>
                         </div>
-                        <div className="w-12 h-12 bg-info/10 rounded-md flex items-center justify-center text-info">
+                        <div className="w-12 h-12 bg-info/10 rounded-md flex items-center justify-center text-info-text">
                             <TrendingUp size={20} aria-hidden="true" />
                         </div>
                     </div>

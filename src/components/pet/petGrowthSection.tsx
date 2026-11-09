@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TrendingUp, Plus, Pencil, Trash2 } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import type { PetGrowthRecordInfo, PetGrowthRecordCreateRequest } from '../../types/pet';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
@@ -151,17 +152,17 @@ export function PetGrowthSection({
                         className="min-w-0 h-auto p-1.5 text-brown-muted hover:text-primary-text"
                         aria-label="编辑"
                       >
-                        <Pencil size={14} aria-hidden="true" />
+                        <Pencil size={ICON_SIZE.inline} aria-hidden="true" />
                       </Button>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => setConfirmId(record.id)}
-                        className="min-w-0 h-auto p-1.5 text-brown-muted hover:text-error"
+                        className="min-w-0 h-auto p-1.5 text-brown-muted hover:text-error-text"
                         aria-label="删除"
                       >
-                        <Trash2 size={14} aria-hidden="true" />
+                        <Trash2 size={ICON_SIZE.inline} aria-hidden="true" />
                       </Button>
                     </div>
                   )}

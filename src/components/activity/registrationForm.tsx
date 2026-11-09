@@ -113,7 +113,7 @@ export const RegistrationForm = ({ activity, onSuccess }: RegistrationFormProps)
       </div>
 
       <Button type="submit" block loading={loading} disabled={loading}>
-        {loading ? '提交中' : '提交报名'}
+        {loading ? '提交中…' : '提交报名'}
       </Button>
     </form>
   );

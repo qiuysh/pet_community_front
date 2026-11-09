@@ -1,6 +1,8 @@
+import { Download } from 'lucide-react';
 import { exportLogs } from '../../api/admin';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { useAsync } from '../../hooks/useAsync';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { AdminButton } from './adminButton';
 
 interface LogExportProps {
@@ -39,10 +41,13 @@ export function LogExport({ userId, actionType, targetType, startTime, endTime }
 
     return (
         <AdminButton type="button" variant="secondary" onClick={handleExport} disabled={loading} loading={loading}>
-            <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            {loading ? '导出中...' : '导出日志'}
+            <Download
+              size={ICON_SIZE.inline}
+              strokeWidth={iconStroke(ICON_SIZE.inline)}
+              className="mr-1.5"
+              aria-hidden="true"
+            />
+            {loading ? '导出中…' : '导出日志'}
         </AdminButton>
     );
 }

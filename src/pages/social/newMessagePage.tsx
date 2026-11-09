@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Send, MessageCircle, UserCircle } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { useFollows } from '../../hooks/useFollows';
 import { useStartConversation } from '../../hooks/useStartConversation';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
@@ -66,7 +67,7 @@ const NewMessagePage: React.FC = () => {
             </div>
           ) : follows.length === 0 ? (
             <EmptyState
-              icon={<UserCircle size={56} strokeWidth={1.5} />}
+              icon={<UserCircle size={ICON_SIZE.empty} strokeWidth={1.5} />}
               title="暂未关注任何用户"
               action={
                 <Button type="button" onClick={() => navigate('/search')}>
@@ -94,7 +95,7 @@ const NewMessagePage: React.FC = () => {
                     <div className="user-name">{u.nickname}</div>
                     {u.signature && <div className="user-sig">{u.signature}</div>}
                   </div>
-                  <MessageCircle size={18} className="msg-icon" aria-hidden="true" />
+                  <MessageCircle size={ICON_SIZE.action} className="msg-icon" aria-hidden="true" />
                 </Button>
               ))}
             </div>
@@ -111,7 +112,7 @@ const NewMessagePage: React.FC = () => {
               onClick={() => setTargetUser(null)}
               aria-label="更换收件人"
             >
-              <UserCircle size={14} aria-hidden="true" />
+              <UserCircle size={ICON_SIZE.inline} aria-hidden="true" />
               <span>{targetUser.nickname}</span>
               <span className="remove-mark" aria-hidden="true">×</span>
             </Button>

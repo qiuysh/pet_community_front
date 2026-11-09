@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Pagination } from '../../components/admin/pagination';
 import { useAdminUsers } from '../../hooks/useAdminUsers';
-import { PawPrint } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, PawPrint } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
@@ -86,7 +87,7 @@ export function AdminUserListPage() {
 
       {error && (
         <div
-          className="mx-6 mt-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error text-sm"
+          className="mx-6 mt-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm"
           role="status"
           aria-live="polite"
         >
@@ -118,7 +119,7 @@ export function AdminUserListPage() {
         ) : users.length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">
-              <PawPrint size={40} aria-hidden="true" />
+              <PawPrint size={ICON_SIZE.empty} aria-hidden="true" />
             </div>
             <p>暂无数据</p>
           </AdminTable.Status>
@@ -198,9 +199,12 @@ export function AdminUserListPage() {
           <div className="bg-white rounded-md p-6 max-w-md w-full mx-4 shadow-card">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
-                <svg className="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
+                <AlertTriangle
+                  size={ICON_SIZE.nav}
+                  strokeWidth={iconStroke(ICON_SIZE.nav)}
+                  className="text-error-text"
+                  aria-hidden="true"
+                />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-brown">确认删除</h3>
@@ -228,9 +232,12 @@ export function AdminUserListPage() {
               <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                 confirmStatusChange.status === 1 ? 'bg-success/10' : 'bg-warning/10'
               }`}>
-                <svg className={`w-6 h-6 ${confirmStatusChange.status === 1 ? 'text-success' : 'text-warning'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <CheckCircle2
+                  size={ICON_SIZE.nav}
+                  strokeWidth={iconStroke(ICON_SIZE.nav)}
+                  className={confirmStatusChange.status === 1 ? 'text-success-text' : 'text-warning-text'}
+                  aria-hidden="true"
+                />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-brown">
@@ -256,7 +263,11 @@ export function AdminUserListPage() {
                 loading={isLoading}
                 className={confirmStatusChange.status === 1 ? '!bg-success hover:!bg-success/90' : '!bg-warning hover:!bg-warning/90'}
               >
-                {isLoading ? '处理中…' : '确认'}
+                {isLoading
+                  ? '处理中…'
+                  : confirmStatusChange.status === 1
+                    ? '确认启用'
+                    : '确认禁用'}
               </AdminButton>
             </div>
           </div>

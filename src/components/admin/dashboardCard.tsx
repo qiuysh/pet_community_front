@@ -23,7 +23,7 @@ export function DashboardCard({
   iconTone = 'bg-secondary-soft text-secondary',
 }: DashboardCardProps) {
   const changeTone =
-    changeType === 'up' ? 'text-success' : changeType === 'down' ? 'text-error' : 'text-brown-muted';
+    changeType === 'up' ? 'text-success-text' : changeType === 'down' ? 'text-error-text' : 'text-brown-muted';
 
   return (
     <div className="min-w-0 rounded-md border border-border-light/60 !bg-white p-5 shadow-card transition-shadow hover:shadow-hover">

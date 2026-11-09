@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, MessageCircle } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { useConversationList } from '../../hooks/useConversationList';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../../components/ui/avatar';
@@ -63,7 +64,7 @@ const MessageListPage: React.FC = () => {
         </div>
       ) : conversations.length === 0 ? (
         <EmptyState
-          icon={<MessageCircle size={56} strokeWidth={1.5} />}
+          icon={<MessageCircle size={ICON_SIZE.empty} strokeWidth={1.5} />}
           title="暂无消息"
           action={<Button onClick={handleNewMessage}>发起对话</Button>}
         />

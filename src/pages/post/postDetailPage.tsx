@@ -2,18 +2,21 @@ import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useUserStore } from '../../stores/userStore';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
+import { formatRelativeTime } from '../../utils/format';
 import { usePostDetail } from '../../hooks/usePostDetail';
 import { usePostComments } from '../../hooks/usePostComments';
 import { ReportReasonOptions } from '../../types/post';
 import { MoreHorizontal, MapPin, Heart } from 'lucide-react';
 import { AdBanner } from '../../components/ad/AdBanner';
+import { ImageLightbox } from '../../components/chat/imageLightbox';
+import { MentionText } from '../../components/post/mentionText';
+import { MentionTextarea } from '../../components/post/mentionTextarea';
 import { ShareSheet } from '../../components/post/shareSheet';
 import { PostActions } from '../../components/post/postActions';
 import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Avatar } from '../../components/ui/avatar';
 import { EmptyState } from '../../components/ui/emptyState';
-import { Textarea } from '../../components/ui/input';
 import { Dropdown } from '../../components/ui/dropdown';
 import { Modal } from '../../components/ui/modal';
 import { ConfirmDialog } from '../../components/ui/confirmDialog';
@@ -54,10 +57,12 @@ export const PostDetailPage = () => {
   } = usePostComments(post ? post.id : 0, post?.commentsCount);
 
   const [commentText, setCommentText] = useState('');
+  const [commentAtUsers, setCommentAtUsers] = useState<number[]>([]);
   const [showReport, setShowReport] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportType, setReportType] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const focusCommentInput = () => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -68,8 +73,11 @@ export const PostDetailPage = () => {
   };
 
   const handleSubmitComment = async () => {
-    const ok = await addComment(commentText, replyTarget);
-    if (ok) setCommentText('');
+    const ok = await addComment(commentText, replyTarget, commentAtUsers);
+    if (ok) {
+      setCommentText('');
+      setCommentAtUsers([]);
+    }
   };
 
   const handleDelete = async () => {
@@ -146,20 +154,32 @@ export const PostDetailPage = () => {
           </Link>
           <div className="user-info">
             <Link to={`/profile/${post.userId}`} className="nickname">{post.userNickname}</Link>
-            <div className="time">{post.createdAt}</div>
+            <div className="time" title={post.createdAt}>
+              {formatRelativeTime(post.createdAt)}
+            </div>
           </div>
           {post.visibility === 2 && <span className="visibility-tag">私密</span>}
           {post.visibility === 1 && <span className="visibility-tag">仅粉丝</span>}
         </div>
 
-        {post.content && <div className="post-text">{post.content}</div>}
+        {post.content && (
+          <div className="post-text">
+            <MentionText text={post.content} />
+          </div>
+        )}
 
         {post.images && post.images.length > 0 && (
           <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
             {post.images.map((img, idx) => (
-              <div key={idx} className="image-item">
+              <button
+                key={idx}
+                type="button"
+                className="image-item image-item--preview"
+                onClick={() => setPreviewImage(img)}
+                aria-label={`查看配图 ${idx + 1}`}
+              >
                 <img src={img} alt="" decoding="async" />
-              </div>
+              </button>
             ))}
           </div>
         )}
@@ -205,6 +225,13 @@ export const PostDetailPage = () => {
         onShare={(platform) => onShare(platform)}
       />
 
+      <ImageLightbox
+        open={!!previewImage}
+        src={previewImage || ''}
+        alt="动态配图"
+        onClose={() => setPreviewImage(null)}
+      />
+
       <div id="post-detail-comments" className="comments-section">
         <div className="comments-header">评论 ({commentsTotal})</div>
 
@@ -215,13 +242,19 @@ export const PostDetailPage = () => {
               <Button type="button" variant="ghost" size="sm" onClick={cancelReply}>取消</Button>
             </div>
           )}
-          <Textarea
+          <MentionTextarea
             id={COMMENT_INPUT_ID}
             aria-label={replyTarget ? `回复 @${replyTarget.name}` : '发表评论'}
             value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder={replyTarget ? `回复 @${replyTarget.name}` : '说点什么…'}
+            onChange={setCommentText}
+            onAtUsersChange={setCommentAtUsers}
+            placeholder={
+              replyTarget
+                ? `回复 @${replyTarget.name}，输入 @ 可提及用户`
+                : '说点什么… 输入 @ 可提及用户'
+            }
             rows={3}
+            maxLength={200}
           />
           <div className="send-row">
             <Button
@@ -250,12 +283,16 @@ export const PostDetailPage = () => {
               <div className="comment-body">
                 <div className="comment-header">
                   <span className="comment-name">{comment.userNickname}</span>
-                  <span className="comment-time">{comment.createdAt}</span>
+                  <span className="comment-time" title={comment.createdAt}>
+                    {formatRelativeTime(comment.createdAt)}
+                  </span>
                 </div>
                 {comment.replyToName && (
                   <div className="reply-prefix">回复 @{comment.replyToName}：</div>
                 )}
-                <div className="comment-text">{comment.content}</div>
+                <div className="comment-text">
+                  <MentionText text={comment.content} />
+                </div>
                 <div className="comment-actions">
                   <Button
                     type="button"
@@ -297,12 +334,16 @@ export const PostDetailPage = () => {
                         <div className="reply-body">
                           <div className="reply-header">
                             <span className="reply-name">{reply.userNickname}</span>
-                            <span className="reply-time">{reply.createdAt}</span>
+                            <span className="reply-time" title={reply.createdAt}>
+                              {formatRelativeTime(reply.createdAt)}
+                            </span>
                           </div>
                           {reply.replyToName && (
                             <span className="reply-prefix">回复 @{reply.replyToName}：</span>
                           )}
-                          <span className="reply-text">{reply.content}</span>
+                          <span className="reply-text">
+                            <MentionText text={reply.content} />
+                          </span>
                           <div className="reply-actions">
                             <Button
                               type="button"
@@ -348,7 +389,7 @@ export const PostDetailPage = () => {
         footer={
           <>
             <Button variant="ghost" onClick={() => setShowReport(false)}>取消</Button>
-            <Button disabled={!reportType} onClick={handleReport}>提交</Button>
+            <Button disabled={!reportType} onClick={handleReport}>提交举报</Button>
           </>
         }
       >

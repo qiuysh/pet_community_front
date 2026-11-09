@@ -32,7 +32,7 @@ export function TodoAggregate({ data, loading }: TodoAggregateProps) {
       <div className="mb-3 flex shrink-0 items-center justify-between gap-2">
         <h3 className={adminUi.blockTitle}>待办事项</h3>
         {data && data.total > 0 && (
-          <span className="rounded-full bg-warning/10 px-2 py-1 text-xs font-medium tabular-nums text-warning">
+          <span className="rounded-full bg-warning/10 px-2 py-1 text-xs font-medium tabular-nums text-warning-text">
             共 {data.total} 项
           </span>
         )}
@@ -54,7 +54,7 @@ export function TodoAggregate({ data, loading }: TodoAggregateProps) {
                 <span className="text-sm text-brown">{item.label}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`text-sm font-semibold tabular-nums ${item.count > 0 ? 'text-warning' : 'text-brown-muted'}`}>
+                <span className={`text-sm font-semibold tabular-nums ${item.count > 0 ? 'text-warning-text' : 'text-brown-muted'}`}>
                   {item.count}
                 </span>
                 <ChevronRight className="h-4 w-4 text-brown-muted" aria-hidden="true" />

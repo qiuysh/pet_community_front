@@ -4,11 +4,13 @@ import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { ShareSheet } from '../../components/post/shareSheet';
 import { Heart, MessageCircle, Share2, UserPlus, UserCheck } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { Avatar } from '../../components/ui/avatar';
 import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
+import { Pagination } from '../../components/ui/pagination';
 import { Skeleton } from '../../components/ui/skeleton';
 import './topicDetailPage.scss';
 
@@ -20,7 +22,6 @@ export const TopicDetailPage = () => {
     loadingTopic,
     posts,
     loadingPosts,
-    total,
     totalPages,
     page,
     setPage,
@@ -78,18 +79,18 @@ export const TopicDetailPage = () => {
             >
               {topic.isParticipated ? (
                 <>
-                  <UserCheck size={14} aria-hidden="true" />
+                  <UserCheck size={ICON_SIZE.inline} aria-hidden="true" />
                   已参与
                 </>
               ) : (
                 <>
-                  <UserPlus size={14} aria-hidden="true" />
+                  <UserPlus size={ICON_SIZE.inline} aria-hidden="true" />
                   参与话题
                 </>
               )}
             </Button>
             <Button type="button" size="sm" variant="outline" onClick={openShare}>
-              <Share2 size={14} aria-hidden="true" />
+              <Share2 size={ICON_SIZE.inline} aria-hidden="true" />
               分享{topic.sharesCount > 0 ? ` ${topic.sharesCount}` : ''}
             </Button>
             <Button
@@ -162,17 +163,7 @@ export const TopicDetailPage = () => {
           ))}
         </div>
 
-        {total > 10 && (
-          <div className="pagination">
-            <Button type="button" variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>
-              上一页
-            </Button>
-            <span>第 {page} 页 / 共 {totalPages} 页</span>
-            <Button type="button" variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
-              下一页
-            </Button>
-          </div>
-        )}
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       <ShareSheet

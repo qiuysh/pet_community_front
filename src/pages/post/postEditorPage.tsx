@@ -7,10 +7,12 @@ import { VisibilityOptions } from '../../types/post';
 import { getDefaultPetAvatar } from '../../utils/avatarUtils';
 import { useToast } from '../../components/toast';
 import { Plus, X, Image, Video, PawPrint, Hash, MapPin, Lock, ChevronRight, Check, Clock } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { SchedulePicker } from '../../components/post/schedulePicker';
 import { Button, buttonClass } from '../../components/ui/button';
 import { EmptyState } from '../../components/ui/emptyState';
-import { Input, Textarea } from '../../components/ui/input';
+import { Input } from '../../components/ui/input';
+import { MentionTextarea } from '../../components/post/mentionTextarea';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Avatar } from '../../components/ui/avatar';
 import './postEditorPage.scss';
@@ -162,13 +164,14 @@ export const PostEditorPage = () => {
       </div>
 
       <div className="editor-body">
-        <Textarea
-          className="content-input"
+        <MentionTextarea
+          className="content-input !border-0 !px-0 !shadow-none focus:!ring-0"
           value={state.content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="分享你家萌宠的精彩瞬间吧～"
+          onChange={setContent}
+          placeholder="分享你家萌宠的精彩瞬间吧～ 输入 @ 可提及用户"
           maxLength={500}
           rows={6}
+          aria-label="动态正文"
         />
         <div className="char-count">{charCount}/500</div>
 
@@ -178,7 +181,7 @@ export const PostEditorPage = () => {
               <span key={topic.id} className="topic-tag">
                 {topic.name}
                 <Button type="button" variant="ghost" size="sm" onClick={() => removeTopic(topic.id)} aria-label="移除话题">
-                  <X size={14} aria-hidden="true" />
+                  <X size={ICON_SIZE.inline} aria-hidden="true" />
                 </Button>
               </span>
             ))}
@@ -260,7 +263,7 @@ export const PostEditorPage = () => {
             <span className="option-value">
               {state.selectedPets.length > 0 ? `已选 ${state.selectedPets.length} 只` : '未选择'}
             </span>
-            <span className="option-arrow"><ChevronRight size={18} aria-hidden="true" /></span>
+            <span className="option-arrow"><ChevronRight size={ICON_SIZE.action} aria-hidden="true" /></span>
           </button>
 
           {showPetPicker && (
@@ -305,7 +308,7 @@ export const PostEditorPage = () => {
             <span className="option-value">
               {state.selectedTopics.length > 0 ? `已选 ${state.selectedTopics.length} 个` : '最多3个'}
             </span>
-            <span className="option-arrow"><ChevronRight size={18} aria-hidden="true" /></span>
+            <span className="option-arrow"><ChevronRight size={ICON_SIZE.action} aria-hidden="true" /></span>
           </button>
 
           {showTopicPicker && (
@@ -400,7 +403,7 @@ export const PostEditorPage = () => {
             <span className="option-value">
               {VisibilityOptions.find((v) => v.value === state.visibility)?.label}
             </span>
-            <span className="option-arrow"><ChevronRight size={18} aria-hidden="true" /></span>
+            <span className="option-arrow"><ChevronRight size={ICON_SIZE.action} aria-hidden="true" /></span>
           </button>
 
           {showVisibilityPicker && (
@@ -417,7 +420,7 @@ export const PostEditorPage = () => {
                     <span className="vis-label">{opt.label}</span>
                     <span className="vis-desc">{opt.desc}</span>
                   </span>
-                  {state.visibility === opt.value && <span className="check"><Check size={18} aria-hidden="true" /></span>}
+                  {state.visibility === opt.value && <span className="check"><Check size={ICON_SIZE.action} aria-hidden="true" /></span>}
                 </button>
               ))}
             </div>

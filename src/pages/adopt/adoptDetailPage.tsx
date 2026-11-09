@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Phone, Lock, Send } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { useAdoptDetail } from '../../hooks/useAdoptDetail';
 import { useUserStore } from '../../stores/userStore';
 import { maskContact } from '../../utils/contactPrivacy';
@@ -175,11 +176,11 @@ export const AdoptDetailPage = () => {
         <Card>
           <div className="flex flex-wrap items-center gap-2 text-sm text-brown-muted">
             <p className="flex items-center gap-2" data-testid="adopt-contact">
-              <Phone size={14} aria-hidden="true" />
+              <Phone size={ICON_SIZE.inline} aria-hidden="true" />
               <span>{displayContact || '未提供'}</span>
               {!contactVisible && (
                 <span className="inline-flex items-center gap-1 text-xs text-brown-muted">
-                  <Lock size={12} aria-hidden="true" />
+                  <Lock size={ICON_SIZE.inline} aria-hidden="true" />
                   登录后查看完整联系方式
                 </span>
               )}
@@ -192,7 +193,7 @@ export const AdoptDetailPage = () => {
                 onClick={handleContactCta}
                 aria-label={isLoggedIn ? '私信联系发布者' : '登录后查看联系方式'}
               >
-                <Send size={14} aria-hidden="true" />
+                <Send size={ICON_SIZE.inline} aria-hidden="true" />
                 {isLoggedIn ? '私信联系' : '登录查看'}
               </Button>
             )}

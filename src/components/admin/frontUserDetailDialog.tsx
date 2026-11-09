@@ -75,7 +75,7 @@ export const FrontUserDetailDialog = ({ userId, onClose }: FrontUserDetailDialog
           <Spinner />
         </div>
       ) : error ? (
-        <p className="text-sm text-error">{error}</p>
+        <p className="text-sm text-error-text">{error}</p>
       ) : user ? (
         <div className="space-y-5">
           <div className="flex items-center gap-3">

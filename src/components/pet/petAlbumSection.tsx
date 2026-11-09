@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Camera, Trash2, ImagePlus, Star, Video, GripVertical } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import type { PetAlbumInfo } from '../../types/pet';
 import { getPetTypeIcon } from '../../types/pet';
 import { Button } from '../ui/button';
@@ -203,7 +204,7 @@ export function PetAlbumSection({
 
                 {isOwner && (
                   <div className="absolute top-2 right-2 p-1.5 rounded bg-black/40 text-white opacity-100 [@media(hover:hover)_and_(pointer:fine)]:opacity-0 [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100 transition-opacity">
-                    <GripVertical size={14} aria-hidden="true" />
+                    <GripVertical size={ICON_SIZE.inline} aria-hidden="true" />
                   </div>
                 )}
 
@@ -218,7 +219,7 @@ export function PetAlbumSection({
                         className="flex-1 min-h-9 h-auto py-2 text-xs text-white bg-white/20 rounded hover:bg-white/30"
                         aria-label="设为封面"
                       >
-                        <Star size={12} aria-hidden="true" />
+                        <Star size={ICON_SIZE.inline} aria-hidden="true" />
                         封面
                       </Button>
                     )}
@@ -230,7 +231,7 @@ export function PetAlbumSection({
                       className="min-h-9 min-w-9 h-auto p-2 bg-error/80 rounded hover:bg-error"
                       aria-label="删除"
                     >
-                      <Trash2 size={14} aria-hidden="true" />
+                      <Trash2 size={ICON_SIZE.inline} aria-hidden="true" />
                     </Button>
                   </div>
                 )}

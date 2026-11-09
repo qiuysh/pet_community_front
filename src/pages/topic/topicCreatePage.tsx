@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Sparkles, Lock } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { createTopic } from '../../api/discovery';
 import { useUserStore } from '../../stores/userStore';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
@@ -137,7 +138,7 @@ export function TopicCreatePage() {
               )}
             </div>
             <div className="rounded-md bg-soft/40 p-3 text-xs text-brown-muted">
-              <Sparkles size={14} className="mb-0.5 inline text-primary-text" aria-hidden="true" /> 提交后需管理员审核通过方可公开；
+              <Sparkles size={ICON_SIZE.inline} className="mb-0.5 inline text-primary-text" aria-hidden="true" /> 提交后需管理员审核通过方可公开；
               每天最多创建 3 个话题。
             </div>
             <Button
@@ -147,7 +148,7 @@ export function TopicCreatePage() {
               disabled={loading || levelBlocked || !isLoggedIn}
               loading={loading}
             >
-              {loading ? '提交中' : '提交创建申请'}
+              {loading ? '提交中…' : '提交创建申请'}
             </Button>
           </Card>
         </form>

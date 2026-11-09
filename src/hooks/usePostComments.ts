@@ -75,7 +75,11 @@ export function usePostComments(postId: number, commentsCount?: number) {
   }, [isLoggedIn, navigate]);
 
   const addComment = useCallback(
-    async (content: string, reply?: ReplyTarget | null): Promise<boolean> => {
+    async (
+      content: string,
+      reply?: ReplyTarget | null,
+      atUsers?: number[],
+    ): Promise<boolean> => {
       if (!requireLogin() || !content.trim() || !postId) return false;
 
       const req: CommentCreateRequest = {
@@ -83,6 +87,7 @@ export function usePostComments(postId: number, commentsCount?: number) {
         content: content.trim(),
         parentId: reply?.parentId || 0,
         replyToId: reply?.id,
+        atUsers: atUsers && atUsers.length > 0 ? atUsers : undefined,
       };
 
       try {

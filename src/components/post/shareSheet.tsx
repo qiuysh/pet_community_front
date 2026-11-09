@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Copy, Check, Link2, MessageCircle, Send } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { showSuccessToast, showErrorToast } from '../../utils/toastManager';
 import { Modal } from '../ui/modal';
 import { Button } from '../ui/button';
@@ -164,7 +165,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
           </div>
 
           <div className="flex items-center gap-2 p-3 bg-bg-secondary rounded-md border border-border-light">
-            <Link2 size={14} className="text-brown-muted shrink-0" aria-hidden="true" />
+            <Link2 size={ICON_SIZE.inline} className="text-brown-muted shrink-0" aria-hidden="true" />
             <Input
               type="text"
               readOnly
@@ -179,7 +180,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
               onClick={handleCopyLink}
               aria-label="复制链接"
             >
-              {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+              {copied ? <Check size={ICON_SIZE.inline} aria-hidden="true" /> : <Copy size={ICON_SIZE.inline} aria-hidden="true" />}
               {copied ? '已复制' : '复制'}
             </Button>
           </div>

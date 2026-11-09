@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import type { ChangeEvent, KeyboardEvent, PointerEvent } from 'react';
 import { ImagePlus, Mic, Send } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/input';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
@@ -130,7 +131,7 @@ export function ChatComposer({
         onClick={handlePickImage}
         disabled={busy || recording}
       >
-        <ImagePlus size={22} aria-hidden="true" />
+        <ImagePlus size={ICON_SIZE.action} aria-hidden="true" />
       </Button>
 
       <Textarea
@@ -157,7 +158,7 @@ export function ChatComposer({
         onKeyDown={handleVoiceKeyDown}
         onContextMenu={(event) => event.preventDefault()}
       >
-        <Mic size={22} aria-hidden="true" />
+        <Mic size={ICON_SIZE.action} aria-hidden="true" />
       </button>
 
       <Button

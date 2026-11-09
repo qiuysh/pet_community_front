@@ -64,7 +64,7 @@ export const messageApi = {
   },
   recallMessage: (msgId: number) =>
     post(`/api/v1/social/messages/recall/${msgId}`),
-  getUnreadCount: () => get('/api/v1/social/messages/unread/count'),
+  getUnreadCount: () => get<{ count: number }>('/api/v1/social/messages/unread/count'),
 }
 
 export const pointsApi = {
@@ -92,6 +92,7 @@ export const notificationSettingsApi = {
 export const notificationApi = {
   getNotifications: (params?: { page?: number; pageSize?: number }) =>
     get('/api/v1/notifications', { params }),
+  getUnreadCount: () => get<{ count: number }>('/api/v1/notifications/unread'),
   markAsRead: (id: number) => post(`/api/v1/notifications/${id}/read`),
   markAllAsRead: () => post('/api/v1/notifications/read-all'),
 }

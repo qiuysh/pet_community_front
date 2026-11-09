@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { sendCode } from '../../api/user';
 import { SendCodeRequest } from '../../types/user';
 import { showSuccessToast, showErrorToast } from '../../utils/toastManager';
@@ -130,7 +131,7 @@ export function VerificationCodeModal({
       dismissable={!submitting}
       footer={
         <Button block disabled={!canSubmit} onClick={handleSubmit}>
-          {submitting && <Loader2 size={14} className="animate-spin" aria-hidden="true" />}
+          {submitting && <Loader2 size={ICON_SIZE.inline} className="animate-spin" aria-hidden="true" />}
           {mode === 'bind' ? '确认绑定' : '确认解绑'}
         </Button>
       }
@@ -188,7 +189,7 @@ export function VerificationCodeModal({
               className="min-w-[88px]"
             >
               {sendingCode ? (
-                <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+                <Loader2 size={ICON_SIZE.inline} className="animate-spin" aria-hidden="true" />
               ) : countdown > 0 ? (
                 `${countdown}s`
               ) : (
@@ -202,7 +203,7 @@ export function VerificationCodeModal({
         </div>
 
         {mode === 'unbind' && (
-          <p className="text-xs text-error/80 text-center">
+          <p className="text-xs text-error-text text-center">
             解绑后该{ACCOUNT_LABEL[channel]}将无法用于登录与找回密码
           </p>
         )}

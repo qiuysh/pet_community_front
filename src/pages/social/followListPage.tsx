@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { EyeOff, MoreVertical } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { useFollowList } from '../../hooks/useFollowList';
 import { useUserStore } from '../../stores/userStore';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
@@ -149,7 +150,7 @@ const FollowListPage: React.FC = () => {
                         data-testid="secret-follow"
                         aria-label="悄悄关注"
                       >
-                        <EyeOff size={14} aria-hidden="true" />
+                        <EyeOff size={ICON_SIZE.inline} aria-hidden="true" />
                       </span>
                     )}
                   </div>

@@ -296,45 +296,6 @@
     }
   }
 
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin-top: 20px;
-
-    button {
-      padding: 8px 16px;
-      border: 1px solid $border-color;
-      background: $background-white;
-      color: $text-primary;
-      border-radius: $border-radius-xs;
-      cursor: pointer;
-      font-family: inherit;
-      transition: color $duration-base ease, border-color $duration-base ease, background-color $duration-base ease;
-
-      &:hover:not(:disabled) {
-        color: $primary-text;
-        border-color: $primary-text;
-      }
-
-      &:focus-visible {
-        outline: 2px solid $primary-text;
-        outline-offset: 2px;
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
-    .page-info {
-      color: $text-secondary;
-      font-size: $font-size-sm;
-      font-variant-numeric: tabular-nums;
-    }
-  }
 }
 
 @media (min-width: 768px) {
@@ -378,14 +339,6 @@
     max-height: 500px;
   }
 
-  .post-list-page .pagination {
-    gap: 24px;
-  }
-
-  .post-list-page .pagination button {
-    padding: 10px 24px;
-    font-size: $font-size-sm;
-  }
 }
 
 @media (min-width: 1280px) {

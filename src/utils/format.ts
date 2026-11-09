@@ -105,6 +105,30 @@ export function formatDateTime(value: string | number | Date): string {
   return `${formatDate(date)} ${timeFormatter.format(date)}`;
 }
 
+/**
+ * 相对时间（I1-06 / N6-04）：刚刚 / N分钟前 / N小时前 / N天前；
+ * 超过 7 天回退为 formatDate。非法输入返回空串。
+ */
+export function formatRelativeTime(value: string | number | Date, now: Date = new Date()): string {
+  const date = toValidDate(value);
+  if (!date) return '';
+
+  const diffMs = now.getTime() - date.getTime();
+  if (diffMs < 0) return formatDate(date);
+
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 1) return '刚刚';
+  if (minutes < 60) return `${minutes}分钟前`;
+
+  const hours = Math.floor(diffMs / 3_600_000);
+  if (hours < 24) return `${hours}小时前`;
+
+  const days = Math.floor(diffMs / 86_400_000);
+  if (days < 7) return `${days}天前`;
+
+  return formatDate(date);
+}
+
 function trimZero(text: string): string {
   return text.endsWith('.0') ? text.slice(0, -2) : text;
 }

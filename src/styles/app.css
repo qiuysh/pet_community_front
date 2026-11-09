@@ -48,6 +48,11 @@
   --color-rank-silver: #a0a6ad;
   --color-rank-bronze: #c4895a;
 
+  /* 第三方品牌色（账号绑定 / OAuth） */
+  --color-brand-wechat: #07c160;
+  --color-brand-weibo: #e6162d;
+  --color-brand-qq: #12b7f5;
+
   --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
     "Helvetica Neue", sans-serif;
 

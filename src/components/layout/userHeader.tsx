@@ -1,16 +1,40 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Bell, MessageSquare, PawPrint, Search } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { useNavUnreadCounts } from '../../hooks/useNavUnreadCounts';
 import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
+import { formatCount } from '../../utils/format';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Avatar } from '../ui/avatar';
 import { Button, buttonClass } from '../ui/button';
 import { Dropdown } from '../ui/dropdown';
+
+const actionIconProps = {
+  size: ICON_SIZE.action,
+  strokeWidth: iconStroke(ICON_SIZE.action),
+  'aria-hidden': true as const,
+};
+
+/** 与站点自定义 logo 图同宽，避免切换时顶栏跳动 */
+const LOGO_MARK_SIZE = 28;
+
+function UnreadBadge({ count, label }: { count: number; label: string }) {
+  if (count <= 0) return null;
+  const text = count > 99 ? '99+' : formatCount(count);
+  return (
+    <span className="nav-unread-badge" aria-label={`${label}${text}`}>
+      {text}
+    </span>
+  );
+}
 
 export function UserHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isLoggedIn, user, logout } = useUserStore();
+  const { messageUnread, notificationUnread } = useNavUnreadCounts();
   // 站点名称 / Logo 由后台「站点配置」维护，未配置时用默认站点名 + 内置图标
   const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
   const siteLogo = useSiteConfigStore((state) => state.siteLogo);
@@ -30,16 +54,21 @@ export function UserHeader() {
       <div className="header-content">
         <Link to="/" className="logo" aria-label={`${siteName}首页`}>
           {siteLogo ? (
-            <img className="logo-img" src={siteLogo} alt="" width={28} height={28} decoding="async" />
+            <img
+              className="logo-img"
+              src={siteLogo}
+              alt=""
+              width={LOGO_MARK_SIZE}
+              height={LOGO_MARK_SIZE}
+              decoding="async"
+            />
           ) : (
-            <svg className="logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="11" cy="4" r="2.5" />
-              <circle cx="18" cy="8" r="2" />
-              <circle cx="4" cy="8" r="2" />
-              <circle cx="6" cy="14" r="1.8" />
-              <circle cx="16" cy="14" r="1.8" />
-              <path d="M11 7c-3 0-5 2-5 5 0 3 2 5 5 5s5-2 5-5-2-5-5-5z" />
-            </svg>
+            <PawPrint
+              className="logo-icon"
+              size={LOGO_MARK_SIZE}
+              strokeWidth={iconStroke(LOGO_MARK_SIZE)}
+              aria-hidden="true"
+            />
           )}
           <span className="logo-text">{siteName}</span>
         </Link>
@@ -58,21 +87,23 @@ export function UserHeader() {
           {isLoggedIn ? (
             <div className="user-menu">
               <Link to="/search" className="action-link" aria-label="搜索">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <circle cx="11" cy="11" r="8"/>
-                  <path d="M21 21l-4.35-4.35"/>
-                </svg>
+                <Search {...actionIconProps} />
               </Link>
-              <Link to="/notifications" className="action-link action-link--secondary" aria-label="通知">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                </svg>
+              <Link
+                to="/notifications"
+                className="action-link action-link--secondary"
+                aria-label={notificationUnread > 0 ? `通知，${notificationUnread}条未读` : '通知'}
+              >
+                <Bell {...actionIconProps} />
+                <UnreadBadge count={notificationUnread} label="未读通知" />
               </Link>
-              <Link to="/messages" className="action-link action-link--secondary" aria-label="私信">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
+              <Link
+                to="/messages"
+                className="action-link action-link--secondary"
+                aria-label={messageUnread > 0 ? `私信，${messageUnread}条未读` : '私信'}
+              >
+                <MessageSquare {...actionIconProps} />
+                <UnreadBadge count={messageUnread} label="未读私信" />
               </Link>
               <Dropdown
                 aria-label="用户菜单"

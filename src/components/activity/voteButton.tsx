@@ -60,14 +60,14 @@ export const VoteButton = ({
         onClick={voted ? handleCancelVote : handleVote}
         className={
           voted
-            ? 'bg-warning/15 text-warning border-warning/30 hover:bg-warning/25'
+            ? 'bg-warning/15 text-warning-text border-warning/30 hover:bg-warning/25'
             : undefined
         }
       >
         {loading ? '处理中' : voted ? '取消投票' : '投票'}
       </Button>
       <span className="text-sm text-brown-muted">{count} 票</span>
-      {voted && <span className="text-xs text-warning">已投票</span>}
+      {voted && <span className="text-xs text-warning-text">已投票</span>}
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { banFrontUser, unbanFrontUser } from '../../api/admin';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { AdminButton } from './adminButton';
 import { AdminLabel, AdminTextarea } from './adminField';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
@@ -75,13 +77,21 @@ export function UserBanAction({ userId, userName, isBanned, onSuccess }: UserBan
                                 <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                                     isBanned ? 'bg-success/10' : 'bg-error/10'
                                 }`}>
-                                    <svg className={`w-6 h-6 ${isBanned ? 'text-success' : 'text-error'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        {isBanned ? (
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        ) : (
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                        )}
-                                    </svg>
+                                    {isBanned ? (
+                                      <CheckCircle2
+                                        size={ICON_SIZE.nav}
+                                        strokeWidth={iconStroke(ICON_SIZE.nav)}
+                                        className="text-success-text"
+                                        aria-hidden="true"
+                                      />
+                                    ) : (
+                                      <AlertTriangle
+                                        size={ICON_SIZE.nav}
+                                        strokeWidth={iconStroke(ICON_SIZE.nav)}
+                                        className="text-error-text"
+                                        aria-hidden="true"
+                                      />
+                                    )}
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-brown">
@@ -111,7 +121,7 @@ export function UserBanAction({ userId, userName, isBanned, onSuccess }: UserBan
                             )}
 
                             {error && (
-                                <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error text-sm">
+                                <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
                                     {error}
                                 </div>
                             )}

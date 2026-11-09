@@ -116,7 +116,7 @@ export function PetDetailPage() {
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold text-brown">{pet.name}</h1>
                 {pet.gender === 1 && <span className="text-xl text-primary-text">♂</span>}
-                {pet.gender === 2 && <span className="text-xl text-pink-500">♀</span>}
+                {pet.gender === 2 && <span className="text-xl text-error-text">♀</span>}
               </div>
               <div className="flex items-center gap-4 mt-2 text-brown-muted">
                 <span>{petTypeInfo?.label || '未知'}</span>

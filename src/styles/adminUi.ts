@@ -9,7 +9,7 @@ const controlBase =
   'w-full h-10 px-3 border border-border rounded-sm text-sm text-brown bg-white ' +
   'placeholder:text-brown-muted transition-colors ' +
   'hover:border-secondary/40 ' +
-  'focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary ' +
+  'focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/20 focus-visible:border-secondary ' +
   'disabled:bg-muted disabled:text-brown-muted disabled:cursor-not-allowed disabled:hover:border-border';
 
 const selectChevron =
@@ -56,11 +56,11 @@ export const adminUi = {
   filterPanel: 'rounded-md border border-border-light bg-soft/60 p-4',
 
   btnPrimary:
-    'inline-flex items-center justify-center h-10 px-4 rounded-sm text-sm font-medium text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-secondary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+    'inline-flex items-center justify-center h-10 px-4 rounded-sm text-sm font-medium text-white bg-secondary hover:bg-secondary-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
   btnSecondary:
-    'inline-flex items-center justify-center h-10 px-4 rounded-sm text-sm font-medium text-brown-secondary bg-soft hover:bg-muted focus:outline-none focus:ring-2 focus:ring-secondary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+    'inline-flex items-center justify-center h-10 px-4 rounded-sm text-sm font-medium text-brown-secondary bg-soft hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
   btnDanger:
-    'inline-flex items-center justify-center h-10 px-4 rounded-sm text-sm font-medium text-white bg-error hover:bg-error/90 focus:outline-none focus:ring-2 focus:ring-error/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+    'inline-flex items-center justify-center h-10 px-4 rounded-sm text-sm font-medium text-white bg-error-dark hover:bg-error-dark/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-error/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
   btnGhost: `${actionBase} text-brown-secondary hover:text-brown`,
 
   /** 筛选 / 分段 Tab */
@@ -83,20 +83,20 @@ export const adminUi = {
     'w-full min-h-[6rem] px-3 py-2.5 border border-border rounded-sm text-sm text-brown bg-white ' +
     'placeholder:text-brown-muted transition-colors resize-none ' +
     'hover:border-secondary/40 ' +
-    'focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary ' +
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/20 focus-visible:border-secondary ' +
     'disabled:bg-muted disabled:text-brown-muted disabled:cursor-not-allowed',
   label: 'block text-sm font-medium text-brown-secondary mb-1.5',
   hint: 'mt-1 text-xs text-brown-muted',
-  controlInvalid: 'border-error hover:border-error focus:ring-error/20 focus:border-error',
+  controlInvalid: 'border-error hover:border-error focus-visible:ring-error/20 focus-visible:border-error',
 
   /** 表格行内操作（无背景，仅文字色） */
   actions: 'inline-flex items-center gap-3 flex-wrap',
   action: actionBase,
   actionNeutral: `${actionBase} text-brown-secondary hover:text-brown`,
-  actionPrimary: `${actionBase} text-secondary hover:text-secondary-dark`,
-  actionSuccess: `${actionBase} text-success hover:text-success/80`,
-  actionWarning: `${actionBase} text-warning hover:text-warning/80`,
-  actionDanger: `${actionBase} text-error hover:text-error/80`,
+  actionPrimary: `${actionBase} text-secondary-dark hover:text-secondary-dark/80`,
+  actionSuccess: `${actionBase} text-success-text hover:text-success-dark`,
+  actionWarning: `${actionBase} text-warning-text hover:opacity-80`,
+  actionDanger: `${actionBase} text-error-text hover:opacity-80`,
 
   badge: 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium',
   overlay: 'fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fadeIn overscroll-contain',
