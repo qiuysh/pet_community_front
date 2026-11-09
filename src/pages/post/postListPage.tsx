@@ -58,7 +58,8 @@ export const PostListPage = () => {
 
       <AdBanner location="home_banner" className="home-banner-slot" />
 
-      <div className="post-list">
+      {/* key 随 tab/页码变化：切筛选或翻页时整列重新错峰进场，等价于一次淡入切换 */}
+      <div className="post-list motion-list" key={`${tab}-${page}`}>
         {loading && posts.length === 0 && (
           <div className="loading-skeleton" role="status" aria-live="polite">
             <Spinner size="sm" label="加载中…" className="mx-auto mb-4" />

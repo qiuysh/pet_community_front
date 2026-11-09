@@ -39,7 +39,7 @@ export const AdoptListPage = () => {
       case AdoptionStatus.PENDING:
         return 'bg-secondary-soft text-secondary-dark';
       case AdoptionStatus.ADOPTED:
-        return 'bg-primary-soft text-primary-dark';
+        return 'bg-primary-soft text-primary-text';
       case AdoptionStatus.CANCELLED:
         return 'bg-error/10 text-error-dark';
       default:
@@ -125,7 +125,7 @@ export const AdoptListPage = () => {
         ) : adopts.length === 0 ? (
           <EmptyState compact title="暂无领养信息" />
         ) : (
-          <div className="space-y-3 mt-4">
+          <div className="space-y-3 mt-4 motion-list">
             {adopts.map((adopt) => (
               <Link key={adopt.id} to={`/adopts/${adopt.id}`} className="block">
                 <Card hoverable padding="none" className="overflow-hidden">

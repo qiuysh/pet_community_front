@@ -95,7 +95,7 @@ export function PetFormPage() {
                     onClick={() => updateField('petType', type.value)}
                     className={`flex flex-col items-center gap-1 p-3 h-auto min-h-0 rounded-md border-2 transition-colors ${
                       formData.petType === type.value
-                        ? 'border-primary bg-primary-soft'
+                        ? 'border-primary-text bg-primary-soft'
                         : 'border-border-light hover:border-border'
                     }`}
                   >
@@ -185,14 +185,14 @@ export function PetFormPage() {
               <Checkbox
                 checked={formData.isSterilized === 1}
                 onChange={(checked) => updateField('isSterilized', checked ? 1 : 0)}
-                className="p-3 border border-border-light rounded-md hover:border-primary/30 transition-colors"
+                className="p-3 border border-border-light rounded-md hover:border-primary-text/30 transition-colors"
               >
                 已绝育
               </Checkbox>
               <Checkbox
                 checked={formData.isVaccinated === 1}
                 onChange={(checked) => updateField('isVaccinated', checked ? 1 : 0)}
-                className="p-3 border border-border-light rounded-md hover:border-primary/30 transition-colors"
+                className="p-3 border border-border-light rounded-md hover:border-primary-text/30 transition-colors"
               >
                 已接种疫苗
               </Checkbox>

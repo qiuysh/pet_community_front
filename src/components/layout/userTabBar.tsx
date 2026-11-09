@@ -85,7 +85,8 @@ export function UserTabBar() {
         (user != null && location.pathname === `/profile/${user.id}`) ||
         location.pathname.startsWith('/settings') ||
         location.pathname.startsWith('/points') ||
-        location.pathname.startsWith('/notification-settings')
+        location.pathname.startsWith('/notification-settings') ||
+        location.pathname.startsWith('/my-reports')
       );
     }
     return location.pathname.startsWith(path);

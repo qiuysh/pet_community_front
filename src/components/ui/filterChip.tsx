@@ -22,7 +22,7 @@ export function FilterChip({
   disabled = false,
 }: FilterChipProps) {
   const activeClass =
-    tone === 'secondary' ? 'bg-secondary text-white' : 'bg-primary text-white';
+    tone === 'secondary' ? 'bg-secondary-dark text-white' : 'bg-primary-strong text-white';
 
   return (
     <HeroButton

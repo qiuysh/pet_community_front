@@ -8,7 +8,7 @@
   .level-card {
     margin: 16px;
     padding: 20px;
-    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    background: linear-gradient(135deg, $primary-strong 0%, $primary-text 100%);
     border-radius: 16px;
     color: $background-white;
 
@@ -89,7 +89,7 @@
       transition: background-color $duration-base, color $duration-base;
 
       &.active {
-        background-color: $primary-color;
+        background-color: $primary-strong;
         color: $background-white;
       }
     }
@@ -140,7 +140,7 @@
           font-weight: 600;
 
           &.gain {
-            color: $primary-color;
+            color: $primary-text;
           }
 
           &.lose {
@@ -189,7 +189,7 @@
         .rule-points {
           font-size: 18px;
           font-weight: 700;
-          color: $primary-color;
+          color: $primary-text;
         }
       }
     }

@@ -68,7 +68,7 @@ export function PetListPage() {
             ))}
           </div>
         ) : pets.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 motion-list">
             {pets.map((pet) => (
               <Link
                 key={pet.id}
@@ -109,7 +109,7 @@ export function PetListPage() {
             title="暂无宠物档案"
             action={
               isLoggedIn ? (
-                <Link to="/pets/create" className="font-medium text-primary hover:text-primary-dark">
+                <Link to="/pets/create" className="font-medium text-primary-text hover:text-primary-text">
                   立即创建第一个宠物档案
                 </Link>
               ) : undefined

@@ -32,7 +32,7 @@ export function Avatar({
   return (
     <HeroAvatar className={[sizeClass[size], 'rounded-full shrink-0', className].join(' ')}>
       {src ? <HeroAvatar.Image src={src} alt={alt || name || ''} /> : null}
-      <HeroAvatar.Fallback className="bg-primary-soft text-primary text-sm font-medium">
+      <HeroAvatar.Fallback className="bg-primary-soft text-primary-text text-sm font-medium">
         {fallback ?? initials(name || alt)}
       </HeroAvatar.Fallback>
     </HeroAvatar>

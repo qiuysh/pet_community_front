@@ -33,7 +33,7 @@
 
   .sidebar-user {
     padding: $spacing-md;
-    background: linear-gradient(135deg, $primary-color, $primary-dark);
+    background: linear-gradient(135deg, $primary-strong, $primary-text);
     color: white;
     display: flex;
     align-items: center;
@@ -106,12 +106,12 @@
       }
 
       &:focus-visible {
-        outline: 2px solid $primary-color;
+        outline: 2px solid $primary-text;
         outline-offset: -2px;
       }
 
       &.active {
-        color: $primary-color;
+        color: $primary-text;
         background: rgba($primary-color, 0.08);
         font-weight: 500;
 
@@ -123,7 +123,7 @@
           transform: translateY(-50%);
           width: 3px;
           height: 24px;
-          background: $primary-color;
+          background: $primary-strong;
           border-radius: 0 2px 2px 0;
         }
       }
@@ -162,7 +162,7 @@
 
       &.active .menu-arrow {
         opacity: 1;
-        color: $primary-color;
+        color: $primary-text;
       }
     }
   }
@@ -253,7 +253,7 @@
     }
 
     &:focus-visible {
-      outline: 2px solid $primary-color;
+      outline: 2px solid $primary-text;
       outline-offset: 2px;
     }
 
@@ -262,7 +262,7 @@
     }
 
     &.active {
-      color: $primary-color;
+      color: $primary-text;
       border-color: rgba($primary-color, 0.45);
       background: linear-gradient(135deg, rgba($primary-color, 0.12), rgba($primary-color, 0.04));
       box-shadow: 0 2px 8px rgba($primary-color, 0.12);
@@ -280,7 +280,7 @@
         transform: translateX(-50%);
         width: 20px;
         height: 3px;
-        background: $primary-color;
+        background: $primary-strong;
         border-radius: 2px 2px 0 0;
       }
     }
@@ -348,8 +348,8 @@
           display: none;
 
           &:checked + .radio-custom {
-            border-color: $primary-color;
-            background: $primary-color;
+            border-color: $primary-text;
+            background: $primary-strong;
             box-shadow: 0 0 0 2px $background-white inset;
           }
         }
@@ -368,7 +368,7 @@
         }
 
         &:hover .radio-custom {
-          border-color: $primary-color;
+          border-color: $primary-text;
         }
       }
     }
@@ -427,7 +427,7 @@
 
         .device-icon-primary {
           background: rgba($primary-color, 0.15);
-          color: $primary-dark;
+          color: $primary-text;
         }
       }
 
@@ -468,7 +468,7 @@
 
         &.status-online {
           background: rgba($primary-color, 0.15);
-          color: $primary-dark;
+          color: $primary-text;
         }
       }
 
@@ -540,7 +540,7 @@
 
       &.binding-phone .binding-icon {
         background: rgba($primary-color, 0.12);
-        color: $primary-dark;
+        color: $primary-text;
       }
 
       &.binding-email .binding-icon {
@@ -567,7 +567,7 @@
 
       .binding-action {
         font-size: $font-size-xs;
-        color: $primary-color;
+        color: $primary-text;
         background: none;
         border: none;
         cursor: pointer;

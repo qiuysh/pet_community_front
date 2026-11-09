@@ -74,7 +74,7 @@ const AdBannerItem: React.FC<AdBannerItemProps> = ({ ad, eager = false }) => {
         className="w-full h-auto object-cover block"
       />
       <div className="absolute left-0 bottom-0 right-0 flex items-center gap-2 px-3 py-2 bg-gradient-to-t from-black/60 to-transparent">
-        <span className="text-[10px] font-semibold text-white bg-primary px-1.5 py-0.5 rounded">
+        <span className="text-[10px] font-semibold text-white bg-primary-strong px-1.5 py-0.5 rounded">
           广告
         </span>
         <span className="text-sm text-white truncate flex-1">{ad.title}</span>

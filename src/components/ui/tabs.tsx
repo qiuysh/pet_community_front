@@ -27,7 +27,7 @@ export interface TabsProps {
 }
 
 const selectedToneClass: Record<TabsTone, string> = {
-  primary: 'data-[selected=true]:bg-white data-[selected=true]:text-primary data-[selected=true]:shadow-card',
+  primary: 'data-[selected=true]:bg-white data-[selected=true]:text-primary-text data-[selected=true]:shadow-card',
   secondary:
     'data-[selected=true]:bg-white data-[selected=true]:text-secondary-dark data-[selected=true]:shadow-card',
 };

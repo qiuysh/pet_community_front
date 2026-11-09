@@ -107,7 +107,7 @@ export const TopicSquarePage = () => {
               <h2 className="section-title">热门标签</h2>
               <span className="section-subtitle">大家都在讨论这些</span>
             </div>
-            <div className="tag-cloud">
+            <div className="tag-cloud motion-list">
               {tags.map((tag) => (
                 <Link
                   key={tag.id}

@@ -56,7 +56,7 @@ export function DraftListPage() {
         <div className="page-shell py-3 flex items-center justify-between">
           <BackButton className="-ml-2" />
           <h1 className="text-lg font-semibold text-brown">草稿箱</h1>
-          <Link to="/posts/create" className="text-sm text-primary font-medium">
+          <Link to="/posts/create" className="text-sm text-primary-text font-medium">
             写动态
           </Link>
         </div>
@@ -92,7 +92,7 @@ export function DraftListPage() {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="p-2 rounded-lg text-primary"
+                  className="p-2 rounded-lg text-primary-text"
                   aria-label="继续编辑"
                   onClick={() => navigate(`/posts/drafts/${draft.id}`)}
                 >

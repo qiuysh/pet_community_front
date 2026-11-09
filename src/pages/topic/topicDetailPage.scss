@@ -50,7 +50,7 @@
       .cover-placeholder {
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, $primary-color, $primary-dark);
+        background: linear-gradient(135deg, $primary-strong, $primary-text);
         color: $background-white;
         display: flex;
         align-items: center;
@@ -237,13 +237,13 @@
   .topic-detail-page .detail-header {
     padding: 16px 20px;
     margin: 0 auto;
-    max-width: $page-max-read;
+    max-width: $page-max;
   }
 
   .topic-detail-page .topic-info-card {
     padding: 24px;
     margin: 0 auto 12px;
-    max-width: $page-max-read;
+    max-width: $page-max;
     gap: 20px;
   }
 
@@ -264,7 +264,13 @@
   .topic-detail-page .posts-section {
     padding: 20px;
     margin: 0 auto;
-    max-width: $page-max-read;
+    max-width: $page-max;
+  }
+
+  // 广告位在话题卡与动态列表之间，必须与正文同宽（$page-max）
+  .topic-detail-page .topic-banner-slot {
+    margin: 0 auto 12px;
+    max-width: $page-max;
   }
 
   .topic-detail-page .posts-section .section-title {

@@ -22,7 +22,7 @@
 
       // 内部 input 是去边框的，焦点环画在外层药丸上
       &:focus-within {
-        outline: 2px solid $primary-color;
+        outline: 2px solid $primary-text;
         outline-offset: 2px;
       }
 
@@ -72,7 +72,7 @@
       padding: 0;
 
       &:hover {
-        color: $primary-color;
+        color: $primary-text;
       }
     }
   }
@@ -100,7 +100,7 @@
           cursor: pointer;
 
           &:hover {
-            color: $primary-color;
+            color: $primary-text;
           }
         }
       }
@@ -128,7 +128,7 @@
           }
 
           &:focus-visible {
-            outline: 2px solid $primary-color;
+            outline: 2px solid $primary-text;
             outline-offset: 2px;
           }
 
@@ -145,7 +145,7 @@
             margin-right: 6px;
 
             &.top {
-              background: linear-gradient(135deg, $primary-color, $primary-dark);
+              background: linear-gradient(135deg, $primary-strong, $primary-text);
               color: $background-white;
             }
           }
@@ -192,11 +192,11 @@
             padding: 0;
 
             &:hover {
-              color: $primary-color;
+              color: $primary-text;
             }
 
             &:focus-visible {
-              outline: 2px solid $primary-color;
+              outline: 2px solid $primary-text;
               outline-offset: 2px;
               border-radius: 4px;
             }
@@ -420,7 +420,7 @@
         }
 
         .posts-count {
-          color: $primary-color;
+          color: $primary-text;
           font-size: $font-size-xs;
         }
       }

@@ -18,7 +18,7 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
       case 'draft':
         return { text: '草稿', color: 'bg-muted text-brown-muted' };
       case 'upcoming':
-        return { text: '即将开始', color: 'bg-primary-soft text-primary-dark' };
+        return { text: '即将开始', color: 'bg-primary-soft text-primary-text' };
       case 'active':
         return { text: '进行中', color: 'bg-secondary-soft text-secondary-dark' };
       case 'ended':

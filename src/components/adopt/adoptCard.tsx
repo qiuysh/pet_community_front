@@ -30,7 +30,7 @@ export const AdoptCard = ({ adopt }: AdoptCardProps) => {
   const getStatusColor = (status: AdoptionStatus) => {
     const colors = {
       [AdoptionStatus.PENDING]: 'bg-secondary-soft text-secondary-dark',
-      [AdoptionStatus.ADOPTED]: 'bg-primary-soft text-primary-dark',
+      [AdoptionStatus.ADOPTED]: 'bg-primary-soft text-primary-text',
       [AdoptionStatus.CANCELLED]: 'bg-error/10 text-error-dark',
     };
     return colors[status] || 'bg-muted text-brown';

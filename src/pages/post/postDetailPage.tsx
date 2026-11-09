@@ -96,7 +96,7 @@ export const PostDetailPage = () => {
 
   if (postLoading || !post) {
     return (
-      <div className="post-detail-page loading flex justify-center py-16">
+      <div className="post-detail-page page-shell loading flex justify-center py-16">
         <Spinner label="加载中…" />
       </div>
     );
@@ -116,7 +116,7 @@ export const PostDetailPage = () => {
   };
 
   return (
-    <div className="post-detail-page">
+    <div className="post-detail-page page-shell">
       <div className="detail-header">
         <BackButton size={ICON_SIZE.nav} />
         <span className="title">动态详情</span>
@@ -221,7 +221,7 @@ export const PostDetailPage = () => {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             placeholder={replyTarget ? `回复 @${replyTarget.name}` : '说点什么…'}
-            rows={2}
+            rows={3}
           />
           <div className="send-row">
             <Button
@@ -236,7 +236,7 @@ export const PostDetailPage = () => {
           </div>
         </div>
 
-        <div className="comments-list">
+        <div className="comments-list motion-list">
           {comments.length === 0 && <EmptyState compact title="暂无评论，快来抢沙发吧～" />}
           {comments.map((comment) => (
             <div key={comment.id} className="comment-item">

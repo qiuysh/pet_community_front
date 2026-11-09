@@ -35,13 +35,13 @@ export function LostPetListPage() {
         <div className="page-shell py-3 flex items-center justify-between">
           <BackButton className="-ml-2" />
           <h1 className="text-lg font-semibold text-brown">寻宠启事</h1>
-          <Link to="/lost-pets/create" className="text-sm text-primary font-medium">
+          <Link to="/lost-pets/create" className="text-sm text-primary-text font-medium">
             发布
           </Link>
         </div>
       </div>
 
-      <div className="page-shell py-4 space-y-3">
+      <div className="page-shell py-4 space-y-3 motion-list">
         {loading ? (
           <div className="flex flex-col items-center py-12 gap-3">
             <Spinner />
@@ -73,7 +73,7 @@ export function LostPetListPage() {
 
         {total > page * 10 && (
           <div className="text-center">
-            <Button type="button" variant="ghost" size="sm" className="text-primary" onClick={() => setPage((p) => p + 1)}>
+            <Button type="button" variant="ghost" size="sm" className="text-primary-text" onClick={() => setPage((p) => p + 1)}>
               加载更多
             </Button>
           </div>

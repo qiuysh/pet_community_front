@@ -92,7 +92,7 @@
           align-self: flex-end;
 
           .message-content {
-            background-color: $primary-color;
+            background-color: $primary-strong;
             color: $background-white;
             border-radius: 16px 16px 4px 16px;
           }
@@ -144,7 +144,7 @@
 
           &:hover,
           &:focus-visible {
-            color: $primary-color;
+            color: $primary-text;
           }
         }
 
@@ -193,11 +193,11 @@
       margin: 0 10px;
 
       &:focus {
-        border-color: $primary-color;
+        border-color: $primary-text;
       }
 
       &:focus-visible {
-        outline: 2px solid $primary-color;
+        outline: 2px solid $primary-text;
         outline-offset: 2px;
       }
     }
@@ -215,7 +215,7 @@
       flex-shrink: 0;
 
       &.active {
-        color: $primary-color;
+        color: $primary-text;
       }
     }
   }
@@ -281,7 +281,7 @@
   box-shadow: $shadow-card;
 
   &--mine {
-    background-color: $primary-color;
+    background-color: $primary-strong;
     border-radius: 16px 16px 4px 16px;
   }
 
@@ -295,7 +295,7 @@
     border: none;
     border-radius: 50%;
     background-color: $primary-soft;
-    color: $primary-dark;
+    color: $primary-text;
     cursor: pointer;
 
     .voice-bubble--mine & {
@@ -342,7 +342,7 @@
     top: 50%;
     height: 3px;
     transform: translateY(-50%);
-    background-color: $primary-color;
+    background-color: $primary-strong;
     transition: width $duration-fast linear;
     pointer-events: none;
 
@@ -576,7 +576,7 @@
   padding: 0 1px;
   border-radius: 2px;
   background-color: $primary-soft;
-  color: $primary-dark;
+  color: $primary-text;
 }
 
 // ============================================

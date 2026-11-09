@@ -6,6 +6,7 @@ import { maskContact } from '../../utils/contactPrivacy';
 import { PetType, AdoptionStatus, PetGender, ApplicationStatus } from '../../types/adopt';
 import { AdoptionApplyForm } from '../../components/adopt/adoptionApplyForm';
 import { AdoptionReview } from '../../components/adopt/adoptionReview';
+import { AdoptionFollowUpPanel } from '../../components/adopt/adoptionFollowUpPanel';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -20,6 +21,11 @@ export const AdoptDetailPage = () => {
     isOwner,
     applications,
     appsLoading,
+    followUps,
+    followUpsLoading,
+    refetchFollowUps,
+    canSeeFollowUps,
+    followUpApplicationId,
     showApplyForm,
     setShowApplyForm,
     showReviewModal,
@@ -77,7 +83,7 @@ export const AdoptDetailPage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-text"></div>
       </div>
     );
   }
@@ -112,7 +118,7 @@ export const AdoptDetailPage = () => {
               adopt.status === AdoptionStatus.PENDING
                 ? 'bg-secondary-soft text-secondary-dark'
                 : adopt.status === AdoptionStatus.ADOPTED
-                ? 'bg-primary-soft text-primary-dark'
+                ? 'bg-primary-soft text-primary-text'
                 : 'bg-error/10 text-error-dark'
             }`}>
               {getStatusLabel(adopt.status)}
@@ -243,6 +249,60 @@ export const AdoptDetailPage = () => {
                 ))}
               </ul>
             )}
+          </Card>
+        )}
+
+        {canSeeFollowUps && (
+          <Card>
+            <h2 className="text-base font-medium text-brown mb-3">领养回访</h2>
+            {followUpApplicationId ? (
+              <AdoptionFollowUpPanel
+                adoptionId={adopt.id}
+                applicationId={followUpApplicationId}
+                onSuccess={refetchFollowUps}
+              />
+            ) : (
+              <p className="text-sm text-brown-muted">完成领养协议签署后可提交回访记录。</p>
+            )}
+
+            <div className="mt-4 space-y-3">
+              {followUpsLoading ? (
+                <p className="text-sm text-brown-muted">加载中…</p>
+              ) : followUps.length === 0 ? (
+                <EmptyState compact title="暂无回访记录" />
+              ) : (
+                followUps.map((item) => (
+                  <div key={item.id} className="rounded-lg bg-cream p-3">
+                    <div className="flex items-center gap-2">
+                      <img
+                        decoding="async"
+                        src={item.userAvatar || getDefaultUserAvatar()}
+                        alt=""
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                      <span className="text-sm font-medium text-brown">{item.userNickname}</span>
+                      <span className="ml-auto text-xs text-brown-muted">{item.createdAt}</span>
+                    </div>
+                    <p className="mt-2 whitespace-pre-wrap text-sm text-brown-secondary">
+                      {item.content}
+                    </p>
+                    {item.photos && item.photos.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {item.photos.map((url, index) => (
+                          <img
+                            key={`${url}-${index}`}
+                            loading="lazy"
+                            src={url}
+                            alt={`回访照片 ${index + 1}`}
+                            className="h-20 w-20 rounded-md object-cover"
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </Card>
         )}
 

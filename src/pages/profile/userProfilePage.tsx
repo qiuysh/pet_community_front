@@ -162,7 +162,7 @@ export function UserProfilePage() {
               <Avatar
                 src={displayUser?.avatar}
                 name={displayUser?.nickname || '宠友'}
-                className="!size-full h-full w-full bg-primary text-2xl font-bold text-white sm:text-3xl"
+                className="!size-full h-full w-full bg-primary-strong text-2xl font-bold text-white sm:text-3xl"
               />
             </div>
             <div className="min-w-0 flex-1 text-center sm:text-left">
@@ -284,6 +284,12 @@ export function UserProfilePage() {
                 >
                   黑名单
                 </Link>
+                <Link
+                  to="/my-reports"
+                  className="inline-flex min-h-10 items-center justify-center rounded-md border border-border px-3 py-2 text-sm text-brown-secondary transition-colors hover:bg-soft sm:rounded-full sm:px-4 sm:py-1.5"
+                >
+                  我的举报
+                </Link>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
@@ -348,7 +354,7 @@ export function UserProfilePage() {
                   )
                 )}
                 {followStatus?.isMutual && (
-                  <span className="inline-flex min-h-10 items-center gap-1 rounded-md border border-primary/40 px-3 text-xs text-primary sm:rounded-full" data-testid="mutual-follow">
+                  <span className="inline-flex min-h-10 items-center gap-1 rounded-md border border-primary-text/40 px-3 text-xs text-primary-text sm:rounded-full" data-testid="mutual-follow">
                     互相关注
                   </span>
                 )}

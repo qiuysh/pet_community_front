@@ -7,7 +7,7 @@
   padding-bottom: 80px;
 
   .page-header {
-    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    background: linear-gradient(135deg, $primary-strong 0%, $primary-text 100%);
     padding: 24px 16px;
     color: $background-white;
     text-align: center;
@@ -34,7 +34,7 @@
 
         &.active {
           background: white;
-          color: $primary-color;
+          color: $primary-text;
         }
 
         &:hover {
@@ -100,20 +100,26 @@
           justify-content: center;
           margin-right: 12px;
 
+          // 白字在浅金属色上仅 1.9~3:1，统一改墨色（金底 ink 7.23:1）
           &.first {
             background: linear-gradient(135deg, $rank-gold, $rank-gold-dark);
-            color: $background-white;
+            color: $text-primary;
           }
 
           &.second {
             background: linear-gradient(135deg, $rank-silver, $rank-silver-dark);
-            color: $background-white;
+            color: $text-primary;
           }
 
           &.third {
             background: linear-gradient(135deg, $rank-bronze, $rank-bronze-dark);
-            color: $background-white;
+            color: $text-primary;
           }
+        }
+
+        // 前三名奖牌入场弹一下（列表整体进场后再播，避免同时抢注意力）
+        &.top-three .rank {
+          animation: motion-pop $duration-emphasized $ease-spring 0.24s;
         }
 
         .item-content {
@@ -167,7 +173,7 @@
 
         .hot-score {
           font-size: $font-size-xs;
-          color: $primary-color;
+          color: $primary-text;
           margin-left: 8px;
         }
       }

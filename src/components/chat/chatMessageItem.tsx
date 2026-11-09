@@ -11,6 +11,8 @@ export interface ChatMessageItemProps {
   /** 自己 2 分钟内且未撤回的消息可撤回 */
   canRecall?: boolean;
   onRecall?: (messageId: number) => void;
+  /** 本次会话内新到达的消息（历史消息不播入场动画） */
+  isNew?: boolean;
 }
 
 /** 单条消息：文本 / 图片 / 语音 / 已撤回 */
@@ -21,6 +23,7 @@ export function ChatMessageItem({
   onPreviewImage,
   canRecall = false,
   onRecall,
+  isNew = false,
 }: ChatMessageItemProps) {
   const mediaSrc = message.mediaUrl || message.localUrl || '';
   const classNames = [
@@ -28,6 +31,7 @@ export function ChatMessageItem({
     isMine ? 'sent' : 'received',
     highlighted ? 'highlighted' : '',
     message.pending ? 'pending' : '',
+    isNew ? 'motion-message' : '',
   ]
     .filter(Boolean)
     .join(' ');

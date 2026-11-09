@@ -23,14 +23,14 @@
     transition: background-color $duration-fast ease, border-color $duration-fast ease, color $duration-fast ease;
 
     &:hover {
-      border-color: $primary-color;
-      color: $primary-color;
+      border-color: $primary-text;
+      color: $primary-text;
     }
 
     &.active {
       background: $primary-soft;
-      border-color: $primary-color;
-      color: $primary-dark;
+      border-color: $primary-text;
+      color: $primary-text;
       font-weight: 500;
     }
   }
@@ -83,12 +83,12 @@
     padding-right: 28px;
 
     &:focus {
-      border-color: $primary-color;
+      border-color: $primary-text;
       box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
     }
 
     &:focus-visible {
-      outline: 2px solid $primary-color;
+      outline: 2px solid $primary-text;
       outline-offset: 2px;
     }
   }

@@ -36,19 +36,19 @@
 
         &:hover,
         &:focus-visible {
-          color: $primary-color;
+          color: $primary-text;
         }
 
         &.active {
-          color: $primary-color;
-          border-bottom-color: $primary-color;
+          color: $primary-text;
+          border-bottom-color: $primary-text;
           font-weight: 600;
         }
       }
     }
 
     .publish-btn {
-      background: $primary-color;
+      background: $primary-strong;
       color: $background-white;
       border: none;
       padding: 8px 20px;
@@ -105,7 +105,7 @@
         text-indent: -9999px;
 
         &:focus-visible {
-          outline: 2px solid $primary-color;
+          outline: 2px solid $primary-text;
           outline-offset: -4px;
           border-radius: $border-radius-sm;
         }
@@ -228,7 +228,7 @@
         margin-bottom: 8px;
 
         .topic-tag {
-          color: $primary-color;
+          color: $primary-text;
           font-size: $font-size-xs + 1;
           text-decoration: none;
           cursor: pointer;
@@ -237,7 +237,7 @@
 
           &:hover,
           &:focus-visible {
-            color: $primary-dark;
+            color: $primary-text;
             background: rgba($primary-color, 0.06);
             outline: none;
           }
@@ -289,7 +289,7 @@
           }
 
           &:hover {
-            color: $primary-color;
+            color: $primary-text;
           }
         }
       }
@@ -314,12 +314,12 @@
       transition: color $duration-base ease, border-color $duration-base ease, background-color $duration-base ease;
 
       &:hover:not(:disabled) {
-        color: $primary-color;
-        border-color: $primary-color;
+        color: $primary-text;
+        border-color: $primary-text;
       }
 
       &:focus-visible {
-        outline: 2px solid $primary-color;
+        outline: 2px solid $primary-text;
         outline-offset: 2px;
       }
 

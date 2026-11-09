@@ -171,7 +171,7 @@ export const MyAdoptPage = () => {
                         <>
                           <button
                             type="button"
-                            className="text-primary"
+                            className="text-primary-text"
                             onClick={() => handleUpdateStatus(adopt.id, AdoptionStatus.ADOPTED, '标记已领养')}
                           >
                             标记已领养

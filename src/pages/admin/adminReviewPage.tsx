@@ -4,6 +4,7 @@ import type { ReviewContent, ReviewHistory } from '../../types/admin';
 import { showErrorToast } from '../../utils/toastManager';
 import { ReviewPreview } from '../../components/admin/reviewPreview';
 import { ReviewAction } from '../../components/admin/reviewAction';
+import { PostPinAction } from '../../components/admin/postPinAction';
 import { BatchReview } from '../../components/admin/batchReview';
 import { Pagination } from '../../components/admin/pagination';
 import { useAsyncEffect } from '../../hooks/useAsync';
@@ -272,6 +273,9 @@ export function AdminReviewPage() {
                         预览
                       </AdminButton>
                       <ReviewAction content={item} onSuccess={handleReviewSuccess} />
+                      {item.type === 'post' && (
+                        <PostPinAction postId={item.id} onSuccess={handleReviewSuccess} />
+                      )}
                     </div>
                   </AdminTable.Cell>
                 </AdminTable.Row>

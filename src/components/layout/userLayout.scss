@@ -46,7 +46,7 @@
     display: flex;
     align-items: center;
     gap: $spacing-xs;
-    color: $primary-color;
+    color: $primary-text;
     font-weight: 600;
     font-size: $font-size-title;
     flex-shrink: 0;
@@ -71,7 +71,7 @@
     }
 
     &:hover {
-      color: $primary-dark;
+      color: $primary-text;
     }
 
     @media (max-width: 768px) {
@@ -100,17 +100,17 @@
       position: relative;
 
       &:hover {
-        color: $primary-color;
+        color: $primary-text;
         background: rgba($primary-color, 0.06);
       }
 
       &:focus-visible {
-        color: $primary-color;
+        color: $primary-text;
         background: rgba($primary-color, 0.08);
       }
 
       &.active {
-        color: $primary-color;
+        color: $primary-text;
         background: rgba($primary-color, 0.08);
 
         &::after {
@@ -121,7 +121,7 @@
           transform: translateX(-50%);
           width: 24px;
           height: 3px;
-          background: $primary-color;
+          background: $primary-strong;
           border-radius: 2px;
         }
       }
@@ -159,13 +159,13 @@
         transition: color $duration-base ease, background-color $duration-base ease, transform $duration-base ease;
 
         &:hover {
-          color: $primary-color;
+          color: $primary-text;
           background: rgba($primary-color, 0.08);
           transform: translateY(-1px);
         }
 
         &:focus-visible {
-          color: $primary-color;
+          color: $primary-text;
           background: rgba($primary-color, 0.08);
         }
 
@@ -189,7 +189,7 @@
           transition: border-color $duration-base;
 
           &:hover {
-            border-color: $primary-color;
+            border-color: $primary-text;
           }
         }
       }
@@ -216,7 +216,7 @@
           }
 
           &:hover .user-avatar {
-            border-color: $primary-color;
+            border-color: $primary-text;
             transform: scale(1.05);
           }
         }
@@ -261,10 +261,10 @@
           &:hover,
           &:focus-visible {
             background: rgba($primary-color, 0.08);
-            color: $primary-color;
+            color: $primary-text;
 
             svg {
-              color: $primary-color;
+              color: $primary-text;
             }
           }
         }
@@ -324,14 +324,14 @@
         border: 1px solid $border-color;
 
         &:hover {
-          color: $primary-color;
-          border-color: $primary-color;
+          color: $primary-text;
+          border-color: $primary-text;
           background: rgba($primary-color, 0.05);
         }
       }
 
       .register-btn {
-        background: $primary-color;
+        background: $primary-strong;
         color: white;
         border: none;
 
@@ -409,7 +409,7 @@
 
     &:hover,
     &:focus-visible {
-      color: $primary-color;
+      color: $primary-text;
     }
   }
 }
@@ -486,14 +486,15 @@
 
     &:hover,
     &:focus-visible {
-      color: $primary-color;
+      color: $primary-text;
     }
 
     &.active {
-      color: $primary-color;
+      color: $primary-text;
 
       .tab-icon svg {
         stroke-width: 2.5;
+        transform: translateY(-2px);
       }
 
       .tab-label {
@@ -508,8 +509,9 @@
         transform: translateX(-50%);
         width: 16px;
         height: 3px;
-        background: $primary-color;
+        background: $primary-strong;
         border-radius: 2px;
+        animation: motion-tab-indicator $duration-base $ease-spring;
       }
     }
   }
@@ -530,7 +532,7 @@
     .create-post-icon {
       width: 52px;
       height: 52px;
-      background: $primary-color;
+      background: $primary-strong;
       border-radius: 50%;
       display: flex;
       align-items: center;

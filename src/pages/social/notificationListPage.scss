@@ -35,7 +35,7 @@
       }
 
       &:focus-visible {
-        outline: 2px solid $primary-color;
+        outline: 2px solid $primary-text;
         outline-offset: 2px;
       }
 
@@ -94,7 +94,7 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: $primary-color;
+        background: $primary-strong;
         margin-left: 8px;
         margin-top: 4px;
         flex-shrink: 0;

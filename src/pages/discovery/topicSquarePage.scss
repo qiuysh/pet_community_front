@@ -8,7 +8,7 @@
 
   .page-header {
     position: relative;
-    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    background: linear-gradient(135deg, $primary-strong 0%, $primary-text 100%);
     padding: $spacing-2xl $spacing-md $spacing-xl;
     color: white;
     overflow: hidden;
@@ -145,12 +145,12 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          color: $primary-color;
+          color: $primary-text;
           transition: background-color $duration-slow ease, color $duration-slow ease, transform $duration-slow ease;
         }
 
         &:hover .category-icon-wrap {
-          background: $primary-color;
+          background: $primary-strong;
           color: white;
           transform: scale(1.05);
         }
@@ -193,7 +193,7 @@
         color: $text-secondary;
 
         &:hover {
-          border-color: $primary-color;
+          border-color: $primary-text;
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba($primary-color, 0.15);
         }
@@ -217,11 +217,11 @@
 
         &.tag-hot {
           background: linear-gradient(135deg, rgba($primary-color, 0.1), rgba($error-color, 0.08));
-          color: $primary-dark;
+          color: $primary-text;
           border-color: rgba($primary-color, 0.2);
 
           .tag-count {
-            color: $primary-color;
+            color: $primary-text;
           }
         }
 
@@ -309,7 +309,7 @@
           flex-shrink: 0;
 
           &.rank-1 {
-            background: linear-gradient(135deg, $primary-color, $primary-dark);
+            background: linear-gradient(135deg, $primary-strong, $primary-text);
             color: white;
             box-shadow: 0 2px 8px rgba($primary-color, 0.3);
           }
@@ -349,7 +349,7 @@
           .topic-cover-fallback {
             font-size: $font-size-large;
             font-weight: 700;
-            color: $primary-color;
+            color: $primary-text;
           }
         }
 
@@ -396,7 +396,7 @@
 
         &:hover .topic-arrow {
           transform: translateX(3px);
-          color: $primary-color;
+          color: $primary-text;
         }
       }
     }

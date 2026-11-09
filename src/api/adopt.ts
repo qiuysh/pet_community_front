@@ -13,6 +13,9 @@ import {
   AdoptionAgreementRequest,
   AdoptionStatusUpdateRequest,
   AdoptionStats,
+  AdoptionFollowUpInfo,
+  AdoptionFollowUpCreateRequest,
+  AdoptionFollowUpListResponse,
 } from '../types/adopt';
 
 export interface UploadAdoptPhotoResponse {
@@ -115,4 +118,25 @@ export const reviewApplication = async (data: AdoptionReviewRequest): Promise<vo
 // 签署领养协议
 export const signAgreement = async (data: AdoptionAgreementRequest): Promise<void> => {
   return await post<void>('/api/v1/adopts/applications/sign', data);
+};
+
+// ========== 领养回访相关 API ==========
+
+// 创建领养回访记录（仅当事双方可提交）
+export const createFollowUp = async (
+  data: AdoptionFollowUpCreateRequest
+): Promise<AdoptionFollowUpInfo> => {
+  return await post<AdoptionFollowUpInfo>('/api/v1/adopts/follow-ups', data);
+};
+
+// 获取领养回访记录列表（仅当事双方可见）
+export const getFollowUpListByAdoption = async (
+  adoptionId: number,
+  page = 1,
+  pageSize = 10
+): Promise<AdoptionFollowUpListResponse> => {
+  return await get<AdoptionFollowUpListResponse>(
+    `/api/v1/adopts/${adoptionId}/follow-ups`,
+    { params: { page, page_size: pageSize } }
+  );
 };

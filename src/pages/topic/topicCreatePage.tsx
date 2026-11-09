@@ -81,7 +81,7 @@ export function TopicCreatePage() {
                 <p className="mt-1">
                   创建话题需达到 <span className="font-semibold text-secondary">Lv{TOPIC_CREATE_MIN_LEVEL}+</span>，
                   当前等级 <span className="font-semibold">Lv{currentLevel}</span>。
-                  继续活跃获取积分即可解锁（详见 <Link to="/points" className="text-primary underline">积分等级</Link>）。
+                  继续活跃获取积分即可解锁（详见 <Link to="/points" className="text-primary-text underline">积分等级</Link>）。
                 </p>
               </div>
             </div>
@@ -137,7 +137,7 @@ export function TopicCreatePage() {
               )}
             </div>
             <div className="rounded-md bg-soft/40 p-3 text-xs text-brown-muted">
-              <Sparkles size={14} className="mb-0.5 inline text-primary" aria-hidden="true" /> 提交后需管理员审核通过方可公开；
+              <Sparkles size={14} className="mb-0.5 inline text-primary-text" aria-hidden="true" /> 提交后需管理员审核通过方可公开；
               每天最多创建 3 个话题。
             </div>
             <Button

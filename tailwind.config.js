@@ -16,6 +16,9 @@ export default {
           light: '#F59A82',
           dark: '#D45E42',
           soft: '#FFF0EB',
+          // 可访问性深档：strong=实底（白字4.59）、text=文字/焦点环（白底5.18）
+          strong: '#C2532F',
+          text: '#B84A2E',
         },
         secondary: {
           DEFAULT: '#3D9B8F',
@@ -32,8 +35,8 @@ export default {
         brown: {
           DEFAULT: '#2B2F33',
           secondary: '#5C6370',
-          muted: '#8B929A',
-          light: '#B0B6BE',
+          muted: '#6E7681',
+          light: '#8A929C',
         },
         border: '#E0E6E8',
         'border-light': '#EDF1F2',
@@ -41,13 +44,18 @@ export default {
           DEFAULT: '#2F9B7A',
           dark: '#248A6A',
           soft: '#E8F6F1',
+          // 文字档：base 色当文字不过 AA（3.45:1），文字一律用 text
+          text: '#1F7A5C',
         },
         warning: '#E6A23C',
+        'warning-text': '#8F5F0A',
         error: {
           DEFAULT: '#D94A4A',
           dark: '#C03D3D',
+          text: '#C03D3D',
         },
         info: '#5B8DEF',
+        'info-text': '#3D6FD0',
         rank: {
           gold: '#F0B429',
           silver: '#A0A6AD',
@@ -74,7 +82,7 @@ export default {
         focus: '0 0 0 3px rgba(240, 120, 90, 0.25)',
       },
       ringColor: {
-        DEFAULT: '#F0785A',
+        DEFAULT: '#B84A2E', // 焦点环用文字档深色（原 #F0785A 仅 2.79:1）
       },
       ringOffsetColor: {
         DEFAULT: '#FFFFFF',

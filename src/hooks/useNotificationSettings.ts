@@ -10,6 +10,7 @@ export interface NotificationSettings {
   atNotify: number;
   followNotify: number;
   systemNotify: number;
+  messageNotify: number;
 }
 
 const DEFAULT_SETTINGS: NotificationSettings = {
@@ -18,6 +19,7 @@ const DEFAULT_SETTINGS: NotificationSettings = {
   atNotify: 1,
   followNotify: 1,
   systemNotify: 1,
+  messageNotify: 1,
 };
 
 /**

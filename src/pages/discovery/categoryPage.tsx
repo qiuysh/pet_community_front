@@ -163,7 +163,7 @@ export const CategoryPage = () => {
       </div>
 
       {/* 帖子列表 */}
-      <div className="posts-list">
+      <div className="posts-list motion-list">
         {loading && posts.length === 0 && (
           <div className="space-y-4 p-4">
             {[1, 2, 3].map((i) => (

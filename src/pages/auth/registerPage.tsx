@@ -88,7 +88,7 @@ export function RegisterPage() {
     <div className="min-h-screen bg-cream flex items-center justify-center p-4 py-6">
       <Card className="w-full max-w-md" padding="md">
         <div className="text-center mb-5">
-          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
+          <div className="w-12 h-12 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
             <UserPlus className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-xl font-bold text-brown">加入{siteName}</h1>
@@ -269,7 +269,7 @@ export function RegisterPage() {
         <div className="mt-4 text-center">
           <p className="text-sm text-brown-muted">
             已有账号？{' '}
-            <Link to="/login" className="text-primary hover:text-primary-dark font-medium">
+            <Link to="/login" className="text-primary-text hover:text-primary-text font-medium">
               立即登录
             </Link>
           </p>

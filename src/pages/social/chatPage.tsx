@@ -71,6 +71,19 @@ const ChatPage: React.FC = () => {
   const previewRef = useRef<ImagePreviewState | null>(null);
   previewRef.current = preview;
 
+  // 只有「进入会话之后新到达」的消息才播入场动画，历史消息整屏不动
+  const knownMessageIdsRef = useRef<Set<number> | null>(null);
+  const [newMessageIds, setNewMessageIds] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    const ids = new Set(chat.messages.map((msg) => msg.id));
+    const known = knownMessageIdsRef.current;
+    knownMessageIdsRef.current = ids;
+    if (known === null) return; // 首次拉到的历史消息：只登记
+    const added = [...ids].filter((id) => !known.has(id));
+    if (added.length > 0) setNewMessageIds(new Set(added));
+  }, [chat.messages]);
+
   // 会话切换时关闭搜索态，并释放预览 blob，避免泄漏 / 串会话
   useEffect(() => {
     setSearchOpen(false);
@@ -81,6 +94,9 @@ const ChatPage: React.FC = () => {
     }
     setPreview(null);
     setPreviewSending(false);
+    // 只重置登记表，不重建 state（本 effect 依赖的 resetSearch 每次渲染都是新引用，
+    // 在这里 setState 一个新 Set 会造成无限重渲染）
+    knownMessageIdsRef.current = null;
   }, [conversationId, resetSearch]);
 
   useEffect(() => {
@@ -212,6 +228,7 @@ const ChatPage: React.FC = () => {
                   onPreviewImage={(src, alt) => setLightbox({ src, alt })}
                   canRecall={msg.fromId === currentUserId && canRecallMessage(msg)}
                   onRecall={chat.recallMessage}
+                  isNew={newMessageIds.has(msg.id)}
                 />
               ))}
               <div ref={chat.messagesEndRef} />

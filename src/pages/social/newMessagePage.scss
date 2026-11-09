@@ -71,7 +71,7 @@
       }
 
       .msg-icon {
-        color: $primary-color;
+        color: $primary-text;
         flex-shrink: 0;
       }
     }
@@ -133,12 +133,12 @@
       outline: none;
 
       &:focus {
-        border-color: $primary-color;
+        border-color: $primary-text;
       }
 
       // 键盘聚焦才画环，鼠标点入只变色（避免每次点击都闪一圈）
       &:focus-visible {
-        border-color: $primary-color;
+        border-color: $primary-text;
         box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
       }
 
@@ -165,7 +165,7 @@
       gap: 6px;
       width: 100%;
       padding: 12px;
-      background: $primary-color;
+      background: $primary-strong;
       color: $background-white;
       border: none;
       border-radius: $border-radius-sm;

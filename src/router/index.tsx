@@ -39,6 +39,10 @@ const MessageListPage = lazyDefault(() => import('../pages/social/messageListPag
 const NewMessagePage = lazyDefault(() => import('../pages/social/newMessagePage'));
 const ChatPage = lazyDefault(() => import('../pages/social/chatPage'));
 const NotificationListPage = lazyDefault(() => import('../pages/social/notificationListPage'));
+const MyReportListPage = lazyNamed(
+  () => import('../pages/social/myReportListPage'),
+  'MyReportListPage',
+);
 const NotificationSettingsPage = lazyDefault(
   () => import('../pages/social/notificationSettingsPage'),
 );
@@ -228,6 +232,7 @@ const appRoutes: RouteObject[] = [
 
   { path: '/notifications', element: withUser(<NotificationListPage />, true) },
   { path: '/notification-settings', element: withUser(<NotificationSettingsPage />, true) },
+  { path: '/my-reports', element: withUser(<MyReportListPage />, true) },
   { path: '/points', element: withUser(<PointsPage />, true) },
 
   { path: '/search', element: withUser(<SearchPage />) },

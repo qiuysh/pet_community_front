@@ -72,7 +72,7 @@ export function LoginPage() {
 
       <Card className="w-full max-w-md relative animate-fadeIn" padding="md">
         <div className="text-center mb-5">
-          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
+          <div className="w-12 h-12 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
             <Heart className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-xl font-bold text-brown">欢迎来到{siteName}</h1>
@@ -178,7 +178,7 @@ export function LoginPage() {
             >
               记住我
             </Checkbox>
-            <Link to="/reset-password" className="text-sm text-primary hover:text-primary-dark">
+            <Link to="/reset-password" className="text-sm text-primary-text hover:text-primary-text">
               忘记密码？
             </Link>
           </div>
@@ -198,7 +198,7 @@ export function LoginPage() {
         <div className="mt-4 text-center">
           <p className="text-sm text-brown-secondary">
             还没有账号？{' '}
-            <Link to="/register" className="text-primary hover:text-primary-dark font-medium">
+            <Link to="/register" className="text-primary-text hover:text-primary-text font-medium">
               立即注册
             </Link>
           </p>

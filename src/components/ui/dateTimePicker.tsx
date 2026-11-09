@@ -70,7 +70,7 @@ function fromValueString(raw: string | undefined, granularity: DateTimePickerGra
 
 const groupTone: Record<DateTimePickerTone, string> = {
   primary:
-    'border-border hover:border-primary/40 data-[focus-within=true]:border-primary data-[focus-within=true]:ring-2 data-[focus-within=true]:ring-primary/20',
+    'border-border hover:border-primary-text/40 data-[focus-within=true]:border-primary-text data-[focus-within=true]:ring-2 data-[focus-within=true]:ring-primary/20',
   secondary:
     'border-border hover:border-secondary/40 data-[focus-within=true]:border-secondary data-[focus-within=true]:ring-2 data-[focus-within=true]:ring-secondary/20',
 };

@@ -54,7 +54,7 @@ function parseSelectOptions(children: ReactNode): ParsedOption[] {
 const controlExtra =
   'h-10 min-h-10 rounded-sm border border-border bg-white text-sm text-brown ' +
   'placeholder:text-brown-muted shadow-none ' +
-  'focus:border-primary focus:ring-2 focus:ring-primary/20';
+  'focus:border-primary-text focus:ring-2 focus:ring-primary/20';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   invalid?: boolean;
@@ -81,7 +81,7 @@ export function Input({
       disabled={disabled}
       aria-invalid={invalid || undefined}
       data-invalid={invalid || undefined}
-      className={joinClass(controlExtra, invalid && 'border-error', className)}
+      className={joinClass(controlExtra, invalid && 'border-error motion-shake', className)}
       onChange={onChange as ((e: ChangeEvent<HTMLInputElement>) => void) | undefined}
       {...rest}
     />
@@ -105,7 +105,7 @@ export function Textarea({
       disabled={disabled}
       aria-invalid={invalid || undefined}
       data-invalid={invalid || undefined}
-      className={joinClass(controlExtra, 'resize-none', invalid && 'border-error', className)}
+      className={joinClass(controlExtra, 'resize-none', invalid && 'border-error motion-shake', className)}
       onChange={onChange as ((e: ChangeEvent<HTMLTextAreaElement>) => void) | undefined}
       {...rest}
     />
@@ -123,13 +123,13 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
 }
 
 const selectToneHover: Record<'primary' | 'secondary', string> = {
-  primary: 'hover:border-primary/40 data-[focus-visible=true]:ring-primary/20 data-[focus-visible=true]:border-primary',
+  primary: 'hover:border-primary-text/40 data-[focus-visible=true]:ring-primary/20 data-[focus-visible=true]:border-primary-text',
   secondary:
     'hover:border-secondary/40 data-[focus-visible=true]:ring-secondary/20 data-[focus-visible=true]:border-secondary',
 };
 
 const selectItemSelected: Record<'primary' | 'secondary', string> = {
-  primary: 'data-[selected=true]:bg-primary-soft data-[selected=true]:text-primary-dark',
+  primary: 'data-[selected=true]:bg-primary-soft data-[selected=true]:text-primary-text',
   secondary: 'data-[selected=true]:bg-secondary-soft data-[selected=true]:text-secondary-dark',
 };
 
@@ -251,7 +251,7 @@ export interface FieldErrorProps {
 export function FieldError({ id, children }: FieldErrorProps) {
   if (!children) return null;
   return (
-    <p id={id} role="alert" className="mt-1 text-xs text-error">
+    <p id={id} role="alert" className="mt-1 text-xs text-error-text">
       {children}
     </p>
   );
@@ -265,7 +265,7 @@ export function FieldLabel({ htmlFor, required, children, className = '' }: Fiel
       className={joinClass('block text-sm font-medium text-brown-secondary mb-1', className)}
     >
       {children}
-      {required ? <span className="text-error ml-0.5">*</span> : null}
+      {required ? <span className="text-error-text ml-0.5">*</span> : null}
     </HeroLabel>
   );
 }

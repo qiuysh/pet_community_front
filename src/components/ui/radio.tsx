@@ -62,23 +62,23 @@ export interface RadioProps {
 
 const buttonSelected: Record<RadioTone, string> = {
   primary:
-    'group-data-[selected=true]:border-primary group-data-[selected=true]:bg-primary-soft group-data-[selected=true]:text-primary-dark',
+    'group-data-[selected=true]:border-primary-text group-data-[selected=true]:bg-primary-soft group-data-[selected=true]:text-primary-text',
   secondary:
     'group-data-[selected=true]:border-secondary group-data-[selected=true]:bg-secondary-soft group-data-[selected=true]:text-secondary-dark',
 };
 
 const cardSelected: Record<RadioTone, string> = {
-  primary: 'data-[selected=true]:border-primary data-[selected=true]:bg-primary-soft',
+  primary: 'data-[selected=true]:border-primary-text data-[selected=true]:bg-primary-soft',
   secondary: 'data-[selected=true]:border-secondary data-[selected=true]:bg-secondary-soft',
 };
 
 const controlTone: Record<RadioTone, string> = {
-  primary: 'text-primary',
+  primary: 'text-primary-text',
   secondary: 'text-secondary',
 };
 
 const textSelected: Record<RadioTone, string> = {
-  primary: 'group-data-[selected=true]:text-primary-dark',
+  primary: 'group-data-[selected=true]:text-primary-text',
   secondary: 'group-data-[selected=true]:text-secondary-dark',
 };
 

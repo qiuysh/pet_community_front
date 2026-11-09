@@ -148,7 +148,7 @@ export function PetGrowthSection({
                         variant="ghost"
                         size="sm"
                         onClick={() => openEdit(record)}
-                        className="min-w-0 h-auto p-1.5 text-brown-muted hover:text-primary"
+                        className="min-w-0 h-auto p-1.5 text-brown-muted hover:text-primary-text"
                         aria-label="编辑"
                       >
                         <Pencil size={14} aria-hidden="true" />

@@ -95,7 +95,7 @@ export const ActivityListPage = () => {
         ) : activities.length === 0 ? (
           <EmptyState title="暂无活动" />
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 motion-list">
             {activities.map((activity) => (
               <ActivityCard key={activity.id} activity={activity} />
             ))}

@@ -10,6 +10,9 @@
   --color-primary-light: #f59a82;
   --color-primary-dark: #d45e42;
   --color-primary-soft: #fff0eb;
+  /* 可访问性深档：strong=实底控件底（白字4.59）、text=文字/焦点环（白底5.18） */
+  --color-primary-strong: #c2532f;
+  --color-primary-text: #b84a2e;
 
   --color-secondary: #3d9b8f;
   --color-secondary-light: #6bb5ab;
@@ -23,8 +26,8 @@
 
   --color-brown: #2b2f33;
   --color-brown-secondary: #5c6370;
-  --color-brown-muted: #8b929a;
-  --color-brown-light: #b0b6be;
+  --color-brown-muted: #6e7681;
+  --color-brown-light: #8a929c;
 
   --color-border: #e0e6e8;
   --color-border-light: #edf1f2;
@@ -32,10 +35,14 @@
   --color-success: #2f9b7a;
   --color-success-dark: #248a6a;
   --color-success-soft: #e8f6f1;
+  --color-success-text: #1f7a5c;
   --color-warning: #e6a23c;
+  --color-warning-text: #8f5f0a;
   --color-error: #d94a4a;
   --color-error-dark: #c03d3d;
+  --color-error-text: #c03d3d;
   --color-info: #5b8def;
+  --color-info-text: #3d6fd0;
 
   --color-rank-gold: #f0b429;
   --color-rank-silver: #a0a6ad;
@@ -89,24 +96,30 @@
   }
 }
 
-/* HeroUI 语义色 → 蜜桃·青竹 */
+/* HeroUI 语义色 → 蜜桃·青竹
+ * --accent 用深档 #C2532F：HeroUI 全部实底控件（主按钮 / 选中 Chip / Switch /
+ * Checkbox / Tabs 指示条）都拿它配白字或白图标，原 #F0785A 只有 2.79:1 不达标。
+ * 品牌图形 / 浅底 / 投影染色继续走 --color-primary(#F0785A)，不受影响。
+ */
 :root,
 .light,
 [data-theme="light"] {
-  --accent: #f0785a;
+  --accent: #c2532f;
+  /* hover 由 app.css 的 shadow-brand-hover 表达；hover 变浅会跌破 4.5:1，故锁定同色 */
+  --accent-hover: #c2532f;
   --accent-foreground: #ffffff;
   --success: #2f9b7a;
   --success-foreground: #ffffff;
   --warning: #e6a23c;
   --warning-foreground: #2b2f33;
-  --danger: #d94a4a;
+  --danger: #c03d3d;
   --danger-foreground: #ffffff;
   --background: #f4f7f7;
   --foreground: #2b2f33;
   --surface: #ffffff;
   --surface-foreground: #2b2f33;
   --muted: #e6eaed;
-  --muted-foreground: #8b929a;
+  --muted-foreground: #6e7681;
   --border: #e0e6e8;
   --radius: 0.5rem;
   --radius-control: 8px;
@@ -135,6 +148,17 @@
   .close-button.close-button--default[data-hovered="true"] {
     background-color: var(--color-soft);
     color: var(--color-brown);
+  }
+
+  /*
+   * 实底按钮（accent / danger）的键盘焦点环：global.scss 的深珊瑚环
+   * 与实底同色系看不出，改为白色内环（白 on #C2532F = 4.59:1）。
+   * 负 offset 把环画在按钮边缘内侧，不依赖页面底色。
+   */
+  .button.button--primary:focus-visible,
+  .button.button--danger:focus-visible {
+    outline-color: #ffffff;
+    outline-offset: -2px;
   }
 }
 

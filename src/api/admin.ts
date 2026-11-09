@@ -196,6 +196,15 @@ export const batchReview = async (data: BatchReviewRequest): Promise<void> => {
     return await post<void>('/api/v1/admin/reviews/batch', data);
 };
 
+// I7 置顶/精选：value=1 设置，value=0 取消（仅对已发布动态生效）
+export const pinPost = async (id: number, value: 0 | 1): Promise<void> => {
+    return await post<void>(`/api/v1/admin/posts/${id}/pin`, { value });
+};
+
+export const featurePost = async (id: number, value: 0 | 1): Promise<void> => {
+    return await post<void>(`/api/v1/admin/posts/${id}/feature`, { value });
+};
+
 export const getReviewHistory = async (params: {
     type?: string;
     page?: number;

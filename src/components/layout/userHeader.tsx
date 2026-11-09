@@ -91,6 +91,7 @@ export function UserHeader() {
                   { key: 'settings', label: '个人设置' },
                   { key: 'points', label: '我的积分' },
                   { key: 'notification-settings', label: '通知设置' },
+                  { key: 'my-reports', label: '我的举报' },
                   { key: 'logout', label: '退出登录', danger: true },
                 ]}
                 onAction={(key) => {

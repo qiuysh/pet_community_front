@@ -14,6 +14,7 @@ const NotificationSettingsPage: React.FC = () => {
     { key: 'atNotify' as const, title: '@提及通知', description: '被@时通知' },
     { key: 'followNotify' as const, title: '关注通知', description: '被关注时通知' },
     { key: 'systemNotify' as const, title: '系统通知', description: '系统消息通知' },
+    { key: 'messageNotify' as const, title: '私信通知', description: '收到私信时提醒（不影响消息投递）' },
   ];
 
   return (
@@ -22,7 +23,7 @@ const NotificationSettingsPage: React.FC = () => {
 
       {loading ? (
         <div className="settings-list">
-          {[1, 2, 3, 4, 5].map((i) => (
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="setting-item">
               <div className="setting-info flex-1">
                 <Skeleton className="h-4 w-24 mb-2" />

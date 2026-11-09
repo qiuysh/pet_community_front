@@ -64,7 +64,7 @@ export const RankingPage = () => {
             <div className="section-header">
               <span className="section-title">热门帖子</span>
             </div>
-            <div className="ranking-list">
+            <div className="ranking-list motion-list">
               {(data.posts || []).slice(0, 10).map((post, index) => (
                 <div key={post.id} className={`ranking-item ${index < 3 ? 'top-three' : ''}`}>
                   <span className={`rank ${index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : ''}`}>
@@ -94,7 +94,7 @@ export const RankingPage = () => {
             <div className="section-header">
               <span className="section-title">人气用户</span>
             </div>
-            <div className="ranking-list">
+            <div className="ranking-list motion-list">
               {(data.users || []).slice(0, 10).map((user, index) => (
                 <Link key={user.id} to={`/profile/${user.id}`} className="ranking-item user-item">
                   <span className={`rank ${index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : ''}`}>
@@ -118,7 +118,7 @@ export const RankingPage = () => {
             <div className="section-header">
               <span className="section-title">热门话题</span>
             </div>
-            <div className="ranking-list">
+            <div className="ranking-list motion-list">
               {(data.topics || []).slice(0, 10).map((topic, index) => (
                 <Link key={topic.id} to={`/topics/${topic.id}`} className="ranking-item topic-item">
                   <span className={`rank ${index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : ''}`}>

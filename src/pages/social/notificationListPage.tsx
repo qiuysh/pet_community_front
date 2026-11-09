@@ -86,7 +86,7 @@ const NotificationListPage: React.FC = () => {
         title="通知"
         fallbackTo="/"
         right={
-          <Button type="button" variant="ghost" size="sm" className="shrink-0 text-primary" onClick={handleMarkAllRead}>
+          <Button type="button" variant="ghost" size="sm" className="shrink-0 text-primary-text" onClick={handleMarkAllRead}>
             全部已读
           </Button>
         }
@@ -108,7 +108,7 @@ const NotificationListPage: React.FC = () => {
       ) : notifications.length === 0 ? (
         <EmptyState icon={<Bell size={56} strokeWidth={1.5} />} title="暂无通知" />
       ) : (
-        <div className="notification-list">
+        <div className="notification-list motion-list">
           {notifications.map((notification) => (
             <button
               type="button"

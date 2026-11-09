@@ -80,15 +80,17 @@ export const PostActions: React.FC<PostActionsProps> = ({
             size="sm"
             aria-label="点赞"
             aria-pressed={isLiked}
-            className={`${itemClass} ${isLiked ? 'text-primary' : ''}`}
+            className={`${itemClass} ${isLiked ? 'text-primary-text' : ''}`}
             onClick={onLikeOverride ?? onLike}
           >
-            <Heart
-              size={iconPx}
-              strokeWidth={stroke}
-              fill={isLiked ? 'currentColor' : 'none'}
-              aria-hidden="true"
-            />
+            <span className={isLiked ? 'motion-pop inline-flex' : 'inline-flex'}>
+              <Heart
+                size={iconPx}
+                strokeWidth={stroke}
+                fill={isLiked ? 'currentColor' : 'none'}
+                aria-hidden="true"
+              />
+            </span>
             <span className="tabular-nums">{formatCount(likesCount)}</span>
           </Button>
         )}
@@ -114,15 +116,17 @@ export const PostActions: React.FC<PostActionsProps> = ({
             size="sm"
             aria-label="收藏"
             aria-pressed={isFavorited}
-            className={`${itemClass} ${isFavorited ? 'text-primary' : ''}`}
+            className={`${itemClass} ${isFavorited ? 'text-primary-text' : ''}`}
             onClick={onFavoriteOverride ?? onFavorite}
           >
-            <Bookmark
-              size={iconPx}
-              strokeWidth={stroke}
-              fill={isFavorited ? 'currentColor' : 'none'}
-              aria-hidden="true"
-            />
+            <span className={isFavorited ? 'motion-pop inline-flex' : 'inline-flex'}>
+              <Bookmark
+                size={iconPx}
+                strokeWidth={stroke}
+                fill={isFavorited ? 'currentColor' : 'none'}
+                aria-hidden="true"
+              />
+            </span>
             <span className="tabular-nums">{formatCount(favoritesCount)}</span>
           </Button>
         )}

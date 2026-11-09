@@ -61,7 +61,7 @@ export function ResetPasswordPage() {
     <div className="min-h-screen bg-cream flex items-center justify-center p-4">
       <Card className="w-full max-w-md" padding="lg">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-brand">
+          <div className="w-16 h-16 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-4 shadow-brand">
             <Key className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-brown">重置密码</h1>
@@ -168,7 +168,7 @@ export function ResetPasswordPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <Link to="/login" className="text-sm text-primary hover:text-primary-dark font-medium">
+          <Link to="/login" className="text-sm text-primary-text hover:text-primary-text font-medium">
             返回登录
           </Link>
         </div>

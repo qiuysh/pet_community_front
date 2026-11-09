@@ -11,7 +11,7 @@
   // ============================================
   .category-hero {
     position: relative;
-    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    background: linear-gradient(135deg, $primary-strong 0%, $primary-text 100%);
     padding: $spacing-xl $spacing-md $spacing-lg;
     color: white;
     overflow: hidden;
@@ -171,7 +171,7 @@
           }
 
           &:focus-visible {
-            outline: 2px solid $primary-color;
+            outline: 2px solid $primary-text;
             outline-offset: 2px;
           }
 
@@ -180,20 +180,20 @@
           &[aria-pressed='true'] {
             background: $primary-soft;
             background-image: none;
-            color: $primary-dark;
-            border-color: $primary-color;
+            color: $primary-text;
+            border-color: $primary-text;
             box-shadow: 0 0 0 1px rgba($primary-color, 0.2);
             font-weight: 600;
 
             svg {
-              color: $primary-dark;
+              color: $primary-text;
               stroke: $primary-dark;
             }
 
             &:hover {
               background: mix(white, $primary-soft, 20%);
-              color: $primary-dark;
-              border-color: $primary-dark;
+              color: $primary-text;
+              border-color: $primary-text;
             }
           }
         }
@@ -229,7 +229,7 @@
               transform: translateX(-50%);
               width: 0;
               height: 2px;
-              background: $primary-color;
+              background: $primary-strong;
               border-radius: 1px;
               transition: width $duration-base ease;
             }
@@ -239,7 +239,7 @@
             }
 
             &.active {
-              color: $primary-color;
+              color: $primary-text;
 
               &::after {
                 width: 20px;
@@ -292,7 +292,7 @@
         text-indent: -9999px;
 
         &:focus-visible {
-          outline: 2px solid $primary-color;
+          outline: 2px solid $primary-text;
           outline-offset: -4px;
           border-radius: $border-radius-sm;
         }
@@ -468,7 +468,7 @@
           }
 
           &:hover {
-            color: $primary-color;
+            color: $primary-text;
           }
         }
       }
@@ -503,8 +503,8 @@
       }
 
       &:hover:not(:disabled) {
-        border-color: $primary-color;
-        color: $primary-color;
+        border-color: $primary-text;
+        color: $primary-text;
         background: rgba($primary-color, 0.05);
       }
     }
@@ -520,7 +520,7 @@
 
       .page-current {
         font-weight: 600;
-        color: $primary-color;
+        color: $primary-text;
       }
 
       .page-separator {

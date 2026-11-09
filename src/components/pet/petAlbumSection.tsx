@@ -104,7 +104,7 @@ export function PetAlbumSection({
               size="sm"
               disabled={uploading}
               onClick={() => videoInputRef.current?.click()}
-              className="rounded-lg gap-1.5 border-primary text-primary"
+              className="rounded-lg gap-1.5 border-primary-text text-primary-text"
             >
               <Video size={16} aria-hidden="true" />
               上传视频
@@ -196,7 +196,7 @@ export function PetAlbumSection({
                   </span>
                 )}
                 {isCover && (
-                  <span className="absolute top-2 left-2 px-1.5 py-0.5 text-xs bg-primary text-white rounded">
+                  <span className="absolute top-2 left-2 px-1.5 py-0.5 text-xs bg-primary-strong text-white rounded">
                     封面
                   </span>
                 )}

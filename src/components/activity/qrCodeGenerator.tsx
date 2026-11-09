@@ -87,7 +87,7 @@ export const QRCodeGenerator = ({ activityId, onRefresh }: QRCodeGeneratorProps)
             <span className="text-error font-medium">二维码已过期</span>
           ) : (
             <span>
-              有效期剩余：<span className="font-medium text-primary">{remainingTime}秒</span>
+              有效期剩余：<span className="font-medium text-primary-text">{remainingTime}秒</span>
             </span>
           )}
         </div>

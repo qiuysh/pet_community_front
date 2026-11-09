@@ -27,6 +27,9 @@ export default defineConfig({
         video: 'retain-on-failure',
         actionTimeout: 10_000,
         navigationTimeout: 30_000,
+        // 动效会让元素在动画期间位置抖动，被 Playwright 判为「not stable」；
+        // 测试统一走减动效分支（也顺带覆盖 prefers-reduced-motion 的可用性）
+        reducedMotion: 'reduce',
     },
 
     projects: [

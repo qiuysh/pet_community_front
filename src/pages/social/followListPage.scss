@@ -22,7 +22,7 @@
       position: relative;
 
       &.active {
-        color: $primary-color;
+        color: $primary-text;
 
         &::after {
           content: '';
@@ -32,7 +32,7 @@
           transform: translateX(-50%);
           width: 40px;
           height: 3px;
-          background-color: $primary-color;
+          background-color: $primary-strong;
           border-radius: 2px;
         }
       }
@@ -128,13 +128,13 @@
         padding: 8px 20px;
         border-radius: 20px;
         font-size: $font-size-sm;
-        border: 1px solid $primary-color;
-        color: $primary-color;
+        border: 1px solid $primary-text;
+        color: $primary-text;
         background: none;
         cursor: pointer;
 
         &.following {
-          background-color: $primary-color;
+          background-color: $primary-strong;
           color: $background-white;
         }
       }

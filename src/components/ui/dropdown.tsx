@@ -99,7 +99,7 @@ export function Dropdown({
               isDisabled={item.disabled}
               className={[
                 'rounded-sm px-3 py-2 text-sm cursor-pointer',
-                item.danger ? 'text-error' : 'text-brown',
+                item.danger ? 'text-error-text' : 'text-brown',
               ].join(' ')}
             >
               {item.label}

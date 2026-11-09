@@ -153,20 +153,23 @@ export const ActivityDetailPage = () => {
       </div>
 
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 border-b shadow-card px-4 py-2">
-        <Tabs
-          listOnly
-          className="w-full"
-          selectedKey={activeTab}
-          onSelectionChange={(key) => setActiveTab(key as typeof activeTab)}
-          items={[
-            { key: 'detail', title: '活动详情' },
-            ...(activity.type === ActivityType.VOTING || activity.type === ActivityType.CONTEST
-              ? [{ key: 'submissions', title: '作品展示' }]
-              : []),
-            { key: 'album', title: '活动相册' },
-            ...(review ? [{ key: 'review', title: '活动回顾' }] : []),
-          ]}
-        />
+        {/* 页签条背景通栏，内容仍走 page-shell，与下方正文列对齐 */}
+        <div className="page-shell">
+          <Tabs
+            listOnly
+            className="w-full"
+            selectedKey={activeTab}
+            onSelectionChange={(key) => setActiveTab(key as typeof activeTab)}
+            items={[
+              { key: 'detail', title: '活动详情' },
+              ...(activity.type === ActivityType.VOTING || activity.type === ActivityType.CONTEST
+                ? [{ key: 'submissions', title: '作品展示' }]
+                : []),
+              { key: 'album', title: '活动相册' },
+              ...(review ? [{ key: 'review', title: '活动回顾' }] : []),
+            ]}
+          />
+        </div>
       </div>
 
       <div className="page-shell py-4">

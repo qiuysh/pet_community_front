@@ -1,5 +1,6 @@
 /* Tailwind / HeroUI 样式见 app.css（由 Vite + @tailwindcss/vite 处理） */
 @import './_variables.scss';
+@import './motion';
 
 // ============================================
 // 设计 Token（CSS 变量 = Tailwind / 内联样式单一事实来源）
@@ -11,6 +12,8 @@
   --color-primary-light: #{$primary-light};
   --color-primary-dark: #{$primary-dark};
   --color-primary-soft: #{$primary-soft};
+  --color-primary-strong: #{$primary-strong};
+  --color-primary-text: #{$primary-text};
 
   --color-secondary: #{$secondary-color};
   --color-secondary-light: #{$secondary-light};
@@ -34,10 +37,14 @@
   --color-success: #{$success-color};
   --color-success-dark: #{$success-dark};
   --color-success-soft: #{$success-soft};
+  --color-success-text: #{$success-text};
   --color-warning: #{$warning-color};
+  --color-warning-text: #{$warning-text};
   --color-error: #{$error-color};
   --color-error-dark: #{$error-dark};
+  --color-error-text: #{$error-text};
   --color-info: #{$info-color};
+  --color-info-text: #{$info-text};
 
   --shadow-brand: #{$shadow-brand};
   --shadow-brand-hover: #{$shadow-brand-hover};
@@ -46,6 +53,9 @@
   --radius-card: #{$border-radius-sm};
   --radius-sheet: #{$border-radius-base};
   --radius-container: #{$border-radius-lg};
+
+  // 动效（供内联样式与页面 scss 覆盖；Keyframes 见 _motion.scss）
+  --motion-distance: #{$motion-distance-md};
 }
 
 // ============================================
@@ -111,13 +121,13 @@ p {
 // （后台侧栏 text-brown-secondary 等会被刷成蜜桃色）
 @layer base {
   :where(a) {
-    color: $primary-color;
+    color: $primary-text;
     text-decoration: none;
     transition: color $duration-base ease;
   }
 
   :where(a):hover {
-    color: $primary-dark;
+    color: $primary-text;
   }
 }
 
@@ -160,8 +170,10 @@ html {
   outline: none;
 }
 
+// 焦点环用 $primary-text：原 $primary-color 在 cream 底上仅 2.79:1，
+// 不达 WCAG 1.4.11 非文本对比 3:1。实底按钮的环另在 app.css 覆盖为白色内环。
 :focus-visible {
-  outline: 2px solid $primary-color;
+  outline: 2px solid $primary-text;
   outline-offset: 2px;
 }
 
@@ -172,7 +184,7 @@ html {
   left: 0;
   z-index: $z-index-toast;
   padding: $spacing-sm $spacing-md;
-  background: $primary-color;
+  background: $primary-strong;
   color: $background-white;
   border-radius: 0 0 $border-radius-sm 0;
   text-decoration: none;
@@ -186,25 +198,8 @@ html {
 
 // ============================================
 // 动画效果
+// keyframes 与工具类统一在 _motion.scss（本文件不再新增）
 // ============================================
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.animate-slideIn {
-  animation: slideIn 0.4s ease-out;
-}
 
 // 减少动画（用户偏好）
 @media (prefers-reduced-motion: reduce) {
@@ -212,6 +207,7 @@ html {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
@@ -235,7 +231,7 @@ a,
 .page-shell {
   @extend %page-shell;
 
-  // 长文正文：帖子详情 / 话题详情 / 聊天
+  // 会话列：聊天
   &--read {
     max-width: $page-max-read;
   }

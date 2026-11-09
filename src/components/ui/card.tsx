@@ -25,7 +25,8 @@ export function Card({
     <HeroCard
       className={[
         'bg-white rounded-md shadow-card overflow-hidden border-0',
-        hoverable ? 'transition-shadow hover:shadow-hover' : '',
+        // motion-lift：PC 悬停抬升 + 阴影加深，移动端按下下沉（见 _motion.scss）
+        hoverable ? 'motion-lift' : '',
         paddingClass[padding],
         className,
       ]
