@@ -9,6 +9,7 @@ import { EmptyState } from '../ui/emptyState';
 import { FilterChip } from '../ui/filterChip';
 import { FieldLabel, Input, Textarea } from '../ui/input';
 import { Modal } from '../ui/modal';
+import { PetWeightChart } from './petWeightChart';
 
 const RECORD_TYPES = [
   { value: 'weight', label: '体重记录' },
@@ -122,6 +123,8 @@ export function PetGrowthSection({
           </Button>
         )}
       </div>
+
+      <PetWeightChart records={records} />
 
       {records.length > 0 ? (
         <div className="space-y-4">

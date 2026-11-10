@@ -5,18 +5,13 @@ import { ICON_SIZE } from '../../styles/iconSize';
 import { getLostPetList } from '../../api/pet';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { LostPetInfo } from '../../types/pet';
+import { LOST_PET_STATUS_LABEL } from '../../utils/lostPetShare';
 import { showErrorToast } from '../../utils/toastManager';
 import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Spinner } from '../../components/ui/spinner';
-
-const STATUS_MAP: Record<number, string> = {
-  0: '寻找中',
-  1: '已找到',
-  2: '已关闭',
-};
 
 export function LostPetListPage() {
   const [page, setPage] = useState(1);
@@ -57,7 +52,7 @@ export function LostPetListPage() {
                 <div className="flex justify-between gap-3">
                   <h2 className="font-semibold text-brown">{item.petName}</h2>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-soft text-brown-secondary shrink-0">
-                    {STATUS_MAP[item.status] ?? '未知'}
+                    {LOST_PET_STATUS_LABEL[item.status] ?? '未知'}
                   </span>
                 </div>
                 <p className="text-sm text-brown-muted mt-2 line-clamp-2">{item.description}</p>

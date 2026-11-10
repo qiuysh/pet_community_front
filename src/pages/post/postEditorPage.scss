@@ -122,6 +122,12 @@
     .media-section {
       margin: 16px 0;
 
+      .image-reorder-hint {
+        margin: 0 0 8px;
+        font-size: $font-size-xs;
+        color: $text-muted;
+      }
+
       .image-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -132,19 +138,67 @@
           aspect-ratio: 1;
           border-radius: $border-radius-xs;
           overflow: hidden;
+          cursor: grab;
+          transition: opacity $duration-base ease, transform $duration-base ease, box-shadow $duration-base ease;
+
+          &:active {
+            cursor: grabbing;
+          }
+
+          &.is-dragging {
+            opacity: 0.5;
+            transform: scale(0.96);
+          }
+
+          &.is-over {
+            box-shadow: 0 0 0 2px $primary-text;
+          }
 
           img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            pointer-events: none;
+          }
+
+          .cover-badge {
+            position: absolute;
+            left: 4px;
+            top: 4px;
+            z-index: 1;
+            padding: 2px 6px;
+            border-radius: $border-radius-xs;
+            background: rgba(0, 0, 0, 0.55);
+            color: $background-white;
+            font-size: 10px;
+            line-height: 1.2;
+          }
+
+          .drag-handle {
+            position: absolute;
+            left: 4px;
+            bottom: 4px;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: $border-radius-xs;
+            background: rgba(0, 0, 0, 0.45);
+            color: $background-white;
+            pointer-events: none;
           }
 
           .remove-btn {
             position: absolute;
             top: 4px;
             right: 4px;
+            z-index: 2;
             width: 20px;
             height: 20px;
+            min-width: 20px;
+            min-height: 20px;
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.5);
             color: $background-white;
@@ -156,6 +210,30 @@
             justify-content: center;
             padding: 0;
             line-height: 1;
+          }
+
+          .reorder-actions {
+            position: absolute;
+            right: 4px;
+            bottom: 4px;
+            z-index: 2;
+            display: flex;
+            gap: 2px;
+          }
+
+          .reorder-btn {
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            min-height: 22px;
+            padding: 0;
+            border-radius: $border-radius-xs;
+            background: rgba(0, 0, 0, 0.5);
+            color: $background-white;
+
+            &:disabled {
+              opacity: 0.35;
+            }
           }
         }
 

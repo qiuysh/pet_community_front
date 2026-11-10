@@ -6,9 +6,10 @@ import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { VisibilityOptions } from '../../types/post';
 import { getDefaultPetAvatar } from '../../utils/avatarUtils';
 import { useToast } from '../../components/toast';
-import { Plus, X, Image, Video, PawPrint, Hash, MapPin, Eye, ChevronRight, Check, Clock } from 'lucide-react';
+import { X, Image, Video, PawPrint, Hash, MapPin, Eye, ChevronRight, Check, Clock } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { SchedulePicker } from '../../components/post/schedulePicker';
+import { PostImageGrid } from '../../components/post/postImageGrid';
 import { Button, buttonClass } from '../../components/ui/button';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Input } from '../../components/ui/input';
@@ -105,10 +106,6 @@ export const PostEditorPage = () => {
     setImages([]);
   };
 
-  const removeImage = (index: number) => {
-    setImages(state.images.filter((_, i) => i !== index));
-  };
-
   const removeVideo = () => {
     setVideo('');
   };
@@ -190,26 +187,16 @@ export const PostEditorPage = () => {
 
         <div className="media-section">
           {state.images.length > 0 && (
-            <div className="image-grid">
-              {state.images.map((img, idx) => (
-                <div key={idx} className="image-item">
-                  <img src={img} alt="" decoding="async" />
-                  <Button type="button" variant="ghost" size="sm" className="remove-btn" onClick={() => removeImage(idx)} aria-label="删除图片">
-                    <X size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
-                  </Button>
-                </div>
-              ))}
-              {state.images.length < 9 && !state.video && (
-                <button
-                  type="button"
-                  className="add-image-btn"
-                  onClick={() => fileInputRef.current?.click()}
-                  aria-label="添加图片"
-                >
-                  <span className="plus"><Plus size={ICON_SIZE.nav} strokeWidth={iconStroke(ICON_SIZE.nav)} aria-hidden="true" /></span>
-                </button>
+            <>
+              {state.images.length > 1 && (
+                <p className="image-reorder-hint">拖拽调整顺序，或用左右按钮上移/下移；首图为封面</p>
               )}
-            </div>
+              <PostImageGrid
+                images={state.images}
+                onChange={setImages}
+                onAddClick={() => fileInputRef.current?.click()}
+              />
+            </>
           )}
 
           {state.video && (

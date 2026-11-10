@@ -127,6 +127,8 @@ export interface LostPetInfo {
   contact: string;
   status: number;
   viewCount: number;
+  /** R2：选定分享平台后累加 */
+  sharesCount: number;
   createdAt: string;
 }
 

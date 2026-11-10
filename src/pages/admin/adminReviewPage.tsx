@@ -253,7 +253,11 @@ export function AdminReviewPage() {
                       onClick={() => setPreviewContent(item)}
                     >
                       <span className="line-clamp-2 break-words" title={item.content}>
-                        {item.content}
+                        {item.type === 'topic' && item.categoryName
+                          ? `【${item.categoryName}】${item.content}`
+                          : item.type === 'topic' && item.categoryId
+                            ? `【分类#${item.categoryId}】${item.content}`
+                            : item.content}
                       </span>
                     </AdminButton>
                   </AdminTable.Cell>

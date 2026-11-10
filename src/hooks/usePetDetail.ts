@@ -85,7 +85,8 @@ export function usePetDetail() {
   const growthHook = useAsyncEffect(
     async () => {
       if (!pet?.id) return { list: [], total: 0 };
-      return await getGrowthRecords(pet.id, 1, 50);
+      // 体重曲线需要时间序全量有效点；成长记录量通常不大，取 100 条足够覆盖「全部」
+      return await getGrowthRecords(pet.id, 1, 100);
     },
     [pet?.id],
     { onError: (err) => reportError('获取成长记录失败', err) },

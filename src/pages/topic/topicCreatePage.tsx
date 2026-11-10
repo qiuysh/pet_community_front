@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Sparkles, Lock } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
-import { createTopic } from '../../api/discovery';
+import { createTopic, getTopicCategories } from '../../api/discovery';
+import type { TopicCategoryInfo } from '../../types/discovery';
 import { useUserStore } from '../../stores/userStore';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { TOPIC_CREATE_MIN_LEVEL } from '../../utils/topicPolicy';
@@ -10,7 +11,7 @@ import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
 import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
-import { FieldError, FieldLabel, Input, Textarea } from '../../components/ui/input';
+import { FieldError, FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
 
 export function TopicCreatePage() {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ export function TopicCreatePage() {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [categoryId, setCategoryId] = useState('0');
+  const [categories, setCategories] = useState<TopicCategoryInfo[]>([]);
   const { errors, showErrors, clearError, formRef } = useFormErrors(['name', 'description'] as const);
 
   // 确保用户信息（含 level）已加载
@@ -26,6 +29,20 @@ export function TopicCreatePage() {
       void fetchProfile();
     }
   }, [isLoggedIn, user, fetchProfile]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void getTopicCategories()
+      .then((list) => {
+        if (!cancelled) setCategories(list.filter((c) => c.status === 1));
+      })
+      .catch(() => {
+        if (!cancelled) setCategories([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const currentLevel = user?.level ?? 0;
   const levelBlocked = isLoggedIn && !!user && currentLevel < TOPIC_CREATE_MIN_LEVEL;
@@ -48,9 +65,11 @@ export function TopicCreatePage() {
     }
     setLoading(true);
     try {
+      const selectedCategory = Number(categoryId) || 0;
       const created = await createTopic({
         name: trimmedName,
         description: description.trim() || undefined,
+        categoryId: selectedCategory > 0 ? selectedCategory : undefined,
       });
       showSuccessToast('话题已提交，等待管理员审核');
       // 待审核话题不可走公开详情；回到话题广场
@@ -118,6 +137,26 @@ export function TopicCreatePage() {
               ) : (
                 <p id="topic-name-count" className="mt-1 text-xs text-brown-muted">{name.length}/50</p>
               )}
+            </div>
+            <div>
+              <FieldLabel htmlFor="topic-category">话题分类</FieldLabel>
+              <Select
+                id="topic-category"
+                name="categoryId"
+                aria-label="话题分类"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                disabled={levelBlocked}
+              >
+                <option value="0">未分类</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={String(cat.id)}>
+                    {cat.icon ? `${cat.icon} ` : ''}
+                    {cat.name}
+                  </option>
+                ))}
+              </Select>
+              <p className="mt-1 text-xs text-brown-muted">可选；分类浏览只收录有分类的话题</p>
             </div>
             <div>
               <FieldLabel htmlFor="topic-description">话题描述</FieldLabel>

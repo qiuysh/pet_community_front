@@ -220,6 +220,9 @@ export interface ReviewContent {
     isPinned?: number;
     /** 动态精选标记：1=已精选 */
     isFeatured?: number;
+    /** 话题分类（仅 type=topic） */
+    categoryId?: number;
+    categoryName?: string;
     createdAt: string;
 }
 

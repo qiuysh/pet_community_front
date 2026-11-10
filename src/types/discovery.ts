@@ -60,6 +60,7 @@ export interface TopicDetailInfo {
   name: string;
   description: string;
   cover: string;
+  categoryId?: number;
   postsCount: number;
   /** 分享数（用户选择分享平台后累加） */
   sharesCount: number;
@@ -153,4 +154,6 @@ export interface TopicCreateRequest {
   name: string;
   description?: string;
   cover?: string;
+  /** 0 或不传 = 未分类；>0 须为启用中的分类 */
+  categoryId?: number;
 }

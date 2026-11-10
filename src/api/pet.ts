@@ -145,3 +145,11 @@ export const createLostPet = async (data: LostPetCreateRequest): Promise<LostPet
 export const updateLostPetStatus = async (id: number, status: number): Promise<void> => {
   return await put<void>(`/api/v1/lost-pets/${id}/status`, { status });
 };
+
+/** R2：选定分享平台后上报；游客可调；platform 非空时后端 shares_count +1 */
+export const recordLostPetShare = async (
+  id: number,
+  platform: string,
+): Promise<{ sharesCount: number }> => {
+  return await post<{ sharesCount: number }>(`/api/v1/lost-pets/${id}/share`, { platform });
+};
