@@ -120,7 +120,7 @@ export const MyAdoptPage = () => {
     <div className="min-h-screen bg-cream">
       <PageHeader title="我的领养" fallbackTo="/adopts" />
 
-      <div className="page-shell py-3">
+      <div className="page-shell px-4 py-3">
         <Tabs
           listOnly
           selectedKey={tab}
@@ -132,7 +132,7 @@ export const MyAdoptPage = () => {
         />
       </div>
 
-      <div className="page-shell pb-8 space-y-3">
+      <div className="page-shell space-y-3 px-4 pb-8">
         {loading ? (
           [1, 2, 3].map((i) => <Skeleton key={i} className="h-24 w-full rounded-lg" />)
         ) : tab === 'adopts' ? (

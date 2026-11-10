@@ -72,7 +72,7 @@ export const ActivityDetailPage = () => {
           alt={activity.title}
           className="w-full h-48 object-cover"
         />
-        <div className="page-shell py-4">
+        <div className="page-shell px-4 py-4">
           <h1 className="text-xl font-bold text-brown mb-2">{activity.title}</h1>
           <p className="text-brown-muted mb-3">{activity.description}</p>
 
@@ -153,9 +153,9 @@ export const ActivityDetailPage = () => {
         </div>
       </div>
 
-      <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 border-b shadow-card px-4 py-2">
-        {/* 页签条背景通栏，内容仍走 page-shell，与下方正文列对齐 */}
-        <div className="page-shell">
+      <div className="sticky top-[var(--user-header-offset,56px)] z-10 border-b bg-white py-2 shadow-card">
+        {/* 白底通栏；水平内边距放在 page-shell，与下方正文同列 */}
+        <div className="page-shell px-4">
           <Tabs
             listOnly
             className="w-full"
@@ -173,7 +173,7 @@ export const ActivityDetailPage = () => {
         </div>
       </div>
 
-      <div className="page-shell py-4">
+      <div className="page-shell px-4 py-4">
         {activeTab === 'detail' && (
           <Card>
             {activity.rules && (

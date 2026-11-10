@@ -37,7 +37,7 @@ export function PetFormPage() {
 
   return (
     <div className="min-h-screen bg-cream">
-      <div className="page-shell py-8">
+      <div className="page-shell px-4 py-8">
         <div className="flex items-center gap-4 mb-6">
           <BackButton />
           <h1 className="text-lg font-semibold text-brown">

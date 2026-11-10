@@ -54,7 +54,7 @@ export function DraftListPage() {
   return (
     <div className="min-h-screen bg-cream">
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
-        <div className="page-shell py-3 flex items-center justify-between">
+        <div className="page-shell flex items-center justify-between px-4 py-3">
           <BackButton className="-ml-2" />
           <h1 className="text-lg font-semibold text-brown">草稿箱</h1>
           <Link to="/posts/create" className="text-sm text-primary-text font-medium">
@@ -63,7 +63,7 @@ export function DraftListPage() {
         </div>
       </div>
 
-      <div className="page-shell py-4 space-y-3">
+      <div className="page-shell space-y-3 px-4 py-4">
         {loading && drafts.length === 0 ? (
           <div className="py-12 flex flex-col items-center gap-4">
             <Spinner label="加载中…" />

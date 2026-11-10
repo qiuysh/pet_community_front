@@ -63,7 +63,7 @@ export function MyReportListPage() {
   const maxPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <div className="page-shell min-h-screen py-4">
+    <div className="page-shell min-h-screen px-4 py-4">
       <PageHeader title="我的举报" fallbackTo="/profile" />
 
       <div className="mt-4 space-y-3 motion-list">

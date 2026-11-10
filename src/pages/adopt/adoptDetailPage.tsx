@@ -111,7 +111,7 @@ export const AdoptDetailPage = () => {
         </div>
       )}
 
-      <div className="page-shell py-4 space-y-4">
+      <div className="page-shell space-y-4 px-4 py-4">
         <Card>
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-bold text-brown">{adopt.petName}</h1>

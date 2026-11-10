@@ -28,7 +28,7 @@ export function LostPetListPage() {
   return (
     <div className="min-h-screen bg-cream pb-8">
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
-        <div className="page-shell py-3 flex items-center justify-between">
+        <div className="page-shell flex items-center justify-between px-4 py-3">
           <BackButton className="-ml-2" />
           <h1 className="text-lg font-semibold text-brown">寻宠启事</h1>
           <Link to="/lost-pets/create" className="text-sm text-primary-text font-medium">
@@ -37,7 +37,7 @@ export function LostPetListPage() {
         </div>
       </div>
 
-      <div className="page-shell py-4 space-y-3 motion-list">
+      <div className="page-shell motion-list space-y-3 px-4 py-4">
         {loading ? (
           <div className="flex flex-col items-center py-12 gap-3">
             <Spinner />

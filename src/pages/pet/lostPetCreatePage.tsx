@@ -140,13 +140,13 @@ export function LostPetCreatePage() {
   return (
     <div className="min-h-screen bg-cream pb-10">
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
-        <div className="page-shell py-3 flex items-center gap-2">
+        <div className="page-shell flex items-center gap-2 px-4 py-3">
           <BackButton className="-ml-2" />
           <h1 className="text-lg font-semibold text-brown">发布寻宠</h1>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} ref={formRef} className="page-shell py-4" noValidate>
+      <form onSubmit={handleSubmit} ref={formRef} className="page-shell px-4 py-4" noValidate>
         <Card className="space-y-4 rounded-xl">
           <div>
             <FieldLabel htmlFor="lost-pet-name" required>宠物名称</FieldLabel>

@@ -67,7 +67,7 @@ export const AdoptListPage = () => {
   return (
     <div className="bg-cream min-h-screen pb-6">
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
-        <div className="page-shell py-3">
+        <div className="page-shell px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-lg font-semibold text-brown">领养中心</h1>
             <div className="flex items-center gap-2">
@@ -106,7 +106,7 @@ export const AdoptListPage = () => {
         </div>
       </div>
 
-      <div className="page-shell">
+      <div className="page-shell px-4">
         {loading ? (
           <div className="space-y-3 mt-4">
             {[1, 2, 3, 4].map((i) => (

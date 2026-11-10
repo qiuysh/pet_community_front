@@ -25,29 +25,41 @@
     }
 
     .follow-item {
+      // 列表行用原生 button，勿套 HeroUI Button（会被 button--md 压扁）
       display: flex;
       align-items: center;
       gap: 12px;
+      width: 100%;
+      min-height: 64px;
       padding: 12px;
+      margin: 0;
       background: $background-white;
       border: 1px solid $border-color;
       border-radius: $border-radius-sm;
       cursor: pointer;
       text-align: left;
-      transition: box-shadow $duration-fast;
+      font: inherit;
+      color: inherit;
+      appearance: none;
+      transition: box-shadow $duration-base ease, border-color $duration-base ease;
 
       &:hover {
         box-shadow: $shadow-card;
+        border-color: rgba($secondary-color, 0.35);
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary-text;
+        outline-offset: 2px;
       }
 
       .user-avatar {
         width: 40px;
         height: 40px;
+        min-width: 40px;
+        min-height: 40px;
         border-radius: 50%;
-        background-size: cover;
-        background-position: center;
         flex-shrink: 0;
-        background-color: $primary-soft;
       }
 
       .user-info {
@@ -56,14 +68,19 @@
 
         .user-name {
           font-size: $font-size-sm;
-          font-weight: 500;
+          font-weight: 600;
           color: $text-primary;
+          line-height: 1.3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .user-sig {
           font-size: $font-size-xs;
           color: $text-muted;
           margin-top: 2px;
+          line-height: 1.3;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -99,22 +116,39 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 4px 10px;
-        background: $primary-soft;
-        color: $text-secondary;
-        border: none;
+        max-width: 100%;
+        padding: 6px 10px;
+        margin: 0;
+        background: $secondary-soft;
+        color: $secondary-dark;
+        border: 1px solid rgba($secondary-color, 0.28);
         border-radius: 14px;
+        font: inherit;
         font-size: 13px;
+        font-weight: 500;
         cursor: pointer;
+        appearance: none;
+
+        span:not(.remove-mark) {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
 
         .remove-mark {
           color: $text-light;
           font-size: $font-size-large;
           line-height: 1;
+          flex-shrink: 0;
         }
 
         &:hover .remove-mark {
-          color: $error-color;
+          color: $error-text;
+        }
+
+        &:focus-visible {
+          outline: 2px solid $primary-text;
+          outline-offset: 2px;
         }
       }
     }
@@ -158,31 +192,9 @@
       }
     }
 
+    // 视觉以 Button primary 为准；仅补图标间距
     .send-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       gap: 6px;
-      width: 100%;
-      padding: 12px;
-      background: $primary-strong;
-      color: $background-white;
-      border: none;
-      border-radius: $border-radius-sm;
-      font-size: $font-size-base;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background $duration-fast;
-
-      &:hover:not(:disabled) {
-        background: $primary-dark;
-      }
-
-      &:disabled {
-        background: $primary-light;
-        cursor: not-allowed;
-        opacity: 0.7;
-      }
     }
   }
 }

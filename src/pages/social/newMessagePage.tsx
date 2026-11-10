@@ -78,15 +78,15 @@ const NewMessagePage: React.FC = () => {
           ) : (
             <div className="follow-list">
               {follows.map((u) => (
-                <Button
+                <button
                   key={u.id}
                   type="button"
-                  variant="ghost"
                   className="follow-item"
                   onClick={() => setTargetUser({ id: u.id, nickname: u.nickname })}
                 >
                   <Avatar
                     className="user-avatar"
+                    size="md"
                     src={u.avatar || getDefaultUserAvatar()}
                     name={u.nickname}
                     alt={u.nickname}
@@ -95,8 +95,13 @@ const NewMessagePage: React.FC = () => {
                     <div className="user-name">{u.nickname}</div>
                     {u.signature && <div className="user-sig">{u.signature}</div>}
                   </div>
-                  <MessageCircle size={ICON_SIZE.action} className="msg-icon" aria-hidden="true" />
-                </Button>
+                  <MessageCircle
+                    size={ICON_SIZE.action}
+                    strokeWidth={iconStroke(ICON_SIZE.action)}
+                    className="msg-icon"
+                    aria-hidden="true"
+                  />
+                </button>
               ))}
             </div>
           )}
@@ -105,17 +110,18 @@ const NewMessagePage: React.FC = () => {
         <div className="compose-section">
           <div className="target-card">
             <div className="target-label">收件人</div>
-            <Button
+            <button
               type="button"
-              variant="outline"
               className="target-pill"
               onClick={() => setTargetUser(null)}
               aria-label="更换收件人"
             >
               <UserCircle size={ICON_SIZE.inline} aria-hidden="true" />
               <span>{targetUser.nickname}</span>
-              <span className="remove-mark" aria-hidden="true">×</span>
-            </Button>
+              <span className="remove-mark" aria-hidden="true">
+                ×
+              </span>
+            </button>
           </div>
 
           <Textarea
@@ -134,6 +140,7 @@ const NewMessagePage: React.FC = () => {
 
           <Button
             type="button"
+            block
             className="send-btn"
             onClick={handleSubmit}
             disabled={loading || !content.trim()}
