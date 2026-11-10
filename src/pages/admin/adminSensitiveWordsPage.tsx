@@ -261,7 +261,7 @@ export function AdminSensitiveWordsPage() {
                   />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-brown">添加敏感词</h3>
+                  <h3 className="page-bar-title">添加敏感词</h3>
                   <p className="text-sm text-brown-muted">新增一条敏感词过滤规则</p>
                 </div>
               </div>
@@ -326,7 +326,7 @@ export function AdminSensitiveWordsPage() {
                   />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-brown">编辑敏感词</h3>
+                  <h3 className="page-bar-title">编辑敏感词</h3>
                   <p className="text-sm text-brown-muted">修改敏感词过滤规则</p>
                 </div>
               </div>
@@ -392,7 +392,7 @@ export function AdminSensitiveWordsPage() {
                   />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-brown">确认删除</h3>
+                  <h3 className="page-bar-title">确认删除</h3>
                   <p className="text-sm text-brown-muted">此操作无法撤销</p>
                 </div>
               </div>

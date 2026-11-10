@@ -81,7 +81,7 @@ export function MyReportListPage() {
           list.map((report) => (
             <Card key={report.id} className="space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-sm font-medium text-brown">
+                <span className="page-section-title">
                   {targetLabel(report.targetType)} #{report.targetId}
                 </span>
                 <span className="text-xs text-brown-muted">{statusLabel(report.status)}</span>

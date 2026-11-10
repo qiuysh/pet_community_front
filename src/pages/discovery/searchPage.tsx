@@ -77,7 +77,7 @@ export const SearchPage = () => {
         <div className="search-content">
           <div className="section">
             <div className="section-header">
-              <span>热门搜索</span>
+              <span className="page-section-title">热门搜索</span>
             </div>
             <div className="hot-keywords">
               {hotKeywords.map((kw, index) => (
@@ -97,7 +97,7 @@ export const SearchPage = () => {
 
           <div className="section">
             <div className="section-header">
-              <span>搜索历史</span>
+              <span className="page-section-title">搜索历史</span>
               {history.length > 0 && (
                 <Button type="button" variant="ghost" size="sm" className="clear-btn" onClick={handleClearHistoryWithConfirm}>
                   清空
@@ -148,12 +148,12 @@ export const SearchPage = () => {
             <>
               {result.users.length > 0 && (
                 <div className="result-section">
-                  <div className="section-title">用户</div>
+                  <div className="page-section-title section-title">用户</div>
                   {result.users.map((user) => (
                     <Link key={user.id} to={`/profile/${user.id}`} className="user-item">
                       <Avatar src={user.avatar || getDefaultUserAvatar()} name={user.nickname} className="avatar" />
                       <div className="user-info">
-                        <div className="nickname">{user.nickname}</div>
+                        <div className="page-section-title nickname">{user.nickname}</div>
                         <div className="followers tabular-nums">{formatCount(user.followersCount)} 粉丝</div>
                       </div>
                     </Link>
@@ -163,13 +163,13 @@ export const SearchPage = () => {
 
               {result.posts.length > 0 && (
                 <div className="result-section">
-                  <div className="section-title">帖子</div>
+                  <div className="page-section-title section-title">帖子</div>
                   {result.posts.map((post) => (
                     <Link key={post.id} to={`/posts/${post.id}`} className="post-item">
                       <div className="post-header">
                         <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="avatar" />
                         <div className="user-info">
-                          <span className="nickname">{post.userNickname}</span>
+                          <span className="page-section-title nickname">{post.userNickname}</span>
                           <span className="time">{post.createdAt}</span>
                         </div>
                       </div>
@@ -200,11 +200,11 @@ export const SearchPage = () => {
 
               {result.topics.length > 0 && (
                 <div className="result-section">
-                  <div className="section-title">话题</div>
+                  <div className="page-section-title section-title">话题</div>
                   {result.topics.map((topic) => (
                     <Link key={topic.id} to={`/topics/${topic.id}`} className="topic-item">
                       <div className="topic-info">
-                        <div className="topic-name">{topic.name}</div>
+                        <div className="page-section-title topic-name">{topic.name}</div>
                         <div className="topic-desc">{topic.description}</div>
                       </div>
                       <span className="posts-count tabular-nums">{formatCount(topic.postsCount)}帖子</span>

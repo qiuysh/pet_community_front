@@ -18,7 +18,7 @@ export const TopicListPage = () => {
   return (
     <div className="topic-list-page">
       <div className="topic-header">
-        <h1>热门话题</h1>
+        <h1 className="page-content-title">热门话题</h1>
         <div className="search-box">
           <Input
             value={keyword}
@@ -75,7 +75,7 @@ export const TopicListPage = () => {
                 )}
               </div>
               <div className="topic-info">
-                <h3 className="topic-name">{topic.name}</h3>
+                <h3 className="page-section-title topic-name">{topic.name}</h3>
                 <p className="topic-desc">{topic.description || '暂无描述'}</p>
                 <div className="topic-stats">
                   <span className="posts-count">{topic.postsCount} 动态</span>

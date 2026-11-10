@@ -46,7 +46,7 @@ export const TopicSquarePage = () => {
             />
             宠友社区
           </span>
-          <h1>话题广场</h1>
+          <h1 className="page-content-title">话题广场</h1>
           <p>逛分类、追热帖，和宠友一起晒日常、聊养宠趣事</p>
         </div>
         {/* 创建话题入口（T5：须 Lv5+，未登录跳登录） */}
@@ -92,7 +92,7 @@ export const TopicSquarePage = () => {
         <>
           <div className="section">
             <div className="section-header">
-              <h2 className="section-title">话题分类</h2>
+              <h2 className="page-section-title section-title">话题分类</h2>
               <span className="section-subtitle">选择你感兴趣的分类</span>
             </div>
             <div className="categories-grid">
@@ -102,7 +102,7 @@ export const TopicSquarePage = () => {
                     <div className="category-icon-wrap">
                       <CategoryIcon categoryName={cat.name} size={ICON_SIZE.feature} color="currentColor" />
                     </div>
-                    <div className="category-name">{cat.name}</div>
+                    <div className="page-section-title category-name">{cat.name}</div>
                     <div className="category-desc">{cat.description}</div>
                   </Card>
                 </Link>
@@ -112,7 +112,7 @@ export const TopicSquarePage = () => {
 
           <div className="section">
             <div className="section-header">
-              <h2 className="section-title">热门标签</h2>
+              <h2 className="page-section-title section-title">热门标签</h2>
               <span className="section-subtitle">大家都在讨论这些</span>
             </div>
             <div className="tag-cloud motion-list">
@@ -131,7 +131,7 @@ export const TopicSquarePage = () => {
 
           <div className="section">
             <div className="section-header">
-              <h2 className="section-title">热门话题</h2>
+              <h2 className="page-section-title section-title">热门话题</h2>
               <span className="section-subtitle">参与度最高的话题</span>
             </div>
             <div className="hot-topics">
@@ -159,7 +159,7 @@ export const TopicSquarePage = () => {
                     )}
                   </div>
                   <div className="topic-info">
-                    <div className="topic-name">{topic.name}</div>
+                    <div className="page-section-title topic-name">{topic.name}</div>
                     <div className="topic-desc">{topic.description || '暂无描述'}</div>
                   </div>
                   <div className="topic-meta">

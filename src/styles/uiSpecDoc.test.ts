@@ -13,6 +13,8 @@ import { describe, expect, it } from 'vitest';
 const read = (rel: string) => readFileSync(resolve(process.cwd(), rel), 'utf-8');
 const spec = read('../docs/frontend/ui-design-spec.md');
 const variablesSource = read('src/styles/_variables.scss');
+const globalSource = read('src/styles/global.scss');
+const appCssSource = read('src/styles/app.css');
 
 /** 取 `### <编号>` 小节正文（到下一个 ## / ### 标题前） */
 function section(id: string): string {
@@ -51,6 +53,17 @@ describe('UI 设计规范与代码一致', () => {
     expect(blocks).not.toMatch(/#[0-9A-Fa-f]{3,8}\b/);
     expect(blocks).not.toMatch(/transition:\s*all/);
     expect(blocks).not.toContain('@keyframes');
+  });
+
+  it('h1 默认样式须在 @layer base，避免压过 page-bar-title', () => {
+    // 回归：未分层 h1{20/600} 曾压过 @layer components 的 .page-bar-title{15/500}，
+    // 导致 PageHeader（消息/通知）比动态详情更粗更大。
+    expect(appCssSource).toMatch(/@layer components[\s\S]*\.page-bar-title\s*\{/);
+    const baseBlocks = [...globalSource.matchAll(/@layer\s+base\s*\{([\s\S]*?)\n\}/g)].map((m) => m[1]);
+    expect(baseBlocks.some((b) => /h1\s*\{[^}]*font-size:\s*\$font-size-title/.test(b))).toBe(true);
+    // 禁止在 layer 外再写裸 h1 字号
+    const withoutLayers = globalSource.replace(/@layer\s+\w+\s*\{[\s\S]*?\n\}/g, '');
+    expect(withoutLayers).not.toMatch(/h1\s*\{[^}]*font-size/);
   });
 
   it('3.2 字号表与 $font-size-* 阶梯一一对应', () => {

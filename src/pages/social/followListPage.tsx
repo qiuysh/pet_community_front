@@ -140,7 +140,7 @@ const FollowListPage: React.FC = () => {
                   alt={user.nickname}
                 />
                 <div className="user-info">
-                  <div className="user-name">
+                  <div className="page-section-title user-name">
                     {user.nickname}
                     {/* 悄悄关注标识（F6-04） */}
                     {user.isSecret && (

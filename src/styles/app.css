@@ -178,6 +178,35 @@
     );
   }
 
+  /*
+   * 前台标题三档（全站统一，禁止再散写字号/字重）：
+   * 1. .page-bar-title     吸顶/工具条页名  15 / 500
+   * 2. .page-section-title 列表区块标题      16 / 600
+   * 3. .page-content-title 页面主标题/实体名/发现页头/登录卡  20 / 600
+   * 禁止 text-[18px]、text-lg、font-bold(700)、裸 22/26/28 当页标题。
+   */
+  .page-bar-title {
+    font-size: var(--font-size-base, 15px);
+    font-weight: 500;
+    line-height: 1.4;
+    text-wrap: balance;
+    color: var(--color-brown);
+  }
+  .page-section-title {
+    font-size: var(--font-size-large, 16px);
+    font-weight: 600;
+    line-height: 1.4;
+    text-wrap: balance;
+    color: var(--color-brown);
+  }
+  .page-content-title {
+    font-size: var(--font-size-title, 20px);
+    font-weight: 600;
+    line-height: 1.4;
+    text-wrap: balance;
+    color: var(--color-brown);
+  }
+
   .button.button--primary {
     box-shadow: var(--shadow-brand);
   }

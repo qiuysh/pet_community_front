@@ -99,11 +99,7 @@
       }
 
       .hero-title {
-        font-size: $font-size-xl;
-        font-weight: 700;
         margin-bottom: $spacing-xs;
-        letter-spacing: 0.5px;
-        color: $text-primary;
       }
 
       .hero-desc {
@@ -332,9 +328,6 @@
           min-width: 0;
 
           .post-nickname {
-            font-weight: 600;
-            font-size: $font-size-sm;
-            color: $text-primary;
             display: block;
           }
 
@@ -521,12 +514,8 @@
           height: 52px;
         }
 
-        .hero-title {
-          font-size: $font-size-large;
-        }
-
         .hero-desc {
-          font-size: $font-size-base;
+          font-size: $font-size-sm;
         }
       }
     }

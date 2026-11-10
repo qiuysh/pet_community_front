@@ -12,9 +12,7 @@
     text-align: center;
 
     h1 {
-      font-size: $font-size-xl;
       margin-bottom: 8px;
-      color: $text-primary;
 
       svg {
         color: $primary-text;
@@ -80,10 +78,6 @@
       padding: 12px 16px;
       border-bottom: 1px solid $divider-color;
 
-      .section-title {
-        font-weight: 600;
-        font-size: $font-size-large;
-      }
     }
 
     .ranking-list {
@@ -158,10 +152,6 @@
                 object-fit: cover;
               }
 
-              .nickname {
-                font-size: 13px;
-                font-weight: 500;
-              }
             }
 
             .post-content {
@@ -207,7 +197,6 @@
           flex: 1;
 
           .nickname {
-            font-weight: 500;
             margin-bottom: 2px;
           }
 
@@ -225,7 +214,6 @@
           flex: 1;
 
           .topic-name {
-            font-weight: 500;
             margin-bottom: 2px;
           }
 

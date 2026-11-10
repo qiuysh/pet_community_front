@@ -9,10 +9,7 @@
   @extend %page-shell;
   padding: $spacing-xl 0;
 
-  .page-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: $text-primary;
+  .page-content-title {
     margin-bottom: $spacing-lg;
   }
 }
@@ -55,10 +52,7 @@
       min-width: 0;
 
       .sidebar-nickname {
-        font-weight: 600;
-        font-size: $font-size-sm;
         margin-bottom: 2px;
-        color: $text-primary;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -152,7 +146,7 @@
       }
 
       .menu-arrow {
-        font-size: 18px;
+        font-size: $font-size-large;
         color: $text-light;
         opacity: 0;
         transition: opacity $duration-base ease, color $duration-base ease;
@@ -386,9 +380,6 @@
     }
 
     .section-title {
-      font-size: $font-size-sm;
-      font-weight: 600;
-      color: $text-primary;
       margin-bottom: 4px;
     }
 
@@ -591,8 +582,7 @@
   .settings-container {
     padding: $spacing-md 0;
 
-    .page-title {
-      font-size: 18px;
+    .page-content-title {
       margin-bottom: $spacing-md;
     }
   }

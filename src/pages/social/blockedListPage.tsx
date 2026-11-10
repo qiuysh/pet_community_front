@@ -68,7 +68,7 @@ const BlockedListPage: React.FC = () => {
                     alt={user.nickname}
                   />
                   <div className="user-info">
-                    <div className="user-name">{user.nickname}</div>
+                    <div className="page-section-title user-name">{user.nickname}</div>
                     <div className="user-signature">{user.signature || '暂无签名'}</div>
                   </div>
                 </button>

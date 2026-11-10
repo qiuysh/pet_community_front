@@ -172,7 +172,7 @@ const ChatPage: React.FC = () => {
           <BackButton />
           <Link to={`/profile/${peerUserId}`} className="user-info">
             <img className="user-avatar" src={getUserAvatar(peer?.avatar)} alt="" decoding="async" />
-            <span className="user-name">{peer?.nickname || '宠友'}</span>
+            <span className="page-bar-title user-name">{peer?.nickname || '宠友'}</span>
           </Link>
           <Button
             type="button"

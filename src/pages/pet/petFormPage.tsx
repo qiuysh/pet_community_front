@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { usePetForm } from '../../hooks/usePetForm';
 import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
-import { PetTypeOptions, GenderOptions, getPetTypeIcon } from '../../types/pet';
+import { PetTypeOptions, GenderOptions, PetVisibilityOptions, getPetTypeIcon } from '../../types/pet';
 import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -40,7 +40,7 @@ export function PetFormPage() {
       <div className="page-shell px-4 py-8">
         <div className="flex items-center gap-4 mb-6">
           <BackButton />
-          <h1 className="text-lg font-semibold text-brown">
+          <h1 className="page-content-title">
             {isEdit ? '编辑宠物档案' : '创建宠物档案'}
           </h1>
         </div>
@@ -196,6 +196,26 @@ export function PetFormPage() {
               >
                 已接种疫苗
               </Checkbox>
+            </div>
+
+            <div>
+              <FieldLabel>可见范围</FieldLabel>
+              <RadioGroup
+                name="visibility"
+                aria-label="宠物可见范围"
+                className="flex flex-col gap-2"
+                value={String(formData.visibility ?? 0)}
+                onChange={(v) => updateField('visibility', Number(v) as 0 | 1 | 2)}
+              >
+                {PetVisibilityOptions.map((option) => (
+                  <Radio key={option.value} value={String(option.value)} variant="button">
+                    <span className="flex flex-col items-start text-left">
+                      <span>{option.label}</span>
+                      <span className="text-xs text-brown-muted font-normal">{option.hint}</span>
+                    </span>
+                  </Radio>
+                ))}
+              </RadioGroup>
             </div>
 
             <div>

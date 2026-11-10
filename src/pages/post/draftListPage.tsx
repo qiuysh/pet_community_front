@@ -56,7 +56,7 @@ export function DraftListPage() {
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
         <div className="page-shell flex items-center justify-between px-4 py-3">
           <BackButton className="-ml-2" />
-          <h1 className="text-lg font-semibold text-brown">草稿箱</h1>
+          <h1 className="page-bar-title">草稿箱</h1>
           <Link to="/posts/create" className="text-sm text-primary-text font-medium">
             写动态
           </Link>

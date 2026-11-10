@@ -50,7 +50,7 @@ export function PetWeightChart({ records, className = '' }: PetWeightChartProps)
         .join(' ')}
     >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h4 className="text-sm font-medium text-brown">体重曲线</h4>
+        <h4 className="page-section-title">体重曲线</h4>
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="体重曲线时间范围">
           {RANGES.map((item) => (
             <FilterChip

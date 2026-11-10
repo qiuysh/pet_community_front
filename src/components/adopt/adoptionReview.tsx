@@ -91,7 +91,7 @@ export const AdoptionReview = ({ application, onClose, onSuccess }: AdoptionRevi
             size="md"
           />
           <div>
-            <div className="text-sm font-medium text-brown">{application.userNickname}</div>
+            <div className="page-section-title">{application.userNickname}</div>
             <div className="text-xs text-brown-muted">{application.createdAt}</div>
           </div>
         </div>

@@ -61,7 +61,7 @@ export const ActivitySignInPage = () => {
   return (
     <div className="bg-cream min-h-dvh pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
       <div className="page-shell bg-white px-4 py-4 shadow-card">
-        <h1 className="text-xl font-bold text-brown mb-2">{activity.title}</h1>
+        <h1 className="page-content-title mb-2">{activity.title}</h1>
         <p className="text-sm text-brown-muted mb-4">{activity.description}</p>
 
         {signInStats && (
@@ -98,12 +98,12 @@ export const ActivitySignInPage = () => {
         {activeTab === 'qrcode' && (
           <div className="space-y-6">
             <Card>
-              <h3 className="text-base font-medium text-brown mb-4">活动签到二维码</h3>
+              <h3 className="page-section-title mb-4">活动签到二维码</h3>
               <QRCodeGenerator activityId={activityId} />
             </Card>
 
             <Card>
-              <h3 className="text-base font-medium text-brown mb-1">摄像头扫码</h3>
+              <h3 className="page-section-title mb-1">摄像头扫码</h3>
               <p className="text-xs text-brown-muted mb-4">
                 对准现场签到二维码，识别成功后自动提交。无摄像头时请用手输。
               </p>
@@ -111,7 +111,7 @@ export const ActivitySignInPage = () => {
             </Card>
 
             <Card>
-              <h3 className="text-base font-medium text-brown mb-1">输入签到码</h3>
+              <h3 className="page-section-title mb-1">输入签到码</h3>
               <p className="text-xs text-brown-muted mb-4">
                 降级通道：可用系统相机扫码后粘贴，或手动输入签到码。
               </p>
@@ -172,7 +172,7 @@ export const ActivitySignInPage = () => {
                         className="w-8 h-8 rounded-full"
                       />
                       <div>
-                        <div className="text-sm font-medium text-brown">{record.userNickname}</div>
+                        <div className="page-section-title">{record.userNickname}</div>
                         <div className="text-xs text-brown-muted">{formatTime(record.signInTime)}</div>
                       </div>
                     </div>

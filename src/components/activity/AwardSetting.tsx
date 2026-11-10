@@ -78,7 +78,7 @@ export const AwardSetting = ({ submissions, selectedAward, onAwardChange, onSubm
 
   return (
     <div className="bg-white rounded-lg border border-border-light p-4">
-      <h3 className="text-lg font-semibold text-brown mb-4">设置获奖</h3>
+      <h3 className="page-section-title mb-4">设置获奖</h3>
 
       <div className="mb-4">
         <FieldLabel className="mb-2">奖项等级</FieldLabel>
@@ -127,7 +127,7 @@ export const AwardSetting = ({ submissions, selectedAward, onAwardChange, onSubm
                   className="w-4 h-4 rounded border-border-light"
                 />
                 <span className="flex-1 min-w-0">
-                  <span className="block text-sm font-medium text-brown truncate">{submission.title}</span>
+                  <span className="page-section-title block truncate">{submission.title}</span>
                   <span className="block text-xs text-brown-muted">{submission.votesCount} 票</span>
                 </span>
               </label>

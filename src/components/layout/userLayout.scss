@@ -48,12 +48,12 @@
     gap: $spacing-xs;
     color: $primary-text;
     font-weight: 600;
-    font-size: $font-size-title;
+    font-size: $font-size-large;
     flex-shrink: 0;
     min-width: 0;
 
     .logo-icon {
-      font-size: $font-size-xl;
+      font-size: $font-size-title;
       flex-shrink: 0;
     }
 
@@ -137,6 +137,26 @@
 
     @media (max-width: 768px) {
       gap: 2px;
+    }
+
+    // PC 顶栏已有完整主导航；移动端用「更多」补宠物/话题/排行榜（及通知/私信）
+    // class 打在 Dropdown Trigger（button）上
+    .mobile-nav-more {
+      display: none;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      color: $text-secondary;
+
+      @media (max-width: 768px) {
+        display: inline-flex;
+      }
+
+      &:hover,
+      &:focus-visible {
+        color: $primary-text;
+        background: rgba($primary-color, 0.08);
+      }
     }
 
     .user-menu {

@@ -51,7 +51,7 @@ export const TopicDetailPage = () => {
     <div className="topic-detail-page">
       <div className="detail-header">
         <BackButton />
-        <span className="title">话题详情</span>
+        <h1 className="page-bar-title title">话题详情</h1>
       </div>
 
       <Card padding="none" className="topic-info-card">
@@ -63,7 +63,7 @@ export const TopicDetailPage = () => {
           )}
         </div>
         <div className="topic-meta">
-          <h2 className="topic-name">{topic.name}</h2>
+          <h2 className="page-content-title topic-name">{topic.name}</h2>
           <p className="topic-desc">{topic.description || '暂无描述'}</p>
           <div className="topic-stats">
             <span>{topic.postsCount} 条动态</span>
@@ -108,7 +108,7 @@ export const TopicDetailPage = () => {
       <AdBanner location="topic_banner" className="topic-banner-slot" />
 
       <div className="posts-section">
-        <h3 className="section-title">相关动态</h3>
+        <h3 className="page-section-title section-title">相关动态</h3>
 
         <div className="posts-list">
           {loadingPosts && posts.length === 0 && (
@@ -135,7 +135,7 @@ export const TopicDetailPage = () => {
               <div className="post-header">
                 <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="avatar" />
                 <div className="user-info">
-                  <div className="nickname">{post.userNickname}</div>
+                  <div className="page-section-title nickname">{post.userNickname}</div>
                   <div className="time">{post.createdAt}</div>
                 </div>
               </div>

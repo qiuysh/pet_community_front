@@ -86,7 +86,7 @@ export function TopicCreatePage() {
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
         <div className="page-shell flex items-center gap-2 px-4 py-3">
           <BackButton className="-ml-2" />
-          <h1 className="text-lg font-semibold text-brown">创建话题</h1>
+          <h1 className="page-bar-title">创建话题</h1>
         </div>
       </div>
 

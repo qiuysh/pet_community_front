@@ -119,14 +119,14 @@ export function LostPetDetailPage() {
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
         <div className="page-shell flex items-center gap-2 px-4 py-3">
           <BackButton className="-ml-2" />
-          <h1 className="text-lg font-semibold text-brown">寻宠详情</h1>
+          <h1 className="page-bar-title">寻宠详情</h1>
         </div>
       </div>
 
       <div className="page-shell space-y-4 px-4 py-4">
         <Card className="rounded-xl shadow-card p-5">
           <div className="flex justify-between items-start gap-3">
-            <h2 className="text-xl font-bold text-brown">{item.petName}</h2>
+            <h2 className="page-content-title">{item.petName}</h2>
             <span
               className={`text-xs px-2 py-1 rounded-full shrink-0 ${
                 item.status === LOST_PET_STATUS.found

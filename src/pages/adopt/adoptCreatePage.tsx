@@ -31,7 +31,7 @@ export const AdoptCreatePage = () => {
     <div className="bg-cream min-h-screen pb-6">
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
         <div className="page-shell flex items-center justify-between px-4 py-3">
-          <h1 className="text-lg font-semibold text-brown">发布领养</h1>
+          <h1 className="page-bar-title">发布领养</h1>
           <Button size="sm" disabled={loading} loading={loading} onClick={handleSubmit}>
             {loading ? '发布中' : '发布'}
           </Button>
@@ -40,7 +40,7 @@ export const AdoptCreatePage = () => {
 
       <div className="page-shell space-y-4 px-4 py-4">
         <Card>
-          <h2 className="text-base font-medium text-brown mb-4">基本信息</h2>
+          <h2 className="page-section-title mb-4">基本信息</h2>
           <div className="space-y-3">
             <div>
               <FieldLabel htmlFor="adopt-pet-name" required>宠物名称</FieldLabel>
@@ -126,7 +126,7 @@ export const AdoptCreatePage = () => {
         </Card>
 
         <Card>
-          <h2 className="text-base font-medium text-brown mb-4">宠物照片 *</h2>
+          <h2 className="page-section-title mb-4">宠物照片 *</h2>
           <div className="flex items-center gap-2">
             <input
               type="file"
@@ -200,7 +200,7 @@ export const AdoptCreatePage = () => {
         </Card>
 
         <Card>
-          <h2 className="text-base font-medium text-brown mb-4">详细介绍</h2>
+          <h2 className="page-section-title mb-4">详细介绍</h2>
           <div className="space-y-3">
             <div>
               <FieldLabel htmlFor="adopt-description" required>宠物介绍</FieldLabel>
@@ -236,7 +236,7 @@ export const AdoptCreatePage = () => {
         </Card>
 
         <Card>
-          <h2 className="text-base font-medium text-brown mb-4">联系方式</h2>
+          <h2 className="page-section-title mb-4">联系方式</h2>
           <div className="space-y-3">
             <div>
               <FieldLabel htmlFor="adopt-location" required>所在地区</FieldLabel>

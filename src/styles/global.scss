@@ -58,6 +58,15 @@
   --radius-sheet: #{$border-radius-base};
   --radius-container: #{$border-radius-lg};
 
+  // 字号阶梯（吸顶页头等 Tailwind 工具类用）
+  --font-size-xs: #{$font-size-xs};
+  --font-size-sm: #{$font-size-sm};
+  --font-size-base: #{$font-size-base};
+  --font-size-large: #{$font-size-large};
+  --font-size-title: #{$font-size-title};
+  --font-size-xl: #{$font-size-xl};
+  --font-size-2xl: #{$font-size-2xl};
+
   // 动效（供内联样式与页面 scss 覆盖；Keyframes 见 _motion.scss）
   --motion-distance: #{$motion-distance-md};
 }
@@ -103,22 +112,27 @@ body {
 // ============================================
 // 文字样式
 // ============================================
+// 必须 @layer base：未分层的 h1{20/600} 会压过 @layer components 的
+// .page-bar-title{15/500}，导致 PageHeader（h1）比动态详情（span）更粗更大。
 
-h1, h2, h3, h4, h5, h6 {
-  color: $text-primary;
-  font-weight: 600;
-  line-height: 1.4;
-}
+@layer base {
+  // 前台社区密度：标题偏克制。2xl/xl 留给数据大数与营销数字，不作默认页标题。
+  h1, h2, h3, h4, h5, h6 {
+    color: $text-primary;
+    font-weight: 600;
+    line-height: 1.4;
+  }
 
-h1 { font-size: $font-size-2xl; letter-spacing: -0.02em; }
-h2 { font-size: $font-size-xl; letter-spacing: -0.01em; }
-h3 { font-size: $font-size-title; }
-h4 { font-size: $font-size-large; }
-h5 { font-size: $font-size-sm; }
-h6 { font-size: $font-size-xs; }
+  h1 { font-size: $font-size-title; letter-spacing: -0.01em; } // 20px 页面/内容标题
+  h2 { font-size: $font-size-large; } // 16px 区块标题
+  h3 { font-size: $font-size-large; }
+  h4 { font-size: $font-size-base; font-weight: 500; } // 15px
+  h5 { font-size: $font-size-sm; font-weight: 500; }
+  h6 { font-size: $font-size-xs; font-weight: 500; }
 
-p {
-  color: $text-secondary;
+  p {
+    color: $text-secondary;
+  }
 }
 
 // 链接默认主色；必须放在 @layer base，否则会压过 Tailwind @layer utilities
@@ -246,11 +260,8 @@ a,
 // ============================================
 
 @media (max-width: 768px) {
+  // 仅用根字号微调；勿再单独把 h1/h2 抬到 xl/title（会比桌面默认更大）
   html {
     font-size: 13px;
   }
-  
-  h1 { font-size: $font-size-xl; }
-  h2 { font-size: $font-size-title; }
-  h3 { font-size: $font-size-large; }
 }

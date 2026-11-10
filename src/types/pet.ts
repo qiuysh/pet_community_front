@@ -1,6 +1,15 @@
 import type { LucideIcon } from 'lucide-react';
 import { Dog, Cat, Rabbit, Bird, Fish, PawPrint } from 'lucide-react';
 
+/** R5：与动态一致 0公开 / 1仅粉丝 / 2仅自己 */
+export type PetVisibility = 0 | 1 | 2;
+
+export const PetVisibilityOptions: Array<{ value: PetVisibility; label: string; hint: string }> = [
+  { value: 0, label: '所有人可见', hint: '出现在宠物广场与他人主页' },
+  { value: 1, label: '仅粉丝可见', hint: '只有关注你的人能看' },
+  { value: 2, label: '仅自己可见', hint: '只有你能打开档案' },
+];
+
 export interface PetInfo {
   id: number;
   userId: number;
@@ -17,6 +26,9 @@ export interface PetInfo {
   isSterilized: number;
   isVaccinated: number;
   status: number;
+  visibility: PetVisibility;
+  /** false = 帖子关联降级「宠物信息不可见」 */
+  accessible?: boolean;
   viewCount: number;
   createdAt: string;
 }
@@ -34,6 +46,7 @@ export interface PetCreateRequest {
   bio?: string;
   isSterilized?: number;
   isVaccinated?: number;
+  visibility?: PetVisibility;
 }
 
 export interface PetUpdateRequest {
@@ -50,6 +63,7 @@ export interface PetUpdateRequest {
   isSterilized?: number;
   isVaccinated?: number;
   status?: number;
+  visibility?: PetVisibility;
 }
 
 export interface PetListParams {

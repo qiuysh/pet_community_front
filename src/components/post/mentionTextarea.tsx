@@ -246,7 +246,7 @@ export function MentionTextarea({
                 alt=""
                 size="sm"
               />
-              <span className="truncate font-medium">{user.nickname}</span>
+              <span className="page-section-title truncate">{user.nickname}</span>
             </li>
           ))}
         </ul>

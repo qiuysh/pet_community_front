@@ -207,7 +207,7 @@ export function AdminUserListPage() {
                 />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-brown">确认删除</h3>
+                <h3 className="page-bar-title">确认删除</h3>
                 <p className="text-sm text-brown-muted">此操作无法撤销</p>
               </div>
             </div>
@@ -240,7 +240,7 @@ export function AdminUserListPage() {
                 />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-brown">
+                <h3 className="page-bar-title">
                   {confirmStatusChange.status === 1 ? '确认启用' : '确认禁用'}
                 </h3>
                 <p className="text-sm text-brown-muted">

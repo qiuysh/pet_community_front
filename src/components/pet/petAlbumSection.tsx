@@ -56,7 +56,7 @@ export function PetAlbumSection({
     <Card className="rounded-xl shadow-sm" padding="lg">
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div>
-          <h3 className="font-medium text-brown">相册</h3>
+          <h3 className="page-section-title">相册</h3>
           {isOwner && album.length > 1 && (
             <p className="text-xs text-brown-muted mt-1">拖拽卡片可调整顺序</p>
           )}

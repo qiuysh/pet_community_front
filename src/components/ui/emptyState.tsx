@@ -36,7 +36,7 @@ export function EmptyState({
           {icon}
         </div>
       ) : null}
-      <p className={compact ? 'text-sm text-brown-muted' : 'text-[15px] text-brown-secondary'}>{title}</p>
+      <p className={compact ? 'page-bar-title !text-brown-muted' : 'page-section-title'}>{title}</p>
       {description ? <p className="mt-1 text-xs text-brown-muted">{description}</p> : null}
       {action ? <div className="mt-4">{action}</div> : null}
     </div>

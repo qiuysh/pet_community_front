@@ -97,7 +97,7 @@ export function RegisterPage() {
               aria-hidden="true"
             />
           </div>
-          <h1 className="text-xl font-semibold text-brown">加入{siteName}</h1>
+          <h1 className="page-content-title">加入{siteName}</h1>
           <p className="text-sm text-brown-muted mt-1">创建账号，开启你的宠物之旅</p>
         </div>
 

@@ -119,7 +119,7 @@ export function ProfileSettingsPage() {
     <div className="profile-settings-page">
       {leaveDialog}
       <div className="settings-container">
-        <h1 className="page-title">账号设置</h1>
+        <h1 className="page-content-title">账号设置</h1>
 
         <div className="settings-layout">
           <nav className="settings-sidebar" aria-label="设置分类">
@@ -131,7 +131,7 @@ export function ProfileSettingsPage() {
                 className="sidebar-avatar"
               />
               <div className="sidebar-user-info">
-                <div className="sidebar-nickname">{user?.nickname || '用户'}</div>
+                <div className="page-section-title sidebar-nickname">{user?.nickname || '用户'}</div>
                 <div className="sidebar-bio">{user?.signature || '设置你的个性签名'}</div>
               </div>
             </div>
@@ -332,7 +332,7 @@ export function ProfileSettingsPage() {
               {activeTab === 'privacy' && (
                 <div className="form-wrapper">
                   <div className="privacy-section">
-                    <h3 className="section-title">帖子可见范围</h3>
+                    <h3 className="page-section-title section-title">帖子可见范围</h3>
                     <p className="section-desc">设置谁可以看到你的帖子</p>
                     <RadioGroup
                       name="postVisibility"
@@ -353,7 +353,7 @@ export function ProfileSettingsPage() {
                   </div>
 
                   <div className="privacy-section">
-                    <h3 className="section-title">评论权限</h3>
+                    <h3 className="page-section-title section-title">评论权限</h3>
                     <p className="section-desc">设置谁可以评论你的帖子</p>
                     <RadioGroup
                       name="commentPermission"
@@ -374,7 +374,7 @@ export function ProfileSettingsPage() {
                   </div>
 
                   <div className="privacy-section">
-                    <h3 className="section-title">私信权限</h3>
+                    <h3 className="page-section-title section-title">私信权限</h3>
                     <p className="section-desc">设置谁可以给你发私信</p>
                     <RadioGroup
                       name="messagePermission"

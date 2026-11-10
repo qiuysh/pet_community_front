@@ -71,7 +71,7 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
           )}
         </div>
 
-        <h3 className="text-base font-medium text-brown mb-2 line-clamp-2">{activity.title}</h3>
+        <h3 className="page-section-title mb-2 line-clamp-2">{activity.title}</h3>
 
         <p className="text-sm text-brown-muted mb-3 line-clamp-2">{activity.description}</p>
 

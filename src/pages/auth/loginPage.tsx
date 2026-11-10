@@ -81,7 +81,7 @@ export function LoginPage() {
               aria-hidden="true"
             />
           </div>
-          <h1 className="text-xl font-semibold text-brown">欢迎来到{siteName}</h1>
+          <h1 className="page-content-title">欢迎来到{siteName}</h1>
           <p className="text-sm text-brown-secondary mt-1">登录您的账号，与宠友分享快乐</p>
         </div>
 

@@ -12,9 +12,6 @@
     margin-bottom: $spacing-md;
 
     h1 {
-      font-size: 18px;
-      font-weight: 600;
-      color: $text-primary;
       margin-bottom: $spacing-sm;
     }
 
@@ -93,9 +90,6 @@
         min-width: 0;
 
         .topic-name {
-          font-size: $font-size-large;
-          font-weight: 600;
-          color: $text-primary;
           margin: 0 0 8px 0;
         }
 
@@ -128,10 +122,6 @@
     padding: 20px;
   }
 
-  .topic-list-page .topic-header h1 {
-    font-size: $font-size-title;
-  }
-
   .topic-list-page .topic-list {
     gap: 16px;
   }
@@ -146,10 +136,6 @@
     height: 96px;
   }
 
-  .topic-list-page .topic-list .topic-card .topic-info .topic-name {
-    font-size: 18px;
-  }
-
   .topic-list-page .topic-list .topic-card .topic-info .topic-desc {
     font-size: $font-size-base;
   }
@@ -159,10 +145,6 @@
 @media (min-width: 1024px) {
   .topic-list-page .topic-header {
     padding: 24px;
-  }
-
-  .topic-list-page .topic-header h1 {
-    font-size: 22px;
   }
 
   .topic-list-page .topic-header .search-box input {
@@ -190,12 +172,8 @@
     border-radius: $border-radius-sm;
   }
 
-  .topic-list-page .topic-list .topic-card .topic-info .topic-name {
-    font-size: $font-size-title;
-  }
-
   .topic-list-page .topic-list .topic-card .topic-info .topic-desc {
-    font-size: $font-size-large;
+    font-size: $font-size-base;
     line-height: 1.6;
   }
 
@@ -213,13 +191,5 @@
   .topic-list-page .topic-list .topic-card .topic-cover {
     width: 140px;
     height: 140px;
-  }
-
-  .topic-list-page .topic-list .topic-card .topic-info .topic-name {
-    font-size: 22px;
-  }
-
-  .topic-list-page .topic-list .topic-card .topic-info .topic-desc {
-    font-size: $font-size-large;
   }
 }

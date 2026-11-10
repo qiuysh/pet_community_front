@@ -115,7 +115,7 @@ export function PetGrowthSection({
   return (
     <Card className="rounded-xl shadow-sm" padding="lg">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-medium text-brown">成长记录</h3>
+        <h3 className="page-section-title">成长记录</h3>
         {isOwner && (
           <Button type="button" size="sm" onClick={openCreate} className="rounded-lg gap-1.5">
             <Plus size={16} aria-hidden="true" />
@@ -135,7 +135,7 @@ export function PetGrowthSection({
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h4 className="font-medium text-brown">{record.title}</h4>
+                  <h4 className="page-section-title">{record.title}</h4>
                   <p className="text-sm text-brown-muted mt-1">
                     {new Date(record.recordDate).toLocaleDateString('zh-CN')}
                   </p>

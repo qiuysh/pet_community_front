@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, MessageCircle, PawPrint, Search } from 'lucide-react';
+import { Bell, Menu, MessageCircle, PawPrint, Search } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { useNavUnreadCounts } from '../../hooks/useNavUnreadCounts';
@@ -10,6 +10,7 @@ import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Avatar } from '../ui/avatar';
 import { Button, buttonClass } from '../ui/button';
 import { Dropdown } from '../ui/dropdown';
+import { USER_HEADER_NAV, USER_MOBILE_MORE_NAV } from './userNav';
 
 const actionIconProps = {
   size: ICON_SIZE.action,
@@ -49,6 +50,23 @@ export function UserHeader() {
   const navClass = (path: string) =>
     `nav-item ${isActive(path) ? 'active' : ''}`;
 
+  const mobileMoreItems = [
+    ...USER_MOBILE_MORE_NAV.map((item) => ({ key: item.path, label: item.label })),
+    ...(isLoggedIn
+      ? [
+          {
+            key: '/notifications',
+            label:
+              notificationUnread > 0 ? `通知（${formatCount(notificationUnread)}）` : '通知',
+          },
+          {
+            key: '/messages',
+            label: messageUnread > 0 ? `私信（${formatCount(messageUnread)}）` : '私信',
+          },
+        ]
+      : []),
+  ];
+
   return (
     <header className="user-header">
       <div className="header-content">
@@ -74,16 +92,30 @@ export function UserHeader() {
         </Link>
 
         <nav className="header-nav" aria-label="主导航">
-          <Link to="/" className={navClass('/')} aria-current={isActive('/') ? 'page' : undefined}>首页</Link>
-          <Link to="/discover" className={navClass('/discover')} aria-current={isActive('/discover') ? 'page' : undefined}>发现</Link>
-          <Link to="/pets" className={navClass('/pets')} aria-current={isActive('/pets') ? 'page' : undefined}>宠物</Link>
-          <Link to="/activities" className={navClass('/activities')} aria-current={isActive('/activities') ? 'page' : undefined}>活动</Link>
-          <Link to="/topics" className={navClass('/topics')} aria-current={isActive('/topics') ? 'page' : undefined}>话题</Link>
-          <Link to="/adopts" className={navClass('/adopts')} aria-current={isActive('/adopts') ? 'page' : undefined}>领养</Link>
-          <Link to="/ranking" className={navClass('/ranking')} aria-current={isActive('/ranking') ? 'page' : undefined}>排行榜</Link>
+          {USER_HEADER_NAV.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={navClass(item.path)}
+              aria-current={isActive(item.path) ? 'page' : undefined}
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="header-actions">
+          <Dropdown
+            aria-label="更多导航"
+            className="mobile-nav-more"
+            trigger={
+              <Button type="button" variant="ghost" className="action-link p-0" aria-label="更多导航">
+                <Menu {...actionIconProps} />
+              </Button>
+            }
+            items={mobileMoreItems}
+            onAction={(key) => navigate(key)}
+          />
           {isLoggedIn ? (
             <div className="user-menu">
               <Link to="/search" className="action-link" aria-label="搜索">

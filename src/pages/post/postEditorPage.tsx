@@ -148,7 +148,7 @@ export const PostEditorPage = () => {
     <div className="post-editor-page">
       <div className="editor-header">
         <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)}>取消</Button>
-        <span className="title">{isEdit ? '编辑动态' : '发布动态'}</span>
+        <h1 className="page-bar-title title">{isEdit ? '编辑动态' : '发布动态'}</h1>
         <Button
           type="button"
           className="publish-btn"
@@ -316,7 +316,7 @@ export const PostEditorPage = () => {
                       className="topic-suggestion"
                       onClick={() => addTopic(topic)}
                     >
-                      <span className="topic-name">{topic.name}</span>
+                      <span className="page-section-title topic-name text-primary-text">{topic.name}</span>
                       <span className="topic-count">{topic.postsCount} 动态</span>
                     </button>
                   ))}

@@ -21,8 +21,6 @@
     z-index: $z-index-sticky;
 
     .title {
-      font-size: $font-size-large;
-      font-weight: 600;
       margin-left: 16px;
     }
   }
@@ -65,11 +63,8 @@
       min-width: 0;
 
       .topic-name {
-        font-size: $font-size-title;
-        font-weight: 600;
-        color: $text-primary;
-        margin: 0 0 8px 0;
-      }
+          margin: 0 0 8px 0;
+        }
 
       .topic-desc {
         font-size: $font-size-sm;
@@ -90,9 +85,6 @@
     padding: 16px;
 
     .section-title {
-      font-size: $font-size-large;
-      font-weight: 600;
-      color: $text-primary;
       margin: 0 0 16px 0;
     }
 
@@ -130,12 +122,6 @@
           }
 
           .user-info {
-            .nickname {
-              font-size: $font-size-sm;
-              font-weight: 600;
-              color: $text-primary;
-            }
-
             .time {
               font-size: $font-size-xs;
               color: $text-muted;
@@ -227,10 +213,6 @@
     height: 120px;
   }
 
-  .topic-detail-page .topic-info-card .topic-meta .topic-name {
-    font-size: 22px;
-  }
-
   .topic-detail-page .topic-info-card .topic-meta .topic-desc {
     font-size: $font-size-base;
     line-height: 1.6;
@@ -246,10 +228,6 @@
   .topic-detail-page .topic-banner-slot {
     margin: 0 auto 12px;
     max-width: $page-max;
-  }
-
-  .topic-detail-page .posts-section .section-title {
-    font-size: 18px;
   }
 
   .topic-detail-page .posts-section .posts-list .post-card {
@@ -286,21 +264,13 @@
     height: 140px;
   }
 
-  .topic-detail-page .topic-info-card .topic-meta .topic-name {
-    font-size: $font-size-xl;
-  }
-
   .topic-detail-page .topic-info-card .topic-meta .topic-desc {
-    font-size: $font-size-large;
+    font-size: $font-size-base;
     line-height: 1.7;
   }
 
   .topic-detail-page .posts-section {
     padding: 24px;
-  }
-
-  .topic-detail-page .posts-section .section-title {
-    font-size: $font-size-title;
   }
 
   .topic-detail-page .posts-section .posts-list {
@@ -319,10 +289,6 @@
   .topic-detail-page .posts-section .posts-list .post-card .post-header .avatar {
     width: 56px;
     height: 56px;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-header .user-info .nickname {
-    font-size: $font-size-large;
   }
 
   .topic-detail-page .posts-section .posts-list .post-card .post-content {
@@ -350,17 +316,8 @@
     height: 160px;
   }
 
-  .topic-detail-page .topic-info-card .topic-meta .topic-name {
-    font-size: 26px;
-  }
-
   .topic-detail-page .posts-section .posts-list .post-card .post-header .avatar {
     width: 64px;
     height: 64px;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-content {
-    font-size: 17px;
-    line-height: 1.8;
   }
 }

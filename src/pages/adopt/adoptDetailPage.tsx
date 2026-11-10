@@ -114,7 +114,7 @@ export const AdoptDetailPage = () => {
       <div className="page-shell space-y-4 px-4 py-4">
         <Card>
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-brown">{adopt.petName}</h1>
+            <h1 className="page-content-title">{adopt.petName}</h1>
             <span className={`px-2 py-1 rounded-full text-sm font-medium ${
               adopt.status === AdoptionStatus.PENDING
                 ? 'bg-secondary-soft text-secondary-dark'
@@ -146,13 +146,13 @@ export const AdoptDetailPage = () => {
         </Card>
 
         <Card>
-          <h2 className="text-base font-medium text-brown mb-2">宠物介绍</h2>
+          <h2 className="page-section-title mb-2">宠物介绍</h2>
           <p className="text-sm text-brown-muted">{adopt.description}</p>
         </Card>
 
         {adopt.adoptConditions && (
           <Card>
-            <h2 className="text-base font-medium text-brown mb-2">领养条件</h2>
+            <h2 className="page-section-title mb-2">领养条件</h2>
             <p className="text-sm text-brown-muted">{adopt.adoptConditions}</p>
           </Card>
         )}
@@ -166,7 +166,7 @@ export const AdoptDetailPage = () => {
               className="w-10 h-10 rounded-full"
             />
             <div>
-              <div className="text-sm font-medium text-brown">{adopt.userNickname}</div>
+              <div className="page-section-title">{adopt.userNickname}</div>
               <div className="text-xs text-brown-muted">{adopt.createdAt}</div>
             </div>
           </div>
@@ -202,7 +202,7 @@ export const AdoptDetailPage = () => {
 
         {isOwner && (
           <Card>
-            <h2 className="text-base font-medium text-brown mb-3">领养申请</h2>
+            <h2 className="page-section-title mb-3">领养申请</h2>
             {appsLoading ? (
               <p className="text-sm text-brown-muted">加载中…</p>
             ) : applications.length === 0 ? (
@@ -222,7 +222,7 @@ export const AdoptDetailPage = () => {
                           alt=""
                           className="h-8 w-8 rounded-full object-cover"
                         />
-                        <span className="text-sm font-medium text-brown truncate">
+                        <span className="page-section-title truncate">
                           {app.userNickname}
                         </span>
                         <span className="text-xs text-brown-muted shrink-0">
@@ -255,7 +255,7 @@ export const AdoptDetailPage = () => {
 
         {canSeeFollowUps && (
           <Card>
-            <h2 className="text-base font-medium text-brown mb-3">领养回访</h2>
+            <h2 className="page-section-title mb-3">领养回访</h2>
             {followUpApplicationId ? (
               <AdoptionFollowUpPanel
                 adoptionId={adopt.id}
@@ -281,7 +281,7 @@ export const AdoptDetailPage = () => {
                         alt=""
                         className="h-8 w-8 rounded-full object-cover"
                       />
-                      <span className="text-sm font-medium text-brown">{item.userNickname}</span>
+                      <span className="page-section-title">{item.userNickname}</span>
                       <span className="ml-auto text-xs text-brown-muted">{item.createdAt}</span>
                     </div>
                     <p className="mt-2 whitespace-pre-wrap text-sm text-brown-secondary">

@@ -90,7 +90,7 @@ export const CategoryPage = () => {
               <div className="hero-icon-wrap">
                 <CategoryIcon categoryName={categoryInfo.name} size={ICON_SIZE.feature} color="currentColor" />
               </div>
-              <h1 className="hero-title">{categoryInfo.name}</h1>
+              <h1 className="page-content-title hero-title">{categoryInfo.name}</h1>
               <p className="hero-desc">{categoryInfo.description}</p>
             </>
           ) : (
@@ -98,7 +98,7 @@ export const CategoryPage = () => {
               <div className="hero-icon-wrap hero-icon-default">
                 <FallbackHeroIcon />
               </div>
-              <h1 className="hero-title">分类浏览</h1>
+              <h1 className="page-content-title hero-title">分类浏览</h1>
               <p className="hero-desc">按兴趣逛逛猫狗与更多宠友内容</p>
             </>
           )}
@@ -202,7 +202,7 @@ export const CategoryPage = () => {
             <div className="post-user">
               <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="post-avatar" />
               <div className="post-user-info">
-                <span className="post-nickname">{post.userNickname}</span>
+                <span className="page-section-title post-nickname">{post.userNickname}</span>
                 <span className="post-time">{post.createdAt}</span>
               </div>
             </div>

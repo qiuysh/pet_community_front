@@ -42,11 +42,6 @@
         margin-right: 10px;
       }
 
-      .level-name {
-        font-size: 18px;
-        font-weight: 600;
-        color: $text-primary;
-      }
     }
 
     .points-info {
@@ -54,8 +49,8 @@
       margin-bottom: 16px;
 
       .points-value {
-        font-size: 48px;
-        font-weight: 700;
+        font-size: $font-size-2xl;
+        font-weight: 600;
         color: $text-primary;
         font-variant-numeric: tabular-nums;
       }
@@ -193,12 +188,6 @@
         .rule-info {
           flex: 1;
 
-          .rule-name {
-            font-size: $font-size-base;
-            color: $text-primary;
-            font-weight: 600;
-          }
-
           .rule-limit {
             font-size: $font-size-xs;
             color: $text-muted;
@@ -207,8 +196,8 @@
         }
 
         .rule-points {
-          font-size: 18px;
-          font-weight: 700;
+          font-size: $font-size-large;
+          font-weight: 600;
           color: $primary-text;
         }
       }
@@ -236,12 +225,6 @@
 
         .benefit-info {
           flex: 1;
-
-          .benefit-name {
-            font-size: $font-size-base;
-            color: $text-primary;
-            font-weight: 600;
-          }
 
           .benefit-desc {
             font-size: $font-size-xs;

@@ -135,12 +135,6 @@
         }
 
         .user-info {
-          .nickname {
-            font-size: $font-size-sm;
-            font-weight: 600;
-            color: $text-primary;
-          }
-
           .time {
             font-size: $font-size-xs;
             color: $text-muted;
@@ -307,10 +301,6 @@
   .post-list-page .post-card .post-header .avatar {
     width: 48px;
     height: 48px;
-  }
-
-  .post-list-page .post-card .post-header .user-info .nickname {
-    font-size: $font-size-large;
   }
 
   .post-list-page .post-card .post-actions .action-item {

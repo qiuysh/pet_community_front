@@ -26,11 +26,6 @@
     border-bottom: 1px solid $divider-color;
     z-index: $z-index-sticky;
 
-    .title {
-      font-size: $font-size-large;
-      font-weight: 600;
-    }
-
     .more-wrapper {
       position: relative;
 
@@ -97,9 +92,6 @@
         flex: 1;
 
         .nickname {
-          font-size: $font-size-large;
-          font-weight: 600;
-          color: $text-primary;
           text-decoration: none;
           display: block;
         }
@@ -238,8 +230,6 @@
     scroll-margin-top: calc(var(--user-header-offset, 56px) + 48px);
 
     .comments-header {
-      font-size: $font-size-large;
-      font-weight: 600;
       margin-bottom: 16px;
     }
 
@@ -496,8 +486,8 @@
   }
 
   .post-detail-page .post-content-wrapper .post-text {
-    font-size: 17px;
-    line-height: 1.8;
+    font-size: $font-size-large;
+    line-height: 1.7;
   }
 
   .post-detail-page .post-content-wrapper .post-images &.grid-1 .image-item {
@@ -543,7 +533,7 @@
   }
 
   .post-detail-page .post-content-wrapper .post-text {
-    font-size: 18px;
+    font-size: $font-size-large;
   }
 
   .post-detail-page .post-content-wrapper .post-images &.grid-1 .image-item {
@@ -588,7 +578,7 @@
   }
 
   .post-detail-page .post-content-wrapper .post-text {
-    font-size: 18px;
-    line-height: 1.9;
+    font-size: $font-size-large;
+    line-height: 1.7;
   }
 }

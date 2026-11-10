@@ -39,7 +39,7 @@ const NotificationSettingsPage: React.FC = () => {
           {settingsList.map((item) => (
             <div key={item.key} className="setting-item">
               <div className="setting-info">
-                <div className="setting-title">{item.title}</div>
+                <div className="page-section-title setting-title">{item.title}</div>
                 <div className="setting-desc">{item.description}</div>
               </div>
               <Switch

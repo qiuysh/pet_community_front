@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useUserStore } from '../../stores/userStore';
+import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
+import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { formatRelativeTime } from '../../utils/format';
 import { usePostDetail } from '../../hooks/usePostDetail';
 import { usePostComments } from '../../hooks/usePostComments';
@@ -32,6 +34,7 @@ export const PostDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useUserStore();
+  const siteName = useSiteConfigStore((s) => s.siteName) || DEFAULT_SITE_NAME;
 
   const {
     post,
@@ -128,7 +131,7 @@ export const PostDetailPage = () => {
     <div className="post-detail-page page-shell">
       <div className="detail-header">
         <BackButton size={ICON_SIZE.nav} />
-        <span className="title">动态详情</span>
+        <h1 className="page-bar-title title">动态详情</h1>
         <Dropdown
           aria-label="更多操作"
           className="more-wrapper"
@@ -154,7 +157,7 @@ export const PostDetailPage = () => {
             />
           </Link>
           <div className="user-info">
-            <Link to={`/profile/${post.userId}`} className="nickname">{post.userNickname}</Link>
+            <Link to={`/profile/${post.userId}`} className="page-section-title nickname">{post.userNickname}</Link>
             <div className="time" title={post.createdAt}>
               {formatRelativeTime(post.createdAt)}
             </div>
@@ -224,6 +227,13 @@ export const PostDetailPage = () => {
         postUrl={shareUrl}
         postTitle={post.content}
         onShare={(platform) => onShare(platform)}
+        poster={{
+          siteName,
+          title: post.content,
+          coverUrl: post.images?.[0],
+          authorName: post.userNickname,
+          authorAvatar: post.userAvatar || getDefaultUserAvatar(post.userNickname),
+        }}
       />
 
       <ImageLightbox
@@ -234,7 +244,7 @@ export const PostDetailPage = () => {
       />
 
       <div id="post-detail-comments" className="comments-section">
-        <div className="comments-header">评论 ({commentsTotal})</div>
+        <div className="page-section-title comments-header">评论 ({commentsTotal})</div>
 
         <div className="comment-input-wrapper">
           {replyTarget && (

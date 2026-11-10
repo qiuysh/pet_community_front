@@ -120,7 +120,7 @@ export const ActivityVotePage = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-md border border-border-light p-4">
             <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
-              <h2 className="text-lg font-semibold text-brown">作品列表</h2>
+              <h2 className="page-bar-title">作品列表</h2>
               <div className="flex gap-3">
                 <AdminInput
                   type="text"

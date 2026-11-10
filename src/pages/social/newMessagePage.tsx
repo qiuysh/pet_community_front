@@ -92,7 +92,7 @@ const NewMessagePage: React.FC = () => {
                     alt={u.nickname}
                   />
                   <div className="user-info">
-                    <div className="user-name">{u.nickname}</div>
+                    <div className="page-section-title user-name">{u.nickname}</div>
                     {u.signature && <div className="user-sig">{u.signature}</div>}
                   </div>
                   <MessageCircle

@@ -32,11 +32,6 @@
       justify-content: center;
     }
 
-    .title {
-      font-size: $font-size-large;
-      font-weight: 600;
-    }
-
     .publish-btn {
       background: $primary-strong;
       color: $background-white;
@@ -336,7 +331,7 @@
         }
 
         .option-icon {
-          font-size: 18px;
+          font-size: $font-size-large;
           width: 24px;
           text-align: center;
         }
@@ -353,7 +348,7 @@
         }
 
         .option-arrow {
-          font-size: 18px;
+          font-size: $font-size-large;
           color: $text-light;
         }
 
@@ -462,11 +457,6 @@
 
             &:hover {
               background: $background-muted;
-            }
-
-            .topic-name {
-              color: $primary-text;
-              font-size: $font-size-sm;
             }
 
             .topic-count {
@@ -612,7 +602,7 @@
   }
 
   .post-editor-page .editor-body .content-input {
-    font-size: 17px;
+    font-size: $font-size-large;
     line-height: 1.7;
     min-height: 150px;
   }
@@ -651,8 +641,8 @@
   }
 
   .post-editor-page .editor-body .content-input {
-    font-size: 18px;
-    line-height: 1.8;
+    font-size: $font-size-large;
+    line-height: 1.7;
     min-height: 200px;
   }
 
@@ -710,8 +700,8 @@
 
 @media (min-width: 1280px) {
   .post-editor-page .editor-body .content-input {
-    font-size: 18px;
-    line-height: 1.9;
+    font-size: $font-size-large;
+    line-height: 1.7;
     min-height: 220px;
   }
 

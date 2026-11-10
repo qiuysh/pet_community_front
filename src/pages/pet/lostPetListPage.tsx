@@ -30,7 +30,7 @@ export function LostPetListPage() {
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
         <div className="page-shell flex items-center justify-between px-4 py-3">
           <BackButton className="-ml-2" />
-          <h1 className="text-lg font-semibold text-brown">寻宠启事</h1>
+          <h1 className="page-bar-title">寻宠启事</h1>
           <Link to="/lost-pets/create" className="text-sm text-primary-text font-medium">
             发布
           </Link>
@@ -50,7 +50,7 @@ export function LostPetListPage() {
             <Link key={item.id} to={`/lost-pets/${item.id}`} className="block">
               <Card hoverable className="rounded-xl shadow-card p-4">
                 <div className="flex justify-between gap-3">
-                  <h2 className="font-semibold text-brown">{item.petName}</h2>
+                  <h2 className="page-section-title">{item.petName}</h2>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-soft text-brown-secondary shrink-0">
                     {LOST_PET_STATUS_LABEL[item.status] ?? '未知'}
                   </span>

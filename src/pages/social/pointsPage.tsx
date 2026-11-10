@@ -29,7 +29,7 @@ const PointsPage: React.FC = () => {
         <Card className="level-card" padding="md">
           <div className="level-info">
             <div className="level-badge">Lv.{userLevel.level}</div>
-            <div className="level-name">{userLevel.levelName}</div>
+            <div className="page-content-title level-name">{userLevel.levelName}</div>
           </div>
           <div className="points-info">
             <div className="points-value">{userLevel.currentPoints}</div>
@@ -123,7 +123,7 @@ const PointsPage: React.FC = () => {
                     />
                   </div>
                   <div className="rule-info">
-                    <div className="rule-name">{rule.description}</div>
+                    <div className="page-section-title rule-name">{rule.description}</div>
                     <div className="rule-limit">每日上限 {rule.dailyLimit} 分</div>
                   </div>
                   <div className="rule-points">+{rule.points}</div>
@@ -147,7 +147,7 @@ const PointsPage: React.FC = () => {
                     />
                   </div>
                   <div className="benefit-info">
-                    <div className="benefit-name">{benefit.benefitName}</div>
+                    <div className="page-section-title benefit-name">{benefit.benefitName}</div>
                     <div className="benefit-desc">{benefit.benefitDesc}</div>
                   </div>
                   <div className="benefit-level">Lv.{benefit.level}</div>

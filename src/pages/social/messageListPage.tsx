@@ -85,7 +85,7 @@ const MessageListPage: React.FC = () => {
               />
               <div className="conversation-info">
                 <div className="conversation-header">
-                  <span className="user-name">{conv.targetUser.nickname}</span>
+                  <span className="page-section-title user-name">{conv.targetUser.nickname}</span>
                   <span className="message-time">{conv.lastMessageTime}</span>
                 </div>
                 <div className="last-message">{conv.lastMessage}</div>

@@ -41,6 +41,7 @@ export function usePetForm() {
     bio: '',
     isSterilized: 0,
     isVaccinated: 0,
+    visibility: 0,
   });
 
   useEffect(() => {
@@ -74,6 +75,7 @@ export function usePetForm() {
         bio: pet.bio,
         isSterilized: pet.isSterilized,
         isVaccinated: pet.isVaccinated,
+        visibility: (pet.visibility ?? 0) as 0 | 1 | 2,
       });
     },
     () => {

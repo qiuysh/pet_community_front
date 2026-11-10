@@ -108,7 +108,7 @@ const NotificationListPage: React.FC = () => {
             >
               <span className="notification-icon">{getIcon(notification.type)}</span>
               <span className="notification-content">
-                <span className="notification-title">{notification.title}</span>
+                <span className="page-section-title notification-title">{notification.title}</span>
                 <span className="notification-desc">{notification.content}</span>
                 <span className="notification-time" title={notification.createdAt}>
                   {formatRelativeTime(notification.createdAt)}

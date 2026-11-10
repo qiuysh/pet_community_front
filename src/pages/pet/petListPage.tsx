@@ -19,7 +19,7 @@ export function PetListPage() {
       <div className="page-shell px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-lg font-semibold text-brown">宠物广场</h1>
+            <h1 className="page-content-title">宠物广场</h1>
             <p className="text-brown-secondary text-sm mt-1">发现可爱的毛孩子们</p>
           </div>
           {isLoggedIn && (
@@ -95,7 +95,7 @@ export function PetListPage() {
                 </div>
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-brown truncate">{pet.name}</h3>
+                    <h3 className="page-section-title truncate">{pet.name}</h3>
                     {pet.gender === 1 && <span className="text-info-text">♂</span>}
                     {pet.gender === 2 && <span className="text-error-text">♀</span>}
                   </div>

@@ -18,7 +18,13 @@ export interface PostInfo {
   petIds?: number[];
   topicIds?: number[];
   topics?: TopicInfo[];
-  pets?: { id: number; userId: number; name: string; avatar: string }[];
+  pets?: Array<{
+    id: number;
+    userId?: number;
+    name: string;
+    avatar?: string;
+    accessible?: boolean;
+  }>;
   location?: string;
   visibility: number;
   likesCount: number;

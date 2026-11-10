@@ -30,7 +30,7 @@ export const adminUi = {
    */
   pageHeader: 'flex flex-col gap-3 px-6 py-4 border-b border-border-light',
   pageHeaderTop: 'flex flex-row items-start justify-between gap-3',
-  /** 后台页标题：20px（! 覆盖 global.scss 未入 layer 的 h1=28px） */
+  /** 后台页标题：20px（! 钉死字号，避免被其它工具类打断） */
   pageTitle: '!text-[20px] font-semibold leading-snug text-brown text-balance',
   /** 分区标题（h2）：16px，小于页标题 */
   sectionTitle: '!text-[16px] font-semibold leading-snug text-brown text-balance',

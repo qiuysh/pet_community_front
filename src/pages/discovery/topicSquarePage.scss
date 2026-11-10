@@ -56,15 +56,12 @@
         background: $secondary-soft;
         color: $secondary-dark;
         font-size: $font-size-xs;
-        font-weight: 600;
+        font-weight: 500;
         letter-spacing: 0.02em;
       }
 
       h1 {
-        font-size: $font-size-2xl;
-        font-weight: 700;
         margin-bottom: $spacing-xs;
-        letter-spacing: 0.5px;
       }
 
       p {
@@ -103,9 +100,6 @@
       margin-bottom: $spacing-md;
 
       .section-title {
-        font-size: $font-size-large;
-        font-weight: 600;
-        color: $text-primary;
         margin: 0;
       }
 
@@ -173,10 +167,7 @@
         }
 
         .category-name {
-          font-weight: 600;
-          font-size: $font-size-base;
           margin-bottom: 4px;
-          color: $text-primary;
         }
 
         .category-desc {
@@ -318,7 +309,7 @@
           background: $background-muted;
           color: $text-muted;
           font-size: $font-size-xs;
-          font-weight: 700;
+          font-weight: 600;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -373,9 +364,6 @@
           min-width: 0;
 
           .topic-name {
-            font-weight: 500;
-            font-size: $font-size-sm;
-            color: $text-primary;
             margin-bottom: 2px;
           }
 

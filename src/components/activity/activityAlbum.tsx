@@ -99,7 +99,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
   return (
     <div className="bg-white rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-medium text-brown">活动相册</h3>
+        <h3 className="page-section-title">活动相册</h3>
         {canUpload && (
           <Button type="button" size="sm" onClick={() => setShowUploadModal(true)}>
             上传照片

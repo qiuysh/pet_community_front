@@ -37,7 +37,7 @@ export function PageHeader({
         .join(' ')}
     >
       <div className="flex w-10 shrink-0 items-center">{back ? <BackButton fallbackTo={fallbackTo} /> : null}</div>
-      <h1 className="min-w-0 flex-1 truncate text-center text-[18px] font-semibold text-brown">{title}</h1>
+      <h1 className="page-bar-title min-w-0 flex-1 truncate text-center">{title}</h1>
       <div className="flex min-w-10 shrink-0 items-center justify-end gap-1">{right}</div>
     </header>
   );

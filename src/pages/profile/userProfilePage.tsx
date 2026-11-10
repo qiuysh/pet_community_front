@@ -174,10 +174,10 @@ export function UserProfilePage() {
             <div className="min-w-0 flex-1 text-center sm:text-left">
               <h1
                 className={[
-                  'text-balance text-xl font-bold sm:text-2xl',
+                  'page-content-title text-balance',
                   publicProfile?.isVipName || (displayUser as { isVipName?: boolean } | null)?.isVipName
                     ? 'text-secondary tracking-wide'
-                    : 'text-brown',
+                    : '',
                 ].join(' ')}
               >
                 {loadingProfile && !displayUser ? '加载中…' : displayUser?.nickname || '宠友'}
@@ -217,7 +217,7 @@ export function UserProfilePage() {
             aria-label="账号数据"
           >
             <div className="flex flex-col items-center justify-center gap-0.5 px-2 py-3">
-              <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+              <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
                 {postsCount}
               </span>
               <span className="text-xs text-brown-muted">帖子</span>
@@ -228,14 +228,14 @@ export function UserProfilePage() {
                 className={`${relationCellClass} border-x border-border-light`}
                 aria-label="查看关注列表"
               >
-                <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+                <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
                   {formatCount(followingCount)}
                 </span>
                 <span className="text-xs text-brown-muted">关注</span>
               </Link>
             ) : (
               <div className={`${relationCellClass} border-x border-border-light`}>
-                <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+                <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
                   {formatCount(followingCount)}
                 </span>
                 <span className="text-xs text-brown-muted">关注</span>
@@ -247,14 +247,14 @@ export function UserProfilePage() {
                 className={relationCellClass}
                 aria-label="查看粉丝列表"
               >
-                <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+                <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
                   {formatCount(followersCount)}
                 </span>
                 <span className="text-xs text-brown-muted">粉丝</span>
               </Link>
             ) : (
               <div className={relationCellClass}>
-                <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+                <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
                   {formatCount(followersCount)}
                 </span>
                 <span className="text-xs text-brown-muted">粉丝</span>
@@ -431,7 +431,7 @@ export function UserProfilePage() {
                           )}
                         </div>
                         <div className="p-4">
-                          <p className="text-sm font-medium text-brown truncate">{pet.name}</p>
+                          <p className="page-section-title truncate">{pet.name}</p>
                           <p className="text-xs text-brown-muted mt-1 truncate">
                             {pet.breedName || '未知品种'}
                           </p>

@@ -73,7 +73,7 @@ export const ActivityDetailPage = () => {
           className="w-full h-48 object-cover"
         />
         <div className="page-shell px-4 py-4">
-          <h1 className="text-xl font-bold text-brown mb-2">{activity.title}</h1>
+          <h1 className="page-content-title mb-2">{activity.title}</h1>
           <p className="text-brown-muted mb-3">{activity.description}</p>
 
           <div className="space-y-2 text-sm text-brown-muted">
@@ -178,19 +178,19 @@ export const ActivityDetailPage = () => {
           <Card>
             {activity.rules && (
               <div className="mb-4">
-                <h3 className="text-base font-medium text-brown mb-2">活动规则</h3>
+                <h3 className="page-section-title mb-2">活动规则</h3>
                 <p className="text-sm text-brown-muted">{activity.rules}</p>
               </div>
             )}
             {activity.prizes && (
               <div className="mb-4">
-                <h3 className="text-base font-medium text-brown mb-2">奖品设置</h3>
+                <h3 className="page-section-title mb-2">奖品设置</h3>
                 <p className="text-sm text-brown-muted">{activity.prizes}</p>
               </div>
             )}
             {(activity.votesPerDay ?? 0) > 0 && (
               <div className="mb-4">
-                <h3 className="text-base font-medium text-brown mb-2">投票规则</h3>
+                <h3 className="page-section-title mb-2">投票规则</h3>
                 <p className="text-sm text-brown-muted">每人每天最多可投票 {activity.votesPerDay} 次</p>
               </div>
             )}
@@ -212,7 +212,7 @@ export const ActivityDetailPage = () => {
                       className="w-full h-32 object-cover"
                     />
                     <div className="p-3">
-                      <h4 className="text-sm font-medium text-brown mb-1">{submission.title}</h4>
+                      <h4 className="page-section-title mb-1">{submission.title}</h4>
                       <p className="text-xs text-brown-muted mb-2 line-clamp-2">{submission.description}</p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
@@ -288,7 +288,7 @@ export const ActivityDetailPage = () => {
           <Card>
             {review ? (
               <article className="space-y-3">
-                <h3 className="text-base font-medium text-brown">{review.title}</h3>
+                <h3 className="page-section-title">{review.title}</h3>
                 {review.publishedAt && (
                   <p className="text-xs text-brown-muted">发布于 {formatTime(review.publishedAt)}</p>
                 )}

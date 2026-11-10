@@ -158,7 +158,7 @@ export const MyAdoptPage = () => {
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <Link to={`/adopts/${adopt.id}`} className="truncate font-medium text-brown">
+                      <Link to={`/adopts/${adopt.id}`} className="page-section-title truncate">
                         {adopt.petName}
                       </Link>
                       <span className="shrink-0 rounded bg-secondary-soft px-1.5 py-0.5 text-xs text-secondary-dark">
@@ -208,7 +208,7 @@ export const MyAdoptPage = () => {
           applications.map((application) => (
             <Card key={application.id} className="p-4">
               <div className="flex items-center justify-between gap-2">
-                <Link to={`/adopts/${application.adoptionId}`} className="font-medium text-brown">
+                <Link to={`/adopts/${application.adoptionId}`} className="page-section-title">
                   申请 #{application.adoptionId}
                 </Link>
                 <span className="rounded bg-secondary-soft px-1.5 py-0.5 text-xs text-secondary-dark">

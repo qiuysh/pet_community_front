@@ -1,17 +1,24 @@
 import { Link } from 'react-router-dom';
+import { useCallback } from 'react';
 import { usePetDetail } from '../../hooks/usePetDetail';
-import { PetTypeOptions, getPetTypeIcon, PetTypeFallbackIcon } from '../../types/pet';
-import { FileText } from 'lucide-react';
+import { useShare } from '../../hooks/useShare';
+import { PetTypeOptions, PetVisibilityOptions, getPetTypeIcon, PetTypeFallbackIcon } from '../../types/pet';
+import { FileText, Share2 } from 'lucide-react';
 import { PetAlbumSection } from '../../components/pet/petAlbumSection';
 import { PetGrowthSection } from '../../components/pet/petGrowthSection';
-import { buttonClass } from '../../components/ui/button';
+import { ShareSheet } from '../../components/post/shareSheet';
+import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 import { formatCount } from '../../utils/format';
+import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
+import { ICON_SIZE } from '../../styles/iconSize';
 
 export function PetDetailPage() {
+  const siteName = useSiteConfigStore((s) => s.siteName) || DEFAULT_SITE_NAME;
   const {
     pet,
     loading,
@@ -33,6 +40,26 @@ export function PetDetailPage() {
     saveGrowthRecord,
     removeGrowthRecord,
   } = usePetDetail();
+
+  const {
+    shareOpen,
+    shareUrl,
+    shareTitle,
+    openShare,
+    closeShare,
+    onShare,
+  } = useShare({
+    record: async () => undefined,
+    resolveTarget: () => ({
+      url: `${window.location.origin}/pets/${pet?.id ?? ''}`,
+      title: pet ? `【萌宠】${pet.name}${pet.breedName ? ` · ${pet.breedName}` : ''}` : '宠物档案',
+    }),
+  });
+
+  const handleOpenShare = useCallback(() => {
+    if (!pet) return;
+    openShare();
+  }, [pet, openShare]);
 
   if (loading) {
     return (
@@ -62,6 +89,7 @@ export function PetDetailPage() {
   }
 
   const petTypeInfo = PetTypeOptions.find(t => t.value === pet.petType);
+  const visibilityLabel = PetVisibilityOptions.find((o) => o.value === (pet.visibility ?? 0))?.label;
 
   const tabItems = [
     {
@@ -123,7 +151,7 @@ export function PetDetailPage() {
             </div>
             <div className="flex-1 pb-2">
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-brown">{pet.name}</h1>
+                <h1 className="page-content-title">{pet.name}</h1>
                 {pet.gender === 1 && <span className="text-xl text-primary-text">♂</span>}
                 {pet.gender === 2 && <span className="text-xl text-error-text">♀</span>}
               </div>
@@ -143,6 +171,16 @@ export function PetDetailPage() {
               )}
             </div>
             <div className="pb-2 flex gap-3">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="rounded-lg"
+                onClick={handleOpenShare}
+              >
+                <Share2 size={ICON_SIZE.inline} aria-hidden="true" />
+                分享
+              </Button>
               {isOwner && (
                 <Link
                   to={`/pets/${pet.id}/edit`}
@@ -153,6 +191,14 @@ export function PetDetailPage() {
               )}
             </div>
           </div>
+
+          {isOwner && visibilityLabel && (
+            <div className="px-6 pb-2">
+              <span className="inline-flex text-xs text-brown-muted bg-bg-secondary px-2 py-1 rounded-md">
+                {visibilityLabel}
+              </span>
+            </div>
+          )}
 
           {pet.bio && (
             <div className="px-6 pb-4">
@@ -230,7 +276,7 @@ export function PetDetailPage() {
 
         <div className="mt-6 pb-12">
           <Card className="rounded-xl shadow-sm">
-            <h3 className="font-medium text-brown mb-4">基本信息</h3>
+            <h3 className="page-section-title mb-4">基本信息</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex justify-between py-2 border-b border-border-light">
                 <span className="text-brown-muted">类型</span>
@@ -268,6 +314,21 @@ export function PetDetailPage() {
           </Card>
         </div>
       </div>
+
+      <ShareSheet
+        open={shareOpen}
+        onClose={closeShare}
+        postUrl={shareUrl}
+        postTitle={shareTitle}
+        onShare={(platform) => void onShare(platform)}
+        poster={{
+          siteName,
+          title: shareTitle,
+          coverUrl: pet.avatar,
+          authorName: pet.name,
+          authorAvatar: pet.avatar,
+        }}
+      />
     </div>
   );
 }

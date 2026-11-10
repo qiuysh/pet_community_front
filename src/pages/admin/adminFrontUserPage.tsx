@@ -303,7 +303,7 @@ export function AdminFrontUserPage() {
                   />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-brown">批量封禁用户</h3>
+                  <h3 className="page-bar-title">批量封禁用户</h3>
                   <p className="text-sm text-brown-muted">共选择 {selectedUsers.length} 个用户</p>
                 </div>
               </div>

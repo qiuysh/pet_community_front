@@ -67,10 +67,6 @@
         min-width: 0;
 
         .user-name {
-          font-size: $font-size-sm;
-          font-weight: 600;
-          color: $text-primary;
-          line-height: 1.3;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;

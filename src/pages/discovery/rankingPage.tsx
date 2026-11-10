@@ -27,7 +27,7 @@ export const RankingPage = () => {
   return (
     <div className="ranking-page">
       <div className="page-header">
-        <h1 className="flex items-center justify-center gap-2">
+        <h1 className="page-content-title flex items-center justify-center gap-2">
           <Flame size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
           <span>热门排行</span>
         </h1>
@@ -63,7 +63,7 @@ export const RankingPage = () => {
         <>
           <div className="ranking-section">
             <div className="section-header">
-              <span className="section-title">热门帖子</span>
+              <span className="page-section-title section-title">热门帖子</span>
             </div>
             <div className="ranking-list motion-list">
               {(data.posts || []).slice(0, 10).map((post, index) => (
@@ -75,7 +75,7 @@ export const RankingPage = () => {
                     <Link to={`/posts/${post.id}`} className="post-link">
                       <div className="post-header">
                         <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="avatar" />
-                        <span className="nickname">{post.userNickname}</span>
+                        <span className="page-section-title nickname">{post.userNickname}</span>
                       </div>
                       <div className="post-content">{post.content}</div>
                     </Link>
@@ -93,7 +93,7 @@ export const RankingPage = () => {
 
           <div className="ranking-section">
             <div className="section-header">
-              <span className="section-title">人气用户</span>
+              <span className="page-section-title section-title">人气用户</span>
             </div>
             <div className="ranking-list motion-list">
               {(data.users || []).slice(0, 10).map((user, index) => (
@@ -103,7 +103,7 @@ export const RankingPage = () => {
                   </span>
                   <Avatar src={user.avatar || getDefaultUserAvatar()} name={user.nickname} className="avatar" />
                   <div className="user-info">
-                    <div className="nickname">{user.nickname}</div>
+                    <div className="page-section-title nickname">{user.nickname}</div>
                     <div className="stats tabular-nums">
                       <span>{formatCount(user.followersCount)}粉丝</span>
                       <span>{formatCount(user.postsCount)}动态</span>
@@ -117,7 +117,7 @@ export const RankingPage = () => {
 
           <div className="ranking-section">
             <div className="section-header">
-              <span className="section-title">热门话题</span>
+              <span className="page-section-title section-title">热门话题</span>
             </div>
             <div className="ranking-list motion-list">
               {(data.topics || []).slice(0, 10).map((topic, index) => (
@@ -126,7 +126,7 @@ export const RankingPage = () => {
                     {index + 1}
                   </span>
                   <div className="topic-info">
-                    <div className="topic-name">{topic.name}</div>
+                    <div className="page-section-title topic-name">{topic.name}</div>
                     <div className="topic-desc">{topic.description}</div>
                   </div>
                   <div className="topic-stats tabular-nums">

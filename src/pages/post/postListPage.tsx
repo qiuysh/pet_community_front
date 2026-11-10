@@ -100,7 +100,7 @@ export const PostListPage = () => {
                   className="avatar"
                 />
                 <div className="user-info">
-                  <div className="nickname">{post.userNickname}</div>
+                  <div className="page-section-title nickname">{post.userNickname}</div>
                   <div className="time" title={post.createdAt}>
                     {formatRelativeTime(post.createdAt)}
                   </div>

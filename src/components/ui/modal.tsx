@@ -79,7 +79,7 @@ export function Modal({
             />
             {title ? (
               <HeroModal.Header>
-                <HeroModal.Heading className="text-brown text-lg font-semibold">
+                <HeroModal.Heading className="page-section-title">
                   {title}
                 </HeroModal.Heading>
               </HeroModal.Header>
