@@ -31,7 +31,7 @@ export const AdoptCreatePage = () => {
     <div className="bg-cream min-h-screen pb-6">
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
         <div className="page-shell py-3 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-brown">发布领养</h1>
+          <h1 className="text-lg font-semibold text-brown">发布领养</h1>
           <Button size="sm" disabled={loading} loading={loading} onClick={handleSubmit}>
             {loading ? '发布中' : '发布'}
           </Button>

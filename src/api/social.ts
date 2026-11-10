@@ -85,6 +85,7 @@ export const notificationSettingsApi = {
     followNotify: number
     systemNotify: number
     messageNotify: number
+    securityNotify: number
   }) => put('/api/v1/social/notification-settings', data),
 }
 

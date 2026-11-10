@@ -40,7 +40,7 @@ export function PetFormPage() {
       <div className="page-shell py-8">
         <div className="flex items-center gap-4 mb-6">
           <BackButton />
-          <h1 className="text-2xl font-bold text-brown">
+          <h1 className="text-lg font-semibold text-brown">
             {isEdit ? '编辑宠物档案' : '创建宠物档案'}
           </h1>
         </div>

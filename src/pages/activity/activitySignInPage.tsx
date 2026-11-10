@@ -1,8 +1,11 @@
+import { useCallback } from 'react';
 import { useActivitySignIn } from '../../hooks/useActivitySignIn';
 import { QRCodeGenerator } from '../../components/activity/qrCodeGenerator';
+import { QrCodeScanner } from '../../components/activity/qrCodeScanner';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { MapPin } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
+import { useToast } from '../../components/toast';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -10,6 +13,7 @@ import { FieldLabel, Input } from '../../components/ui/input';
 import { Tabs } from '../../components/ui/tabs';
 
 export const ActivitySignInPage = () => {
+  const toast = useToast();
   const {
     activity,
     signInList,
@@ -25,6 +29,20 @@ export const ActivitySignInPage = () => {
     handleSignIn,
     activityId,
   } = useActivitySignIn();
+
+  const onScan = useCallback(
+    (text: string) => {
+      handleSignIn(text);
+    },
+    [handleSignIn],
+  );
+
+  const onScanError = useCallback(
+    (message: string) => {
+      toast.warning(message);
+    },
+    [toast],
+  );
 
   const formatTime = (timeStr: string) => {
     return new Date(timeStr).toLocaleString('zh-CN', {
@@ -85,9 +103,17 @@ export const ActivitySignInPage = () => {
             </Card>
 
             <Card>
+              <h3 className="text-base font-medium text-brown mb-1">摄像头扫码</h3>
+              <p className="text-xs text-brown-muted mb-4">
+                对准现场签到二维码，识别成功后自动提交。无摄像头时请用手输。
+              </p>
+              <QrCodeScanner onScan={onScan} onError={onScanError} disabled={isSigningIn} />
+            </Card>
+
+            <Card>
               <h3 className="text-base font-medium text-brown mb-1">输入签到码</h3>
               <p className="text-xs text-brown-muted mb-4">
-                扫描现场二维码得到签到码后，粘贴到下方完成签到。
+                降级通道：可用系统相机扫码后粘贴，或手动输入签到码。
               </p>
               <div className="space-y-4">
                 <div>
@@ -121,7 +147,7 @@ export const ActivitySignInPage = () => {
                   block
                   disabled={isSigningIn}
                   loading={isSigningIn}
-                  onClick={handleSignIn}
+                  onClick={() => handleSignIn()}
                 >
                   确认签到
                 </Button>

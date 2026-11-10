@@ -69,7 +69,7 @@ export const AdoptListPage = () => {
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
         <div className="page-shell py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-brown">领养中心</h1>
+            <h1 className="text-lg font-semibold text-brown">领养中心</h1>
             <div className="flex items-center gap-2">
               <Link to="/adopts/mine" className={buttonClass({ size: 'sm', variant: 'outline' })}>
                 我的领养

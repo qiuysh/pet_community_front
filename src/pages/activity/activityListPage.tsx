@@ -26,7 +26,7 @@ export const ActivityListPage = () => {
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
         <div className="page-shell py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-brown">活动中心</h1>
+            <h1 className="text-lg font-semibold text-brown">活动中心</h1>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-2">

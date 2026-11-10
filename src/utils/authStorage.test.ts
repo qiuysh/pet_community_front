@@ -8,6 +8,7 @@ import {
   getRememberedUserAccount,
   getUserToken,
   isAdminApiUrl,
+  isAuthEndpointUrl,
   isAdminRemembered,
   isUserRemembered,
   setAdminAuth,
@@ -135,5 +136,14 @@ describe('authStorage', () => {
     expect(isAdminApiUrl('/api/v1/admin-login')).toBe(true);
     expect(isAdminApiUrl('/api/v1/auth/login')).toBe(false);
     expect(isAdminApiUrl('/api/v1/posts')).toBe(false);
+  });
+
+  it('isAuthEndpointUrl 应识别登录/验证码/刷新入口', () => {
+    expect(isAuthEndpointUrl('/api/v1/admin/login')).toBe(true);
+    expect(isAuthEndpointUrl('/api/v1/admin/captcha')).toBe(true);
+    expect(isAuthEndpointUrl('/api/v1/auth/login')).toBe(true);
+    expect(isAuthEndpointUrl('/api/v1/auth/refresh-token')).toBe(true);
+    expect(isAuthEndpointUrl('/api/v1/admin/users')).toBe(false);
+    expect(isAuthEndpointUrl('/api/v1/posts')).toBe(false);
   });
 });

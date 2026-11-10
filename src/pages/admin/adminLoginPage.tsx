@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { RefreshCw, ShieldCheck } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useAdminStore } from '../../stores/adminStore';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { getAdminCaptcha } from '../../api/admin';
 import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { validators, validateForm } from '../../utils/validators';
 import {
@@ -25,18 +26,44 @@ export function AdminLoginPage() {
     () => isAdminRemembered() || !!getRememberedAdminUsername(),
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [requireCaptcha, setRequireCaptcha] = useState(false);
+  const [captchaId, setCaptchaId] = useState('');
+  const [captchaImage, setCaptchaImage] = useState('');
+  const [captchaCode, setCaptchaCode] = useState('');
+  const [captchaLoading, setCaptchaLoading] = useState(false);
 
   const { login, isLoading, error, fetchPublicKey } = useAdminStore();
+
+  const refreshCaptcha = useCallback(async () => {
+    setCaptchaLoading(true);
+    try {
+      const res = await getAdminCaptcha();
+      setCaptchaId(res.captchaId);
+      setCaptchaImage(res.captchaImage);
+      setCaptchaCode('');
+    } catch {
+      setCaptchaId('');
+      setCaptchaImage('');
+    } finally {
+      setCaptchaLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchPublicKey();
   }, [fetchPublicKey]);
 
+  useEffect(() => {
+    if (requireCaptcha) {
+      void refreshCaptcha();
+    }
+  }, [requireCaptcha, refreshCaptcha]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = { username, password };
-    const validationRules = {
+    const formData = { username, password, captchaCode };
+    const validationRules: Record<string, ReturnType<typeof validators.required>[]> = {
       username: [
         validators.required('请输入用户名'),
         validators.minLength(3, '用户名至少3个字符'),
@@ -48,6 +75,9 @@ export function AdminLoginPage() {
         validators.maxLength(50, '密码最多50个字符'),
       ],
     };
+    if (requireCaptcha) {
+      validationRules.captchaCode = [validators.required('请输入验证码')];
+    }
 
     const formErrors = validateForm(formData, validationRules);
     setErrors(formErrors);
@@ -56,11 +86,27 @@ export function AdminLoginPage() {
       return;
     }
 
-    const success = await login({ username, password }, { remember });
+    const result = await login(
+      {
+        username,
+        password,
+        captchaId: requireCaptcha ? captchaId : undefined,
+        captchaCode: requireCaptcha ? captchaCode : undefined,
+      },
+      { remember },
+    );
 
-    if (success) {
+    if (result.ok) {
       setRememberedAdminUsername(remember ? username : null);
       navigate('/admin/dashboard', { replace: true });
+      return;
+    }
+
+    if (result.requireCaptcha) {
+      setRequireCaptcha(true);
+      void refreshCaptcha();
+    } else if (requireCaptcha) {
+      void refreshCaptcha();
     }
   };
 
@@ -106,7 +152,7 @@ export function AdminLoginPage() {
             {errors.username ? <AdminHint className="text-error-text">{errors.username}</AdminHint> : null}
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <AdminLabel htmlFor="admin-password">密码</AdminLabel>
             <AdminInput
               id="admin-password"
@@ -126,6 +172,56 @@ export function AdminLoginPage() {
             />
             {errors.password ? <AdminHint className="text-error-text">{errors.password}</AdminHint> : null}
           </div>
+
+          {requireCaptcha && (
+            <div className="mb-4">
+              <AdminLabel htmlFor="admin-captcha">验证码</AdminLabel>
+              <div className="flex gap-2 items-stretch">
+                <AdminInput
+                  id="admin-captcha"
+                  type="text"
+                  value={captchaCode}
+                  invalid={!!errors.captchaCode}
+                  onChange={(e) => {
+                    setCaptchaCode(e.target.value.toUpperCase());
+                    if (errors.captchaCode) {
+                      setErrors((prev) => ({ ...prev, captchaCode: '' }));
+                    }
+                  }}
+                  placeholder="输入图中字符"
+                  autoComplete="off"
+                  name="captchaCode"
+                  spellCheck={false}
+                  className="h-11 px-4 flex-1"
+                  maxLength={4}
+                  aria-label="图形验证码"
+                />
+                <button
+                  type="button"
+                  className="shrink-0 h-11 w-[120px] rounded-md border border-border-light bg-soft overflow-hidden flex items-center justify-center"
+                  onClick={() => void refreshCaptcha()}
+                  disabled={captchaLoading}
+                  aria-label="刷新验证码"
+                  title="点击刷新"
+                >
+                  {captchaImage ? (
+                    <img src={captchaImage} alt="验证码" className="h-full w-full object-cover" />
+                  ) : (
+                    <RefreshCw
+                      size={ICON_SIZE.inline}
+                      className={captchaLoading ? 'animate-spin text-brown-muted' : 'text-brown-muted'}
+                      aria-hidden="true"
+                    />
+                  )}
+                </button>
+              </div>
+              {errors.captchaCode ? (
+                <AdminHint className="text-error-text">{errors.captchaCode}</AdminHint>
+              ) : (
+                <AdminHint>连续失败后需填写验证码，点击图片可刷新</AdminHint>
+              )}
+            </div>
+          )}
 
           <div className="flex items-center justify-between mb-6">
             <AdminCheckbox

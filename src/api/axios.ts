@@ -13,6 +13,7 @@ import {
   getRefreshToken,
   getUserToken,
   isAdminApiUrl,
+  isAuthEndpointUrl,
   setUserAuth,
 } from '../utils/authStorage';
 
@@ -146,10 +147,18 @@ const createApiInstance = (): AxiosInstance => {
     },
     async (error) => {
       const originalRequest = error.config;
-      const isAdminApi = isAdminApiUrl(originalRequest?.url);
+      const requestUrl = originalRequest?.url as string | undefined;
+      const isAdminApi = isAdminApiUrl(requestUrl);
+      const isAuthEndpoint = isAuthEndpointUrl(requestUrl);
 
       if (error.response) {
         const { status, data } = error.response;
+
+        // 登录/验证码/刷新本身的 401：只提示，绝不清会话、不递归 refresh
+        if (status === 401 && isAuthEndpoint) {
+          handleHttpError(status, data?.message || '认证失败', requestUrl);
+          return Promise.reject(new ApiError(status, data?.message || '认证失败', data?.data ?? null));
+        }
 
         // 管理端 401：只清管理端，绝不走用户 refresh
         if (status === 401 && isAdminApi) {
@@ -185,8 +194,16 @@ const createApiInstance = (): AxiosInstance => {
           }
 
           try {
-            const refreshResponse = await instance.post('/api/v1/auth/refresh-token', { refreshToken });
-            const { token, refreshToken: newRefreshToken } = refreshResponse.data;
+            // 拦截器已解包 data，此处即 { token, refreshToken }
+            const refreshResponse = (await instance.post('/api/v1/auth/refresh-token', {
+              refreshToken,
+            })) as { token?: string; refreshToken?: string };
+            const token = refreshResponse?.token;
+            const newRefreshToken = refreshResponse?.refreshToken;
+
+            if (!token) {
+              throw new Error('refresh token response missing access token');
+            }
 
             // 沿用用户端登录时的「记住我」存储偏好
             setUserAuth(token, newRefreshToken ?? refreshToken);
@@ -205,7 +222,7 @@ const createApiInstance = (): AxiosInstance => {
           }
         }
 
-        handleHttpError(status, data?.message || 'Network error', originalRequest?.url);
+        handleHttpError(status, data?.message || 'Network error', requestUrl);
         return Promise.reject(new ApiError(status, data?.message || 'Network error', null));
       }
 
@@ -226,6 +243,11 @@ const createApiInstance = (): AxiosInstance => {
 const handleBusinessError = (code: number, message: string, url?: string): void => {
   switch (code) {
     case 401:
+      // 登录入口的业务 401 不得清会话
+      if (isAuthEndpointUrl(url)) {
+        showErrorToast(message || '认证失败');
+        break;
+      }
       if (message.toLowerCase().includes('token')) {
         showWarningToast('登录已过期，请重新登录');
         expireAuth(isAdminApiUrl(url));
@@ -251,6 +273,10 @@ const handleBusinessError = (code: number, message: string, url?: string): void 
 const handleHttpError = (status: number, message: string, url?: string): void => {
   switch (status) {
     case 401:
+      if (isAuthEndpointUrl(url)) {
+        showErrorToast(message || '认证失败');
+        break;
+      }
       if (message.toLowerCase().includes('token')) {
         showWarningToast('登录已过期，请重新登录');
         expireAuth(isAdminApiUrl(url));

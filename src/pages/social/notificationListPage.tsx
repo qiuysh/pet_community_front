@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AtSign, Bell, Heart, MessageCircle, UserPlus } from 'lucide-react';
+import { AtSign, Bell, Heart, MessageCircle, ShieldAlert, UserPlus } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useNotificationList } from '../../hooks/useNotificationList';
 import { useConfirm } from '../../hooks/useConfirm';
@@ -63,6 +63,8 @@ const NotificationListPage: React.FC = () => {
         return <AtSign {...props} className="text-info" />;
       case 'follow':
         return <UserPlus {...props} className="text-secondary-light" />;
+      case 'security':
+        return <ShieldAlert {...props} className="text-warning-text" />;
       default:
         return <Bell {...props} className="text-brown-muted" />;
     }

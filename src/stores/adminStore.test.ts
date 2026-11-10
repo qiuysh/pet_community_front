@@ -64,10 +64,10 @@ describe('useAdminStore', () => {
 
     let success = false;
     await act(async () => {
-      success = await result.current.login(
+      success = (await result.current.login(
         { username: 'admin', password: 'Admin@123' },
         { remember: true },
-      );
+      )).ok;
     });
 
     expect(success).toBe(true);
@@ -89,10 +89,10 @@ describe('useAdminStore', () => {
 
     let success = false;
     await act(async () => {
-      success = await result.current.login(
+      success = (await result.current.login(
         { username: 'admin', password: 'Admin@123' },
         { remember: false },
-      );
+      )).ok;
     });
 
     expect(success).toBe(true);
@@ -109,7 +109,7 @@ describe('useAdminStore', () => {
 
     let success = true;
     await act(async () => {
-      success = await result.current.login({ username: 'admin', password: 'wrong' });
+      success = (await result.current.login({ username: 'admin', password: 'wrong' })).ok;
     });
 
     expect(success).toBe(false);
@@ -126,7 +126,7 @@ describe('useAdminStore', () => {
 
     let success = true;
     await act(async () => {
-      success = await result.current.login({ username: 'admin', password: 'Admin@123' });
+      success = (await result.current.login({ username: 'admin', password: 'Admin@123' })).ok;
     });
 
     expect(success).toBe(false);

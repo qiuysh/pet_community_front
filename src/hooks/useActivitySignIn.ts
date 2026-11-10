@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getActivityDetail, getSignInList, getSignInStats, signIn } from '../api/activity';
 import { useUserStore } from '../stores/userStore';
@@ -78,28 +78,36 @@ export function useActivitySignIn() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId, isLoggedIn]);
 
-  const handleSignIn = () => {
-    if (!scanQRCode) {
-      toast.warning('请输入现场提供的签到码');
-      return;
-    }
-    if (!activityId) return;
+  const handleSignIn = useCallback(
+    (codeOverride?: string) => {
+      const qrCode = (codeOverride ?? scanQRCode).trim();
+      if (!qrCode) {
+        toast.warning('请输入现场提供的签到码');
+        return;
+      }
+      if (!activityId) return;
+      if (codeOverride) setScanQRCode(qrCode);
 
-    runSignIn(
-      () => signIn(activityId, {
-        activityId,
-        qrCode: scanQRCode,
-        signInLocation: signInLocation || undefined,
-      }),
-      () => {
-        toast.success('签到成功');
-        setScanQRCode('');
-        setSignInLocation('');
-        loadData(activityId);
-      },
-      (error: unknown) => toast.error((error as Error).message || '签到失败'),
-    );
-  };
+      runSignIn(
+        () =>
+          signIn(activityId, {
+            activityId,
+            qrCode,
+            signInLocation: signInLocation || undefined,
+          }),
+        () => {
+          toast.success('签到成功');
+          setScanQRCode('');
+          setSignInLocation('');
+          loadData(activityId);
+        },
+        (error: unknown) => toast.error((error as Error).message || '签到失败'),
+      );
+    },
+    // loadData / toast / runSignIn 在本 hook 生命周期内稳定或可接受最新闭包
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activityId, scanQRCode, signInLocation],
+  );
 
   return {
     activity,

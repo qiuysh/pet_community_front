@@ -27,11 +27,18 @@ export interface Admin {
 export interface AdminLoginRequest {
     username: string;
     password: string;
+    captchaId?: string;
+    captchaCode?: string;
 }
 
 export interface AdminLoginResponse {
     token: string;
     admin: Admin;
+}
+
+export interface AdminCaptchaResponse {
+    captchaId: string;
+    captchaImage: string;
 }
 
 // Admin User Management Types

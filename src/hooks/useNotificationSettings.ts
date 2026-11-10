@@ -11,6 +11,8 @@ export interface NotificationSettings {
   followNotify: number;
   systemNotify: number;
   messageNotify: number;
+  /** R4：新设备登录安全提醒，默认开启 */
+  securityNotify: number;
 }
 
 const DEFAULT_SETTINGS: NotificationSettings = {
@@ -20,6 +22,7 @@ const DEFAULT_SETTINGS: NotificationSettings = {
   followNotify: 1,
   systemNotify: 1,
   messageNotify: 1,
+  securityNotify: 1,
 };
 
 /**

@@ -3,6 +3,7 @@ import { get, post, put, del } from './axios';
 import { 
     AdminLoginRequest, 
     AdminLoginResponse,
+    AdminCaptchaResponse,
     Admin,
     AdminListParams,
     AdminListResponse,
@@ -62,6 +63,11 @@ import {
 
 export const login = async (data: AdminLoginRequest): Promise<AdminLoginResponse> => {
     return await post<AdminLoginResponse>('/api/v1/admin/login', data);
+};
+
+/** R9：后台登录图形验证码（公开） */
+export const getAdminCaptcha = async (): Promise<AdminCaptchaResponse> => {
+    return await get<AdminCaptchaResponse>('/api/v1/admin/captcha');
 };
 
 export const getPublicKey = async (): Promise<{ publicKey: string }> => {
