@@ -5,7 +5,7 @@ import { ICON_SIZE } from '../../styles/iconSize';
 
 describe('CategoryIcon', () => {
   it('应渲染已知分类的图标', () => {
-    const { container } = render(<CategoryIcon categoryName="萌宠日常" />);
+    const { container } = render(<CategoryIcon categoryName="日常分享" />);
     const svg = container.querySelector('svg');
     expect(svg).toBeInTheDocument();
     expect(svg).toHaveAttribute('width', String(ICON_SIZE.feature));
@@ -20,14 +20,23 @@ describe('CategoryIcon', () => {
     expect(svg).toHaveAttribute('stroke', '#F0785A');
   });
 
+  it('种子分类应各自映射不同图标', () => {
+    const names = ['日常分享', '养宠知识', '美食教程', '健康医疗', '萌宠趣事'];
+    const paths = names.map((name) => {
+      const { container } = render(<CategoryIcon categoryName={name} />);
+      return container.querySelector('svg')?.innerHTML ?? '';
+    });
+    expect(new Set(paths).size).toBe(names.length);
+  });
+
   it('未知分类应渲染默认图标（与已知分类不同）', () => {
-    const { container: known } = render(<CategoryIcon categoryName="萌宠日常" />);
+    const { container: known } = render(<CategoryIcon categoryName="日常分享" />);
     const { container: unknown } = render(<CategoryIcon categoryName="不存在的分类" />);
     expect(known.querySelector('svg')?.innerHTML).not.toBe(unknown.querySelector('svg')?.innerHTML);
   });
 
   it('应包含 path 子元素', () => {
-    const { container } = render(<CategoryIcon categoryName="宠物健康" />);
+    const { container } = render(<CategoryIcon categoryName="健康医疗" />);
     expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
   });
 });
