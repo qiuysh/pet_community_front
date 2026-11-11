@@ -35,7 +35,7 @@ export const ActivityEditPage = () => {
         setFormData({
           title: data.title,
           description: data.description,
-          type: (data.type as ActivityType) || ActivityType.VOTING,
+          type: (data.type as ActivityType) || ActivityType.ONLINE_VOTE,
           cover: data.cover || '',
           startTime: toDateTimeLocal(data.startTime),
           endTime: toDateTimeLocal(data.endTime),
@@ -61,7 +61,7 @@ export const ActivityEditPage = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: ActivityType.VOTING,
+    type: ActivityType.ONLINE_VOTE,
     cover: '',
     startTime: '',
     endTime: '',

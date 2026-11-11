@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useActivityDetail } from '../../hooks/useActivityDetail';
 import { useConfirm } from '../../hooks/useConfirm';
-import { ActivityType } from '../../types/activity';
+import { isSubmissionActivityType } from '../../types/activity';
 import {
   ActivityAlbum,
   RegistrationForm,
@@ -163,7 +163,7 @@ export const ActivityDetailPage = () => {
             onSelectionChange={(key) => setActiveTab(key as typeof activeTab)}
             items={[
               { key: 'detail', title: '活动详情' },
-              ...(activity.type === ActivityType.VOTING || activity.type === ActivityType.CONTEST
+              ...(isSubmissionActivityType(activity.type)
                 ? [{ key: 'submissions', title: '作品展示' }]
                 : []),
               { key: 'album', title: '活动相册' },

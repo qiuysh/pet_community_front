@@ -10,6 +10,7 @@ import {
   ActivityInfo,
   ActivityType,
   ActivityTypeOptions,
+  ActivityTypeCreateOptions,
   ActivityListStatusFilter,
   ActivityStatus,
   getActivityDisplayStatus,
@@ -160,7 +161,7 @@ export function AdminActivityListPage() {
               }}
             >
               <option value="">全部类型</option>
-              {ActivityTypeOptions.map((o) => (
+              {ActivityTypeCreateOptions.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
                 </option>

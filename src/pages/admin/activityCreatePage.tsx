@@ -5,7 +5,7 @@ import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useToast } from '../../components/toast';
 import { useAsync } from '../../hooks/useAsync';
 import { createActivity, publishActivity } from '../../api/activity';
-import { ActivityType, ActivityTypeOptions } from '../../types/activity';
+import { ActivityType, ActivityTypeCreateOptions } from '../../types/activity';
 import { toRFC3339 } from '../../utils/activityDateTime';
 import {
   AdminDateTime,
@@ -26,7 +26,7 @@ export const ActivityCreatePage = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: ActivityType.VOTING,
+    type: ActivityType.ONLINE_VOTE,
     cover: '',
     startTime: '',
     endTime: '',
@@ -133,7 +133,7 @@ export const ActivityCreatePage = () => {
             value={formData.type}
             onChange={(e) => setField('type', e.target.value as ActivityType)}
           >
-            {ActivityTypeOptions.map((option) => (
+            {ActivityTypeCreateOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

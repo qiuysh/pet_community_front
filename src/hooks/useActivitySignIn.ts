@@ -4,7 +4,12 @@ import { getActivityDetail, getSignInList, getSignInStats, signIn } from '../api
 import { useUserStore } from '../stores/userStore';
 import { useToast } from '../components/toast';
 import { useAsync } from './useAsync';
-import { ActivityInfo, SignInInfo, SignInStatsResponse } from '../types/activity';
+import {
+  ActivityInfo,
+  SignInInfo,
+  SignInStatsResponse,
+  isOfflineMeetActivityType,
+} from '../types/activity';
 
 export type SignInTab = 'qrcode' | 'signins';
 
@@ -45,8 +50,7 @@ export function useActivitySignIn() {
       const activityData = await getActivityDetail(activityId);
       setActivity(activityData);
 
-      // 后端活动类型枚举：online_vote / online_collect / offline_meet / adopt
-      if (activityData.type !== 'offline_meet') {
+      if (!isOfflineMeetActivityType(activityData.type)) {
         toast.warning('该活动不是线下活动，无法签到');
         navigate(`/activities/${activityId}`);
         return;

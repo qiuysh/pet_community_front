@@ -14,9 +14,9 @@ import {
   ActivityReviewInfo,
   SubmissionInfo,
   RegistrationInfo,
-  ActivityType,
   ActivityStatus,
   getActivityDisplayStatus,
+  isSubmissionActivityType,
 } from '../types/activity';
 
 export type ActivityDetailTab = 'detail' | 'submissions' | 'album' | 'review' | 'registrations';
@@ -45,7 +45,7 @@ export function useActivityDetail() {
       const activityData = await getActivityDetail(activityId);
 
       let submissionsData: SubmissionInfo[] = [];
-      if (activityData.type === ActivityType.VOTING || activityData.type === ActivityType.CONTEST) {
+      if (isSubmissionActivityType(activityData.type)) {
         const subs = await getSubmissionList({
           activityId,
           sort: 'votes',

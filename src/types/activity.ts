@@ -1,7 +1,14 @@
-/** 与后端 types.ActivityCreateRequest oneof 对齐 */
+/** 与后端 types.ActivityCreateRequest oneof / DB activity_types 对齐 */
 export enum ActivityType {
+  ONLINE_VOTE = 'online_vote',
+  ONLINE_COLLECT = 'online_collect',
+  OFFLINE_MEET = 'offline_meet',
+  ADOPT = 'adopt',
+  /** @deprecated 历史创建值，等同 online_vote */
   VOTING = 'voting',
+  /** @deprecated 历史创建值 */
   CONTEST = 'contest',
+  /** @deprecated 历史创建值，等同 online_collect */
   COLLECTION = 'collection',
 }
 
@@ -232,10 +239,36 @@ export interface PublishAwardResponse {
 }
 
 export const ActivityTypeOptions = [
+  { value: ActivityType.ONLINE_VOTE, label: '投票评选' },
+  { value: ActivityType.ONLINE_COLLECT, label: '话题征集' },
+  { value: ActivityType.OFFLINE_MEET, label: '线下活动' },
+  { value: ActivityType.ADOPT, label: '领养活动' },
+  // 历史值仍可展示标签（列表里旧数据）
   { value: ActivityType.VOTING, label: '投票评选' },
   { value: ActivityType.CONTEST, label: '作品征集' },
   { value: ActivityType.COLLECTION, label: '话题征集' },
 ];
+
+/** 后台新建可选类型（不含历史别名，避免继续写入漂移值） */
+export const ActivityTypeCreateOptions = [
+  { value: ActivityType.ONLINE_VOTE, label: '投票评选' },
+  { value: ActivityType.ONLINE_COLLECT, label: '话题征集' },
+  { value: ActivityType.OFFLINE_MEET, label: '线下活动' },
+  { value: ActivityType.ADOPT, label: '领养活动' },
+];
+
+/** 投票/征集类：可投稿与作品展示（含历史别名） */
+export function isSubmissionActivityType(type: string): boolean {
+  return (
+    type === ActivityType.ONLINE_VOTE ||
+    type === ActivityType.VOTING ||
+    type === ActivityType.CONTEST
+  );
+}
+
+export function isOfflineMeetActivityType(type: string): boolean {
+  return type === ActivityType.OFFLINE_MEET;
+}
 
 export const ActivityStatusOptions = [
   { value: ActivityStatus.DRAFT, label: '草稿', color: 'default' },

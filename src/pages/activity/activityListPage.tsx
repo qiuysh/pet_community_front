@@ -1,5 +1,5 @@
 import { useActivityList } from '../../hooks/useActivityList';
-import { ActivityType } from '../../types/activity';
+import { ActivityTypeCreateOptions } from '../../types/activity';
 import { ActivityCard } from '../../components/activity';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -33,24 +33,15 @@ export const ActivityListPage = () => {
             <FilterChip active={!filters.type} onClick={() => handleTypeChange(undefined)}>
               全部
             </FilterChip>
-            <FilterChip
-              active={filters.type === ActivityType.VOTING}
-              onClick={() => handleTypeChange(ActivityType.VOTING)}
-            >
-              投票评选
-            </FilterChip>
-            <FilterChip
-              active={filters.type === ActivityType.CONTEST}
-              onClick={() => handleTypeChange(ActivityType.CONTEST)}
-            >
-              作品征集
-            </FilterChip>
-            <FilterChip
-              active={filters.type === ActivityType.COLLECTION}
-              onClick={() => handleTypeChange(ActivityType.COLLECTION)}
-            >
-              话题征集
-            </FilterChip>
+            {ActivityTypeCreateOptions.map((option) => (
+              <FilterChip
+                key={option.value}
+                active={filters.type === option.value}
+                onClick={() => handleTypeChange(option.value)}
+              >
+                {option.label}
+              </FilterChip>
+            ))}
           </div>
 
           <div className="flex flex-wrap gap-2">
