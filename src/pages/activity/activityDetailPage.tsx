@@ -1,18 +1,33 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useActivityDetail } from '../../hooks/useActivityDetail';
+import { useConfirm } from '../../hooks/useConfirm';
 import { ActivityType } from '../../types/activity';
-import { RegistrationForm, SubmissionUploader, VoteButton } from '../../components/activity';
+import {
+  ActivityAlbum,
+  RegistrationForm,
+  SubmissionEditDialog,
+  SubmissionUploader,
+  VoteButton,
+} from '../../components/activity';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Clock, Users, Check, Trophy, X } from 'lucide-react';
+import { Clock, Users, Check, Trophy, Pencil, Trash2 } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
+import { Modal } from '../../components/ui/modal';
 import { Tabs } from '../../components/ui/tabs';
 
 export const ActivityDetailPage = () => {
   const navigate = useNavigate();
+  const { confirm, confirmDialog } = useConfirm();
+  const [editingSubmission, setEditingSubmission] = useState(false);
   const {
     activity,
     submissions,
+    review,
+    mySubmission,
     loading,
     refetch,
     isLoggedIn,
@@ -26,6 +41,11 @@ export const ActivityDetailPage = () => {
     isRegistrationOpen,
     isSubmissionOpen,
     isVoteOpen,
+    canCancelRegistration,
+    handleCancelRegistration,
+    handleDeleteSubmission,
+    canceling,
+    deletingSubmission,
   } = useActivityDetail();
 
   const formatTime = (timeStr: string) => {
@@ -47,12 +67,13 @@ export const ActivityDetailPage = () => {
     <div className="bg-cream min-h-screen pb-6">
       <div className="bg-white">
         <img
+          decoding="async"
           src={activity.cover || '/default-activity-cover.png'}
           alt={activity.title}
           className="w-full h-48 object-cover"
         />
-        <div className="px-4 py-4">
-          <h1 className="text-xl font-bold text-brown mb-2">{activity.title}</h1>
+        <div className="page-shell px-4 py-4">
+          <h1 className="page-content-title mb-2">{activity.title}</h1>
           <p className="text-brown-muted mb-3">{activity.description}</p>
 
           <div className="space-y-2 text-sm text-brown-muted">
@@ -89,54 +110,87 @@ export const ActivityDetailPage = () => {
               <Button
                 variant="secondary"
                 className="flex-1"
-                onClick={() => setShowSubmissionForm(true)}
+                onClick={() => {
+                  if (!isLoggedIn) {
+                    navigate('/login');
+                    return;
+                  }
+                  setShowSubmissionForm(true);
+                }}
               >
                 提交作品
               </Button>
             )}
             {activity.isRegistered && (
-              <span className="text-sm text-secondary-dark flex items-center gap-1">
-                <Check size={12} aria-hidden="true" />
-                <span>已报名</span>
-              </span>
+              <div className="flex flex-1 flex-col gap-1">
+                <span className="text-sm text-secondary-dark flex items-center gap-1">
+                  <Check size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
+                  <span>已报名</span>
+                </span>
+                {canCancelRegistration() && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="self-start px-0 text-brown-muted"
+                    loading={canceling}
+                    disabled={canceling}
+                    onClick={async () => {
+                      const ok = await confirm({
+                        title: '取消报名',
+                        description: '取消后需要重新报名才能参与该活动，确定取消吗？',
+                        confirmText: '取消报名',
+                        tone: 'danger',
+                      });
+                      if (ok) handleCancelRegistration();
+                    }}
+                  >
+                    取消报名
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 border-b shadow-card px-4 py-2">
-        <Tabs
-          listOnly
-          className="w-full"
-          selectedKey={activeTab}
-          onSelectionChange={(key) => setActiveTab(key as typeof activeTab)}
-          items={[
-            { key: 'detail', title: '活动详情' },
-            ...(activity.type === ActivityType.VOTING || activity.type === ActivityType.CONTEST
-              ? [{ key: 'submissions', title: '作品展示' }]
-              : []),
-          ]}
-        />
+      <div className="sticky top-[var(--user-header-offset,56px)] z-10 border-b bg-white py-2 shadow-card">
+        {/* 白底通栏；水平内边距放在 page-shell，与下方正文同列 */}
+        <div className="page-shell px-4">
+          <Tabs
+            listOnly
+            className="w-full"
+            selectedKey={activeTab}
+            onSelectionChange={(key) => setActiveTab(key as typeof activeTab)}
+            items={[
+              { key: 'detail', title: '活动详情' },
+              ...(activity.type === ActivityType.VOTING || activity.type === ActivityType.CONTEST
+                ? [{ key: 'submissions', title: '作品展示' }]
+                : []),
+              { key: 'album', title: '活动相册' },
+              ...(review ? [{ key: 'review', title: '活动回顾' }] : []),
+            ]}
+          />
+        </div>
       </div>
 
-      <div className="px-4 py-4">
+      <div className="page-shell px-4 py-4">
         {activeTab === 'detail' && (
           <Card>
             {activity.rules && (
               <div className="mb-4">
-                <h3 className="text-base font-medium text-brown mb-2">活动规则</h3>
+                <h3 className="page-section-title mb-2">活动规则</h3>
                 <p className="text-sm text-brown-muted">{activity.rules}</p>
               </div>
             )}
             {activity.prizes && (
               <div className="mb-4">
-                <h3 className="text-base font-medium text-brown mb-2">奖品设置</h3>
+                <h3 className="page-section-title mb-2">奖品设置</h3>
                 <p className="text-sm text-brown-muted">{activity.prizes}</p>
               </div>
             )}
             {(activity.votesPerDay ?? 0) > 0 && (
               <div className="mb-4">
-                <h3 className="text-base font-medium text-brown mb-2">投票规则</h3>
+                <h3 className="page-section-title mb-2">投票规则</h3>
                 <p className="text-sm text-brown-muted">每人每天最多可投票 {activity.votesPerDay} 次</p>
               </div>
             )}
@@ -146,22 +200,24 @@ export const ActivityDetailPage = () => {
         {activeTab === 'submissions' && (
           <div>
             {submissions.length === 0 ? (
-              <div className="py-8 text-center text-brown-muted">暂无作品</div>
+              <EmptyState compact title="暂无作品" />
             ) : (
               <div className="grid grid-cols-2 gap-4">
                 {submissions.map((submission) => (
                   <Card key={submission.id} padding="none">
                     <img
+                      decoding="async"
                       src={submission.images?.[0] || '/default-submission.png'}
                       alt={submission.title}
                       className="w-full h-32 object-cover"
                     />
                     <div className="p-3">
-                      <h4 className="text-sm font-medium text-brown mb-1">{submission.title}</h4>
+                      <h4 className="page-section-title mb-1">{submission.title}</h4>
                       <p className="text-xs text-brown-muted mb-2 line-clamp-2">{submission.description}</p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
                           <img
+                            decoding="async"
                             src={submission.userAvatar || getDefaultUserAvatar()}
                             alt=""
                             className="w-5 h-5 rounded-full"
@@ -179,9 +235,38 @@ export const ActivityDetailPage = () => {
                         )}
                       </div>
                       {submission.awardLevel && (
-                        <div className="mt-2 text-xs text-warning flex items-center gap-1">
-                          <Trophy size={12} aria-hidden="true" />
+                        <div className="mt-2 text-xs text-warning-text flex items-center gap-1">
+                          <Trophy size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
                           <span>{submission.awardLevel}</span>
+                        </div>
+                      )}
+                      {mySubmission?.id === submission.id && (
+                        <div className="mt-2 flex items-center gap-3 border-t pt-2">
+                          <button
+                            type="button"
+                            className="text-xs text-brown-secondary flex items-center gap-1"
+                            onClick={() => setEditingSubmission(true)}
+                          >
+                            <Pencil size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
+                            编辑
+                          </button>
+                          <button
+                            type="button"
+                            className="text-xs text-error-text flex items-center gap-1"
+                            disabled={deletingSubmission}
+                            onClick={async () => {
+                              const ok = await confirm({
+                                title: '撤回作品',
+                                description: '撤回后作品与已有投票都会被移除，且无法恢复。',
+                                confirmText: '撤回',
+                                tone: 'danger',
+                              });
+                              if (ok) handleDeleteSubmission();
+                            }}
+                          >
+                            <Trash2 size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
+                            撤回
+                          </button>
                         </div>
                       )}
                     </div>
@@ -191,49 +276,73 @@ export const ActivityDetailPage = () => {
             )}
           </div>
         )}
+
+        {activeTab === 'album' && (
+          <ActivityAlbum
+            activityId={activity.id}
+            canUpload={isLoggedIn && !!activity.isRegistered}
+          />
+        )}
+
+        {activeTab === 'review' && (
+          <Card>
+            {review ? (
+              <article className="space-y-3">
+                <h3 className="page-section-title">{review.title}</h3>
+                {review.publishedAt && (
+                  <p className="text-xs text-brown-muted">发布于 {formatTime(review.publishedAt)}</p>
+                )}
+                <p className="text-sm text-brown-secondary whitespace-pre-wrap">{review.content}</p>
+                {review.photos && review.photos.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {review.photos.map((photo, index) => (
+                      <img
+                        key={`${photo}-${index}`}
+                        decoding="async"
+                        src={photo}
+                        alt={`回顾照片 ${index + 1}`}
+                        className="w-full h-24 object-cover rounded"
+                      />
+                    ))}
+                  </div>
+                )}
+              </article>
+            ) : (
+              <EmptyState compact title="暂无活动回顾" />
+            )}
+          </Card>
+        )}
       </div>
 
-      {showRegistrationForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overscroll-contain">
-          <Card className="w-full max-w-md max-h-[min(90dvh,40rem)] overflow-y-auto overscroll-contain" padding="none">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h3 className="text-lg font-medium text-brown">活动报名</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label="关闭"
-                onClick={() => setShowRegistrationForm(false)}
-              >
-                <X size={20} aria-hidden="true" />
-              </Button>
-            </div>
-            <div className="p-4">
-              <RegistrationForm activity={activity} onSuccess={handleRefresh} />
-            </div>
-          </Card>
-        </div>
+      <Modal
+        open={showRegistrationForm}
+        onClose={() => setShowRegistrationForm(false)}
+        title="活动报名"
+        size="md"
+      >
+        <RegistrationForm activity={activity} onSuccess={handleRefresh} />
+      </Modal>
+
+      <Modal
+        open={showSubmissionForm}
+        onClose={() => setShowSubmissionForm(false)}
+        title="提交作品"
+        size="md"
+      >
+        <SubmissionUploader activity={activity} onSuccess={handleRefresh} />
+      </Modal>
+
+      {mySubmission && (
+        <SubmissionEditDialog
+          key={mySubmission.id}
+          submission={mySubmission}
+          open={editingSubmission}
+          onClose={() => setEditingSubmission(false)}
+          onSuccess={() => refetch()}
+        />
       )}
 
-      {showSubmissionForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overscroll-contain">
-          <Card className="w-full max-w-md max-h-[min(90dvh,40rem)] overflow-y-auto overscroll-contain" padding="none">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h3 className="text-lg font-medium text-brown">提交作品</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label="关闭"
-                onClick={() => setShowSubmissionForm(false)}
-              >
-                <X size={20} aria-hidden="true" />
-              </Button>
-            </div>
-            <div className="p-4">
-              <SubmissionUploader activity={activity} onSuccess={handleRefresh} />
-            </div>
-          </Card>
-        </div>
-      )}
+      {confirmDialog}
     </div>
   );
 };

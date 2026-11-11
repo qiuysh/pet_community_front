@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { TEST_USERS, clearAuth, loginAsUser } from './fixtures/auth';
+import { TEST_USERS, apiWrite, clearAuth, loginAsUser } from './fixtures/auth';
 
 test.describe('Phase4 - 推荐流', () => {
     test('V-R1-01/V-R1-04 - 首页推荐流加载', async ({ page }) => {
@@ -46,9 +46,9 @@ test.describe('Phase4 - 推荐流', () => {
         }
     });
 
-    test('V-R4-05 - 协同过滤推荐', async ({ page }) => {
-        test.skip(true, '协同过滤推荐需要多用户行为数据，e2e不适合验证');
-    });
+    // V-R4-05（协同过滤推荐）不纳入 e2e：需要多用户历史行为才能形成推荐差异，
+    // seed 数据无法稳定构造；协同过滤分支由 server/tests/discovery_service_test.go
+    // 的 TestDiscoveryServiceRecommendPosts 覆盖。
 });
 
 test.describe('Phase4 - 话题广场', () => {
@@ -141,19 +141,37 @@ test.describe('Phase4 - 话题广场', () => {
         await expect(page.locator('body')).toContainText(/日常分享|养宠知识|美食|健康|萌宠|分类/, { timeout: 5_000 });
     });
 
-    test('V-T5-01 - 话题创建（Lv5+ 校验，§4.3 唯一交付点）', async ({ page }) => {
-        // §4.3：建话题唯一交付点 Phase-4 T5；须校验 Lv5+ 且管理员审核
-        // 话题创建 UI 已实现：/topics/create（topicCreatePage）+ 话题广场/列表入口按钮（Lv5 门禁）
-        // 完整闭环需 Lv5+ 账号 + 管理员审核，跨账号场景待补
-        test.skip(true, '需 Lv5+ 账号 + 管理员审核闭环，跨账号场景待补');
+    test('V-T5-01 - 话题创建等级门禁（§4.3 须 Lv5+）', async ({ page }) => {
+        // §4.3：建话题须 Lv5+。门禁在前后端各有一道，这里验证「低于 Lv5 时不能提交」：
+        // 页面展示等级不足提示，且提交按钮置灰（后端另有 需达到 Lv5 才可申请创建话题 兜底）。
         await loginAsUser(page);
-        await page.goto('/discover');
-        await page.waitForTimeout(2000);
+
+        const res = await apiWrite(page, 'get', '/api/v1/user/profile');
+        const level = Number(((await res.json().catch(() => ({}))) as { data?: { level?: number } })?.data?.level ?? 0);
+        expect(level, '读取不到当前用户等级').toBeGreaterThan(0);
+
+        await page.goto('/topics/create');
+        const submit = page.getByRole('button', { name: /提交创建申请/ });
+        await expect(submit).toBeVisible({ timeout: 10_000 });
+
+        if (level < 5) {
+            await expect(page.locator('body')).toContainText(/等级不足/);
+            await expect(submit).toBeDisabled();
+        } else {
+            // seed 账号若被提升到 Lv5+，则验证门禁放行
+            await expect(submit).toBeEnabled();
+            await expect(page.locator('body')).not.toContainText(/等级不足/);
+        }
     });
 
     test('V-T5-02 - 话题名称重复校验', async ({ page }) => {
-        // T5 创建 UI 已实现；完整校验需 Lv5+ 账号触发创建，跨账号场景待补
-        test.skip(true, '需 Lv5+ 账号触发创建，跨账号场景待补');
+        await loginAsUser(page);
+
+        const res = await apiWrite(page, 'get', '/api/v1/user/profile');
+        const level = Number(((await res.json().catch(() => ({}))) as { data?: { level?: number } })?.data?.level ?? 0);
+        // 重复校验要先能发起创建，而创建权限本身由 V-T5-01 覆盖；
+        // seed 账号为 Lv1 时无法越过门禁，此处如实跳过而非伪造断言。
+        test.skip(level < 5, `当前账号 Lv${level}，创建话题需 Lv5+，重复校验待 Lv5+ 测试账号`);
     });
 });
 

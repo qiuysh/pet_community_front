@@ -13,6 +13,7 @@ import {
   CommentCreateRequest,
   LikeResult,
 } from '../types/post';
+import { reportError } from '../utils/errorReport';
 
 /**
  * 动态评论 hook
@@ -54,7 +55,7 @@ export function usePostComments(postId: number, commentsCount?: number) {
       setComments(res.list);
       setTotalCount(res.total);
     } catch (e) {
-      console.error('加载评论失败', e);
+      reportError('加载评论失败', e);
     } finally {
       setLoading(false);
     }
@@ -74,7 +75,11 @@ export function usePostComments(postId: number, commentsCount?: number) {
   }, [isLoggedIn, navigate]);
 
   const addComment = useCallback(
-    async (content: string, reply?: ReplyTarget | null): Promise<boolean> => {
+    async (
+      content: string,
+      reply?: ReplyTarget | null,
+      atUsers?: number[],
+    ): Promise<boolean> => {
       if (!requireLogin() || !content.trim() || !postId) return false;
 
       const req: CommentCreateRequest = {
@@ -82,6 +87,7 @@ export function usePostComments(postId: number, commentsCount?: number) {
         content: content.trim(),
         parentId: reply?.parentId || 0,
         replyToId: reply?.id,
+        atUsers: atUsers && atUsers.length > 0 ? atUsers : undefined,
       };
 
       try {

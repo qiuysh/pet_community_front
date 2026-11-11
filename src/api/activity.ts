@@ -21,7 +21,6 @@ import {
   BatchAwardRequest,
   AwardPageResponse,
   PublishAwardResponse,
-  ActivityStats,
   SignInInfo,
   QRCodeResponse,
   SignInRequest,
@@ -73,10 +72,6 @@ export const deleteActivity = async (id: number): Promise<void> => {
 
 export const publishActivity = async (id: number): Promise<void> => {
   return await post<void>(`/api/v1/admin/activities/${id}/publish`);
-};
-
-export const getActivityStats = async (): Promise<ActivityStats> => {
-  return await get<ActivityStats>('/api/v1/activities/stats');
 };
 
 // ========== 报名相关 API ==========
@@ -185,18 +180,19 @@ export const signIn = async (activityId: number, data: SignInRequest): Promise<S
   return await post<SignInInfo>(`/api/v1/activities/${activityId}/sign-in`, data);
 };
 
+// 参与者可见：与签到页一致走活动侧路由，避免普通用户命中 /admin 组被 403
 export const getSignInList = async (
   activityId: number,
   page = 1,
   pageSize = 20,
 ): Promise<SignInListResponse> => {
-  return await get<SignInListResponse>(`/api/v1/admin/activities/${activityId}/sign-ins`, {
+  return await get<SignInListResponse>(`/api/v1/activities/${activityId}/sign-ins`, {
     params: { page, page_size: pageSize },
   });
 };
 
 export const getSignInStats = async (activityId: number): Promise<SignInStatsResponse> => {
-  return await get<SignInStatsResponse>(`/api/v1/admin/activities/${activityId}/sign-ins/stats`);
+  return await get<SignInStatsResponse>(`/api/v1/activities/${activityId}/sign-ins/stats`);
 };
 
 // ========== 相册相关 API ==========
@@ -234,6 +230,6 @@ export const publishReview = async (
   return await post<ActivityReviewInfo>(`/api/v1/admin/activities/${activityId}/review`, payload);
 };
 
-export const getReview = async (activityId: number): Promise<ActivityReviewInfo> => {
-  return await get<ActivityReviewInfo>(`/api/v1/activities/${activityId}/review`);
+export const getReview = async (activityId: number): Promise<ActivityReviewInfo | null> => {
+  return await get<ActivityReviewInfo | null>(`/api/v1/activities/${activityId}/review`);
 };

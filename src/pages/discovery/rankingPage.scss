@@ -1,46 +1,61 @@
 @import '../../styles/variables.scss';
 
 .ranking-page {
+  @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
   padding-bottom: 80px;
 
   .page-header {
-    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    @extend %page-hero-surface;
     padding: 24px 16px;
-    color: $background-white;
     text-align: center;
 
     h1 {
-      font-size: 24px;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
+
+      svg {
+        color: $primary-text;
+      }
+    }
+
+    .header-subtitle {
+      margin: 0 auto 16px;
+      max-width: 22rem;
+      font-size: $font-size-sm;
+      color: $text-secondary;
     }
 
     .period-tabs {
       display: flex;
       justify-content: center;
-      gap: 16px;
+      gap: 12px;
 
       .period-tab {
         padding: 6px 16px;
-        background: rgba($background-white, 0.2);
-        border: none;
+        background: $background-soft;
+        border: 1px solid $border-color;
         border-radius: $border-radius-base;
-        color: $background-white;
-        font-size: 14px;
+        color: $text-secondary;
+        font-size: $font-size-sm;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: background-color $duration-base, color $duration-base, border-color $duration-base;
 
-        &.active {
-          background: white;
-          color: $primary-color;
+        &.active,
+        &[aria-pressed='true'] {
+          background: $primary-soft;
+          border-color: $primary-text;
+          color: $primary-text;
+          font-weight: 600;
         }
 
         &:hover {
-          background: rgba($background-white, 0.3);
+          border-color: rgba($primary-color, 0.45);
+          color: $primary-text;
 
-          &.active {
-            background: white;
+          &.active,
+          &[aria-pressed='true'] {
+            background: mix($primary-soft, white, 18%);
           }
         }
       }
@@ -63,10 +78,6 @@
       padding: 12px 16px;
       border-bottom: 1px solid $divider-color;
 
-      .section-title {
-        font-weight: 600;
-        font-size: 16px;
-      }
     }
 
     .ranking-list {
@@ -92,27 +103,33 @@
           border-radius: 50%;
           background: $border-color;
           color: $text-secondary;
-          font-size: 14px;
+          font-size: $font-size-sm;
           font-weight: 600;
           display: flex;
           align-items: center;
           justify-content: center;
           margin-right: 12px;
 
+          // 白字在浅金属色上仅 1.9~3:1，统一改墨色（金底 ink 7.23:1）
           &.first {
             background: linear-gradient(135deg, $rank-gold, $rank-gold-dark);
-            color: $background-white;
+            color: $text-primary;
           }
 
           &.second {
             background: linear-gradient(135deg, $rank-silver, $rank-silver-dark);
-            color: $background-white;
+            color: $text-primary;
           }
 
           &.third {
             background: linear-gradient(135deg, $rank-bronze, $rank-bronze-dark);
-            color: $background-white;
+            color: $text-primary;
           }
+        }
+
+        // 前三名奖牌入场弹一下（列表整体进场后再播，避免同时抢注意力）
+        &.top-three .rank {
+          animation: motion-pop $duration-emphasized $ease-spring 0.24s;
         }
 
         .item-content {
@@ -135,14 +152,10 @@
                 object-fit: cover;
               }
 
-              .nickname {
-                font-size: 13px;
-                font-weight: 500;
-              }
             }
 
             .post-content {
-              font-size: 14px;
+              font-size: $font-size-sm;
               line-height: 1.4;
               display: -webkit-box;
               -webkit-line-clamp: 2;
@@ -158,15 +171,15 @@
             margin-top: 6px;
 
             .stat-item {
-              font-size: 12px;
+              font-size: $font-size-xs;
               color: $text-muted;
             }
           }
         }
 
         .hot-score {
-          font-size: 12px;
-          color: $primary-color;
+          font-size: $font-size-xs;
+          color: $primary-text;
           margin-left: 8px;
         }
       }
@@ -184,14 +197,13 @@
           flex: 1;
 
           .nickname {
-            font-weight: 500;
             margin-bottom: 2px;
           }
 
           .stats {
             display: flex;
             gap: 12px;
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
           }
         }
@@ -202,12 +214,11 @@
           flex: 1;
 
           .topic-name {
-            font-weight: 500;
             margin-bottom: 2px;
           }
 
           .topic-desc {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
           }
         }
@@ -219,7 +230,7 @@
           gap: 2px;
 
           span {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
           }
         }

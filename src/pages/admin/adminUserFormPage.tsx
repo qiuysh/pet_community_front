@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useAdminUsers } from '../../hooks/useAdminUsers';
 import { validators, validateForm } from '../../utils/validators';
 import {
@@ -163,9 +165,12 @@ export function AdminUserFormPage() {
           to="/admin/users"
           className="inline-flex items-center text-sm text-brown-secondary hover:text-brown transition-colors focus:outline-none focus-visible:underline"
         >
-          <svg className="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <ChevronLeft
+            size={ICON_SIZE.inline}
+            strokeWidth={iconStroke(ICON_SIZE.inline)}
+            className="mr-1"
+            aria-hidden="true"
+          />
           返回列表
         </Link>
       </div>
@@ -177,7 +182,7 @@ export function AdminUserFormPage() {
           </h1>
 
           {error && (
-            <div className="mb-6 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error text-sm">
+            <div className="mb-6 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
               {error}
             </div>
           )}
@@ -202,7 +207,7 @@ export function AdminUserFormPage() {
                 spellCheck={false}
               />
               {errors.username && (
-                <p className="mt-1 text-sm text-error">{errors.username}</p>
+                <p className="mt-1 text-sm text-error-text">{errors.username}</p>
               )}
             </div>
 
@@ -224,7 +229,7 @@ export function AdminUserFormPage() {
                 autoComplete="email"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-error">{errors.email}</p>
+                <p className="mt-1 text-sm text-error-text">{errors.email}</p>
               )}
             </div>
 
@@ -249,7 +254,7 @@ export function AdminUserFormPage() {
                 ))}
               </AdminSelect>
               {errors.role && (
-                <p className="mt-1 text-sm text-error">{errors.role}</p>
+                <p className="mt-1 text-sm text-error-text">{errors.role}</p>
               )}
             </div>
 
@@ -306,7 +311,7 @@ export function AdminUserFormPage() {
                         autoComplete="new-password"
                       />
                       {errors.password && (
-                        <p className="mt-1 text-sm text-error">{errors.password}</p>
+                        <p className="mt-1 text-sm text-error-text">{errors.password}</p>
                       )}
                     </div>
 
@@ -326,7 +331,7 @@ export function AdminUserFormPage() {
                         autoComplete="new-password"
                       />
                       {errors.confirmPassword && (
-                        <p className="mt-1 text-sm text-error">{errors.confirmPassword}</p>
+                        <p className="mt-1 text-sm text-error-text">{errors.confirmPassword}</p>
                       )}
                     </div>
                   </div>
@@ -350,7 +355,7 @@ export function AdminUserFormPage() {
                     autoComplete="new-password"
                   />
                   {errors.password && (
-                    <p className="mt-1 text-sm text-error">{errors.password}</p>
+                    <p className="mt-1 text-sm text-error-text">{errors.password}</p>
                   )}
                 </div>
 
@@ -370,7 +375,7 @@ export function AdminUserFormPage() {
                     autoComplete="new-password"
                   />
                   {errors.confirmPassword && (
-                    <p className="mt-1 text-sm text-error">{errors.confirmPassword}</p>
+                    <p className="mt-1 text-sm text-error-text">{errors.confirmPassword}</p>
                   )}
                 </div>
               </>

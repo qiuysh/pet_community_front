@@ -53,8 +53,8 @@ describe('RegistrationForm', () => {
     vi.mocked(createRegistration).mockResolvedValue({} as any);
     const onSuccess = vi.fn();
     renderWithToast(<RegistrationForm activity={baseActivity} onSuccess={onSuccess} />);
-    fireEvent.change(screen.getByPlaceholderText('请输入真实姓名'), { target: { value: '张三' } });
-    fireEvent.change(screen.getByPlaceholderText('请输入手机号'), { target: { value: '13800138000' } });
+    fireEvent.change(screen.getByPlaceholderText('请输入真实姓名…'), { target: { value: '张三' } });
+    fireEvent.change(screen.getByPlaceholderText('请输入手机号…'), { target: { value: '13800138000' } });
     fireEvent.click(screen.getByRole('button', { name: '提交报名' }));
     await waitFor(() => {
       expect(createRegistration).toHaveBeenCalledWith({

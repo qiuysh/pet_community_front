@@ -1,14 +1,19 @@
 import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { usePostEditor } from '../../hooks/usePostEditor';
 import { useTopicSearch } from '../../hooks/useTopicSearch';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { VisibilityOptions } from '../../types/post';
 import { getDefaultPetAvatar } from '../../utils/avatarUtils';
 import { useToast } from '../../components/toast';
-import { Plus, X, Image, Video, PawPrint, Hash, MapPin, Lock, ChevronRight, Check, Clock } from 'lucide-react';
+import { X, Image, Video, PawPrint, Hash, MapPin, Eye, ChevronRight, Check, Clock } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { SchedulePicker } from '../../components/post/schedulePicker';
-import { Button } from '../../components/ui/button';
-import { Input, Textarea } from '../../components/ui/input';
+import { PostImageGrid } from '../../components/post/postImageGrid';
+import { Button, buttonClass } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
+import { Input } from '../../components/ui/input';
+import { MentionTextarea } from '../../components/post/mentionTextarea';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Avatar } from '../../components/ui/avatar';
 import './postEditorPage.scss';
@@ -49,6 +54,18 @@ export const PostEditorPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
+  const isDirty =
+    state.content.trim().length > 0 ||
+    state.images.length > 0 ||
+    !!state.video ||
+    state.selectedPets.length > 0 ||
+    state.selectedTopics.length > 0 ||
+    state.location.trim().length > 0;
+  const unsavedDialog = useUnsavedChanges(isDirty && !loading, {
+    message: '正文、图片或话题等修改尚未发布或存草稿，离开后本次编辑将丢失。',
+    confirmText: '放弃并离开',
+  });
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -87,10 +104,6 @@ export const PostEditorPage = () => {
     const url = URL.createObjectURL(file);
     setVideo(url);
     setImages([]);
-  };
-
-  const removeImage = (index: number) => {
-    setImages(state.images.filter((_, i) => i !== index));
   };
 
   const removeVideo = () => {
@@ -135,7 +148,7 @@ export const PostEditorPage = () => {
     <div className="post-editor-page">
       <div className="editor-header">
         <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)}>取消</Button>
-        <span className="title">{isEdit ? '编辑动态' : '发布动态'}</span>
+        <h1 className="page-bar-title title">{isEdit ? '编辑动态' : '发布动态'}</h1>
         <Button
           type="button"
           className="publish-btn"
@@ -148,13 +161,14 @@ export const PostEditorPage = () => {
       </div>
 
       <div className="editor-body">
-        <Textarea
-          className="content-input"
+        <MentionTextarea
+          className="content-input !border-0 !px-0 !shadow-none focus:!ring-0"
           value={state.content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="分享你家萌宠的精彩瞬间吧～"
+          onChange={setContent}
+          placeholder="分享你家萌宠的精彩瞬间吧～ 输入 @ 可提及用户"
           maxLength={500}
           rows={6}
+          aria-label="动态正文"
         />
         <div className="char-count">{charCount}/500</div>
 
@@ -164,7 +178,7 @@ export const PostEditorPage = () => {
               <span key={topic.id} className="topic-tag">
                 {topic.name}
                 <Button type="button" variant="ghost" size="sm" onClick={() => removeTopic(topic.id)} aria-label="移除话题">
-                  <X size={14} aria-hidden="true" />
+                  <X size={ICON_SIZE.inline} aria-hidden="true" />
                 </Button>
               </span>
             ))}
@@ -173,28 +187,23 @@ export const PostEditorPage = () => {
 
         <div className="media-section">
           {state.images.length > 0 && (
-            <div className="image-grid">
-              {state.images.map((img, idx) => (
-                <div key={idx} className="image-item">
-                  <img src={img} alt="" />
-                  <Button type="button" variant="ghost" size="sm" className="remove-btn" onClick={() => removeImage(idx)} aria-label="删除图片">
-                    <X size={16} aria-hidden="true" />
-                  </Button>
-                </div>
-              ))}
-              {state.images.length < 9 && !state.video && (
-                <div className="add-image-btn" onClick={() => fileInputRef.current?.click()}>
-                  <span className="plus"><Plus size={24} aria-hidden="true" /></span>
-                </div>
+            <>
+              {state.images.length > 1 && (
+                <p className="image-reorder-hint">拖拽调整顺序，或用左右按钮上移/下移；首图为封面</p>
               )}
-            </div>
+              <PostImageGrid
+                images={state.images}
+                onChange={setImages}
+                onAddClick={() => fileInputRef.current?.click()}
+              />
+            </>
           )}
 
           {state.video && (
             <div className="video-item">
               <video src={state.video} controls />
               <Button type="button" variant="ghost" size="sm" className="remove-btn" onClick={removeVideo} aria-label="删除视频">
-                <X size={16} aria-hidden="true" />
+                <X size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
               </Button>
             </div>
           )}
@@ -202,11 +211,11 @@ export const PostEditorPage = () => {
           {state.images.length === 0 && !state.video && (
             <div className="media-actions">
               <Button type="button" variant="outline" className="media-btn" onClick={() => fileInputRef.current?.click()}>
-                <span className="icon"><Image size={20} aria-hidden="true" /></span>
+                <span className="icon"><Image size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" /></span>
                 <span>图片</span>
               </Button>
               <Button type="button" variant="outline" className="media-btn" onClick={() => videoInputRef.current?.click()}>
-                <span className="icon"><Video size={20} aria-hidden="true" /></span>
+                <span className="icon"><Video size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" /></span>
                 <span>视频</span>
               </Button>
             </div>
@@ -230,44 +239,64 @@ export const PostEditorPage = () => {
         </div>
 
         <div className="extra-options">
-          <div className="option-item" onClick={() => setShowPetPicker(!showPetPicker)}>
-            <span className="option-icon"><PawPrint size={20} aria-hidden="true" /></span>
+          <button
+            type="button"
+            className="option-item"
+            onClick={() => setShowPetPicker(!showPetPicker)}
+            aria-expanded={showPetPicker}
+          >
+            <span className="option-icon"><PawPrint size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" /></span>
             <span className="option-label">选择宠物</span>
             <span className="option-value">
               {state.selectedPets.length > 0 ? `已选 ${state.selectedPets.length} 只` : '未选择'}
             </span>
-            <span className="option-arrow"><ChevronRight size={18} aria-hidden="true" /></span>
-          </div>
+            <span className="option-arrow"><ChevronRight size={ICON_SIZE.action} aria-hidden="true" /></span>
+          </button>
 
           {showPetPicker && (
             <div className="pet-picker">
               {myPets.length === 0 ? (
-                <div className="empty-pets">暂无宠物，<a href="/pets/create">去添加</a></div>
+                <EmptyState
+                  compact
+                  title="暂无宠物"
+                  action={
+                    <Link to="/pets/create" className={buttonClass({ variant: 'outline', size: 'sm' })}>
+                      去添加
+                    </Link>
+                  }
+                />
               ) : (
                 <div className="pet-options">
                   {myPets.map((pet) => (
-                    <div
+                    <button
+                      type="button"
                       key={pet.id}
                       className={`pet-option ${state.selectedPets.includes(pet.id) ? 'selected' : ''}`}
                       onClick={() => togglePet(pet.id)}
+                      aria-pressed={state.selectedPets.includes(pet.id)}
                     >
                       <Avatar src={pet.avatar || getDefaultPetAvatar()} alt="" name={pet.name} size="md" className="pet-avatar" />
                       <span>{pet.name}</span>
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
             </div>
           )}
 
-          <div className="option-item" onClick={() => setShowTopicPicker(!showTopicPicker)}>
-            <span className="option-icon"><Hash size={20} aria-hidden="true" /></span>
+          <button
+            type="button"
+            className="option-item"
+            onClick={() => setShowTopicPicker(!showTopicPicker)}
+            aria-expanded={showTopicPicker}
+          >
+            <span className="option-icon"><Hash size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" /></span>
             <span className="option-label">添加话题</span>
             <span className="option-value">
               {state.selectedTopics.length > 0 ? `已选 ${state.selectedTopics.length} 个` : '最多3个'}
             </span>
-            <span className="option-arrow"><ChevronRight size={18} aria-hidden="true" /></span>
-          </div>
+            <span className="option-arrow"><ChevronRight size={ICON_SIZE.action} aria-hidden="true" /></span>
+          </button>
 
           {showTopicPicker && (
             <div className="topic-picker">
@@ -281,14 +310,15 @@ export const PostEditorPage = () => {
               {topicSuggestions.length > 0 && (
                 <div className="topic-suggestions">
                   {topicSuggestions.map((topic) => (
-                    <div
+                    <button
+                      type="button"
                       key={topic.id}
                       className="topic-suggestion"
                       onClick={() => addTopic(topic)}
                     >
-                      <span className="topic-name">{topic.name}</span>
+                      <span className="page-section-title topic-name text-primary-text">{topic.name}</span>
                       <span className="topic-count">{topic.postsCount} 动态</span>
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -296,7 +326,7 @@ export const PostEditorPage = () => {
           )}
 
           <div className="option-item">
-            <span className="option-icon"><MapPin size={20} aria-hidden="true" /></span>
+            <span className="option-icon"><MapPin size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" /></span>
             <span className="option-label">所在位置</span>
             <Input
               type="text"
@@ -309,7 +339,7 @@ export const PostEditorPage = () => {
           </div>
 
           <div className="option-item">
-            <span className="option-icon"><Clock size={20} aria-hidden="true" /></span>
+            <span className="option-icon"><Clock size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" /></span>
             <span className="option-label">定时发布</span>
             <div className="publish-toggle">
               <FilterChip
@@ -349,29 +379,36 @@ export const PostEditorPage = () => {
             </>
           )}
 
-          <div className="option-item" onClick={() => setShowVisibilityPicker(!showVisibilityPicker)}>
-            <span className="option-icon"><Lock size={20} aria-hidden="true" /></span>
+          <button
+            type="button"
+            className="option-item"
+            onClick={() => setShowVisibilityPicker(!showVisibilityPicker)}
+            aria-expanded={showVisibilityPicker}
+          >
+            <span className="option-icon"><Eye size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" /></span>
             <span className="option-label">谁可以看</span>
             <span className="option-value">
               {VisibilityOptions.find((v) => v.value === state.visibility)?.label}
             </span>
-            <span className="option-arrow"><ChevronRight size={18} aria-hidden="true" /></span>
-          </div>
+            <span className="option-arrow"><ChevronRight size={ICON_SIZE.action} aria-hidden="true" /></span>
+          </button>
 
           {showVisibilityPicker && (
             <div className="visibility-picker">
               {VisibilityOptions.map((opt) => (
-                <div
+                <button
+                  type="button"
                   key={opt.value}
                   className={`visibility-option ${state.visibility === opt.value ? 'selected' : ''}`}
+                  aria-pressed={state.visibility === opt.value}
                   onClick={() => { setVisibility(opt.value); setShowVisibilityPicker(false); }}
                 >
-                  <div>
-                    <div className="vis-label">{opt.label}</div>
-                    <div className="vis-desc">{opt.desc}</div>
-                  </div>
-                  {state.visibility === opt.value && <span className="check"><Check size={18} aria-hidden="true" /></span>}
-                </div>
+                  <span>
+                    <span className="vis-label">{opt.label}</span>
+                    <span className="vis-desc">{opt.desc}</span>
+                  </span>
+                  {state.visibility === opt.value && <span className="check"><Check size={ICON_SIZE.action} aria-hidden="true" /></span>}
+                </button>
               ))}
             </div>
           )}
@@ -395,6 +432,8 @@ export const PostEditorPage = () => {
           草稿箱
         </Button>
       </div>
+
+      {unsavedDialog}
     </div>
   );
 };

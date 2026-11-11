@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .category-page {
+  @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
   padding-bottom: $spacing-2xl;
@@ -9,32 +10,37 @@
   // 渐变头部
   // ============================================
   .category-hero {
-    position: relative;
-    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    @extend %page-hero-surface;
     padding: $spacing-xl $spacing-md $spacing-lg;
-    color: white;
-    overflow: hidden;
 
     .hero-decor {
       position: absolute;
       border-radius: 50%;
-      opacity: 0.12;
-      background: white;
       pointer-events: none;
 
       &.hero-decor-1 {
         width: 140px;
         height: 140px;
-        top: -50px;
-        right: -30px;
+        top: auto;
+        bottom: -42px;
+        right: 10%;
+        background: radial-gradient(
+          circle,
+          rgba($secondary-color, 0.16) 0%,
+          transparent 70%
+        );
       }
 
       &.hero-decor-2 {
-        width: 90px;
-        height: 90px;
-        bottom: -25px;
-        left: 15px;
-        opacity: 0.08;
+        width: 100px;
+        height: 100px;
+        bottom: -30px;
+        left: 8%;
+        background: radial-gradient(
+          circle,
+          rgba($secondary-light, 0.14) 0%,
+          transparent 72%
+        );
       }
     }
 
@@ -42,7 +48,7 @@
       position: absolute;
       top: $spacing-md;
       left: $spacing-md;
-      z-index: 2;
+      z-index: $z-index-raised;
 
       a {
         display: flex;
@@ -51,12 +57,15 @@
         width: 36px;
         height: 36px;
         border-radius: $border-radius-sm;
-        background: rgba(white, 0.2);
-        color: white;
-        transition: all 0.2s ease;
+        background: $background-soft;
+        color: $text-secondary;
+        border: 1px solid $border-color;
+        transition: background-color $duration-base ease, transform $duration-base ease, border-color $duration-base ease, color $duration-base ease;
 
         &:hover {
-          background: rgba(white, 0.35);
+          background: $secondary-soft;
+          border-color: $secondary-color;
+          color: $secondary-dark;
           transform: translateX(-2px);
         }
       }
@@ -64,7 +73,7 @@
 
     .hero-content {
       position: relative;
-      z-index: 1;
+      z-index: $z-index-base;
       text-align: center;
       padding-top: $spacing-sm;
 
@@ -73,31 +82,32 @@
         height: 64px;
         margin: 0 auto $spacing-sm;
         border-radius: $border-radius-lg;
-        background: rgba(white, 0.2);
+        // 青竹结构底 + 蜜桃描边：信任与情绪并置，不混溶渐变
+        background: $secondary-soft;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        box-shadow: 0 4px 16px rgba(white, 0.2);
+        color: $secondary-dark;
+        box-shadow: $shadow-card;
+        border: 1.5px solid rgba($primary-color, 0.28);
 
         &.hero-icon-default {
-          background: rgba(white, 0.15);
+          color: $secondary-dark;
+          background: $secondary-soft;
+          border-color: rgba($primary-color, 0.3);
         }
       }
 
       .hero-title {
-        font-size: $font-size-xl;
-        font-weight: 700;
         margin-bottom: $spacing-xs;
-        letter-spacing: 0.5px;
       }
 
       .hero-desc {
-        font-size: $font-size-base;
-        opacity: 0.85;
+        font-size: $font-size-sm;
         font-weight: 400;
         max-width: 280px;
         margin: 0 auto;
+        color: $text-secondary;
       }
     }
   }
@@ -144,14 +154,14 @@
           background: $background-soft;
           border: 1.5px solid $border-light;
           border-radius: 999px;
-          font-size: $font-size-base;
+          font-size: $font-size-sm;
           line-height: 1.2;
           cursor: pointer;
           transition:
-            background-color 0.2s ease,
-            border-color 0.2s ease,
-            color 0.2s ease,
-            box-shadow 0.2s ease;
+            background-color $duration-base ease,
+            border-color $duration-base ease,
+            color $duration-base ease,
+            box-shadow $duration-base ease;
           color: $text-secondary;
           font-weight: 500;
 
@@ -170,7 +180,7 @@
           }
 
           &:focus-visible {
-            outline: 2px solid $primary-color;
+            outline: 2px solid $primary-text;
             outline-offset: 2px;
           }
 
@@ -179,20 +189,20 @@
           &[aria-pressed='true'] {
             background: $primary-soft;
             background-image: none;
-            color: $primary-dark;
-            border-color: $primary-color;
+            color: $primary-text;
+            border-color: $primary-text;
             box-shadow: 0 0 0 1px rgba($primary-color, 0.2);
             font-weight: 600;
 
             svg {
-              color: $primary-dark;
+              color: $primary-text;
               stroke: $primary-dark;
             }
 
             &:hover {
               background: mix(white, $primary-soft, 20%);
-              color: $primary-dark;
-              border-color: $primary-dark;
+              color: $primary-text;
+              border-color: $primary-text;
             }
           }
         }
@@ -211,13 +221,13 @@
 
           .sort-tab {
             padding: 6px 14px;
-            font-size: $font-size-sm;
+            font-size: $font-size-base;
             font-weight: 500;
             color: $text-secondary;
             background: transparent;
             border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: color $duration-base ease;
             position: relative;
 
             &::after {
@@ -228,9 +238,9 @@
               transform: translateX(-50%);
               width: 0;
               height: 2px;
-              background: $primary-color;
+              background: $primary-strong;
               border-radius: 1px;
-              transition: width 0.2s ease;
+              transition: width $duration-base ease;
             }
 
             &:hover {
@@ -238,7 +248,7 @@
             }
 
             &.active {
-              color: $primary-color;
+              color: $primary-text;
 
               &::after {
                 width: 20px;
@@ -262,37 +272,8 @@
   .posts-list {
     padding: 0 $spacing-md;
 
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: $spacing-2xl $spacing-md;
-      color: $text-muted;
-      text-align: center;
-
-      .empty-spinner {
-        width: 32px;
-        height: 32px;
-        border: 3px solid $border-light;
-        border-top-color: $primary-color;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin-bottom: $spacing-sm;
-      }
-
-      span {
-        font-size: $font-size-base;
-      }
-
-      .empty-hint {
-        font-size: $font-size-xs;
-        margin-top: $spacing-xs;
-        color: $text-light;
-      }
-    }
-
     .post-card {
+      position: relative;
       background: $background-white;
       border-radius: $border-radius-base;
       margin-bottom: $spacing-sm;
@@ -300,12 +281,30 @@
       text-decoration: none;
       color: inherit;
       box-shadow: $shadow-card;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: box-shadow $duration-slow cubic-bezier(0.4, 0, 0.2, 1), transform $duration-slow cubic-bezier(0.4, 0, 0.2, 1);
       display: block;
 
       &:hover {
         box-shadow: $shadow-hover;
         transform: translateY(-2px);
+      }
+
+      // 拉伸链接：覆盖整张卡片，空白处点击进入详情
+      .stretched-link {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: $z-index-base;
+        overflow: hidden;
+        text-indent: -9999px;
+
+        &:focus-visible {
+          outline: 2px solid $primary-text;
+          outline-offset: -4px;
+          border-radius: $border-radius-sm;
+        }
       }
 
       // 用户信息
@@ -329,14 +328,11 @@
           min-width: 0;
 
           .post-nickname {
-            font-weight: 600;
-            font-size: $font-size-base;
-            color: $text-primary;
             display: block;
           }
 
           .post-time {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             display: block;
           }
@@ -345,7 +341,7 @@
 
       // 内容
       .post-content {
-        font-size: $font-size-base;
+        font-size: $font-size-sm;
         line-height: 1.65;
         margin-bottom: $spacing-sm;
         color: $text-primary;
@@ -436,7 +432,7 @@
           align-items: center;
           justify-content: center;
           background: rgba($text-primary, 0.3);
-          transition: background 0.2s ease;
+          transition: background $duration-base ease;
 
           svg {
             width: 48px;
@@ -451,21 +447,25 @@
       }
 
       // 操作栏
-      .post-actions {
+      .post-card-actions {
         display: flex;
-        gap: $spacing-lg;
+        justify-content: space-around;
+        gap: $spacing-sm;
         padding-top: $spacing-sm;
         border-top: 1px solid $divider-color;
 
+        // 可交互按钮需高于 stretched-link
         .action-item {
-          display: flex;
+          position: relative;
+          z-index: $z-index-raised;
+          display: inline-flex;
           align-items: center;
           gap: 6px;
           min-height: 44px;
-          font-size: $font-size-base;
+          font-size: $font-size-sm;
           color: $text-secondary;
-          transition: color 0.2s ease, transform 0.2s ease;
-          cursor: default;
+          transition: color $duration-base ease;
+          cursor: pointer;
 
           svg {
             flex-shrink: 0;
@@ -474,82 +474,13 @@
           }
 
           &:hover {
-            color: $primary-color;
-
-            svg {
-              transform: scale(1.06);
-            }
-          }
-
-          &.like-action.liked {
-            color: $primary-color;
-
-            svg {
-              fill: $primary-color;
-            }
+            color: $primary-text;
           }
         }
       }
     }
   }
 
-  // ============================================
-  // 分页
-  // ============================================
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: $spacing-lg $spacing-md;
-    gap: $spacing-sm;
-
-    .page-btn {
-      padding: 10px 18px;
-      background: $background-white;
-      border: 1px solid $border-color;
-      border-radius: $border-radius-sm;
-      font-size: $font-size-base;
-      cursor: pointer;
-      color: $text-secondary;
-      transition: all 0.2s ease;
-      font-weight: 500;
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background: $background-muted;
-      }
-
-      &:hover:not(:disabled) {
-        border-color: $primary-color;
-        color: $primary-color;
-        background: rgba($primary-color, 0.05);
-      }
-    }
-
-    .page-indicator {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 8px 16px;
-      background: $background-soft;
-      border-radius: $border-radius-sm;
-      font-size: $font-size-sm;
-
-      .page-current {
-        font-weight: 600;
-        color: $primary-color;
-      }
-
-      .page-separator {
-        color: $text-light;
-      }
-
-      .page-total {
-        color: $text-secondary;
-      }
-    }
-  }
 }
 
 // 加载动画
@@ -583,10 +514,6 @@
           height: 52px;
         }
 
-        .hero-title {
-          font-size: $font-size-large;
-        }
-
         .hero-desc {
           font-size: $font-size-sm;
         }
@@ -611,7 +538,7 @@
           .filter-chip {
             padding: 8px 12px;
             min-height: 40px;
-            font-size: $font-size-sm;
+            font-size: $font-size-base;
 
             svg,
             .filter-pet-icon,
@@ -644,25 +571,11 @@
           }
         }
 
-        .post-actions {
-          gap: $spacing-md;
+        .post-card-actions {
+          gap: $spacing-xs;
         }
       }
     }
 
-    .pagination {
-      padding: $spacing-md $spacing-sm;
-      gap: $spacing-xs;
-
-      .page-btn {
-        padding: 8px 14px;
-        font-size: $font-size-sm;
-      }
-
-      .page-indicator {
-        padding: 6px 12px;
-        font-size: $font-size-xs;
-      }
-    }
   }
 }

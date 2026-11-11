@@ -97,7 +97,8 @@ describe('UserTabBar', () => {
     expect(screen.getByText('发现').closest('a')).toHaveAttribute('href', '/discover');
     expect(screen.getByText('活动').closest('a')).toHaveAttribute('href', '/activities');
     expect(screen.getByText('领养').closest('a')).toHaveAttribute('href', '/adopts');
-    expect(screen.getByText('我的').closest('a')).toHaveAttribute('href', '/settings');
+    // 「我的」走个人主页 /profile（/settings 是设置页，由 isActive 额外判定）
+    expect(screen.getByText('我的').closest('a')).toHaveAttribute('href', '/profile');
   });
 
   it('发帖链接指向 /posts/create', () => {

@@ -3,6 +3,7 @@
 .chat-page {
   display: flex;
   flex-direction: column;
+  position: relative;
   height: 100vh;
   height: 100dvh;
   background-color: $background-color;
@@ -42,13 +43,10 @@
         border-radius: 50%;
         background-color: $background-muted;
         margin-right: 10px;
+        flex-shrink: 0;
+        object-fit: cover;
       }
 
-      .user-name {
-        font-size: 16px;
-        font-weight: 600;
-        color: $text-primary;
-      }
     }
 
     .placeholder {
@@ -56,9 +54,19 @@
     }
   }
 
+  .chat-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
   .messages-container {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 16px;
 
     .loading {
@@ -79,7 +87,7 @@
           align-self: flex-end;
 
           .message-content {
-            background-color: $primary-color;
+            background-color: $primary-strong;
             color: $background-white;
             border-radius: 16px 16px 4px 16px;
           }
@@ -106,16 +114,33 @@
 
         .message-content {
           padding: 12px 16px;
-          font-size: 15px;
+          font-size: $font-size-base;
           line-height: 1.5;
           word-break: break-word;
         }
 
         .message-time {
-          font-size: 12px;
+          font-size: $font-size-xs;
           color: $text-muted;
           margin-top: 4px;
           padding: 0 4px;
+        }
+
+        // 撤回入口：默认淡显，hover/focus 时提亮，避免干扰阅读
+        .message-recall {
+          margin-top: 2px;
+          padding: 0 4px;
+          font-size: $font-size-xs;
+          color: $text-muted;
+          background: none;
+          border: none;
+          cursor: pointer;
+          transition: color $duration-base $ease-standard;
+
+          &:hover,
+          &:focus-visible {
+            color: $primary-text;
+          }
         }
 
         .recalled-message {
@@ -157,17 +182,17 @@
       padding: 10px 16px;
       border-radius: 20px;
       border: 1px solid $border-color;
-      font-size: 15px;
+      font-size: $font-size-base;
       resize: none;
       outline: none;
       margin: 0 10px;
 
       &:focus {
-        border-color: $primary-color;
+        border-color: $primary-text;
       }
 
       &:focus-visible {
-        outline: 2px solid $primary-color;
+        outline: 2px solid $primary-text;
         outline-offset: 2px;
       }
     }
@@ -185,15 +210,400 @@
       flex-shrink: 0;
 
       &.active {
-        color: $primary-color;
+        color: $primary-text;
       }
     }
   }
 }
 
+// ============================================
+// 媒体消息（图片 / 语音）
+// ============================================
+.chat-page {
+  .message-item {
+    &.pending {
+      opacity: 0.72;
+    }
+
+    &.highlighted {
+      .message-content,
+      .image-bubble,
+      .voice-bubble {
+        animation: messageFlash 2.5s ease;
+      }
+    }
+
+    .image-bubble {
+      position: relative;
+      display: block;
+      padding: 0;
+      border: none;
+      background: none;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: zoom-in;
+      line-height: 0;
+
+      img {
+        display: block;
+        max-width: 200px;
+        max-height: 260px;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+    }
+
+    .bubble-pending {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba($text-primary, 0.35);
+      border-radius: 12px;
+    }
+  }
+}
+
+.voice-bubble {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+  padding: 8px 12px;
+  border-radius: 16px 16px 16px 4px;
+  background-color: $background-white;
+  box-shadow: $shadow-card;
+
+  &--mine {
+    background-color: $primary-strong;
+    border-radius: 16px 16px 4px 16px;
+  }
+
+  .voice-play-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background-color: $primary-soft;
+    color: $primary-text;
+    cursor: pointer;
+
+    .voice-bubble--mine & {
+      background-color: rgba(255, 255, 255, 0.24);
+      color: $background-white;
+    }
+  }
+
+  .voice-progress {
+    position: relative;
+    flex: 1;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    border-radius: 2px;
+    background-color: $border-color;
+    overflow: hidden;
+
+    .voice-bubble--mine & {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  .voice-progress__input {
+    position: absolute;
+    inset: 0;
+    z-index: $z-index-base;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    appearance: none;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .voice-progress__bar {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 3px;
+    transform: translateY(-50%);
+    background-color: $primary-strong;
+    transition: width $duration-fast linear;
+    pointer-events: none;
+
+    .voice-bubble--mine & {
+      background-color: $background-white;
+    }
+  }
+
+  .voice-duration {
+    flex-shrink: 0;
+    font-size: $font-size-xs;
+    color: $text-secondary;
+
+    .voice-bubble--mine & {
+      color: $background-white;
+    }
+  }
+}
+
+@keyframes messageFlash {
+  0%,
+  100% {
+    box-shadow: none;
+  }
+  20% {
+    box-shadow: 0 0 0 3px $primary-light;
+  }
+}
+
+// ============================================
+// 输入区扩展：图片 / 录音
+// ============================================
+.chat-page {
+  .input-area {
+    position: relative;
+
+    .message-input {
+      margin: 0 8px;
+    }
+
+    .composer-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 44px;
+      flex-shrink: 0;
+      border: none;
+      background: none;
+      color: $text-secondary;
+      cursor: pointer;
+
+      &:disabled {
+        color: $text-light;
+        cursor: not-allowed;
+      }
+    }
+
+    .voice-btn {
+      touch-action: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+
+      &.is-recording {
+        color: $error-color;
+        background-color: $error-background;
+        border-radius: 50%;
+      }
+    }
+
+    .recording-hint {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: calc(100% + 6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background-color: $background-white;
+      box-shadow: $shadow-soft;
+      font-size: 13px;
+      color: $text-secondary;
+    }
+
+    .recording-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: $error-color;
+      animation: recordingPulse 1s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes recordingPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+// ============================================
+// 搜索
+// ============================================
+.chat-page {
+  .chat-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background-color: $background-white;
+    box-shadow: $shadow-card;
+    flex-shrink: 0;
+
+    .back-btn,
+    .chat-search-bar__cancel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      border: none;
+      background: none;
+      color: $text-primary;
+      cursor: pointer;
+    }
+
+    .chat-search-bar__cancel {
+      color: $text-secondary;
+    }
+
+    .chat-search-bar__input {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+    }
+  }
+}
+
+.chat-search-results {
+  position: absolute;
+  inset: 0;
+  z-index: $z-index-dropdown;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 16px;
+  background-color: $background-white;
+  box-shadow: $shadow-medium;
+
+  &__skeletons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  &__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 40px 16px;
+    font-size: $font-size-sm;
+    color: $text-muted;
+  }
+
+  &__head {
+    padding: 8px 16px;
+    font-size: $font-size-xs;
+    color: $text-muted;
+    border-bottom: 1px solid $border-light;
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__more {
+    padding: 12px;
+    text-align: center;
+  }
+}
+
+.search-result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid $border-light;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $background-soft;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: $font-size-xs;
+    color: $text-muted;
+  }
+
+  &__from {
+    font-weight: 600;
+    color: $text-secondary;
+  }
+
+  &__text {
+    font-size: $font-size-sm;
+    line-height: 1.5;
+    color: $text-primary;
+    word-break: break-word;
+  }
+}
+
+.search-highlight {
+  padding: 0 1px;
+  border-radius: 2px;
+  background-color: $primary-soft;
+  color: $primary-text;
+}
+
+// ============================================
+// 图片预览 / 大图
+// ============================================
+.chat-image-preview__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  img {
+    max-width: 100%;
+    max-height: 60vh;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+}
+
+.chat-image-preview__tip {
+  font-size: $font-size-xs;
+  color: $text-muted;
+}
+
+.chat-image-preview__footer {
+  display: flex;
+  gap: 12px;
+}
+
 @media (min-width: 768px) {
   .chat-page {
-    max-width: 600px;
+    max-width: $page-max-read;
     margin: 0 auto;
     border-left: 1px solid $background-muted;
     border-right: 1px solid $background-muted;

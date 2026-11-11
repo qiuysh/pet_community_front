@@ -161,3 +161,17 @@ export function isAdminApiUrl(url?: string): boolean {
   if (!url) return false;
   return url.includes('/admin/') || url.includes('/admin-login') || url.includes('/api/v1/admin');
 }
+
+/** 登录/验证码/刷新等鉴权入口：失败不得触发会话过期清理 */
+export function isAuthEndpointUrl(url?: string): boolean {
+  if (!url) return false;
+  return (
+    url.includes('/auth/login') ||
+    url.includes('/auth/register') ||
+    url.includes('/auth/send-code') ||
+    url.includes('/auth/refresh-token') ||
+    url.includes('/auth/reset-password') ||
+    url.includes('/admin/login') ||
+    url.includes('/admin/captcha')
+  );
+}

@@ -15,22 +15,22 @@
     border: 1px solid $border-color;
     background: $background-white;
     color: $text-secondary;
-    font-size: 12px;
+    font-size: $font-size-xs;
     line-height: 1.2;
     padding: 6px 10px;
     border-radius: 999px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background-color $duration-fast ease, border-color $duration-fast ease, color $duration-fast ease;
 
     &:hover {
-      border-color: $primary-color;
-      color: $primary-color;
+      border-color: $primary-text;
+      color: $primary-text;
     }
 
     &.active {
       background: $primary-soft;
-      border-color: $primary-color;
-      color: $primary-dark;
+      border-color: $primary-text;
+      color: $primary-text;
       font-weight: 500;
     }
   }
@@ -48,7 +48,7 @@
     min-width: 0;
 
     .field-label {
-      font-size: 12px;
+      font-size: $font-size-xs;
       color: $text-muted;
     }
   }
@@ -71,7 +71,7 @@
     padding: 10px 12px;
     border: 1px solid $border-color;
     border-radius: $border-radius-xs;
-    font-size: 14px;
+    font-size: $font-size-sm;
     color: $text-primary;
     background: $background-white;
     outline: none;
@@ -83,8 +83,13 @@
     padding-right: 28px;
 
     &:focus {
-      border-color: $primary-color;
+      border-color: $primary-text;
       box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary-text;
+      outline-offset: 2px;
     }
   }
 
@@ -97,7 +102,7 @@
 
   .schedule-hint {
     margin: 4px 0 0;
-    font-size: 12px;
+    font-size: $font-size-xs;
     color: $text-muted;
   }
 }

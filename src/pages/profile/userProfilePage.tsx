@@ -4,6 +4,7 @@ import { useUserStore } from '../../stores/userStore';
 import { getPublicProfile } from '../../api/user';
 import { blockApi } from '../../api/social';
 import { useFollowState } from '../../hooks/useFollowState';
+import { useConfirm } from '../../hooks/useConfirm';
 import {
   useUserProfileContent,
   type ProfileContentTab,
@@ -19,6 +20,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { getPetTypeIcon } from '../../types/pet';
 import type { PublicUserProfile } from '../../types/user';
+import { formatCount } from '../../utils/format';
 
 export function UserProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +35,7 @@ export function UserProfilePage() {
   const targetIdForFollow = id && !isOwnProfile ? Number(id) : undefined;
   const { status: followStatus, acting: followActing, follow, unfollow, setSecret } =
     useFollowState(targetIdForFollow);
+  const { confirm, confirmDialog } = useConfirm();
 
   const profileUserId = id ? Number(id) : user?.id;
   const {
@@ -85,6 +88,10 @@ export function UserProfilePage() {
   const postsCount = publicProfile?.postsCount ?? 0;
   const followingCount = publicProfile?.followingCount ?? 0;
   const followersCount = publicProfile?.followersCount ?? 0;
+  // 关系列表页所需用户 ID：他人主页取路由参数，本人主页取登录用户
+  const relationUserId = id ?? (user ? String(user.id) : null);
+  const relationCellClass =
+    'flex flex-col items-center justify-center gap-0.5 px-2 py-3 transition-colors hover:bg-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30';
 
   const handleStartConversation = () => {
     if (!id) return;
@@ -94,12 +101,28 @@ export function UserProfilePage() {
     );
   };
 
+  const handleUnfollow = async () => {
+    const confirmed = await confirm({
+      title: '取消关注？',
+      description: `取消关注后，${displayUser?.nickname || '对方'}的新动态不会再出现在你的关注列表。`,
+      confirmText: '取消关注',
+      tone: 'primary',
+    });
+    if (confirmed) await unfollow();
+  };
+
   const handleBlock = async () => {
     if (!id || !isLoggedIn) {
       navigate('/login');
       return;
     }
-    if (!window.confirm('拉黑后双方将无法互看动态、评论与私信，并自动取消关注。确定拉黑？')) {
+    if (
+      !(await confirm({
+        title: '拉黑该用户？',
+        description: '拉黑后双方将无法互看动态、评论与私信，并自动取消关注。',
+        confirmText: '拉黑',
+      }))
+    ) {
       return;
     }
     setBlocking(true);
@@ -127,28 +150,34 @@ export function UserProfilePage() {
 
   return (
     <div className="min-h-screen bg-cream">
-      <div className="bg-primary-soft h-48 relative overflow-hidden">
-        <div className="absolute top-10 right-20 w-32 h-32 bg-primary-light/25 rounded-full blur-2xl pointer-events-none" aria-hidden="true" />
-        <div className="absolute bottom-5 left-10 w-48 h-48 bg-white/60 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+      <div className="page-hero-surface h-48">
+        <div
+          className="pointer-events-none absolute -bottom-8 right-[14%] h-32 w-32 rounded-full bg-secondary-soft blur-xl"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute bottom-6 left-[12%] h-16 w-16 rounded-full bg-primary/20 blur-md"
+          aria-hidden="true"
+        />
       </div>
 
-      <div className="mx-auto max-w-5xl px-3 sm:px-4 -mt-16">
+      <div className="page-shell -mt-16">
         <Card className="rounded-xl shadow-card animate-fadeIn" padding="none">
           <div className="flex flex-col items-center gap-3 p-4 sm:flex-row sm:items-end sm:gap-5 sm:p-6">
             <div className="h-20 w-20 shrink-0 rounded-full bg-white p-1 shadow-soft sm:h-24 sm:w-24 md:h-28 md:w-28">
               <Avatar
                 src={displayUser?.avatar}
                 name={displayUser?.nickname || '宠友'}
-                className="!size-full h-full w-full bg-primary text-2xl font-bold text-white sm:text-3xl"
+                className="!size-full h-full w-full bg-primary-strong text-2xl font-bold text-white sm:text-3xl"
               />
             </div>
             <div className="min-w-0 flex-1 text-center sm:text-left">
               <h1
                 className={[
-                  'text-balance text-xl font-bold sm:text-2xl',
+                  'page-content-title text-balance',
                   publicProfile?.isVipName || (displayUser as { isVipName?: boolean } | null)?.isVipName
                     ? 'text-secondary tracking-wide'
-                    : 'text-brown',
+                    : '',
                 ].join(' ')}
               >
                 {loadingProfile && !displayUser ? '加载中…' : displayUser?.nickname || '宠友'}
@@ -160,7 +189,7 @@ export function UserProfilePage() {
                 )}
               </h1>
               <p className="mt-1 line-clamp-2 text-sm text-brown-muted sm:text-base">
-                {displayUser?.signature || '这个人很懒，什么都没留下...'}
+                {displayUser?.signature || '这个人很懒，什么都没留下…'}
               </p>
               {(displayUser?.location || displayUser?.petYears) && (
                 <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-brown-secondary sm:justify-start">
@@ -188,37 +217,49 @@ export function UserProfilePage() {
             aria-label="账号数据"
           >
             <div className="flex flex-col items-center justify-center gap-0.5 px-2 py-3">
-              <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
+              <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
                 {postsCount}
               </span>
               <span className="text-xs text-brown-muted">帖子</span>
             </div>
-            <button
-              type="button"
-              className="flex flex-col items-center justify-center gap-0.5 border-x border-border-light px-2 py-3 transition-colors hover:bg-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30"
-              onClick={() => {
-                const targetId = id || user?.id;
-                if (targetId) navigate(`/follow/${targetId}/following`);
-              }}
-            >
-              <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
-                {followingCount}
-              </span>
-              <span className="text-xs text-brown-muted">关注</span>
-            </button>
-            <button
-              type="button"
-              className="flex flex-col items-center justify-center gap-0.5 px-2 py-3 transition-colors hover:bg-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30"
-              onClick={() => {
-                const targetId = id || user?.id;
-                if (targetId) navigate(`/follow/${targetId}/followers`);
-              }}
-            >
-              <span className="text-xl font-bold leading-none tabular-nums text-brown sm:text-2xl">
-                {followersCount}
-              </span>
-              <span className="text-xs text-brown-muted">粉丝</span>
-            </button>
+            {relationUserId ? (
+              <Link
+                to={`/follow/${relationUserId}/following`}
+                className={`${relationCellClass} border-x border-border-light`}
+                aria-label="查看关注列表"
+              >
+                <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
+                  {formatCount(followingCount)}
+                </span>
+                <span className="text-xs text-brown-muted">关注</span>
+              </Link>
+            ) : (
+              <div className={`${relationCellClass} border-x border-border-light`}>
+                <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
+                  {formatCount(followingCount)}
+                </span>
+                <span className="text-xs text-brown-muted">关注</span>
+              </div>
+            )}
+            {relationUserId ? (
+              <Link
+                to={`/follow/${relationUserId}/followers`}
+                className={relationCellClass}
+                aria-label="查看粉丝列表"
+              >
+                <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
+                  {formatCount(followersCount)}
+                </span>
+                <span className="text-xs text-brown-muted">粉丝</span>
+              </Link>
+            ) : (
+              <div className={relationCellClass}>
+                <span className="text-[length:var(--font-size-title)] font-semibold leading-none tabular-nums text-brown">
+                  {formatCount(followersCount)}
+                </span>
+                <span className="text-xs text-brown-muted">粉丝</span>
+              </div>
+            )}
           </div>
 
           {/* 操作入口：与昵称分离，避免挤成一团 */}
@@ -249,6 +290,12 @@ export function UserProfilePage() {
                 >
                   黑名单
                 </Link>
+                <Link
+                  to="/my-reports"
+                  className="inline-flex min-h-10 items-center justify-center rounded-md border border-border px-3 py-2 text-sm text-brown-secondary transition-colors hover:bg-soft sm:rounded-full sm:px-4 sm:py-1.5"
+                >
+                  我的举报
+                </Link>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
@@ -266,9 +313,9 @@ export function UserProfilePage() {
                           className="min-h-10 rounded-md sm:rounded-full"
                           aria-label="已关注，点击管理"
                         >
-                          <UserCheck size={14} aria-hidden="true" />
+                          <UserCheck size={ICON_SIZE.inline} aria-hidden="true" />
                           {followStatus.isSecret ? '悄悄关注' : '已关注'}
-                          <MoreVertical size={14} aria-hidden="true" />
+                          <MoreVertical size={ICON_SIZE.inline} aria-hidden="true" />
                         </Button>
                       }
                       items={[
@@ -281,7 +328,7 @@ export function UserProfilePage() {
                         if (key === 'public') void setSecret(false);
                         else if (key === 'secret') void setSecret(true);
                         else if (key === 'unfollow') {
-                          if (window.confirm('确认取消关注？')) void unfollow();
+                          void handleUnfollow();
                         }
                       }}
                     />
@@ -296,9 +343,9 @@ export function UserProfilePage() {
                           className="min-h-10 rounded-md sm:rounded-full"
                           aria-label="关注该用户"
                         >
-                          <UserPlus size={14} aria-hidden="true" />
+                          <UserPlus size={ICON_SIZE.inline} aria-hidden="true" />
                           关注
-                          <MoreVertical size={14} aria-hidden="true" />
+                          <MoreVertical size={ICON_SIZE.inline} aria-hidden="true" />
                         </Button>
                       }
                       items={[
@@ -313,7 +360,7 @@ export function UserProfilePage() {
                   )
                 )}
                 {followStatus?.isMutual && (
-                  <span className="inline-flex min-h-10 items-center gap-1 rounded-md border border-primary/40 px-3 text-xs text-primary sm:rounded-full" data-testid="mutual-follow">
+                  <span className="inline-flex min-h-10 items-center gap-1 rounded-md border border-primary-text/40 px-3 text-xs text-primary-text sm:rounded-full" data-testid="mutual-follow">
                     互相关注
                   </span>
                 )}
@@ -324,7 +371,7 @@ export function UserProfilePage() {
                   className="min-h-10 rounded-md sm:rounded-full"
                   aria-label={`私信 ${displayUser?.nickname || '该用户'}`}
                 >
-                  <Send size={14} aria-hidden="true" />
+                  <Send size={ICON_SIZE.inline} aria-hidden="true" />
                   私信
                 </Button>
                 <Button
@@ -336,7 +383,7 @@ export function UserProfilePage() {
                   className="min-h-10 rounded-md sm:rounded-full"
                   aria-label={`拉黑 ${displayUser?.nickname || '该用户'}`}
                 >
-                  <Ban size={14} aria-hidden="true" />
+                  <Ban size={ICON_SIZE.inline} aria-hidden="true" />
                   {blocking ? '处理中…' : '拉黑'}
                 </Button>
               </div>
@@ -376,15 +423,15 @@ export function UserProfilePage() {
                   return (
                     <Link key={pet.id} to={`/pets/${pet.id}`}>
                       <Card hoverable className="rounded-xl shadow-card h-full" padding="none">
-                        <div className="aspect-square bg-linear-to-br from-primary-soft to-primary-light/20 flex items-center justify-center overflow-hidden">
+                        <div className="aspect-square bg-linear-to-br from-cream to-secondary-soft flex items-center justify-center overflow-hidden">
                           {pet.avatar ? (
-                            <img src={pet.avatar} alt={pet.name} className="w-full h-full object-cover" />
+                            <img src={pet.avatar} alt={pet.name} className="w-full h-full object-cover" decoding="async" />
                           ) : (
                             <PetIcon className="text-brown-light" size={48} aria-hidden="true" />
                           )}
                         </div>
                         <div className="p-4">
-                          <p className="text-sm font-medium text-brown truncate">{pet.name}</p>
+                          <p className="page-section-title truncate">{pet.name}</p>
                           <p className="text-xs text-brown-muted mt-1 truncate">
                             {pet.breedName || '未知品种'}
                           </p>
@@ -406,7 +453,7 @@ export function UserProfilePage() {
                     <Card hoverable className="rounded-xl shadow-card h-full" padding="none">
                       <div className="aspect-square bg-linear-to-br from-muted to-soft flex items-center justify-center overflow-hidden">
                         {cover ? (
-                          <img src={cover} alt="" className="w-full h-full object-cover" />
+                          <img src={cover} alt="" className="w-full h-full object-cover" decoding="async" />
                         ) : post.video ? (
                           <video src={post.video} className="w-full h-full object-cover" muted />
                         ) : (
@@ -480,6 +527,8 @@ export function UserProfilePage() {
 
         <div className="mt-8 mb-12" />
       </div>
+
+      {confirmDialog}
     </div>
   );
 }

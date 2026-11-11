@@ -33,8 +33,8 @@ export function ReportStats({ stats, loading }: ReportStatsProps) {
 
   const cards = [
     { label: '举报总数', value: stats.total, color: 'text-brown' },
-    { label: '待处理', value: stats.pending, color: 'text-warning' },
-    { label: '已处理', value: stats.handled, color: 'text-success' },
+    { label: '待处理', value: stats.pending, color: 'text-warning-text' },
+    { label: '已处理', value: stats.handled, color: 'text-success-text' },
     { label: '处理率', value: `${stats.handleRate.toFixed(1)}%`, color: 'text-secondary' },
   ];
 

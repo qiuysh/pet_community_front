@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getActivityDetail, getSignInList, getSignInStats, signIn } from '../api/activity';
 import { useUserStore } from '../stores/userStore';
@@ -7,6 +7,12 @@ import { useAsync } from './useAsync';
 import { ActivityInfo, SignInInfo, SignInStatsResponse } from '../types/activity';
 
 export type SignInTab = 'qrcode' | 'signins';
+
+/** 路由参数 → 活动 ID；缺失或非法时返回 0（避免 parseInt 得到 NaN 后传给接口） */
+function parseActivityId(raw?: string): number {
+  const parsed = Number(raw);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 0;
+}
 
 /**
  * 活动签到 hook
@@ -21,6 +27,7 @@ export type SignInTab = 'qrcode' | 'signins';
  */
 export function useActivitySignIn() {
   const { id } = useParams<{ id: string }>();
+  const activityId = parseActivityId(id);
   const navigate = useNavigate();
   const { isLoggedIn } = useUserStore();
   const toast = useToast();
@@ -38,7 +45,8 @@ export function useActivitySignIn() {
       const activityData = await getActivityDetail(activityId);
       setActivity(activityData);
 
-      if (activityData.type !== 'offline_event') {
+      // 后端活动类型枚举：online_vote / online_collect / offline_meet / adopt
+      if (activityData.type !== 'offline_meet') {
         toast.warning('该活动不是线下活动，无法签到');
         navigate(`/activities/${activityId}`);
         return;
@@ -58,37 +66,48 @@ export function useActivitySignIn() {
   );
 
   useEffect(() => {
-    if (!id) return;
+    if (!activityId) {
+      navigate('/activities');
+      return;
+    }
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
-    loadData(parseInt(id));
+    loadData(activityId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isLoggedIn]);
+  }, [activityId, isLoggedIn]);
 
-  const handleSignIn = () => {
-    if (!scanQRCode) {
-      toast.warning('请扫描二维码或输入二维码内容');
-      return;
-    }
-    if (!id) return;
+  const handleSignIn = useCallback(
+    (codeOverride?: string) => {
+      const qrCode = (codeOverride ?? scanQRCode).trim();
+      if (!qrCode) {
+        toast.warning('请输入现场提供的签到码');
+        return;
+      }
+      if (!activityId) return;
+      if (codeOverride) setScanQRCode(qrCode);
 
-    runSignIn(
-      () => signIn(parseInt(id), {
-        activityId: parseInt(id),
-        qrCode: scanQRCode,
-        signInLocation: signInLocation || undefined,
-      }),
-      () => {
-        toast.success('签到成功');
-        setScanQRCode('');
-        setSignInLocation('');
-        loadData(parseInt(id));
-      },
-      (error: unknown) => toast.error((error as Error).message || '签到失败'),
-    );
-  };
+      runSignIn(
+        () =>
+          signIn(activityId, {
+            activityId,
+            qrCode,
+            signInLocation: signInLocation || undefined,
+          }),
+        () => {
+          toast.success('签到成功');
+          setScanQRCode('');
+          setSignInLocation('');
+          loadData(activityId);
+        },
+        (error: unknown) => toast.error((error as Error).message || '签到失败'),
+      );
+    },
+    // loadData / toast / runSignIn 在本 hook 生命周期内稳定或可接受最新闭包
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activityId, scanQRCode, signInLocation],
+  );
 
   return {
     activity,
@@ -103,6 +122,6 @@ export function useActivitySignIn() {
     signInLocation,
     setSignInLocation,
     handleSignIn,
-    activityId: id,
+    activityId,
   };
 }

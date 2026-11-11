@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { useProfileSettings } from '../../hooks/useProfileSettings';
+import { useConfirm } from '../../hooks/useConfirm';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { SettingsIcon } from '../../components/settings/settingsIcons';
 import { BrandSocialIcon, type BrandSocialPlatform } from '../../components/icons/brandSocialIcons';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { VerificationCodeModal } from '../../components/profile/verificationCodeModal';
 import { Button } from '../../components/ui/button';
-import { FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
+import { FieldError, FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
 import { Radio, RadioGroup } from '../../components/ui/radio';
-import { Monitor, Smartphone } from 'lucide-react';
+import { Mail, Monitor, Smartphone } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import './profileSettingsPage.scss';
 
 type TabType = 'profile' | 'password' | 'privacy' | 'devices' | 'bindings';
@@ -17,6 +20,7 @@ export function ProfileSettingsPage() {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const {
     loading,
+    dirtyTabs,
     user,
     nickname, setNickname,
     signature, setSignature,
@@ -26,6 +30,7 @@ export function ProfileSettingsPage() {
     oldPassword, setOldPassword,
     newPassword, setNewPassword,
     confirmPassword, setConfirmPassword,
+    fieldErrors, clearFieldError,
     privacy, setPrivacy, privacyLoaded, loadPrivacy, handleSavePrivacy,
     devices, devicesLoaded, loadDevices, handleRemoveDevice,
     thirdPartyLoaded, loadThirdParty,
@@ -36,6 +41,32 @@ export function ProfileSettingsPage() {
     handleChangePassword,
     handleBindSubmit,
   } = useProfileSettings();
+  const { confirm, confirmDialog } = useConfirm();
+
+  const handleRemoveDeviceWithConfirm = async (deviceId: string, deviceName?: string) => {
+    const confirmed = await confirm({
+      title: '将该设备下线？',
+      description: `${deviceName || '该设备'}的登录状态将立即失效，需要重新登录才能继续使用。`,
+      confirmText: '下线',
+    });
+    if (confirmed) await handleRemoveDevice(deviceId);
+  };
+
+  const PLATFORM_LABEL = { wechat: '微信', weibo: '微博', qq: 'QQ' } as const;
+
+  const handleThirdPartyAction = async (platform: 'wechat' | 'weibo' | 'qq') => {
+    if (!isThirdPartyBound(platform)) {
+      await handleBindThirdParty(platform);
+      return;
+    }
+    const confirmed = await confirm({
+      title: `解绑${PLATFORM_LABEL[platform]}？`,
+      description: '解绑后无法再用该账号快捷登录，需要改用手机号或邮箱登录。',
+      confirmText: '解绑',
+    });
+    if (!confirmed) return;
+    await handleUnbindThirdParty(platform);
+  };
 
   useEffect(() => {
     if (activeTab === 'privacy' && !privacyLoaded) {
@@ -80,21 +111,27 @@ export function ProfileSettingsPage() {
       );
     });
 
+  // 只拦当前 tab 的未保存修改；提交中（loading）不拦，否则保存成功后的跳转会被自己挡下
+  const dirty = activeTab in dirtyTabs ? dirtyTabs[activeTab as keyof typeof dirtyTabs] : false;
+  const leaveDialog = useUnsavedChanges(dirty && !loading);
+
   return (
     <div className="profile-settings-page">
+      {leaveDialog}
       <div className="settings-container">
-        <h1 className="page-title">账号设置</h1>
+        <h1 className="page-content-title">账号设置</h1>
 
         <div className="settings-layout">
           <nav className="settings-sidebar" aria-label="设置分类">
             <div className="sidebar-user">
               <img
+                decoding="async"
                 src={user?.avatar || getDefaultUserAvatar()}
                 alt=""
                 className="sidebar-avatar"
               />
               <div className="sidebar-user-info">
-                <div className="sidebar-nickname">{user?.nickname || '用户'}</div>
+                <div className="page-section-title sidebar-nickname">{user?.nickname || '用户'}</div>
                 <div className="sidebar-bio">{user?.signature || '设置你的个性签名'}</div>
               </div>
             </div>
@@ -112,8 +149,9 @@ export function ProfileSettingsPage() {
                 <div className="form-wrapper">
                   <div className="avatar-section">
                     <img
+                      decoding="async"
                       src={user?.avatar || getDefaultUserAvatar()}
-                      alt="avatar"
+                      alt=""
                       className="form-avatar"
                     />
                     <div className="avatar-actions">
@@ -143,13 +181,22 @@ export function ProfileSettingsPage() {
                   </div>
 
                   <div className="form-group">
-                    <FieldLabel>昵称</FieldLabel>
+                    <FieldLabel htmlFor="ps-nickname">昵称</FieldLabel>
                     <Input
+                      id="ps-nickname"
+                      name="nickname"
+                      autoComplete="nickname"
                       value={nickname}
-                      onChange={(e) => setNickname(e.target.value)}
-                      placeholder="请输入昵称"
+                      onChange={(e) => {
+                        setNickname(e.target.value);
+                        clearFieldError('nickname');
+                      }}
+                      placeholder="请输入昵称…"
                       maxLength={20}
+                      invalid={!!fieldErrors.nickname}
+                      aria-describedby={fieldErrors.nickname ? 'ps-nickname-error' : undefined}
                     />
+                    <FieldError id="ps-nickname-error">{fieldErrors.nickname}</FieldError>
                   </div>
 
                   <div className="form-group">
@@ -173,8 +220,10 @@ export function ProfileSettingsPage() {
                   </div>
 
                   <div className="form-group">
-                    <FieldLabel>个性签名</FieldLabel>
+                    <FieldLabel htmlFor="ps-signature">个性签名</FieldLabel>
                     <Textarea
+                      id="ps-signature"
+                      name="signature"
                       value={signature}
                       onChange={(e) => setSignature(e.target.value)}
                       placeholder="介绍一下自己吧…"
@@ -184,17 +233,25 @@ export function ProfileSettingsPage() {
                   </div>
 
                   <div className="form-group">
-                    <FieldLabel>所在地</FieldLabel>
+                    <FieldLabel htmlFor="ps-location">所在地</FieldLabel>
                     <Input
+                      id="ps-location"
+                      name="location"
+                      autoComplete="address-level2"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      placeholder="请输入所在城市"
+                      placeholder="请输入所在城市…"
                     />
                   </div>
 
                   <div className="form-group">
-                    <FieldLabel>养宠年限</FieldLabel>
-                    <Select value={petYears} onChange={(e) => setPetYears(e.target.value)}>
+                    <FieldLabel htmlFor="ps-pet-years">养宠年限</FieldLabel>
+                    <Select
+                      id="ps-pet-years"
+                      name="petYears"
+                      value={petYears}
+                      onChange={(e) => setPetYears(e.target.value)}
+                    >
                       <option value="">请选择</option>
                       <option value="less_than_1">1年以内</option>
                       <option value="1_3">1-3年</option>
@@ -204,8 +261,8 @@ export function ProfileSettingsPage() {
                     </Select>
                   </div>
 
-                  <Button block className="mt-4" disabled={loading} onClick={handleUpdateProfile}>
-                    {loading ? '保存中...' : '保存修改'}
+                  <Button block className="mt-4" disabled={loading} loading={loading} onClick={handleUpdateProfile}>
+                    {loading ? '保存中' : '保存修改'}
                   </Button>
                 </div>
               )}
@@ -213,34 +270,61 @@ export function ProfileSettingsPage() {
               {activeTab === 'password' && (
                 <div className="form-wrapper">
                   <div className="form-group">
-                    <FieldLabel>原密码</FieldLabel>
+                    <FieldLabel htmlFor="ps-old-password">原密码</FieldLabel>
                     <Input
+                      id="ps-old-password"
+                      name="oldPassword"
                       type="password"
+                      autoComplete="current-password"
                       value={oldPassword}
-                      onChange={(e) => setOldPassword(e.target.value)}
-                      placeholder="请输入原密码"
+                      onChange={(e) => {
+                        setOldPassword(e.target.value);
+                        clearFieldError('oldPassword');
+                      }}
+                      placeholder="请输入原密码…"
+                      invalid={!!fieldErrors.oldPassword}
+                      aria-describedby={fieldErrors.oldPassword ? 'ps-old-password-error' : undefined}
                     />
+                    <FieldError id="ps-old-password-error">{fieldErrors.oldPassword}</FieldError>
                   </div>
                   <div className="form-group">
-                    <FieldLabel>新密码</FieldLabel>
+                    <FieldLabel htmlFor="ps-new-password">新密码</FieldLabel>
                     <Input
+                      id="ps-new-password"
+                      name="newPassword"
                       type="password"
+                      autoComplete="new-password"
                       value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="请输入6-20位新密码"
+                      onChange={(e) => {
+                        setNewPassword(e.target.value);
+                        clearFieldError('newPassword');
+                      }}
+                      placeholder="请输入 6-20 位新密码…"
+                      invalid={!!fieldErrors.newPassword}
+                      aria-describedby={fieldErrors.newPassword ? 'ps-new-password-error' : undefined}
                     />
+                    <FieldError id="ps-new-password-error">{fieldErrors.newPassword}</FieldError>
                   </div>
                   <div className="form-group">
-                    <FieldLabel>确认新密码</FieldLabel>
+                    <FieldLabel htmlFor="ps-confirm-password">确认新密码</FieldLabel>
                     <Input
+                      id="ps-confirm-password"
+                      name="confirmPassword"
                       type="password"
+                      autoComplete="new-password"
                       value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="请再次输入新密码"
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                        clearFieldError('confirmPassword');
+                      }}
+                      placeholder="请再次输入新密码…"
+                      invalid={!!fieldErrors.confirmPassword}
+                      aria-describedby={fieldErrors.confirmPassword ? 'ps-confirm-password-error' : undefined}
                     />
+                    <FieldError id="ps-confirm-password-error">{fieldErrors.confirmPassword}</FieldError>
                   </div>
-                  <Button block className="mt-4" disabled={loading} onClick={handleChangePassword}>
-                    {loading ? '修改中...' : '确认修改'}
+                  <Button block className="mt-4" disabled={loading} loading={loading} onClick={handleChangePassword}>
+                    {loading ? '修改中' : '确认修改'}
                   </Button>
                 </div>
               )}
@@ -248,7 +332,7 @@ export function ProfileSettingsPage() {
               {activeTab === 'privacy' && (
                 <div className="form-wrapper">
                   <div className="privacy-section">
-                    <h3 className="section-title">帖子可见范围</h3>
+                    <h3 className="page-section-title section-title">帖子可见范围</h3>
                     <p className="section-desc">设置谁可以看到你的帖子</p>
                     <RadioGroup
                       name="postVisibility"
@@ -269,7 +353,7 @@ export function ProfileSettingsPage() {
                   </div>
 
                   <div className="privacy-section">
-                    <h3 className="section-title">评论权限</h3>
+                    <h3 className="page-section-title section-title">评论权限</h3>
                     <p className="section-desc">设置谁可以评论你的帖子</p>
                     <RadioGroup
                       name="commentPermission"
@@ -290,7 +374,7 @@ export function ProfileSettingsPage() {
                   </div>
 
                   <div className="privacy-section">
-                    <h3 className="section-title">私信权限</h3>
+                    <h3 className="page-section-title section-title">私信权限</h3>
                     <p className="section-desc">设置谁可以给你发私信</p>
                     <RadioGroup
                       name="messagePermission"
@@ -309,8 +393,8 @@ export function ProfileSettingsPage() {
                       ))}
                     </RadioGroup>
                   </div>
-                  <Button block className="mt-4" disabled={loading} onClick={handleSavePrivacy}>
-                    {loading ? '保存中...' : '保存隐私设置'}
+                  <Button block className="mt-4" disabled={loading} loading={loading} onClick={handleSavePrivacy}>
+                    {loading ? '保存中' : '保存隐私设置'}
                   </Button>
                 </div>
               )}
@@ -329,9 +413,9 @@ export function ProfileSettingsPage() {
                           <div key={device.deviceId || device.id} className="device-item">
                             <div className="device-icon">
                               {isMobile ? (
-                                <Smartphone size={22} strokeWidth={1.8} />
+                                <Smartphone size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
                               ) : (
-                                <Monitor size={22} strokeWidth={1.8} />
+                                <Monitor size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
                               )}
                             </div>
                             <div className="device-info">
@@ -345,7 +429,7 @@ export function ProfileSettingsPage() {
                               variant="ghost"
                               size="sm"
                               className="device-action"
-                              onClick={() => handleRemoveDevice(device.deviceId)}
+                              onClick={() => handleRemoveDeviceWithConfirm(device.deviceId, device.deviceName)}
                             >
                               下线
                             </Button>
@@ -369,30 +453,21 @@ export function ProfileSettingsPage() {
                         status: isThirdPartyBound('wechat') ? '已绑定' : '未绑定',
                         color: 'wechat',
                         action: isThirdPartyBound('wechat') ? '解绑' : '去绑定',
-                        onClick: () =>
-                          void (isThirdPartyBound('wechat')
-                            ? handleUnbindThirdParty('wechat')
-                            : handleBindThirdParty('wechat')),
+                        onClick: () => void handleThirdPartyAction('wechat'),
                       },
                       {
                         name: '微博',
                         status: isThirdPartyBound('weibo') ? '已绑定' : '未绑定',
                         color: 'weibo',
                         action: isThirdPartyBound('weibo') ? '解绑' : '去绑定',
-                        onClick: () =>
-                          void (isThirdPartyBound('weibo')
-                            ? handleUnbindThirdParty('weibo')
-                            : handleBindThirdParty('weibo')),
+                        onClick: () => void handleThirdPartyAction('weibo'),
                       },
                       {
                         name: 'QQ',
                         status: isThirdPartyBound('qq') ? '已绑定' : '未绑定',
                         color: 'qq',
                         action: isThirdPartyBound('qq') ? '解绑' : '去绑定',
-                        onClick: () =>
-                          void (isThirdPartyBound('qq')
-                            ? handleUnbindThirdParty('qq')
-                            : handleBindThirdParty('qq')),
+                        onClick: () => void handleThirdPartyAction('qq'),
                       },
                       {
                         name: '手机号',
@@ -458,6 +533,8 @@ export function ProfileSettingsPage() {
         }
         onSubmit={handleBindSubmit}
       />
+
+      {confirmDialog}
     </div>
   );
 }
@@ -471,37 +548,15 @@ const BRAND_BINDING_PLATFORMS: Record<string, BrandSocialPlatform> = {
 const BindingIcon = ({ name }: { name: string }) => {
   const brandPlatform = BRAND_BINDING_PLATFORMS[name];
   if (brandPlatform) {
-    return <BrandSocialIcon platform={brandPlatform} size={20} />;
+    return <BrandSocialIcon platform={brandPlatform} size={ICON_SIZE.action} />;
   }
 
-  const strokeIcons: Record<string, React.ReactElement> = {
-    手机号: (
-      <>
-        <rect x="7" y="2" width="10" height="20" rx="2" />
-        <path d="M12 18h.01" />
-      </>
-    ),
-    邮箱: (
-      <>
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <path d="M3 7l9 6 9-6" />
-      </>
-    ),
-  };
-
+  const Icon = name === '手机号' ? Smartphone : Mail;
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <Icon
+      size={ICON_SIZE.action}
+      strokeWidth={iconStroke(ICON_SIZE.action)}
       aria-hidden="true"
-    >
-      {strokeIcons[name] || strokeIcons['邮箱']}
-    </svg>
+    />
   );
 };

@@ -55,25 +55,9 @@ test.describe('Phase5 - 领养中心', () => {
         }
     });
 
-    test('V-A8-09 - 领养后续跟进记录', async ({ page }) => {
-        // A8-07/08 电子协议与回访已移出 MVP（远期，见 id-traceability §五 / pet-community-requirements §4.10）
-        test.skip(true, 'A8-07/08 回访/电子协议为远期需求，不纳入当前 MVP 验收');
-        await loginAsAdmin(page);
-        await page.goto('/admin/adopts');
-        await page.waitForTimeout(2000);
-
-        const firstLink = page.locator('a[href^="/admin/adopts/"]').first();
-        const count = await firstLink.count();
-        test.skip(count === 0, '暂无领养数据');
-
-        await firstLink.click();
-        await page.waitForTimeout(1500);
-
-        const followUpSection = page.getByText(/回访|跟进|领养情况/);
-        if (await followUpSection.isVisible()) {
-            await expect(followUpSection).toBeVisible();
-        }
-    });
+    // V-A8-09（领养后续跟进记录）暂不纳入：后台没有领养管理页
+    // （/admin/adopts 未注册路由，命中后台 404 兜底），回访能力本身登记在
+    // docs/roadmap.md R6，功能落地后再补用例，避免留下永远 skip 的占位。
 });
 
 test.describe('Phase5 - 活动中心', () => {

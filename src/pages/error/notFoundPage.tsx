@@ -19,7 +19,7 @@ export function NotFoundPage() {
       aria-labelledby="not-found-title"
     >
       <div
-        className="mb-5 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-primary-soft text-primary sm:mb-6 sm:h-24 sm:w-24"
+        className="mb-5 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-primary-soft text-primary-text sm:mb-6 sm:h-24 sm:w-24"
         aria-hidden
       >
         <PawPrint
@@ -29,8 +29,8 @@ export function NotFoundPage() {
         />
       </div>
 
-      <p className="text-5xl font-bold leading-none tracking-tight text-primary sm:text-6xl">404</p>
-      <h1 id="not-found-title" className="mt-3 text-lg font-semibold text-brown sm:mt-4 sm:text-xl">
+      <p className="text-5xl font-bold leading-none tracking-tight text-primary-text sm:text-6xl">404</p>
+      <h1 id="not-found-title" className="page-content-title mt-3 sm:mt-4">
         页面走丢了
       </h1>
       <p className="mt-2 max-w-[18rem] text-sm leading-relaxed text-brown-muted sm:max-w-sm sm:text-base">

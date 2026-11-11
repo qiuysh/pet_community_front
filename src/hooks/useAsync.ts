@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, type DependencyList } from 'react';
+import { reportError } from '../utils/errorReport';
 
 // ============================================================
 // useAsync: 手动触发异步操作(表单提交、投票、操作按钮)
@@ -39,7 +40,12 @@ export function useAsync() {
     } catch (err) {
       if (mountedRef.current) {
         setError(err);
-        onError?.(err);
+        // 未自定义错误处理时给出可见提示，避免「失败了但界面没反应」
+        if (onError) {
+          onError(err);
+        } else {
+          reportError('useAsync', err);
+        }
       }
       return undefined;
     } finally {
@@ -104,7 +110,13 @@ export function useAsyncEffect<T>(
     } catch (err) {
       if (mountedRef.current) {
         setError(err);
-        optsRef.current?.onError?.(err);
+        // 未自定义错误处理时给出可见提示：否则页面只剩空态，用户分不清没数据还是接口挂了
+        const onError = optsRef.current?.onError;
+        if (onError) {
+          onError(err);
+        } else {
+          reportError('useAsyncEffect', err);
+        }
       }
     } finally {
       if (mountedRef.current) {

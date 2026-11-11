@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { pointsApi } from '../api/social';
 import { useAsyncEffect } from './useAsync';
 import { showErrorToast } from '../utils/toastManager';
+import { reportError } from '../utils/errorReport';
 
 export interface PointsRecord {
   id: number;
@@ -60,7 +61,7 @@ export function usePoints(pageSize = 50) {
   const { data: userLevelData } = useAsyncEffect(
     () => pointsApi.getUserLevel() as Promise<UserLevel>,
     [activeTab],
-    { onError: (error) => console.error('获取用户等级失败', error) },
+    { onError: (error) => reportError('获取用户等级失败', error) },
   );
   const userLevel = userLevelData ?? null;
 
@@ -86,7 +87,7 @@ export function usePoints(pageSize = 50) {
     },
     [activeTab],
     { onError: (error) => {
-      console.error('获取数据失败', error);
+      reportError('获取数据失败', error);
       showErrorToast('获取数据失败');
     } },
   );

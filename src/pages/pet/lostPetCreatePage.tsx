@@ -1,12 +1,16 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { createLostPet, uploadLostPetPhoto } from '../../api/pet';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
+import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
+import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { DateTimePicker } from '../../components/ui/dateTimePicker';
-import { FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
+import { FieldError, FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
 
 const MAX_IMAGES = 9;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -26,6 +30,23 @@ export function LostPetCreatePage() {
   const [lostTime, setLostTime] = useState('');
   const [contact, setContact] = useState('');
   const [images, setImages] = useState<string[]>([]);
+
+  const isDirty =
+    petName.trim().length > 0 ||
+    description.trim().length > 0 ||
+    lostLocation.trim().length > 0 ||
+    contact.trim().length > 0 ||
+    images.length > 0;
+  const unsavedDialog = useUnsavedChanges(isDirty && !loading, {
+    message: '寻宠启事尚未发布，离开后填写的内容将丢失。',
+  });
+  const { errors, showErrors, clearError, formRef } = useFormErrors([
+    'petName',
+    'lostLocation',
+    'lostTime',
+    'contact',
+    'description',
+  ] as const);
 
   const handlePhotoUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -67,8 +88,24 @@ export function LostPetCreatePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!petName.trim() || !description.trim() || !lostLocation.trim() || !lostTime || !contact.trim()) {
-      showErrorToast('请填写必填项');
+    const next: FormErrors<'petName' | 'lostLocation' | 'lostTime' | 'contact' | 'description'> = {};
+    if (!petName.trim()) {
+      next.petName = '请填写宠物名称';
+    }
+    if (!lostLocation.trim()) {
+      next.lostLocation = '请填写走失地点';
+    }
+    if (!lostTime) {
+      next.lostTime = '请选择走失时间';
+    }
+    if (!contact.trim()) {
+      next.contact = '请填写联系方式';
+    }
+    if (!description.trim()) {
+      next.description = '请填写详细描述';
+    }
+    if (Object.keys(next).length > 0) {
+      showErrors(next);
       return;
     }
     if (uploading) {
@@ -103,33 +140,37 @@ export function LostPetCreatePage() {
   return (
     <div className="min-h-screen bg-cream pb-10">
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            className="p-2 -ml-2 min-w-0 h-auto text-brown"
-            onClick={() => navigate(-1)}
-            aria-label="返回"
-          >
-            <ChevronLeft size={22} />
-          </Button>
-          <h1 className="text-lg font-semibold text-brown">发布寻宠</h1>
+        <div className="page-shell flex items-center gap-2 px-4 py-3">
+          <BackButton className="-ml-2" />
+          <h1 className="page-bar-title">发布寻宠</h1>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-3xl mx-auto px-4 py-4">
+      <form onSubmit={handleSubmit} ref={formRef} className="page-shell px-4 py-4" noValidate>
         <Card className="space-y-4 rounded-xl">
           <div>
-            <FieldLabel required>宠物名称</FieldLabel>
+            <FieldLabel htmlFor="lost-pet-name" required>宠物名称</FieldLabel>
             <Input
+              id="lost-pet-name"
+              name="petName"
+              autoComplete="off"
               value={petName}
-              onChange={(e) => setPetName(e.target.value)}
+              onChange={(e) => {
+                setPetName(e.target.value);
+                clearError('petName');
+              }}
               maxLength={50}
+              placeholder="请输入宠物名称…"
+              invalid={!!errors.petName}
+              aria-describedby={errors.petName ? 'lost-pet-name-error' : undefined}
             />
+            <FieldError id="lost-pet-name-error">{errors.petName}</FieldError>
           </div>
           <div>
-            <FieldLabel required>宠物类型</FieldLabel>
+            <FieldLabel htmlFor="lost-pet-type" required>宠物类型</FieldLabel>
             <Select
+              id="lost-pet-type"
+              name="petType"
               value={petType}
               onChange={(e) => setPetType(Number(e.target.value))}
             >
@@ -177,7 +218,7 @@ export function LostPetCreatePage() {
                           上传中
                         </div>
                       ) : (
-                        <img src={photo} alt="" className="w-full h-full object-cover" loading="lazy" />
+                        <img src={photo} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                       )}
                       <Button
                         type="button"
@@ -187,7 +228,7 @@ export function LostPetCreatePage() {
                         aria-label="删除图片"
                         onClick={() => setImages((prev) => prev.filter((_, i) => i !== idx))}
                       >
-                        <X size={14} aria-hidden="true" />
+                        <X size={ICON_SIZE.inline} aria-hidden="true" />
                       </Button>
                     </div>
                   );
@@ -196,42 +237,79 @@ export function LostPetCreatePage() {
             )}
           </div>
           <div>
-            <FieldLabel required>走失地点</FieldLabel>
+            <FieldLabel htmlFor="lost-location" required>走失地点</FieldLabel>
             <Input
+              id="lost-location"
+              name="lostLocation"
+              autoComplete="off"
               value={lostLocation}
-              onChange={(e) => setLostLocation(e.target.value)}
+              onChange={(e) => {
+                setLostLocation(e.target.value);
+                clearError('lostLocation');
+              }}
+              placeholder="如：朝阳区望京公园附近…"
+              invalid={!!errors.lostLocation}
+              aria-describedby={errors.lostLocation ? 'lost-location-error' : undefined}
             />
+            <FieldError id="lost-location-error">{errors.lostLocation}</FieldError>
           </div>
           <div>
             <FieldLabel required>走失时间</FieldLabel>
             <DateTimePicker
               aria-label="走失时间"
               value={lostTime}
-              onChange={setLostTime}
+              onChange={(value) => {
+                setLostTime(value);
+                clearError('lostTime');
+              }}
               granularity="minute"
             />
+            <FieldError>{errors.lostTime}</FieldError>
           </div>
           <div>
-            <FieldLabel required>联系方式</FieldLabel>
+            <FieldLabel htmlFor="lost-contact" required>联系方式</FieldLabel>
             <Input
+              id="lost-contact"
+              name="contact"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
               value={contact}
-              onChange={(e) => setContact(e.target.value)}
+              onChange={(e) => {
+                setContact(e.target.value);
+                clearError('contact');
+              }}
+              placeholder="手机号或微信号…"
+              invalid={!!errors.contact}
+              aria-describedby={errors.contact ? 'lost-contact-error' : undefined}
             />
+            <FieldError id="lost-contact-error">{errors.contact}</FieldError>
           </div>
           <div>
-            <FieldLabel required>详细描述</FieldLabel>
+            <FieldLabel htmlFor="lost-description" required>详细描述</FieldLabel>
             <Textarea
+              id="lost-description"
+              name="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                clearError('description');
+              }}
               maxLength={500}
               rows={5}
+              placeholder="描述宠物的外貌特征、走失经过等…"
+              invalid={!!errors.description}
+              aria-describedby={errors.description ? 'lost-description-error' : undefined}
             />
+            <FieldError id="lost-description-error">{errors.description}</FieldError>
           </div>
-          <Button type="submit" block disabled={loading || uploading} className="rounded-xl">
-            {loading ? '提交中...' : '发布启事'}
+          <Button type="submit" block disabled={loading || uploading} loading={loading} className="rounded-xl">
+            {loading ? '提交中…' : '发布启事'}
           </Button>
         </Card>
       </form>
+
+      {unsavedDialog}
     </div>
   );
 }

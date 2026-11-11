@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getPostList, getMyFavorites, getMyLikes } from '../api/post';
 import { getPetList } from '../api/pet';
 import { useAsyncEffect } from './useAsync';
+import { reportError } from '../utils/errorReport';
 import type { PostInfo } from '../types/post';
 import type { PetInfo } from '../types/pet';
 
@@ -31,7 +32,7 @@ export function useUserProfileContent(opts: {
       return getPostList({ userId: profileUserId, page, pageSize });
     },
     [profileUserId, activeTab, page, pageSize],
-    { onError: (err) => console.error('加载主页帖子失败', err) },
+    { onError: (err) => reportError('加载主页帖子失败', err) },
   );
 
   const petsHook = useAsyncEffect(
@@ -40,7 +41,7 @@ export function useUserProfileContent(opts: {
       return getPetList({ userId: profileUserId, page, pageSize });
     },
     [profileUserId, activeTab, page, pageSize],
-    { onError: (err) => console.error('加载主页宠物失败', err) },
+    { onError: (err) => reportError('加载主页宠物失败', err) },
   );
 
   const favoritesHook = useAsyncEffect(
@@ -49,7 +50,7 @@ export function useUserProfileContent(opts: {
       return getMyFavorites(page, pageSize);
     },
     [isOwnProfile, activeTab, page, pageSize],
-    { onError: (err) => console.error('加载收藏失败', err) },
+    { onError: (err) => reportError('加载收藏失败', err) },
   );
 
   const likesHook = useAsyncEffect(
@@ -58,7 +59,7 @@ export function useUserProfileContent(opts: {
       return getMyLikes(page, pageSize);
     },
     [isOwnProfile, activeTab, page, pageSize],
-    { onError: (err) => console.error('加载点赞失败', err) },
+    { onError: (err) => reportError('加载点赞失败', err) },
   );
 
   const loading =

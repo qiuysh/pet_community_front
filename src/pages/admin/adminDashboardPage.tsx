@@ -18,16 +18,18 @@ import {
 import { TodayTrendChart } from '@/components/admin/todayTrendChart';
 import { TodoAggregate } from '@/components/admin/todoAggregate';
 import { AdminButton } from '@/components/admin/adminButton';
+import { EmptyState } from '@/components/ui/emptyState';
 import { getDashboardOverview, getTodoAggregate } from '@/api/admin';
 import { useAsyncEffect } from '@/hooks/useAsync';
 import { adminUi } from '@/styles/adminUi';
 import { dayOverDayChange, formatCount } from '@/utils/dashboardMetrics';
+import { reportError } from '@/utils/errorReport';
 
 // 运营驾驶舱 - 实时概览（今日指标、业务存量、趋势、待办）
 export function AdminDashboardPage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const { loading, data, refetch } = useAsyncEffect(
+  const { loading, data, refetch, error } = useAsyncEffect(
     async () => {
       const [overview, todo] = await Promise.all([
         getDashboardOverview(),
@@ -37,7 +39,7 @@ export function AdminDashboardPage() {
       return { overview, todo };
     },
     [],
-    { onError: (error) => console.error('获取驾驶舱数据失败:', error) },
+    { onError: (err) => reportError('获取驾驶舱数据失败', err) },
   );
 
   useEffect(() => {
@@ -55,6 +57,24 @@ export function AdminDashboardPage() {
       <div className="flex h-64 items-center justify-center" role="status" aria-live="polite">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-secondary border-t-transparent motion-reduce:animate-none" />
         <span className="sr-only">加载中…</span>
+      </div>
+    );
+  }
+
+  // 取数失败时不能渲染成「全 0 面板」：那会让运营误以为当天真的没有数据
+  if (!data && error) {
+    return (
+      <div className="space-y-5">
+        <h1 className={adminUi.pageTitle}>运营驾驶舱</h1>
+        <EmptyState
+          title="驾驶舱数据加载失败"
+          description="可能是网络或服务异常，请重新加载"
+          action={
+            <AdminButton type="button" onClick={handleRefresh}>
+              重新加载
+            </AdminButton>
+          }
+        />
       </div>
     );
   }
@@ -114,7 +134,7 @@ export function AdminDashboardPage() {
             value={formatCount(summary?.todayActiveUsers)}
             change={activeChange.change}
             changeType={activeChange.changeType}
-            iconTone="bg-success-soft text-success"
+            iconTone="bg-success-soft text-success-text"
             icon={<Activity className="h-5 w-5" />}
           />
           <DashboardCard
@@ -132,7 +152,7 @@ export function AdminDashboardPage() {
             hint={`今日评论 ${formatCount(summary?.todayComments)}`}
             change={likesChange.change}
             changeType={likesChange.changeType}
-            iconTone="bg-warning/10 text-warning"
+            iconTone="bg-warning/10 text-warning-text"
             icon={<Heart className="h-5 w-5" />}
           />
         </div>
@@ -142,7 +162,7 @@ export function AdminDashboardPage() {
         aria-label="互动与存量"
         className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6"
       >
-        <div className="min-w-0">
+        <div className="flex min-w-0 flex-col">
           <h2 className={`${adminUi.sectionTitle} mb-3`}>今日互动与活动</h2>
           <DashboardInteractionPanel
             interaction={[
@@ -184,7 +204,7 @@ export function AdminDashboardPage() {
             ]}
           />
         </div>
-        <div className="min-w-0">
+        <div className="flex min-w-0 flex-col">
           <h2 className={`${adminUi.sectionTitle} mb-3`}>业务存量</h2>
           <DashboardStockPanel
             groups={[

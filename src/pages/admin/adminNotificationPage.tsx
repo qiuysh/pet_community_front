@@ -14,6 +14,7 @@ import { AnnouncementForm } from '../../components/admin/announcementForm';
 import { Pagination } from '../../components/admin/pagination';
 import { showSuccessToast, showErrorToast } from '../../utils/toastManager';
 import { Pin } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { AdminSelect } from '../../components/admin/adminField';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminTabs } from '../../components/admin/adminTabs';
@@ -370,7 +371,7 @@ export function AdminNotificationPage() {
                       </AdminTable.Cell>
                       <AdminTable.Cell className="whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          notification.type === 3 ? 'bg-warning/10 text-warning' : 'bg-secondary-soft text-secondary'
+                          notification.type === 3 ? 'bg-warning/10 text-warning-text' : 'bg-secondary-soft text-secondary'
                         }`}>
                           {getNotificationTypeLabel(notification.type)}
                         </span>
@@ -380,7 +381,7 @@ export function AdminNotificationPage() {
                       </AdminTable.Cell>
                       <AdminTable.Cell className="whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          notification.status === 1 ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'
+                          notification.status === 1 ? 'bg-success/10 text-success-text' : 'bg-warning/10 text-warning-text'
                         }`}>
                           {getNotificationStatusLabel(notification.status)}
                         </span>
@@ -471,21 +472,21 @@ export function AdminNotificationPage() {
                       <AdminTable.Cell>
                         <div className="max-w-xs truncate">
                           {announcement.sortOrder > 0 && (
-                            <span className="text-secondary mr-1 inline-flex items-center"><Pin size={14} aria-hidden="true" /></span>
+                            <span className="text-secondary mr-1 inline-flex items-center"><Pin size={ICON_SIZE.inline} aria-hidden="true" /></span>
                           )}
                           {announcement.title}
                         </div>
                       </AdminTable.Cell>
                       <AdminTable.Cell className="whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          announcement.type === 3 ? 'bg-warning/10 text-warning' : 'bg-secondary-soft text-secondary'
+                          announcement.type === 3 ? 'bg-warning/10 text-warning-text' : 'bg-secondary-soft text-secondary'
                         }`}>
                           {getAnnouncementTypeLabel(announcement.type)}
                         </span>
                       </AdminTable.Cell>
                       <AdminTable.Cell className="whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          announcement.status === 1 ? 'bg-success/10 text-success' : 'bg-muted text-brown-muted'
+                          announcement.status === 1 ? 'bg-success/10 text-success-text' : 'bg-muted text-brown-muted'
                         }`}>
                           {getAnnouncementStatusLabel(announcement.status)}
                         </span>

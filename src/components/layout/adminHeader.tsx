@@ -1,7 +1,21 @@
+import { LogOut, Menu, User, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAdminStore } from '../../stores/adminStore';
 import { useLayoutStore } from '../../stores/layoutStore';
-import { useNavigate } from 'react-router-dom';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Button } from '../ui';
+
+const headerIconProps = {
+  size: ICON_SIZE.nav,
+  strokeWidth: iconStroke(ICON_SIZE.nav),
+  'aria-hidden': true as const,
+};
+
+const metaIconProps = {
+  size: ICON_SIZE.action,
+  strokeWidth: iconStroke(ICON_SIZE.action),
+  'aria-hidden': true as const,
+};
 
 export function AdminHeader() {
   const { admin, logout } = useAdminStore();
@@ -25,13 +39,9 @@ export function AdminHeader() {
         aria-expanded={!sidebarCollapsed}
       >
         {sidebarCollapsed ? (
-          <svg className="h-6 w-6 text-brown-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <Menu {...headerIconProps} className="text-brown-secondary" />
         ) : (
-          <svg className="h-6 w-6 text-brown-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <X {...headerIconProps} className="text-brown-secondary" />
         )}
       </Button>
 
@@ -41,9 +51,7 @@ export function AdminHeader() {
             className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-sm bg-secondary-soft"
             aria-hidden="true"
           >
-            <svg className="h-5 w-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+            <User {...metaIconProps} className="text-secondary" />
           </div>
           <div className="hidden sm:block">
             <p className="text-sm font-medium text-brown">{admin?.username || '管理员'}</p>
@@ -59,9 +67,7 @@ export function AdminHeader() {
           className="min-w-0 p-2 flex-shrink-0 text-brown-muted hover:bg-secondary-soft hover:text-secondary"
           aria-label="退出登录"
         >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
+          <LogOut {...metaIconProps} />
         </Button>
       </div>
     </header>

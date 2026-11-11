@@ -58,8 +58,15 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
     proxy: {
+      // 含上传文件静态路由 /api/v1/uploads（后端 storage.local.base_url 默认值）
       '/api': {
         target: 'http://localhost:8083',
+        changeOrigin: true,
+      },
+      // 私信实时推送：WebSocket 需单独代理，否则开发环境连的是 vite 自身
+      '/ws': {
+        target: 'ws://localhost:8083',
+        ws: true,
         changeOrigin: true,
       },
     },

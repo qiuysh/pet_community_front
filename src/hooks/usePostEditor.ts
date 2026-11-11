@@ -21,6 +21,7 @@ import {
 } from '../types/post';
 import { PetInfo } from '../types/pet';
 import { getDefaultScheduleTime, toScheduleValue } from '../components/post/schedulePicker';
+import { reportError } from '../utils/errorReport';
 
 // 将 RFC3339 字符串转换为本地时间格式 (YYYY-MM-DDTHH:mm)。
 export const toLocalDatetimeInput = (rfc3339: string): string => {
@@ -125,7 +126,7 @@ export function usePostEditor() {
     runBg(
       () => getMyPets(),
       (res) => setMyPets(res),
-      (e) => console.error('加载宠物失败', e),
+      (e) => reportError('加载宠物失败', e),
     );
   }, [runBg]);
 

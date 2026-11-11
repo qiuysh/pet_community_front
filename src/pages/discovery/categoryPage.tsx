@@ -3,26 +3,18 @@ import { useCategory } from '../../hooks/useCategory';
 import { PetIcon, PostIcon } from '../../components/discovery/filterIcons';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Heart, MessageCircle, Share2, ArrowLeft, Play, Image } from 'lucide-react';
+import { ArrowLeft, Inbox, LayoutGrid, Play } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
-import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
+import { Pagination } from '../../components/ui/pagination';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Spinner } from '../../components/ui/spinner';
+import { PostActions } from '../../components/post/postActions';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import type { PostInfo } from '../../types/post';
+import type { RecommendPostInfo } from '../../types/discovery';
 import './categoryPage.scss';
-
-const LikeIcon = ({ active, size = ICON_SIZE.action }: { active?: boolean; size?: number }) => (
-  <Heart size={size} strokeWidth={iconStroke(size)} fill={active ? 'currentColor' : 'none'} aria-hidden="true" />
-);
-
-const CommentIcon = ({ size = ICON_SIZE.action }: { size?: number }) => (
-  <MessageCircle size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
-);
-
-const ShareIcon = ({ size = ICON_SIZE.action }: { size?: number }) => (
-  <Share2 size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
-);
 
 const ArrowLeftIcon = ({ size = ICON_SIZE.nav }: { size?: number }) => (
   <ArrowLeft size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
@@ -32,9 +24,20 @@ const PlayIcon = () => (
   <Play size={ICON_SIZE.feature} fill="white" stroke="none" aria-hidden="true" />
 );
 
-const ImageIcon = ({ size = ICON_SIZE.feature }: { size?: number }) => (
-  <Image size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
+const FallbackHeroIcon = ({ size = ICON_SIZE.feature }: { size?: number }) => (
+  <LayoutGrid size={size} strokeWidth={iconStroke(size)} aria-hidden="true" />
 );
+
+/**
+ * 分类卡的帖子模型缺少收藏/可见性/状态字段，补默认值后复用 PostActions，
+ * 保证点赞/评论/分享与首页、详情页行为一致。
+ */
+const toPostInfo = (post: RecommendPostInfo): PostInfo => ({
+  ...post,
+  favoritesCount: 0,
+  visibility: 0,
+  status: 1,
+});
 
 export const CategoryPage = () => {
   const {
@@ -70,12 +73,6 @@ export const CategoryPage = () => {
     { value: 'text', label: '文字', icon: 'text' },
   ];
 
-  const formatCount = (count: number) => {
-    if (count >= 10000) return `${(count / 10000).toFixed(1)}万`;
-    if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
-    return String(count);
-  };
-
   return (
     <div className="category-page">
       {/* 渐变头部 */}
@@ -93,16 +90,16 @@ export const CategoryPage = () => {
               <div className="hero-icon-wrap">
                 <CategoryIcon categoryName={categoryInfo.name} size={ICON_SIZE.feature} color="currentColor" />
               </div>
-              <h1 className="hero-title">{categoryInfo.name}</h1>
+              <h1 className="page-content-title hero-title">{categoryInfo.name}</h1>
               <p className="hero-desc">{categoryInfo.description}</p>
             </>
           ) : (
             <>
               <div className="hero-icon-wrap hero-icon-default">
-                <ImageIcon />
+                <FallbackHeroIcon />
               </div>
-              <h1 className="hero-title">分类浏览</h1>
-              <p className="hero-desc">发现感兴趣的宠物内容</p>
+              <h1 className="page-content-title hero-title">分类浏览</h1>
+              <p className="hero-desc">按兴趣逛逛猫狗与更多宠友内容</p>
             </>
           )}
         </div>
@@ -166,7 +163,7 @@ export const CategoryPage = () => {
       </div>
 
       {/* 帖子列表 */}
-      <div className="posts-list">
+      <div className="posts-list motion-list">
         {loading && posts.length === 0 && (
           <div className="space-y-4 p-4">
             {[1, 2, 3].map((i) => (
@@ -183,37 +180,29 @@ export const CategoryPage = () => {
               </div>
             ))}
             <div className="flex justify-center py-2">
-              <Spinner size="sm" label="加载中..." />
+              <Spinner size="sm" label="加载中…" />
             </div>
           </div>
         )}
         {!loading && posts.length === 0 && (
-          <div className="empty-state">
-            <svg
-              width={ICON_SIZE.empty}
-              height={ICON_SIZE.empty}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity="0.3"
-              aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <span>暂无相关内容</span>
-            <p className="empty-hint">换个筛选条件试试吧</p>
-          </div>
+          <EmptyState
+            icon={<Inbox size={ICON_SIZE.empty} strokeWidth={iconStroke(ICON_SIZE.empty)} className="opacity-30" />}
+            title="暂无相关内容"
+            description="换个筛选条件试试吧"
+          />
         )}
         {posts.map((post) => (
-          <Link key={post.id} to={`/posts/${post.id}`} className="post-card">
+          <div key={post.id} className="post-card">
+            {/* 拉伸链接：卡片空白处点击进入详情；操作按钮浮在其上 */}
+            <Link
+              to={`/posts/${post.id}`}
+              className="stretched-link"
+              aria-label={`查看 ${post.userNickname} 的动态详情`}
+            />
             <div className="post-user">
               <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="post-avatar" />
               <div className="post-user-info">
-                <span className="post-nickname">{post.userNickname}</span>
+                <span className="page-section-title post-nickname">{post.userNickname}</span>
                 <span className="post-time">{post.createdAt}</span>
               </div>
             </div>
@@ -222,7 +211,7 @@ export const CategoryPage = () => {
               <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                 {post.images.slice(0, 9).map((img, idx) => (
                   <div key={idx} className="post-image">
-                    <img src={img} alt="" />
+                    <img src={img} alt="" decoding="async" />
                     {post.images!.length > 9 && idx === 8 && (
                       <div className="image-more">+{post.images!.length - 9}</div>
                     )}
@@ -238,52 +227,17 @@ export const CategoryPage = () => {
                 </div>
               </div>
             )}
-            <div className="post-actions">
-              <span className={`action-item like-action ${post.isLiked ? 'liked' : ''}`}>
-                <LikeIcon active={post.isLiked} />
-                <span>{formatCount(post.likesCount)}</span>
-              </span>
-              <span className="action-item">
-                <CommentIcon />
-                <span>{formatCount(post.commentsCount)}</span>
-              </span>
-              <span className="action-item">
-                <ShareIcon />
-                <span>{formatCount(post.sharesCount)}</span>
-              </span>
-            </div>
-          </Link>
+            <PostActions
+              post={toPostInfo(post)}
+              compact
+              items={['like', 'comment', 'share']}
+              className="post-card-actions"
+            />
+          </div>
         ))}
       </div>
 
-      {/* 分页 */}
-      {totalPages > 1 && (
-        <div className="pagination">
-          <Button
-            type="button"
-            variant="outline"
-            className="page-btn prev-btn"
-            disabled={page <= 1}
-            onClick={() => setPage(page - 1)}
-          >
-            上一页
-          </Button>
-          <div className="page-indicator">
-            <span className="page-current">{page}</span>
-            <span className="page-separator">/</span>
-            <span className="page-total">{totalPages}</span>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            className="page-btn next-btn"
-            disabled={page >= totalPages}
-            onClick={() => setPage(page + 1)}
-          >
-            下一页
-          </Button>
-        </div>
-      )}
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 };

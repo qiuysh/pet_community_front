@@ -1,17 +1,9 @@
 @import '../../styles/variables';
 
 .post-list-page {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 16px;
+  @extend %page-shell;
   min-height: auto;
   background: $background-color;
-
-  @media (max-width: 768px) {
-    // 外壳 .user-content 已有水平内边距，避免双重收窄
-    padding: 0;
-    max-width: none;
-  }
 
   .post-list-header {
     display: flex;
@@ -32,40 +24,40 @@
       gap: 24px;
 
       .tab {
-        font-size: $font-size-sm;
+        font-size: $font-size-base;
         color: $text-secondary;
         cursor: pointer;
         padding: 4px 0;
         background: transparent;
         border: none;
         border-bottom: 2px solid transparent;
-        transition: color 0.2s ease, border-color 0.2s ease, font-weight 0.2s ease;
+        transition: color $duration-base ease, border-color $duration-base ease, font-weight $duration-base ease;
         font-family: inherit;
 
         &:hover,
         &:focus-visible {
-          color: $primary-color;
+          color: $primary-text;
         }
 
         &.active {
-          color: $primary-color;
-          border-bottom-color: $primary-color;
+          color: $primary-text;
+          border-bottom-color: $primary-text;
           font-weight: 600;
         }
       }
     }
 
     .publish-btn {
-      background: $primary-color;
+      background: $primary-strong;
       color: $background-white;
       border: none;
       padding: 8px 20px;
       border-radius: $border-radius-lg;
-      font-size: $font-size-base;
+      font-size: $font-size-sm;
       cursor: pointer;
       font-weight: 500;
       box-shadow: $shadow-brand;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      transition: transform $duration-base ease, box-shadow $duration-base ease, background $duration-base ease;
 
       &:hover {
         background: $primary-dark;
@@ -80,7 +72,7 @@
     flex-direction: column;
     gap: 12px;
 
-    .loading, .empty {
+    .loading {
       text-align: center;
       padding: 40px;
       color: $text-muted;
@@ -90,7 +82,7 @@
       position: relative;
       color: inherit;
       display: block;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      transition: box-shadow $duration-base ease, transform $duration-base ease;
 
       .post-card-inner {
         position: relative;
@@ -108,12 +100,12 @@
         right: 0;
         bottom: 0;
         left: 0;
-        z-index: 1;
+        z-index: $z-index-base;
         overflow: hidden;
         text-indent: -9999px;
 
         &:focus-visible {
-          outline: 2px solid $primary-color;
+          outline: 2px solid $primary-text;
           outline-offset: -4px;
           border-radius: $border-radius-sm;
         }
@@ -125,7 +117,7 @@
       .play-btn,
       .post-actions button {
         position: relative;
-        z-index: 2;
+        z-index: $z-index-raised;
       }
 
       .post-header {
@@ -143,12 +135,6 @@
         }
 
         .user-info {
-          .nickname {
-            font-size: $font-size-base;
-            font-weight: 600;
-            color: $text-primary;
-          }
-
           .time {
             font-size: $font-size-xs;
             color: $text-muted;
@@ -158,7 +144,7 @@
       }
 
       .post-content {
-        font-size: $font-size-sm;
+        font-size: $font-size-base;
         line-height: 1.6;
         color: $text-primary;
         margin-bottom: 12px;
@@ -224,7 +210,7 @@
           align-items: center;
           justify-content: center;
           color: $background-white;
-          font-size: 20px;
+          font-size: $font-size-title;
           pointer-events: none;
         }
       }
@@ -236,7 +222,7 @@
         margin-bottom: 8px;
 
         .topic-tag {
-          color: $primary-color;
+          color: $primary-text;
           font-size: $font-size-xs + 1;
           text-decoration: none;
           cursor: pointer;
@@ -245,7 +231,7 @@
 
           &:hover,
           &:focus-visible {
-            color: $primary-dark;
+            color: $primary-text;
             background: rgba($primary-color, 0.06);
             outline: none;
           }
@@ -276,7 +262,7 @@
           align-items: center;
           gap: 6px;
           min-height: 44px;
-          font-size: $font-size-base;
+          font-size: $font-size-sm;
           color: $text-secondary;
           font-variant-numeric: tabular-nums;
 
@@ -297,60 +283,16 @@
           }
 
           &:hover {
-            color: $primary-color;
+            color: $primary-text;
           }
         }
       }
     }
   }
 
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin-top: 20px;
-
-    button {
-      padding: 8px 16px;
-      border: 1px solid $border-color;
-      background: $background-white;
-      color: $text-primary;
-      border-radius: $border-radius-xs;
-      cursor: pointer;
-      font-family: inherit;
-      transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
-
-      &:hover:not(:disabled) {
-        color: $primary-color;
-        border-color: $primary-color;
-      }
-
-      &:focus-visible {
-        outline: 2px solid $primary-color;
-        outline-offset: 2px;
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
-    .page-info {
-      color: $text-secondary;
-      font-size: $font-size-base;
-      font-variant-numeric: tabular-nums;
-    }
-  }
 }
 
 @media (min-width: 768px) {
-  .post-list-page {
-    max-width: 720px;
-    padding: 20px;
-  }
-
   .post-list-page .post-card .post-content {
     font-size: $font-size-large;
     line-height: 1.7;
@@ -361,21 +303,12 @@
     height: 48px;
   }
 
-  .post-list-page .post-card .post-header .user-info .nickname {
-    font-size: $font-size-large;
-  }
-
   .post-list-page .post-card .post-actions .action-item {
-    font-size: $font-size-base;
+    font-size: $font-size-sm;
   }
 }
 
 @media (min-width: 1024px) {
-  .post-list-page {
-    max-width: 800px;
-    padding: 24px;
-  }
-
   .post-list-page .post-list {
     gap: 16px;
   }
@@ -396,21 +329,9 @@
     max-height: 500px;
   }
 
-  .post-list-page .pagination {
-    gap: 24px;
-  }
-
-  .post-list-page .pagination button {
-    padding: 10px 24px;
-    font-size: $font-size-base;
-  }
 }
 
 @media (min-width: 1280px) {
-  .post-list-page {
-    max-width: 900px;
-  }
-
   .post-list-page .post-card {
     padding: 24px;
   }

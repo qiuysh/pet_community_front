@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Modal as HeroModal } from '@heroui/react/modal';
 import { Button } from './button';
 import { useOverlayState } from './useOverlayState';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 
 export interface ModalProps {
   open: boolean;
@@ -13,6 +14,11 @@ export interface ModalProps {
   className?: string;
   /** 点击遮罩是否关闭，默认 true */
   dismissable?: boolean;
+  /**
+   * 弹出位置。默认按设备自适应：移动端贴底（Sheet 手感），桌面端居中。
+   * 显式传入时以传入值为准。
+   */
+  placement?: 'auto' | 'top' | 'center' | 'bottom';
 }
 
 const sizeMap = {
@@ -30,6 +36,7 @@ export function Modal({
   size = 'md',
   className = '',
   dismissable = true,
+  placement,
 }: ModalProps) {
   const state = useOverlayState({
     isOpen: open,
@@ -37,6 +44,9 @@ export function Modal({
       if (!next) onClose();
     },
   });
+  // 断点值须与 _variables.scss / global.scss 的 768px 保持一致
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const resolvedPlacement = placement ?? (isMobile ? 'bottom' : 'center');
 
   if (!open && !state.isOpen) {
     return null;
@@ -44,13 +54,19 @@ export function Modal({
 
   return (
     <HeroModal state={state}>
-      {/* DialogTrigger 需要可按压子节点；受控场景用隐藏 trigger 满足要求 */}
-      <HeroModal.Trigger className="sr-only" aria-hidden>
+      {/* DialogTrigger 需要可按压子节点；受控场景用隐藏且不可聚焦的 trigger 满足要求。
+          可聚焦元素不能带 aria-hidden，故用 tabIndex=-1 移出 Tab 序列而非 aria-hidden。 */}
+      <HeroModal.Trigger className="sr-only" tabIndex={-1}>
         <span />
       </HeroModal.Trigger>
       <HeroModal.Backdrop isDismissable={dismissable} variant="blur">
-        <HeroModal.Container size={sizeMap[size]} placement="center">
-          <HeroModal.Dialog className={['rounded-md shadow-medium bg-white', className].join(' ')}>
+        <HeroModal.Container size={sizeMap[size]} placement={resolvedPlacement}>
+          <HeroModal.Dialog
+            className={[
+              'rounded-md shadow-medium bg-white overscroll-contain',
+              className,
+            ].join(' ')}
+          >
             <HeroModal.CloseTrigger
               aria-label="关闭"
               className={[
@@ -63,7 +79,7 @@ export function Modal({
             />
             {title ? (
               <HeroModal.Header>
-                <HeroModal.Heading className="text-brown text-lg font-semibold">
+                <HeroModal.Heading className="page-section-title">
                   {title}
                 </HeroModal.Heading>
               </HeroModal.Header>

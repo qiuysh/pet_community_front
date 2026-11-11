@@ -4,16 +4,19 @@ import { getFrontUserList, batchBanFrontUsers } from '../../api/admin';
 import { Pagination } from '../../components/admin/pagination';
 import { UserBanAction } from '../../components/admin/userBanAction';
 import { AdminInput, AdminLabel, AdminSelect, AdminTextarea } from '../../components/admin/adminField';
-import { PawPrint } from 'lucide-react';
+import { AlertTriangle, PawPrint } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { adminUi } from '../../styles/adminUi';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
 import { AdminTable } from '../../components/admin/adminTable';
+import { FrontUserDetailDialog } from '../../components/admin/frontUserDetailDialog';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 
 export function AdminFrontUserPage() {
   const [users, setUsers] = useState<FrontUser[]>([]);
+  const [detailUserId, setDetailUserId] = useState<number | null>(null);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(20);
@@ -157,7 +160,7 @@ export function AdminFrontUserPage() {
             <AdminButton
               type="button"
               variant="outline"
-              className="border-error text-error hover:bg-error/5"
+              className="border-error text-error-text hover:bg-error/5"
               onClick={() => setShowBatchBanModal(true)}
             >
               批量封禁 ({selectedUsers.length})
@@ -197,7 +200,7 @@ export function AdminFrontUserPage() {
       </div>
 
       {error && (
-        <div className="mb-6 mx-6 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error text-sm">
+        <div className="mb-6 mx-6 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
           {error}
         </div>
       )}
@@ -208,7 +211,7 @@ export function AdminFrontUserPage() {
         ) : users.length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">
-              <PawPrint size={40} aria-hidden="true" />
+              <PawPrint size={ICON_SIZE.empty} aria-hidden="true" />
             </div>
             <p>暂无数据</p>
           </AdminTable.Status>
@@ -256,12 +259,21 @@ export function AdminFrontUserPage() {
                     <AdminChip tone={getStatusTone(user.status)}>{getStatusText(user.status)}</AdminChip>
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap">
-                    <UserBanAction
-                      userId={user.id}
-                      userName={user.nickname}
-                      isBanned={user.status === 2}
-                      onSuccess={fetchUserList}
-                    />
+                    <div className="flex items-center gap-2">
+                      <AdminButton
+                        type="button"
+                        variant="outline"
+                        onClick={() => setDetailUserId(user.id)}
+                      >
+                        详情
+                      </AdminButton>
+                      <UserBanAction
+                        userId={user.id}
+                        userName={user.nickname}
+                        isBanned={user.status === 2}
+                        onSuccess={fetchUserList}
+                      />
+                    </div>
                   </AdminTable.Cell>
                 </AdminTable.Row>
               ))}
@@ -283,12 +295,15 @@ export function AdminFrontUserPage() {
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
+                  <AlertTriangle
+                    size={ICON_SIZE.nav}
+                    strokeWidth={iconStroke(ICON_SIZE.nav)}
+                    className="text-error-text"
+                    aria-hidden="true"
+                  />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-brown">批量封禁用户</h3>
+                  <h3 className="page-bar-title">批量封禁用户</h3>
                   <p className="text-sm text-brown-muted">共选择 {selectedUsers.length} 个用户</p>
                 </div>
               </div>
@@ -308,7 +323,7 @@ export function AdminFrontUserPage() {
               </div>
 
               {batchError && (
-                <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error text-sm">
+                <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
                   {batchError}
                 </div>
               )}
@@ -335,6 +350,8 @@ export function AdminFrontUserPage() {
           </div>
         </div>
       )}
+
+      <FrontUserDetailDialog userId={detailUserId} onClose={() => setDetailUserId(null)} />
     </div>
   );
 }

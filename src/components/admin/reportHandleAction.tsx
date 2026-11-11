@@ -52,7 +52,7 @@ export function ReportHandleAction({ report, onSuccess }: ReportHandleActionProp
           variant="ghost"
           disabled={loading}
           onClick={() => openModal('approve')}
-          className="text-success hover:text-success/80"
+          className="text-success-text hover:text-success-dark"
         >
           通过
         </AdminButton>
@@ -61,7 +61,7 @@ export function ReportHandleAction({ report, onSuccess }: ReportHandleActionProp
           variant="ghost"
           disabled={loading}
           onClick={() => openModal('warn')}
-          className="text-warning hover:text-warning/80"
+          className="text-warning-text hover:opacity-80"
         >
           警告
         </AdminButton>

@@ -74,7 +74,7 @@ export const AdoptionAgreement = ({ application, onClose, onSuccess }: AdoptionA
             取消
           </Button>
           <Button className="flex-1" disabled={loading || !checked} loading={loading} onClick={handleSign}>
-            {loading ? '签署中...' : '确认签署'}
+            {loading ? '签署中…' : '确认签署'}
           </Button>
         </>
       }
@@ -84,17 +84,21 @@ export const AdoptionAgreement = ({ application, onClose, onSuccess }: AdoptionA
       </div>
 
       <div className="mb-4">
-        <Checkbox checked={checked} onChange={setChecked}>
+        <Checkbox id="agreement-accept" name="acceptAgreement" checked={checked} onChange={setChecked}>
           我已阅读并同意以上条款
         </Checkbox>
       </div>
 
       <div>
-        <FieldLabel required>电子签名（您的姓名）</FieldLabel>
+        <FieldLabel htmlFor="agreement-signature" required>电子签名（您的姓名）</FieldLabel>
         <Input
+          id="agreement-signature"
+          name="signature"
+          autoComplete="name"
           value={signature}
           onChange={(e) => setSignature(e.target.value)}
-          placeholder="请输入您的姓名作为电子签名"
+          placeholder="请输入您的姓名作为电子签名…"
+          maxLength={20}
         />
       </div>
     </Modal>

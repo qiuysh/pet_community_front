@@ -1,7 +1,10 @@
 @import '../../styles/variables';
 
 .post-detail-page {
-  background: $background-muted;
+  // 根容器被 page-shell 收到 1120，底色必须靠通栏层铺满视口，
+  // 否则两侧各露 16px 外壳底色（#F4F7F7），宽屏下能看到两条浅色竖带。
+  @extend %page-bleed;
+  --page-bg: #{$background-muted};
   min-height: 100vh;
   // 移动端仅预留底部 Tab，操作栏已改为正文内联
   padding-bottom: 16px;
@@ -21,31 +24,13 @@
     justify-content: space-between;
     padding: 12px 16px;
     border-bottom: 1px solid $divider-color;
-    z-index: 10;
-
-    .back-btn {
-      font-size: 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 10px;
-      min-width: 44px;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .title {
-      font-size: 16px;
-      font-weight: 600;
-    }
+    z-index: $z-index-sticky;
 
     .more-wrapper {
       position: relative;
 
       .more-btn {
-        font-size: 20px;
+        font-size: $font-size-title;
         background: none;
         border: none;
         cursor: pointer;
@@ -65,11 +50,11 @@
         border-radius: $border-radius-xs;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
         min-width: 120px;
-        z-index: 20;
+        z-index: $z-index-dropdown;
 
         .menu-item {
           padding: 12px 16px;
-          font-size: 14px;
+          font-size: $font-size-sm;
           cursor: pointer;
 
           &:hover {
@@ -107,23 +92,20 @@
         flex: 1;
 
         .nickname {
-          font-size: 16px;
-          font-weight: 600;
-          color: $text-primary;
           text-decoration: none;
           display: block;
         }
 
         .time {
-          font-size: 12px;
+          font-size: $font-size-xs;
           color: $text-muted;
           margin-top: 4px;
         }
       }
 
       .visibility-tag {
-        font-size: 12px;
-        color: $primary-color;
+        font-size: $font-size-xs;
+        color: $primary-text;
         background: $primary-soft;
         padding: 2px 8px;
         border-radius: $border-radius-xs;
@@ -131,7 +113,7 @@
     }
 
     .post-text {
-      font-size: 16px;
+      font-size: $font-size-large;
       line-height: 1.7;
       color: $text-primary;
       margin-bottom: 16px;
@@ -153,7 +135,19 @@
       .image-item {
         aspect-ratio: 1;
         overflow: hidden;
-        img { width: 100%; height: 100%; object-fit: cover; }
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: zoom-in;
+        display: block;
+        width: 100%;
+
+        img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+        &:focus-visible {
+          outline: 2px solid $primary-text;
+          outline-offset: 2px;
+        }
       }
     }
 
@@ -171,8 +165,8 @@
       margin-bottom: 12px;
 
       .topic-tag {
-        color: $primary-color;
-        font-size: 14px;
+        color: $primary-text;
+        font-size: $font-size-sm;
         text-decoration: none;
         cursor: pointer;
 
@@ -183,7 +177,7 @@
     }
 
     .post-location {
-      font-size: 14px;
+      font-size: $font-size-sm;
       color: $text-secondary;
       margin-bottom: 16px;
     }
@@ -207,10 +201,10 @@
         min-height: 44px;
         min-width: 0;
         flex: 1;
-        font-size: $font-size-base;
+        font-size: $font-size-sm;
         font-variant-numeric: tabular-nums;
         color: inherit;
-        transition: color 0.15s ease;
+        transition: color $duration-fast ease;
 
         svg {
           flex-shrink: 0;
@@ -219,11 +213,11 @@
         }
 
         &:hover {
-          color: $primary-color;
+          color: $primary-text;
         }
 
         &:focus-visible {
-          outline: 2px solid $primary-color;
+          outline: 2px solid $primary-text;
           outline-offset: 2px;
         }
       }
@@ -236,8 +230,6 @@
     scroll-margin-top: calc(var(--user-header-offset, 56px) + 48px);
 
     .comments-header {
-      font-size: 16px;
-      font-weight: 600;
       margin-bottom: 16px;
     }
 
@@ -257,26 +249,29 @@
           border: none;
           color: $text-muted;
           cursor: pointer;
-          font-size: 12px;
+          font-size: $font-size-xs;
         }
       }
 
       textarea {
         width: 100%;
+        // 3 行起高：评论框是页面主输入区，2 行容易被误认为只能写一句话
+        min-height: 100px;
         border: 1px solid $border-color;
         border-radius: $border-radius-xs;
         padding: 10px 12px;
-        font-size: 14px;
+        font-size: $font-size-sm;
+        line-height: 1.6;
         resize: none;
         box-sizing: border-box;
 
         &:focus {
           outline: none;
-          border-color: $primary-color;
+          border-color: $primary-text;
         }
 
         &:focus-visible {
-          outline: 2px solid $primary-color;
+          outline: 2px solid $primary-text;
           outline-offset: 2px;
         }
       }
@@ -287,12 +282,12 @@
         margin-top: 8px;
 
         .send-btn {
-          background: $primary-color;
+          background: $primary-strong;
           color: $background-white;
           border: none;
           padding: 6px 18px;
           border-radius: $border-radius-base;
-          font-size: 14px;
+          font-size: $font-size-sm;
           cursor: pointer;
 
           &:disabled {
@@ -304,12 +299,6 @@
     }
 
     .comments-list {
-      .empty {
-        text-align: center;
-        padding: 40px;
-        color: $text-muted;
-        font-size: 14px;
-      }
 
       .comment-item {
         display: flex;
@@ -335,13 +324,13 @@
             margin-bottom: 4px;
 
             .comment-name {
-              font-size: 14px;
+              font-size: $font-size-sm;
               font-weight: 600;
               color: $text-primary;
             }
 
             .comment-time {
-              font-size: 12px;
+              font-size: $font-size-xs;
               color: $text-muted;
             }
           }
@@ -353,7 +342,7 @@
           }
 
           .comment-text {
-            font-size: 14px;
+            font-size: $font-size-sm;
             line-height: 1.5;
             color: $text-primary;
             word-break: break-word;
@@ -368,12 +357,12 @@
               background: none;
               border: none;
               cursor: pointer;
-              font-size: 12px;
+              font-size: $font-size-xs;
               color: $text-muted;
               padding: 0;
 
               &.active {
-                color: $primary-color;
+                color: $primary-text;
               }
             }
           }
@@ -424,7 +413,7 @@
                 }
 
                 .reply-prefix {
-                  font-size: 12px;
+                  font-size: $font-size-xs;
                   color: $text-secondary;
                 }
 
@@ -449,126 +438,11 @@
                     padding: 0;
 
                     &.active {
-                      color: $primary-color;
+                      color: $primary-text;
                     }
                   }
                 }
               }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .report-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .modal-mask {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content {
-      position: relative;
-      background: $background-white;
-      border-radius: $border-radius-sm;
-      width: 85%;
-      max-width: 360px;
-      overflow: hidden;
-
-      .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px;
-        border-bottom: 1px solid $divider-color;
-        font-weight: 600;
-
-        button {
-          background: none;
-          border: none;
-          font-size: 18px;
-          cursor: pointer;
-          color: $text-muted;
-        }
-      }
-
-      .modal-body {
-        padding: 16px;
-
-        .reason-options {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-bottom: 16px;
-
-          .reason-option {
-            padding: 12px;
-            border: 1px solid $border-color;
-            border-radius: $border-radius-xs;
-            cursor: pointer;
-            font-size: 14px;
-
-            &.active {
-              border-color: $primary-color;
-              background: $primary-soft;
-              color: $primary-color;
-            }
-          }
-        }
-
-        textarea {
-          width: 100%;
-          border: 1px solid $border-color;
-          border-radius: $border-radius-xs;
-          padding: 10px;
-          font-size: 14px;
-          resize: none;
-          box-sizing: border-box;
-
-          &:focus {
-            outline: none;
-            border-color: $primary-color;
-          }
-
-          &:focus-visible {
-            outline: 2px solid $primary-color;
-            outline-offset: 2px;
-          }
-        }
-      }
-
-      .modal-footer {
-        display: flex;
-        border-top: 1px solid $divider-color;
-
-        button {
-          flex: 1;
-          padding: 14px;
-          border: none;
-          background: none;
-          cursor: pointer;
-          font-size: 15px;
-
-          &.cancel-btn {
-            color: $text-secondary;
-            border-right: 1px solid $divider-color;
-          }
-
-          &.confirm-btn {
-            color: $primary-color;
-            font-weight: 600;
-
-            &:disabled {
-              opacity: 0.5;
-              cursor: not-allowed;
             }
           }
         }
@@ -582,20 +456,24 @@
     padding-bottom: 24px;
   }
 
+  // 列宽只由根容器的 .page-shell（$page-max = 1120）约束，
+  // 内部块只负责内边距。不要再给单个块写 max-width —— 漏一个就是页头铺满的错位。
   .post-detail-page .detail-header {
-    padding: 16px 20px;
+    padding: 16px 32px;
   }
 
   .post-detail-page .post-content-wrapper {
-    padding: 20px;
-    margin: 0 auto 12px;
-    max-width: 720px;
+    padding: 32px;
+    margin-bottom: 12px;
   }
 
   .post-detail-page .comments-section {
-    padding: 20px;
-    margin: 0 auto;
-    max-width: 720px;
+    padding: 32px;
+  }
+
+  // 广告位夹在正文卡与评论区之间，跟随列宽即可
+  .post-detail-page .detail-sidebar-ad {
+    margin-bottom: 12px;
   }
 
   .post-detail-page .post-content-wrapper .post-header {
@@ -608,8 +486,8 @@
   }
 
   .post-detail-page .post-content-wrapper .post-text {
-    font-size: 17px;
-    line-height: 1.8;
+    font-size: $font-size-large;
+    line-height: 1.7;
   }
 
   .post-detail-page .post-content-wrapper .post-images &.grid-1 .image-item {
@@ -632,14 +510,17 @@
     padding-bottom: 48px;
   }
 
+  // 列宽固定 1120，正文嫌宽就靠内边距收（移动 16 → 768:32 → 1024:40 → 1280:48）
+  .post-detail-page .detail-header {
+    padding: 16px 40px;
+  }
+
   .post-detail-page .post-content-wrapper {
-    max-width: 800px;
-    padding: 24px;
+    padding: 40px;
   }
 
   .post-detail-page .comments-section {
-    max-width: 800px;
-    padding: 24px;
+    padding: 40px;
   }
 
   .post-detail-page .post-content-wrapper .post-header {
@@ -652,7 +533,7 @@
   }
 
   .post-detail-page .post-content-wrapper .post-text {
-    font-size: 18px;
+    font-size: $font-size-large;
   }
 
   .post-detail-page .post-content-wrapper .post-images &.grid-1 .image-item {
@@ -665,7 +546,7 @@
   }
 
   .post-detail-page .comments-section .comment-item .comment-body .comment-text {
-    font-size: 15px;
+    font-size: $font-size-base;
     line-height: 1.6;
   }
 
@@ -675,12 +556,16 @@
 }
 
 @media (min-width: 1280px) {
+  .post-detail-page .detail-header {
+    padding: 16px 48px;
+  }
+
   .post-detail-page .post-content-wrapper {
-    max-width: 900px;
+    padding: 48px;
   }
 
   .post-detail-page .comments-section {
-    max-width: 900px;
+    padding: 48px;
   }
 
   .post-detail-page .post-content-wrapper .post-header {
@@ -693,7 +578,7 @@
   }
 
   .post-detail-page .post-content-wrapper .post-text {
-    font-size: 18px;
-    line-height: 1.9;
+    font-size: $font-size-large;
+    line-height: 1.7;
   }
 }

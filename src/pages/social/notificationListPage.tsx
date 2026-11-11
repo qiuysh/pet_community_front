@@ -1,8 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, RefreshCw, Bell, ChevronLeft } from 'lucide-react';
+import { AtSign, Bell, Heart, MessageCircle, ShieldAlert, UserPlus } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useNotificationList } from '../../hooks/useNotificationList';
+import { useConfirm } from '../../hooks/useConfirm';
+import { formatRelativeTime } from '../../utils/format';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
 import './notificationListPage.scss';
 
@@ -17,6 +22,18 @@ const NotificationListPage: React.FC = () => {
     markAsRead,
     markAllAsRead,
   } = useNotificationList();
+  const { confirm, confirmDialog } = useConfirm();
+
+  const handleMarkAllRead = async () => {
+    const confirmed = await confirm({
+      title: '全部标为已读？',
+      description: `当前列表共 ${total} 条通知，未读标记将被一次性清除，该操作无法撤销。`,
+      confirmText: '全部已读',
+      tone: 'primary',
+    });
+    if (!confirmed) return;
+    markAllAsRead();
+  };
 
   const handleNotificationClick = (notification: typeof notifications[0]) => {
     if (!notification.isRead) {
@@ -32,50 +49,38 @@ const NotificationListPage: React.FC = () => {
   };
 
   const getIcon = (type: string) => {
+    const props = {
+      size: ICON_SIZE.nav,
+      strokeWidth: iconStroke(ICON_SIZE.nav),
+      'aria-hidden': true as const,
+    };
     switch (type) {
       case 'like':
-        return <Heart size={24} color="var(--color-primary)" />;
+        return <Heart {...props} className="text-primary" />;
       case 'comment':
-        return <MessageCircle size={24} color="var(--color-secondary)" />;
+        return <MessageCircle {...props} className="text-secondary" />;
       case 'at':
-        return <RefreshCw size={24} color="var(--color-info)" />;
+        return <AtSign {...props} className="text-info" />;
       case 'follow':
-        return (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary-light)" strokeWidth="2" aria-hidden="true">
-            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-          </svg>
-        );
+        return <UserPlus {...props} className="text-secondary-light" />;
+      case 'security':
+        return <ShieldAlert {...props} className="text-warning-text" />;
       default:
-        return <Bell size={24} color="var(--color-ink-muted)" />;
+        return <Bell {...props} className="text-brown-muted" />;
     }
-  };
-
-  const formatTime = (timeStr: string) => {
-    const date = new Date(timeStr);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return '刚刚';
-    if (minutes < 60) return `${minutes}分钟前`;
-    if (hours < 24) return `${hours}小时前`;
-    if (days < 7) return `${days}天前`;
-    return `${date.getMonth() + 1}/${date.getDate()}`;
   };
 
   return (
     <div className="notification-list-page">
-      <div className="page-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">通知</h1>
-        <Button type="button" variant="ghost" size="sm" className="action-btn" onClick={markAllAsRead}>
-          全部已读
-        </Button>
-      </div>
+      <PageHeader
+        title="通知"
+        fallbackTo="/"
+        right={
+          <Button type="button" variant="ghost" size="sm" className="shrink-0 text-primary-text" onClick={handleMarkAllRead}>
+            全部已读
+          </Button>
+        }
+      />
 
       {loading && notifications.length === 0 ? (
         <div className="notification-list">
@@ -91,28 +96,28 @@ const NotificationListPage: React.FC = () => {
           ))}
         </div>
       ) : notifications.length === 0 ? (
-        <div className="empty">
-          <Bell size={64} color="var(--color-ink-light)" strokeWidth={1.5} />
-          <p>暂无通知</p>
-        </div>
+        <EmptyState icon={<Bell size={ICON_SIZE.empty} strokeWidth={1.5} />} title="暂无通知" />
       ) : (
-        <div className="notification-list">
+        <div className="notification-list motion-list">
           {notifications.map((notification) => (
-            <div
+            <button
+              type="button"
               key={notification.id}
               className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
               onClick={() => handleNotificationClick(notification)}
             >
-              <div className="notification-icon">{getIcon(notification.type)}</div>
-              <div className="notification-content">
-                <div className="notification-title">{notification.title}</div>
-                <div className="notification-desc">{notification.content}</div>
-                <div className="notification-time">{formatTime(notification.createdAt)}</div>
-              </div>
+              <span className="notification-icon">{getIcon(notification.type)}</span>
+              <span className="notification-content">
+                <span className="page-section-title notification-title">{notification.title}</span>
+                <span className="notification-desc">{notification.content}</span>
+                <span className="notification-time" title={notification.createdAt}>
+                  {formatRelativeTime(notification.createdAt)}
+                </span>
+              </span>
               {!notification.isRead && (
-                <div className="unread-dot" />
+                <span className="unread-dot" />
               )}
-            </div>
+            </button>
           ))}
         </div>
       )}
@@ -124,6 +129,8 @@ const NotificationListPage: React.FC = () => {
           </Button>
         </div>
       )}
+
+      {confirmDialog}
     </div>
   );
 };

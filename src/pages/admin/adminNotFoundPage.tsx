@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FileQuestion } from 'lucide-react';
 import { AdminButton } from '../../components/admin/adminButton';
 import { adminUi } from '../../styles/adminUi';
-import { ADMIN_DOCUMENT_TITLE } from '../../utils/documentTitle';
+import { adminDocumentTitle } from '../../utils/documentTitle';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
 /** 后台 404：未知 /admin/* 路径 */
@@ -11,7 +11,7 @@ export function AdminNotFoundPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = `页面不存在 · ${ADMIN_DOCUMENT_TITLE}`;
+    document.title = `页面不存在 · ${adminDocumentTitle()}`;
   }, []);
 
   return (

@@ -3,7 +3,8 @@ import { Pagination } from '../../components/admin/pagination';
 import { AdminInput, AdminLabel } from '../../components/admin/adminField';
 import { useAdminSettings } from '../../hooks/useAdminSettings';
 import { AddSensitiveWordRequest, UpdateSensitiveWordRequest } from '../../types/admin';
-import { PawPrint, Search } from 'lucide-react';
+import { AlertTriangle, Pencil, Plus, PawPrint, Search } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
@@ -119,7 +120,7 @@ export function AdminSensitiveWordsPage() {
   const getCategoryChipClass = (category: string) => {
     if (!category) return 'bg-muted text-brown-secondary';
     const cat = category.toLowerCase();
-    if (cat.includes('广告')) return 'bg-info/10 text-info';
+    if (cat.includes('广告')) return 'bg-info/10 text-info-text';
     return '';
   };
 
@@ -139,8 +140,8 @@ export function AdminSensitiveWordsPage() {
         <div
           className={`mx-6 mt-4 px-4 py-3 rounded-md text-sm ${
             error.includes('成功')
-              ? 'bg-success/10 border border-success/20 text-success'
-              : 'bg-error/10 border border-error/20 text-error'
+              ? 'bg-success/10 border border-success/20 text-success-text'
+              : 'bg-error/10 border border-error/20 text-error-text'
           }`}
           role="status"
           aria-live="polite"
@@ -178,7 +179,7 @@ export function AdminSensitiveWordsPage() {
         ) : sensitiveWords.length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">
-              <Search size={40} aria-hidden="true" />
+              <Search size={ICON_SIZE.empty} aria-hidden="true" />
             </div>
             <p>暂无数据</p>
           </AdminTable.Status>
@@ -252,12 +253,15 @@ export function AdminSensitiveWordsPage() {
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-sm bg-secondary-soft flex items-center justify-center">
-                  <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+                  <Plus
+                    size={ICON_SIZE.nav}
+                    strokeWidth={iconStroke(ICON_SIZE.nav)}
+                    className="text-secondary"
+                    aria-hidden="true"
+                  />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-brown">添加敏感词</h3>
+                  <h3 className="page-bar-title">添加敏感词</h3>
                   <p className="text-sm text-brown-muted">新增一条敏感词过滤规则</p>
                 </div>
               </div>
@@ -314,12 +318,15 @@ export function AdminSensitiveWordsPage() {
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-sm bg-secondary-soft flex items-center justify-center">
-                  <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
+                  <Pencil
+                    size={ICON_SIZE.nav}
+                    strokeWidth={iconStroke(ICON_SIZE.nav)}
+                    className="text-secondary"
+                    aria-hidden="true"
+                  />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-brown">编辑敏感词</h3>
+                  <h3 className="page-bar-title">编辑敏感词</h3>
                   <p className="text-sm text-brown-muted">修改敏感词过滤规则</p>
                 </div>
               </div>
@@ -377,12 +384,15 @@ export function AdminSensitiveWordsPage() {
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
+                  <AlertTriangle
+                    size={ICON_SIZE.nav}
+                    strokeWidth={iconStroke(ICON_SIZE.nav)}
+                    className="text-error-text"
+                    aria-hidden="true"
+                  />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-brown">确认删除</h3>
+                  <h3 className="page-bar-title">确认删除</h3>
                   <p className="text-sm text-brown-muted">此操作无法撤销</p>
                 </div>
               </div>

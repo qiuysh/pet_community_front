@@ -1,14 +1,17 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import { ChevronLeft, EyeOff, MoreVertical } from 'lucide-react';
+import { EyeOff, MoreVertical } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useFollowList } from '../../hooks/useFollowList';
 import { useUserStore } from '../../stores/userStore';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Tabs } from '../../components/ui/tabs';
 import { Dropdown } from '../../components/ui/dropdown';
+import { PageHeader } from '../../components/ui/pageHeader';
 import './followListPage.scss';
 
 function UserListSkeleton() {
@@ -105,13 +108,7 @@ const FollowListPage: React.FC = () => {
 
   return (
     <div className="follow-list-page">
-      <div className="page-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">关系列表</h1>
-        <div className="placeholder" />
-      </div>
+      <PageHeader title="关系列表" fallbackTo="/profile" />
 
       <div className="tab-bar">
         <Tabs
@@ -127,7 +124,7 @@ const FollowListPage: React.FC = () => {
         {loading && users.length === 0 ? (
           <UserListSkeleton />
         ) : users.length === 0 ? (
-          <div className="empty">暂无{emptyText}</div>
+          <EmptyState compact title={`暂无${emptyText}`} />
         ) : (
           users.map(user => (
             <div key={user.id} className="user-item">
@@ -143,7 +140,7 @@ const FollowListPage: React.FC = () => {
                   alt={user.nickname}
                 />
                 <div className="user-info">
-                  <div className="user-name">
+                  <div className="page-section-title user-name">
                     {user.nickname}
                     {/* 悄悄关注标识（F6-04） */}
                     {user.isSecret && (
@@ -153,7 +150,7 @@ const FollowListPage: React.FC = () => {
                         data-testid="secret-follow"
                         aria-label="悄悄关注"
                       >
-                        <EyeOff size={14} aria-hidden="true" />
+                        <EyeOff size={ICON_SIZE.inline} aria-hidden="true" />
                       </span>
                     )}
                   </div>
@@ -195,7 +192,7 @@ const FollowListPage: React.FC = () => {
                           className="secret-toggle"
                           aria-label="更多关注操作"
                         >
-                          <MoreVertical size={16} aria-hidden="true" />
+                          <MoreVertical size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
                         </Button>
                       }
                       items={[

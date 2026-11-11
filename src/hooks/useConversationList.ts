@@ -1,5 +1,6 @@
 import { messageApi } from '../api/social';
 import { useAsyncEffect } from './useAsync';
+import { reportError } from '../utils/errorReport';
 
 export interface Conversation {
   id: number;
@@ -25,7 +26,7 @@ export function useConversationList(pageSize = 50) {
   const { loading, data } = useAsyncEffect(
     () => messageApi.getConversations({ page: 1, pageSize }) as Promise<{ list: Conversation[] }>,
     [],
-    { onError: (error) => console.error('获取消息列表失败', error) },
+    { onError: (error) => reportError('获取消息列表失败', error) },
   );
 
   const conversations: Conversation[] = data?.list ?? [];

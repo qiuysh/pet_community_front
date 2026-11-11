@@ -11,11 +11,8 @@ import {
   PasswordResetRequest,
   LogoutRequest,
   DeviceInfo,
-  UserListParams,
-  UserListResponse,
   RefreshTokenResponse,
   ThirdPartyLoginRequest,
-  ThirdPartyBindRequest,
   ThirdPartyLoginResponse,
   PrivacySettings,
   PrivacySettingsUpdateRequest,
@@ -77,10 +74,6 @@ export const removeDevice = async (deviceId: string): Promise<void> => {
   return await del<void>(`/api/v1/user/devices/${encodeURIComponent(deviceId)}`);
 };
 
-export const getUserList = async (params: UserListParams): Promise<UserListResponse> => {
-  return await get<UserListResponse>('/api/v1/admin/users-list', { params });
-};
-
 export const updateUserStatus = async (id: number, status: number): Promise<void> => {
   return await put<void>(`/api/v1/admin/users/${id}/status`, { status });
 };
@@ -91,10 +84,6 @@ export const refreshTokenApi = async (refreshToken: string): Promise<RefreshToke
 
 export const thirdPartyLogin = async (data: ThirdPartyLoginRequest): Promise<ThirdPartyLoginResponse> => {
   return await post<ThirdPartyLoginResponse>('/api/v1/auth/third-party-login', data);
-};
-
-export const thirdPartyBind = async (data: ThirdPartyBindRequest): Promise<UserLoginResponse> => {
-  return await post<UserLoginResponse>('/api/v1/auth/third-party-bind', data);
 };
 
 export interface ThirdPartyAccountInfo {

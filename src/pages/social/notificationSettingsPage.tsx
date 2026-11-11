@@ -1,13 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
 import { useNotificationSettings } from '../../hooks/useNotificationSettings';
-import { Button } from '../../components/ui/button';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
+import { Switch } from '../../components/ui/switch';
 import './notificationSettingsPage.scss';
 
 const NotificationSettingsPage: React.FC = () => {
-  const navigate = useNavigate();
   const { settings, loading, toggleSetting } = useNotificationSettings();
 
   const settingsList = [
@@ -16,21 +14,17 @@ const NotificationSettingsPage: React.FC = () => {
     { key: 'atNotify' as const, title: '@提及通知', description: '被@时通知' },
     { key: 'followNotify' as const, title: '关注通知', description: '被关注时通知' },
     { key: 'systemNotify' as const, title: '系统通知', description: '系统消息通知' },
+    { key: 'messageNotify' as const, title: '私信通知', description: '收到私信时提醒（不影响消息投递）' },
+    { key: 'securityNotify' as const, title: '安全提醒', description: '新设备登录时通知' },
   ];
 
   return (
     <div className="notification-settings-page">
-      <div className="page-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">通知设置</h1>
-        <div className="placeholder" />
-      </div>
+      <PageHeader title="通知设置" fallbackTo="/notifications" />
 
       {loading ? (
         <div className="settings-list">
-          {[1, 2, 3, 4, 5].map((i) => (
+          {[1, 2, 3, 4, 5, 6, 7].map((i) => (
             <div key={i} className="setting-item">
               <div className="setting-info flex-1">
                 <Skeleton className="h-4 w-24 mb-2" />
@@ -43,18 +37,16 @@ const NotificationSettingsPage: React.FC = () => {
       ) : (
         <div className="settings-list">
           {settingsList.map((item) => (
-            <div
-              key={item.key}
-              className="setting-item"
-              onClick={() => toggleSetting(item.key)}
-            >
+            <div key={item.key} className="setting-item">
               <div className="setting-info">
-                <div className="setting-title">{item.title}</div>
+                <div className="page-section-title setting-title">{item.title}</div>
                 <div className="setting-desc">{item.description}</div>
               </div>
-              <div className={`toggle-switch ${settings[item.key] === 1 ? 'on' : 'off'}`}>
-                <div className="toggle-thumb" />
-              </div>
+              <Switch
+                checked={settings[item.key] === 1}
+                onChange={() => toggleSetting(item.key)}
+                aria-label={item.title}
+              />
             </div>
           ))}
         </div>

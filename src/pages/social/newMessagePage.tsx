@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronLeft, Send, MessageCircle, UserCircle } from 'lucide-react';
+import { Send, MessageCircle, UserCircle } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useFollows } from '../../hooks/useFollows';
 import { useStartConversation } from '../../hooks/useStartConversation';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Textarea } from '../../components/ui/input';
+import { PageHeader } from '../../components/ui/pageHeader';
 import './newMessagePage.scss';
 
 /**
@@ -45,19 +48,7 @@ const NewMessagePage: React.FC = () => {
 
   return (
     <div className="new-message-page">
-      <div className="page-header">
-        <Button
-          type="button"
-          variant="ghost"
-          className="back-btn"
-          onClick={() => navigate(-1)}
-          aria-label="返回"
-        >
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">发起对话</h1>
-        <div className="placeholder" />
-      </div>
+      <PageHeader title="发起对话" fallbackTo="/messages" />
 
       {!targetUser ? (
         <div className="follow-list-section">
@@ -75,35 +66,42 @@ const NewMessagePage: React.FC = () => {
               ))}
             </div>
           ) : follows.length === 0 ? (
-            <div className="empty">
-              <UserCircle size={64} color="var(--color-ink-light)" strokeWidth={1.5} aria-hidden="true" />
-              <p>暂未关注任何用户</p>
-              <Button type="button" className="explore-btn" onClick={() => navigate('/search')}>
-                去发现宠友
-              </Button>
-            </div>
+            <EmptyState
+              icon={<UserCircle size={ICON_SIZE.empty} strokeWidth={1.5} />}
+              title="暂未关注任何用户"
+              action={
+                <Button type="button" onClick={() => navigate('/search')}>
+                  去发现宠友
+                </Button>
+              }
+            />
           ) : (
             <div className="follow-list">
               {follows.map((u) => (
-                <Button
+                <button
                   key={u.id}
                   type="button"
-                  variant="ghost"
                   className="follow-item"
                   onClick={() => setTargetUser({ id: u.id, nickname: u.nickname })}
                 >
                   <Avatar
                     className="user-avatar"
+                    size="md"
                     src={u.avatar || getDefaultUserAvatar()}
                     name={u.nickname}
                     alt={u.nickname}
                   />
                   <div className="user-info">
-                    <div className="user-name">{u.nickname}</div>
+                    <div className="page-section-title user-name">{u.nickname}</div>
                     {u.signature && <div className="user-sig">{u.signature}</div>}
                   </div>
-                  <MessageCircle size={18} className="msg-icon" aria-hidden="true" />
-                </Button>
+                  <MessageCircle
+                    size={ICON_SIZE.action}
+                    strokeWidth={iconStroke(ICON_SIZE.action)}
+                    className="msg-icon"
+                    aria-hidden="true"
+                  />
+                </button>
               ))}
             </div>
           )}
@@ -112,22 +110,23 @@ const NewMessagePage: React.FC = () => {
         <div className="compose-section">
           <div className="target-card">
             <div className="target-label">收件人</div>
-            <Button
+            <button
               type="button"
-              variant="outline"
               className="target-pill"
               onClick={() => setTargetUser(null)}
               aria-label="更换收件人"
             >
-              <UserCircle size={14} aria-hidden="true" />
+              <UserCircle size={ICON_SIZE.inline} aria-hidden="true" />
               <span>{targetUser.nickname}</span>
-              <span className="remove-mark" aria-hidden="true">×</span>
-            </Button>
+              <span className="remove-mark" aria-hidden="true">
+                ×
+              </span>
+            </button>
           </div>
 
           <Textarea
             className="message-input"
-            placeholder={`给 ${targetUser.nickname} 发条消息吧...`}
+            placeholder={`给 ${targetUser.nickname} 发条消息吧…`}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={5}
@@ -141,12 +140,13 @@ const NewMessagePage: React.FC = () => {
 
           <Button
             type="button"
+            block
             className="send-btn"
             onClick={handleSubmit}
             disabled={loading || !content.trim()}
             loading={loading}
           >
-            <Send size={16} aria-hidden="true" />
+            <Send size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
             发送
           </Button>
         </div>

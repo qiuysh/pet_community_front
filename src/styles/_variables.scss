@@ -10,11 +10,17 @@ $primary-color: #F0785A;
 $primary-light: #F59A82;
 $primary-dark: #D45E42;
 $primary-soft: #FFF0EB;
+// 可访问性深档（WCAG AA 实测）：
+// $primary-strong 实底控件底（白字 4.59:1）——按钮 / 选中 Chip / Switch；
+// $primary-text 文字与焦点环（白底 5.18 / soft 底 4.66）——链接 / 激活 Tab / 焦点环。
+// $primary-color 只做品牌图形、浅底、阴影染色，不再配白字或直接当文字。
+$primary-strong: #C2532F;
+$primary-text: #B84A2E;
 
 // 辅助色 - 青竹（结构/信任，与成功色区分）
 $secondary-color: #3D9B8F;
 $secondary-light: #6BB5AB;
-$secondary-dark: #2E7A70;
+$secondary-dark: #2E7A70; // 白字 5.08:1，青竹实底一律用它
 $secondary-soft: #E6F4F2;
 
 // 管理后台侧栏底（冷灰实色，弱于白卡、强于 cream，避免青绿突兀）
@@ -26,11 +32,11 @@ $background-white: #FFFFFF;
 $background-soft: #FBFCFC;
 $background-muted: #E6EAED;
 
-// 文字色
+// 文字色（$text-muted 由 #8B929A 加深：原值在 cream 上只有 2.92:1）
 $text-primary: #2B2F33;
 $text-secondary: #5C6370;
-$text-muted: #8B929A;
-$text-light: #B0B6BE;
+$text-muted: #6E7681;
+$text-light: #8A929C; // 占位符（原 #B0B6BE 仅 2.04:1）
 
 // 边框/分隔色（略偏青，与底色同族）
 $border-color: #E0E6E8;
@@ -45,6 +51,12 @@ $warning-color: #E6A23C;
 $error-color: #D94A4A;
 $error-dark: #C03D3D;
 $info-color: #5B8DEF;
+
+// 功能色文字档（base 色当文字全部不过 AA，文字一律用这组；图标/图形仍可用 base）
+$success-text: #1F7A5C; // 5.25:1
+$warning-text: #8F5F0A; // 5.51:1
+$error-text: #C03D3D; // 5.28:1（与 $error-dark 同值，语义独立命名）
+$info-text: #3D6FD0; // 4.79:1
 
 // 功能背景色
 $error-background: #FDF4F4;
@@ -74,13 +86,14 @@ $border-radius-base: 16px;
 $border-radius-lg: 20px;
 $border-radius-xl: 24px;
 
-$font-size-xs: 12px;
-$font-size-base: 14px;
-$font-size-sm: 15px;
-$font-size-large: 16px;
-$font-size-title: 20px;
-$font-size-xl: 24px;
-$font-size-2xl: 28px;
+// 字号阶梯（必须逐级递增，否则命名会误导：xs < sm < base < large < title < xl < 2xl）
+$font-size-xs: 12px; // 辅助说明、计数单位
+$font-size-sm: 14px; // 次要正文、密集列表
+$font-size-base: 15px; // 正文基准
+$font-size-large: 16px; // 强调正文、卡片标题
+$font-size-title: 20px; // 页面/区块标题
+$font-size-xl: 24px; // 首屏大标题
+$font-size-2xl: 28px; // 数据大数、营销标题
 
 $spacing-xs: 8px;
 $spacing-sm: 12px;
@@ -88,6 +101,111 @@ $spacing-md: 16px;
 $spacing-lg: 24px;
 $spacing-xl: 32px;
 $spacing-2xl: 48px;
+
+// ============================================
+// 页面宽度（唯一事实来源）
+// 外壳 .user-content 已提供 1200px 上限 + 水平内边距（PC 24 / 移动 12），
+// 页面内部只做「收窄 + 居中」，禁止手写像素 max-width。
+// 例外：白底吸顶工具条 / 标题行的 page-shell 须加 px-4（与 PageHeader 一致），
+// 同页正文 page-shell 同步加，避免贴白边（详见 ui-design-spec 5.5）。
+// ============================================
+$content-max: 1200px; // 外壳：顶栏 / 内容区 / 页脚共用
+$page-max: 1120px; // 常规页面：列表、详情、正文、表单、设置
+$page-max-read: 720px; // 仅会话列：聊天（泡泡行宽再长就难读）
+
+// 同页同宽：一个页面里所有横向内容块必须共用同一个列宽。
+// 页头 / 页签条 / 广告位 / 固定底栏最容易漏——正文 1120 而页头铺满 1152 就是错位。
+// 背景色可以通栏，内容必须列内（详见 docs/frontend/ui-design-spec.md 5.5）。
+
+// 页面宽度容器占位符：页面根容器 @extend 它，不要手写 max-width / margin auto
+%page-shell {
+  width: 100%;
+  max-width: $page-max;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// 页头阅读面（萌宠社区 · 可爱活力）：
+// - 底色：白卡混入少量 secondary-soft（清新），避免 primary-soft 大面积「暧昧粉感」
+// - 顶部条：蜜桃活力细条（情绪/CTA 点缀）
+// - ::before：右上小块蜜桃活力点（实、短、亮），不是大片软桃色暧昧暖晕
+// - 页面 .*-decor：青竹气泡光斑，表达玩具感/清新，与蜜桃分区并置
+// 禁止：大面积 primary-soft / primary-strong 实铺；primary→secondary 混色渐变；暧昧粉感铺底。
+// 显式写 h1/p 色，避免被 global.scss 的 h1/p 深色规则盖掉。
+%page-hero-surface {
+  position: relative;
+  overflow: hidden;
+  // 18% secondary-soft → 微薄荷清新，偏萌宠活力而非蜜桃暧昧
+  background: mix($secondary-soft, $background-white, 18%);
+  color: $text-primary;
+  border-bottom: 1px solid $border-light;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: min(120px, 28vw);
+    height: min(120px, 28vw);
+    right: 6%;
+    top: -18%;
+    border-radius: 50%;
+    pointer-events: none;
+    // 小而亮的活力点，忌大半径低透明软晕
+    background: radial-gradient(
+      circle at center,
+      rgba($primary-color, 0.22) 0%,
+      rgba($primary-light, 0.08) 48%,
+      transparent 70%
+    );
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 3px;
+    z-index: 1;
+    pointer-events: none;
+    // 同色相蜜桃渐变；青竹留给装饰光斑/结构控件，不在此混溶
+    background: linear-gradient(90deg, $primary-strong 0%, $primary-light 100%);
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: $text-primary;
+    text-wrap: balance;
+  }
+
+  p {
+    color: $text-secondary;
+  }
+}
+
+// 兼容旧名（过渡）；新代码请用 %page-hero-surface
+%page-hero-soft {
+  @extend %page-hero-surface;
+}
+
+// 通栏底色占位符：给「自带页面底色 + 用 %page-shell 收窄」的页面用。
+// 根容器被收窄到 1120 后，底色只能铺到 1120，两侧会露出外壳底色形成竖带；
+// 这里用一层 fixed 伪元素把底色铺满视口，内容仍留在列内。
+// 用法：@extend %page-bleed; --page-bg: #{$background-muted};
+// isolation 必须保留，否则负 z-index 会被外壳的底色盖住。
+%page-bleed {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--page-bg, transparent);
+  }
+}
 
 // ============================================
 // 阴影系统（中性内容卡 + 品牌色强调）
@@ -99,3 +217,36 @@ $shadow-card: 0 2px 16px rgba(43, 47, 51, 0.04), 0 4px 8px rgba(43, 47, 51, 0.03
 $shadow-hover: 0 6px 24px rgba(43, 47, 51, 0.08), 0 8px 12px rgba(43, 47, 51, 0.05);
 $shadow-brand: 0 4px 16px rgba(240, 120, 90, 0.28);
 $shadow-brand-hover: 0 6px 22px rgba(240, 120, 90, 0.34);
+
+// ============================================
+// 层级（z-index）：按角色取值，仅用于必须脱离文档流的元素，禁止裸数字
+// ============================================
+$z-index-base: 1; // 卡内浮层：图片、角标、渐变遮罩
+$z-index-raised: 2; // 卡内第二层：悬停遮罩上方的按钮/标签
+$z-index-sticky: 10; // 页内 sticky 头、悬浮工具条
+$z-index-dropdown: 20; // 下拉、浮层、搜索结果面板
+$z-index-nav: 100; // 全局导航（顶栏 / 底部 tab）
+$z-index-overlay: 200; // 抽屉、局部遮罩
+$z-index-modal: 1000; // 全屏弹层（图片预览等）
+$z-index-toast: 9999; // 全局提示，永远在最上
+
+// ============================================
+// 动效（时长 / 缓动）：交互反馈 0.15–0.3s，超过 0.3s 会显得拖沓
+// ============================================
+$duration-fast: 0.15s; // hover / 按下反馈
+$duration-base: 0.2s; // 常规状态切换（颜色、背景）
+$duration-slow: 0.25s; // 阴影、位移、展开
+$duration-emphasized: 0.3s; // 需要被注意到的过渡
+$duration-instant: 0.1s; // 按压下沉、开关拨动（比 fast 更短）
+$duration-narrative: 0.32s; // 首屏叙事进场（仅一次，不可循环）
+$ease-standard: ease;
+$ease-emphasized: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); // 进场：快起慢收
+$ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); // 微弹：仅小尺寸元素（图标、圆点）
+
+// 动效位移与错峰（PC 值；移动端在 media query 里覆盖 --motion-distance）
+$motion-distance-sm: 8px; // 移动端进场
+$motion-distance-md: 12px; // PC 进场
+$motion-stagger: 40ms; // 相邻两项错峰间隔
+$motion-stagger-max: 8; // 超过 8 项不再累加延迟
+

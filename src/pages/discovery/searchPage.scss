@@ -1,6 +1,7 @@
 @import '../../styles/variables';
 
 .search-page {
+  @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
 
@@ -19,6 +20,12 @@
       border-radius: 20px;
       padding: 8px 16px;
 
+      // 内部 input 是去边框的，焦点环画在外层药丸上
+      &:focus-within {
+        outline: 2px solid $primary-text;
+        outline-offset: 2px;
+      }
+
       .search-icon {
         display: inline-flex;
         align-items: center;
@@ -30,7 +37,7 @@
         flex: 1;
         border: none;
         background: transparent;
-        font-size: $font-size-sm;
+        font-size: $font-size-base;
         color: $text-primary;
         outline: none;
 
@@ -60,12 +67,12 @@
       background: none;
       border: none;
       color: $text-primary;
-      font-size: $font-size-sm;
+      font-size: $font-size-base;
       cursor: pointer;
       padding: 0;
 
       &:hover {
-        color: $primary-color;
+        color: $primary-text;
       }
     }
   }
@@ -81,9 +88,6 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 12px;
-        font-weight: 600;
-        font-size: $font-size-base;
-        color: $text-primary;
 
         .clear-btn {
           background: none;
@@ -93,7 +97,7 @@
           cursor: pointer;
 
           &:hover {
-            color: $primary-color;
+            color: $primary-text;
           }
         }
       }
@@ -109,11 +113,20 @@
           background: $background-white;
           padding: 8px 12px;
           border-radius: 16px;
+          border: none;
+          font: inherit;
+          text-align: left;
+          color: inherit;
           cursor: pointer;
-          transition: background 0.2s ease, color 0.2s ease;
+          transition: background $duration-base ease, color $duration-base ease;
 
           &:hover {
             background: $background-muted;
+          }
+
+          &:focus-visible {
+            outline: 2px solid $primary-text;
+            outline-offset: 2px;
           }
 
           .rank {
@@ -129,14 +142,14 @@
             margin-right: 6px;
 
             &.top {
-              background: linear-gradient(135deg, $primary-color, $primary-dark);
+              background: linear-gradient(135deg, $primary-strong, $primary-text);
               color: $background-white;
             }
           }
 
           .keyword {
             margin-right: 8px;
-            font-size: $font-size-sm;
+            font-size: $font-size-base;
             color: $text-primary;
           }
 
@@ -166,12 +179,23 @@
           .history-keyword {
             flex: 1;
             cursor: pointer;
-            font-size: $font-size-sm;
+            font-size: $font-size-base;
             color: $text-primary;
             min-width: 0;
+            text-align: left;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 0;
 
             &:hover {
-              color: $primary-color;
+              color: $primary-text;
+            }
+
+            &:focus-visible {
+              outline: 2px solid $primary-text;
+              outline-offset: 2px;
+              border-radius: 4px;
             }
           }
 
@@ -192,12 +216,6 @@
         }
       }
 
-      .empty {
-        text-align: center;
-        color: $text-muted;
-        padding: 24px;
-        font-size: $font-size-sm;
-      }
     }
   }
 
@@ -208,17 +226,14 @@
       text-align: center;
       padding: 24px;
       color: $text-muted;
-      font-size: $font-size-sm;
+      font-size: $font-size-base;
     }
 
     .result-section {
       margin-bottom: 24px;
 
       .section-title {
-        font-weight: 600;
-        font-size: $font-size-base;
         margin-bottom: 12px;
-        color: $text-primary;
       }
 
       .user-item {
@@ -230,7 +245,7 @@
         margin-bottom: 8px;
         text-decoration: none;
         color: inherit;
-        transition: box-shadow 0.2s ease;
+        transition: box-shadow $duration-base ease;
 
         &:hover {
           box-shadow: $shadow-card;
@@ -247,9 +262,7 @@
 
         .user-info {
           .nickname {
-            font-weight: 500;
             margin-bottom: 4px;
-            color: $text-primary;
           }
 
           .followers {
@@ -267,7 +280,7 @@
         text-decoration: none;
         color: inherit;
         display: block;
-        transition: box-shadow 0.2s ease;
+        transition: box-shadow $duration-base ease;
 
         &:hover {
           box-shadow: $shadow-card;
@@ -292,12 +305,6 @@
             flex-direction: column;
             min-width: 0;
 
-            .nickname {
-              font-size: $font-size-base;
-              font-weight: 600;
-              color: $text-primary;
-            }
-
             .time {
               font-size: $font-size-xs;
               color: $text-muted;
@@ -307,7 +314,7 @@
         }
 
         .post-content {
-          font-size: $font-size-sm;
+          font-size: $font-size-base;
           line-height: 1.6;
           color: $text-primary;
           margin-bottom: 12px;
@@ -379,7 +386,7 @@
         margin-bottom: 8px;
         text-decoration: none;
         color: inherit;
-        transition: box-shadow 0.2s ease;
+        transition: box-shadow $duration-base ease;
 
         &:hover {
           box-shadow: $shadow-card;
@@ -387,9 +394,7 @@
 
         .topic-info {
           .topic-name {
-            font-weight: 500;
             margin-bottom: 4px;
-            color: $text-primary;
           }
 
           .topic-desc {
@@ -399,18 +404,12 @@
         }
 
         .posts-count {
-          color: $primary-color;
+          color: $primary-text;
           font-size: $font-size-xs;
         }
       }
     }
 
-    .empty {
-      text-align: center;
-      color: $text-muted;
-      padding: 48px;
-      font-size: $font-size-sm;
-    }
   }
 }
 
@@ -429,7 +428,7 @@
     }
 
     .post-meta .action-item {
-      font-size: $font-size-base;
+      font-size: $font-size-sm;
     }
   }
 }

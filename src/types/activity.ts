@@ -231,14 +231,6 @@ export interface PublishAwardResponse {
   notifiedUsers: number[];
 }
 
-export interface ActivityStats {
-  totalActivities: number;
-  ongoingActivities: number;
-  totalRegistrations: number;
-  totalSubmissions: number;
-  totalVotes: number;
-}
-
 export const ActivityTypeOptions = [
   { value: ActivityType.VOTING, label: '投票评选' },
   { value: ActivityType.CONTEST, label: '作品征集' },
@@ -275,7 +267,6 @@ export interface SignInInfo {
 
 export interface QRCodeResponse {
   qrCode: string;
-  imageUrl?: string;
   expires: string;
 }
 

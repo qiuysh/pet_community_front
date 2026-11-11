@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ImagePlus } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useToast } from '../../components/toast';
 import { useAsync } from '../../hooks/useAsync';
 import { createActivity, publishActivity } from '../../api/activity';
@@ -171,9 +173,12 @@ export const ActivityCreatePage = () => {
             <label className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-border-light rounded-sm cursor-pointer hover:border-border">
               <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
               <div className="text-center text-brown-muted">
-                <svg className="w-8 h-8 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-4-4h6m-6 0v6" />
-                </svg>
+                <ImagePlus
+                  size={ICON_SIZE.feature}
+                  strokeWidth={iconStroke(ICON_SIZE.feature)}
+                  className="mx-auto mb-1"
+                  aria-hidden="true"
+                />
                 <span className="text-xs">上传封面</span>
               </div>
             </label>

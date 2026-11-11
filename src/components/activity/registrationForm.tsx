@@ -3,8 +3,9 @@ import { useToast } from '../toast';
 import { createRegistration } from '../../api/activity';
 import { ActivityInfo } from '../../types/activity';
 import { useAsync } from '../../hooks/useAsync';
+import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
 import { Button } from '../ui/button';
-import { FieldLabel, Input, Textarea } from '../ui/input';
+import { FieldError, FieldLabel, Input, Textarea } from '../ui/input';
 
 interface RegistrationFormProps {
   activity: ActivityInfo;
@@ -17,16 +18,22 @@ export const RegistrationForm = ({ activity, onSuccess }: RegistrationFormProps)
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
+  const { errors, showErrors, clearError, formRef } = useFormErrors(['name', 'phone'] as const);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const next: FormErrors<'name' | 'phone'> = {};
     if (!name.trim()) {
-      toast.warning('请填写姓名');
-      return;
+      next.name = '请填写姓名';
     }
     if (!phone.trim()) {
-      toast.warning('请填写手机号');
+      next.phone = '请填写手机号';
+    } else if (!/^1[3-9]\d{9}$/.test(phone.trim())) {
+      next.phone = '请输入有效的 11 位手机号';
+    }
+    if (Object.keys(next).length > 0) {
+      showErrors(next);
       return;
     }
 
@@ -50,30 +57,52 @@ export const RegistrationForm = ({ activity, onSuccess }: RegistrationFormProps)
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} ref={formRef} className="space-y-4" noValidate>
       <div>
-        <FieldLabel required>姓名</FieldLabel>
+        <FieldLabel htmlFor="reg-name" required>姓名</FieldLabel>
         <Input
+          id="reg-name"
+          name="name"
+          autoComplete="name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="请输入真实姓名"
+          onChange={(e) => {
+            setName(e.target.value);
+            clearError('name');
+          }}
+          placeholder="请输入真实姓名…"
           maxLength={50}
+          invalid={!!errors.name}
+          aria-describedby={errors.name ? 'reg-name-error' : undefined}
         />
+        <FieldError id="reg-name-error">{errors.name}</FieldError>
       </div>
 
       <div>
-        <FieldLabel required>手机号</FieldLabel>
+        <FieldLabel htmlFor="reg-phone" required>手机号</FieldLabel>
         <Input
+          id="reg-phone"
+          name="phone"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="请输入手机号"
+          onChange={(e) => {
+            setPhone(e.target.value);
+            clearError('phone');
+          }}
+          placeholder="请输入手机号…"
           maxLength={20}
+          invalid={!!errors.phone}
+          aria-describedby={errors.phone ? 'reg-phone-error' : undefined}
         />
+        <FieldError id="reg-phone-error">{errors.phone}</FieldError>
       </div>
 
       <div>
-        <FieldLabel>留言（可选）</FieldLabel>
+        <FieldLabel htmlFor="reg-message">留言（可选）</FieldLabel>
         <Textarea
+          id="reg-message"
+          name="message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="可补充报名说明…"
@@ -84,7 +113,7 @@ export const RegistrationForm = ({ activity, onSuccess }: RegistrationFormProps)
       </div>
 
       <Button type="submit" block loading={loading} disabled={loading}>
-        {loading ? '提交中...' : '提交报名'}
+        {loading ? '提交中…' : '提交报名'}
       </Button>
     </form>
   );

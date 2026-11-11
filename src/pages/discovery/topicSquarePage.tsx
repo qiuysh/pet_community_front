@@ -1,18 +1,23 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useTopicSquare } from '../../hooks/useTopicSquare';
 import { useUserStore } from '../../stores/userStore';
+import { ChevronRight, Hash, PawPrint } from 'lucide-react';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { formatCount } from '../../utils/format';
+import { TOPIC_CREATE_MIN_LEVEL } from '../../utils/topicPolicy';
+import { showInfoToast } from '../../utils/toastManager';
 import './topicSquarePage.scss';
 
 export const TopicSquarePage = () => {
   const { loading, categories, tags, hotTopics } = useTopicSquare();
   const navigate = useNavigate();
   const { user, isLoggedIn } = useUserStore();
-  const canCreateTopic = !!user && (user.level ?? 0) >= 5;
+  const canCreateTopic = !!user && (user.level ?? 0) >= TOPIC_CREATE_MIN_LEVEL;
 
   const getTagSize = (hot: number) => {
     if (hot >= 100) return 'large';
@@ -33,19 +38,32 @@ export const TopicSquarePage = () => {
         <div className="header-decor decor-1" />
         <div className="header-decor decor-2" />
         <div className="header-content">
-          <h1>话题广场</h1>
-          <p>发现有趣的话题，找到志同道合的朋友</p>
+          <span className="header-eyebrow">
+            <PawPrint
+              size={ICON_SIZE.inline}
+              strokeWidth={iconStroke(ICON_SIZE.inline)}
+              aria-hidden="true"
+            />
+            宠友社区
+          </span>
+          <h1 className="page-content-title">话题广场</h1>
+          <p>逛分类、追热帖，和宠友一起晒日常、聊养宠趣事</p>
         </div>
         {/* 创建话题入口（T5：须 Lv5+，未登录跳登录） */}
         <Button
           type="button"
           size="sm"
-          variant="outline"
           className="create-topic-btn"
-          aria-label="创建话题"
+          aria-label={
+            canCreateTopic ? '创建话题' : `创建话题（需 Lv${TOPIC_CREATE_MIN_LEVEL} 及以上）`
+          }
           onClick={() => {
             if (!isLoggedIn) {
               navigate('/login');
+              return;
+            }
+            if (!canCreateTopic) {
+              showInfoToast(`创建话题需达到 Lv${TOPIC_CREATE_MIN_LEVEL}`);
               return;
             }
             navigate('/topics/create');
@@ -74,7 +92,7 @@ export const TopicSquarePage = () => {
         <>
           <div className="section">
             <div className="section-header">
-              <h2 className="section-title">话题分类</h2>
+              <h2 className="page-section-title section-title">话题分类</h2>
               <span className="section-subtitle">选择你感兴趣的分类</span>
             </div>
             <div className="categories-grid">
@@ -84,7 +102,7 @@ export const TopicSquarePage = () => {
                     <div className="category-icon-wrap">
                       <CategoryIcon categoryName={cat.name} size={ICON_SIZE.feature} color="currentColor" />
                     </div>
-                    <div className="category-name">{cat.name}</div>
+                    <div className="page-section-title category-name">{cat.name}</div>
                     <div className="category-desc">{cat.description}</div>
                   </Card>
                 </Link>
@@ -94,10 +112,10 @@ export const TopicSquarePage = () => {
 
           <div className="section">
             <div className="section-header">
-              <h2 className="section-title">热门标签</h2>
+              <h2 className="page-section-title section-title">热门标签</h2>
               <span className="section-subtitle">大家都在讨论这些</span>
             </div>
-            <div className="tag-cloud">
+            <div className="tag-cloud motion-list">
               {tags.map((tag) => (
                 <Link
                   key={tag.id}
@@ -105,7 +123,7 @@ export const TopicSquarePage = () => {
                   className={`tag-item ${getTagSize(tag.hot)} ${getTagColorClass(tag.hot)}`}
                 >
                   <span className="tag-name">{tag.name}</span>
-                  <span className="tag-count">{tag.count}</span>
+                  <span className="tag-count tabular-nums">{formatCount(tag.count)}</span>
                 </Link>
               ))}
             </div>
@@ -113,12 +131,12 @@ export const TopicSquarePage = () => {
 
           <div className="section">
             <div className="section-header">
-              <h2 className="section-title">热门话题</h2>
+              <h2 className="page-section-title section-title">热门话题</h2>
               <span className="section-subtitle">参与度最高的话题</span>
             </div>
             <div className="hot-topics">
               {hotTopics.length === 0 && (
-                <div className="hot-topic-empty">暂无热门话题</div>
+                <EmptyState compact title="暂无热门话题" />
               )}
               {hotTopics.map((topic, index) => (
                 <Link
@@ -130,19 +148,24 @@ export const TopicSquarePage = () => {
                   <span className={`rank rank-${index + 1}`}>{index + 1}</span>
                   <div className="topic-icon" aria-hidden="true">
                     {topic.cover ? (
-                      <img src={topic.cover} alt="" className="topic-cover-thumb" />
+                      <img src={topic.cover} alt="" className="topic-cover-thumb" decoding="async" />
                     ) : (
-                      <span className="topic-cover-fallback">#</span>
+                      <Hash
+                        size={ICON_SIZE.action}
+                        strokeWidth={iconStroke(ICON_SIZE.action)}
+                        className="topic-cover-fallback-icon"
+                        aria-hidden="true"
+                      />
                     )}
                   </div>
                   <div className="topic-info">
-                    <div className="topic-name">{topic.name}</div>
+                    <div className="page-section-title topic-name">{topic.name}</div>
                     <div className="topic-desc">{topic.description || '暂无描述'}</div>
                   </div>
                   <div className="topic-meta">
-                    <span className="posts-count">{topic.postsCount} 动态</span>
+                    <span className="posts-count tabular-nums">{formatCount(topic.postsCount)} 动态</span>
                     <span className="topic-arrow" aria-hidden="true">
-                      →
+                      <ChevronRight size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} />
                     </span>
                   </div>
                 </Link>

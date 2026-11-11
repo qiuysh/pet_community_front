@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Copy, Check, Link2, MessageCircle, Send } from 'lucide-react';
+import { Copy, Check, Link2, MessageCircle, Send, ImageIcon } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { showSuccessToast, showErrorToast } from '../../utils/toastManager';
 import { Modal } from '../ui/modal';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Tabs } from '../ui/tabs';
+import { SharePosterModal } from './sharePosterModal';
+import type { SharePosterInput } from '../../utils/sharePoster';
 
 /**
  * 帖子分享面板
@@ -26,9 +29,11 @@ export interface ShareSheetProps {
   postUrl: string;
   postTitle?: string;
   onShare?: (platform: string) => void;
+  /** R3：生成海报所需素材；不传则隐藏「生成海报」 */
+  poster?: Omit<SharePosterInput, 'url' | 'title'> & { title?: string };
 }
 
-type Platform = 'wechat' | 'weibo' | 'link' | 'qrcode';
+type Platform = 'wechat' | 'weibo' | 'link' | 'qrcode' | 'poster';
 
 const PLATFORMS: Array<{ key: Platform; label: string; icon: React.ReactNode; color: string }> = [
   {
@@ -55,6 +60,12 @@ const PLATFORMS: Array<{ key: Platform; label: string; icon: React.ReactNode; co
     icon: <Copy size={20} aria-hidden="true" />,
     color: 'bg-info',
   },
+  {
+    key: 'poster',
+    label: '生成海报',
+    icon: <ImageIcon size={20} aria-hidden="true" />,
+    color: 'bg-primary',
+  },
 ];
 
 export const ShareSheet: React.FC<ShareSheetProps> = ({
@@ -63,14 +74,17 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
   postUrl,
   postTitle,
   onShare,
+  poster,
 }) => {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'platforms' | 'qrcode'>('platforms');
+  const [posterOpen, setPosterOpen] = useState(false);
 
   useEffect(() => {
     if (!open) {
       setCopied(false);
       setActiveTab('platforms');
+      setPosterOpen(false);
     }
   }, [open]);
 
@@ -108,6 +122,11 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
       onShare?.('qrcode');
       return;
     }
+    if (platform === 'poster') {
+      setPosterOpen(true);
+      onShare?.('poster');
+      return;
+    }
     if (platform === 'wechat') {
       showSuccessToast('请使用微信扫一扫二维码进行分享');
       setActiveTab('qrcode');
@@ -123,7 +142,24 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
     }
   };
 
+  const platformItems = poster
+    ? PLATFORMS
+    : PLATFORMS.filter((p) => p.key !== 'poster');
+
+  const posterInput: SharePosterInput | null =
+    poster && postUrl
+      ? {
+          url: postUrl,
+          title: poster.title || postTitle || '',
+          coverUrl: poster.coverUrl,
+          authorName: poster.authorName,
+          authorAvatar: poster.authorAvatar,
+          siteName: poster.siteName,
+        }
+      : null;
+
   return (
+    <>
     <Modal
       open={open}
       onClose={onClose}
@@ -144,8 +180,8 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
 
       {activeTab === 'platforms' ? (
         <>
-          <div className="grid grid-cols-4 gap-3 mb-4">
-            {PLATFORMS.map((p) => (
+          <div className={`grid gap-3 mb-4 ${poster ? 'grid-cols-5' : 'grid-cols-4'}`}>
+            {platformItems.map((p) => (
               <Button
                 key={p.key}
                 type="button"
@@ -164,7 +200,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
           </div>
 
           <div className="flex items-center gap-2 p-3 bg-bg-secondary rounded-md border border-border-light">
-            <Link2 size={14} className="text-brown-muted shrink-0" aria-hidden="true" />
+            <Link2 size={ICON_SIZE.inline} className="text-brown-muted shrink-0" aria-hidden="true" />
             <Input
               type="text"
               readOnly
@@ -179,7 +215,7 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
               onClick={handleCopyLink}
               aria-label="复制链接"
             >
-              {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+              {copied ? <Check size={ICON_SIZE.inline} aria-hidden="true" /> : <Copy size={ICON_SIZE.inline} aria-hidden="true" />}
               {copied ? '已复制' : '复制'}
             </Button>
           </div>
@@ -201,6 +237,13 @@ export const ShareSheet: React.FC<ShareSheetProps> = ({
         </div>
       )}
     </Modal>
+
+    <SharePosterModal
+      open={posterOpen}
+      onClose={() => setPosterOpen(false)}
+      input={posterInput}
+    />
+    </>
   );
 };
 

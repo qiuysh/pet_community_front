@@ -45,7 +45,7 @@ export function Switch({
       className={['inline-flex items-center', toneVars[tone], className].filter(Boolean).join(' ')}
     >
       {/* Content = 可点击的 SwitchButton；缺省则无法切换 */}
-      <HeroSwitch.Content className="inline-flex cursor-pointer items-center outline-none">
+      <HeroSwitch.Content className="inline-flex cursor-pointer items-center outline-none rounded-full focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1">
         <HeroSwitch.Control>
           <HeroSwitch.Thumb />
         </HeroSwitch.Control>

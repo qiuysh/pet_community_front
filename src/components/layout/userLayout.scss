@@ -27,11 +27,11 @@
   padding-top: var(--user-safe-top);
   background: $background-white;
   border-bottom: 1px solid $border-light;
-  z-index: 100;
+  z-index: $z-index-nav;
   box-shadow: $shadow-soft;
 
   .header-content {
-    max-width: 1200px;
+    max-width: $content-max;
     margin: 0 auto;
     height: var(--user-header-height);
     padding: 0 $spacing-md;
@@ -46,15 +46,24 @@
     display: flex;
     align-items: center;
     gap: $spacing-xs;
-    color: $primary-color;
+    color: $primary-text;
     font-weight: 600;
-    font-size: $font-size-title;
+    font-size: $font-size-large;
     flex-shrink: 0;
     min-width: 0;
 
     .logo-icon {
-      font-size: $font-size-xl;
+      font-size: $font-size-title;
       flex-shrink: 0;
+    }
+
+    // 后台配置了站点 Logo 时替换内置图标
+    .logo-img {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      border-radius: $border-radius-sm;
+      object-fit: contain;
     }
 
     .logo-text {
@@ -62,7 +71,7 @@
     }
 
     &:hover {
-      color: $primary-dark;
+      color: $primary-text;
     }
 
     @media (max-width: 768px) {
@@ -83,25 +92,25 @@
 
     .nav-item {
       color: $text-primary;
-      font-size: $font-size-base;
+      font-size: $font-size-sm;
       font-weight: 500;
       padding: $spacing-sm $spacing-md;
       border-radius: $border-radius-sm;
-      transition: color 0.2s ease, background-color 0.2s ease;
+      transition: color $duration-base ease, background-color $duration-base ease;
       position: relative;
 
       &:hover {
-        color: $primary-color;
+        color: $primary-text;
         background: rgba($primary-color, 0.06);
       }
 
       &:focus-visible {
-        color: $primary-color;
+        color: $primary-text;
         background: rgba($primary-color, 0.08);
       }
 
       &.active {
-        color: $primary-color;
+        color: $primary-text;
         background: rgba($primary-color, 0.08);
 
         &::after {
@@ -112,7 +121,7 @@
           transform: translateX(-50%);
           width: 24px;
           height: 3px;
-          background: $primary-color;
+          background: $primary-strong;
           border-radius: 2px;
         }
       }
@@ -130,6 +139,26 @@
       gap: 2px;
     }
 
+    // PC 顶栏已有完整主导航；移动端用「更多」补宠物/话题/排行榜（及通知/私信）
+    // class 打在 Dropdown Trigger（button）上
+    .mobile-nav-more {
+      display: none;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      color: $text-secondary;
+
+      @media (max-width: 768px) {
+        display: inline-flex;
+      }
+
+      &:hover,
+      &:focus-visible {
+        color: $primary-text;
+        background: rgba($primary-color, 0.08);
+      }
+    }
+
     .user-menu {
       display: flex;
       align-items: center;
@@ -140,6 +169,7 @@
       }
 
       .action-link {
+        position: relative;
         width: 40px;
         height: 40px;
         display: flex;
@@ -147,16 +177,16 @@
         justify-content: center;
         color: $text-secondary;
         border-radius: $border-radius-sm;
-        transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+        transition: color $duration-base ease, background-color $duration-base ease, transform $duration-base ease;
 
         &:hover {
-          color: $primary-color;
+          color: $primary-text;
           background: rgba($primary-color, 0.08);
           transform: translateY(-1px);
         }
 
         &:focus-visible {
-          color: $primary-color;
+          color: $primary-text;
           background: rgba($primary-color, 0.08);
         }
 
@@ -165,6 +195,23 @@
           @media (max-width: 768px) {
             display: none;
           }
+        }
+
+        .nav-unread-badge {
+          position: absolute;
+          top: 2px;
+          right: 0;
+          min-width: 16px;
+          height: 16px;
+          padding: 0 4px;
+          border-radius: 999px;
+          background: $error-color;
+          color: #fff;
+          font-size: 10px;
+          font-weight: 600;
+          line-height: 16px;
+          text-align: center;
+          pointer-events: none;
         }
       }
 
@@ -177,10 +224,10 @@
           border-radius: 50%;
           object-fit: cover;
           border: 2px solid $border-light;
-          transition: border-color 0.2s;
+          transition: border-color $duration-base;
 
           &:hover {
-            border-color: $primary-color;
+            border-color: $primary-text;
           }
         }
       }
@@ -203,11 +250,11 @@
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid $border-light;
-            transition: border-color 0.2s ease, transform 0.2s ease;
+            transition: border-color $duration-base ease, transform $duration-base ease;
           }
 
           &:hover .user-avatar {
-            border-color: $primary-color;
+            border-color: $primary-text;
             transform: scale(1.05);
           }
         }
@@ -224,7 +271,7 @@
           padding: $spacing-xs;
           // 由 React state 控制显示，仅负责进入动画
           animation: fadeIn 0.2s ease-out;
-          z-index: 200;
+          z-index: $z-index-overlay;
           overscroll-behavior: contain;
         }
 
@@ -234,9 +281,9 @@
           gap: $spacing-sm;
           padding: $spacing-sm $spacing-md;
           color: $text-primary;
-          font-size: $font-size-base;
+          font-size: $font-size-sm;
           border-radius: $border-radius-sm;
-          transition: color 0.2s ease, background-color 0.2s ease;
+          transition: color $duration-base ease, background-color $duration-base ease;
           text-decoration: none;
           width: 100%;
           border: none;
@@ -252,10 +299,10 @@
           &:hover,
           &:focus-visible {
             background: rgba($primary-color, 0.08);
-            color: $primary-color;
+            color: $primary-text;
 
             svg {
-              color: $primary-color;
+              color: $primary-text;
             }
           }
         }
@@ -288,7 +335,7 @@
       color: $text-secondary;
       font-size: $font-size-xs;
       cursor: pointer;
-      transition: border-color 0.2s ease, color 0.2s ease;
+      transition: border-color $duration-base ease, color $duration-base ease;
 
       &:hover {
         border-color: $error-color;
@@ -304,9 +351,9 @@
       .register-btn {
         padding: $spacing-sm $spacing-md;
         border-radius: $border-radius-base;
-        font-size: $font-size-base;
+        font-size: $font-size-sm;
         font-weight: 500;
-        transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        transition: color $duration-base ease, background-color $duration-base ease, border-color $duration-base ease, transform $duration-base ease, box-shadow $duration-base ease;
       }
 
       .login-btn {
@@ -315,14 +362,14 @@
         border: 1px solid $border-color;
 
         &:hover {
-          color: $primary-color;
-          border-color: $primary-color;
+          color: $primary-text;
+          border-color: $primary-text;
           background: rgba($primary-color, 0.05);
         }
       }
 
       .register-btn {
-        background: $primary-color;
+        background: $primary-strong;
         color: white;
         border: none;
 
@@ -348,7 +395,7 @@
   background: $background-color;
 
   .user-content {
-    max-width: 1200px;
+    max-width: $content-max;
     margin: 0 auto;
     padding: $spacing-lg;
 
@@ -356,6 +403,51 @@
       padding: $spacing-sm;
       // 底部导航 + 安全区 + FAB 余量，避免内容被遮挡
       padding-bottom: calc(var(--user-tab-bar-offset) + 60px + #{$spacing-md});
+    }
+  }
+}
+
+// ============================================
+// Site Footer (站点描述 + ICP 备案号)
+// ============================================
+
+.site-footer {
+  max-width: $content-max;
+  margin: 0 auto;
+  padding: $spacing-lg $spacing-lg calc(#{$spacing-lg} + var(--user-safe-bottom));
+  background: $background-white;
+  border-top: 1px solid $border-light;
+  color: $text-muted;
+  font-size: $font-size-xs;
+  line-height: 1.7;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    // 底部导航覆盖在固定层，页脚需让出高度否则被遮挡
+    padding: $spacing-md $spacing-sm calc(var(--user-tab-bar-offset) + #{$spacing-md});
+  }
+
+  .site-footer-desc {
+    margin: 0 0 $spacing-xs;
+  }
+
+  .site-footer-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    margin: 0;
+  }
+
+  .site-footer-icp {
+    color: inherit;
+    text-decoration: none;
+    transition: color $duration-base ease;
+
+    &:hover,
+    &:focus-visible {
+      color: $primary-text;
     }
   }
 }
@@ -370,7 +462,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: $z-index-nav;
   height: var(--user-tab-bar-offset);
   padding: 0 $spacing-sm var(--user-safe-bottom);
   background: $background-white;
@@ -400,7 +492,7 @@
     min-height: 44px;
     color: $text-muted;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color $duration-base ease;
     padding: 6px 2px;
     position: relative;
     -webkit-tap-highlight-color: transparent;
@@ -415,7 +507,7 @@
       svg {
         width: 22px;
         height: 22px;
-        transition: transform 0.2s ease, stroke-width 0.2s ease;
+        transition: transform $duration-base ease, stroke-width $duration-base ease;
       }
     }
 
@@ -427,19 +519,20 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      transition: font-weight 0.2s ease;
+      transition: font-weight $duration-base ease;
     }
 
     &:hover,
     &:focus-visible {
-      color: $primary-color;
+      color: $primary-text;
     }
 
     &.active {
-      color: $primary-color;
+      color: $primary-text;
 
       .tab-icon svg {
         stroke-width: 2.5;
+        transform: translateY(-2px);
       }
 
       .tab-label {
@@ -454,8 +547,9 @@
         transform: translateX(-50%);
         width: 16px;
         height: 3px;
-        background: $primary-color;
+        background: $primary-strong;
         border-radius: 2px;
+        animation: motion-tab-indicator $duration-base $ease-spring;
       }
     }
   }
@@ -470,19 +564,19 @@
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    z-index: 1;
+    z-index: $z-index-base;
     -webkit-tap-highlight-color: transparent;
 
     .create-post-icon {
       width: 52px;
       height: 52px;
-      background: $primary-color;
+      background: $primary-strong;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 14px rgba($primary-color, 0.35);
-      transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      transition: background-color $duration-base ease, transform $duration-base ease, box-shadow $duration-base ease;
 
       svg {
         stroke: white;

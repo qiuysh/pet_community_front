@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { notificationSettingsApi } from '../api/social';
 import { useAsync } from './useAsync';
 import { showSuccessToast, showErrorToast } from '../utils/toastManager';
+import { reportError } from '../utils/errorReport';
 
 export interface NotificationSettings {
   likeNotify: number;
@@ -9,6 +10,9 @@ export interface NotificationSettings {
   atNotify: number;
   followNotify: number;
   systemNotify: number;
+  messageNotify: number;
+  /** R4：新设备登录安全提醒，默认开启 */
+  securityNotify: number;
 }
 
 const DEFAULT_SETTINGS: NotificationSettings = {
@@ -17,6 +21,8 @@ const DEFAULT_SETTINGS: NotificationSettings = {
   atNotify: 1,
   followNotify: 1,
   systemNotify: 1,
+  messageNotify: 1,
+  securityNotify: 1,
 };
 
 /**
@@ -43,7 +49,7 @@ export function useNotificationSettings() {
     },
     (error) => {
       showErrorToast('获取通知设置失败');
-      console.error('获取通知设置失败', error);
+      reportError('获取通知设置失败', error);
     },
   );
 
@@ -60,7 +66,7 @@ export function useNotificationSettings() {
       },
       (error) => {
         showErrorToast('更新通知设置失败');
-        console.error('更新通知设置失败', error);
+        reportError('更新通知设置失败', error);
         setSettings(oldSettings);
       },
     );

@@ -57,7 +57,7 @@ export function ReviewAction({ content, onSuccess }: ReviewActionProps) {
   return (
     <>
       <div className={adminUi.actions}>
-        <AdminButton type="button" variant="ghost" disabled={loading} onClick={handleApprove} className="text-success hover:text-success/80">
+        <AdminButton type="button" variant="ghost" disabled={loading} onClick={handleApprove} className="text-success-text hover:text-success-dark">
           通过
         </AdminButton>
         <AdminButton
@@ -65,7 +65,7 @@ export function ReviewAction({ content, onSuccess }: ReviewActionProps) {
           variant="ghost"
           disabled={loading}
           onClick={() => setShowRejectModal(true)}
-          className="text-error hover:text-error/80"
+          className="text-error-text hover:opacity-80"
         >
           拒绝
         </AdminButton>

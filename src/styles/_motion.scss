@@ -1,0 +1,175 @@
+// ============================================
+// 动效工具层（唯一允许出现 @keyframes 的文件）
+// 规则见 docs/frontend/motion-spec.md
+// - 只动 transform / opacity
+// - 初始隐藏态必须包在 prefers-reduced-motion: no-preference 内
+// - 页面只加类名，不写自己的 keyframes
+// ============================================
+@import './variables';
+
+@keyframes motion-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--motion-distance, #{$motion-distance-md}), 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes motion-page-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes motion-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+@keyframes motion-shake {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(-2px, 0, 0); }
+  75% { transform: translate3d(2px, 0, 0); }
+}
+
+@keyframes motion-tab-indicator {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0.2);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1);
+  }
+}
+
+@keyframes motion-message-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes motion-img-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// 历史通用类（原 global.scss）：保留同名 keyframes 与类，避免存量页面失效
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn $duration-emphasized ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.4s ease-out;
+}
+
+// --------------------------------------------
+// 列表错峰进场：容器加 .motion-list，子项自动依次淡入上移
+// 只对前 $motion-stagger-max 项累加延迟，之后统一用最大延迟，避免末尾等太久
+// --------------------------------------------
+.motion-list {
+  > * {
+    animation: motion-fade-up $duration-narrative $ease-out-expo both;
+  }
+
+  @for $i from 1 through $motion-stagger-max {
+    > *:nth-child(#{$i}) {
+      animation-delay: ($i - 1) * $motion-stagger;
+    }
+  }
+
+  > *:nth-child(n + #{$motion-stagger-max + 1}) {
+    animation-delay: ($motion-stagger-max - 1) * $motion-stagger;
+  }
+
+  // 移动端节奏更快，避免长列表整体显得拖沓
+  @media (max-width: 768px) {
+    --motion-distance: #{$motion-distance-sm};
+
+    @for $i from 1 through $motion-stagger-max {
+      > *:nth-child(#{$i}) {
+        animation-delay: ($i - 1) * 24ms;
+      }
+    }
+
+    > *:nth-child(n + #{$motion-stagger-max + 1}) {
+      animation-delay: ($motion-stagger-max - 1) * 24ms;
+    }
+  }
+}
+
+// --------------------------------------------
+// 内容卡悬停抬升：仅在真有指针悬停能力的设备启用
+// --------------------------------------------
+.motion-lift {
+  @media (hover: hover) and (pointer: fine) {
+    transition:
+      transform $duration-base $ease-emphasized,
+      box-shadow $duration-base $ease-emphasized;
+
+    &:hover {
+      transform: translate3d(0, -2px, 0);
+      box-shadow: $shadow-hover;
+    }
+  }
+
+  // 移动端没有 hover，按下给一次下沉反馈
+  &:active {
+    transform: scale(0.995);
+  }
+}
+
+// --------------------------------------------
+// 一次性反馈
+// --------------------------------------------
+.motion-pop {
+  animation: motion-pop $duration-base $ease-spring;
+}
+
+.motion-shake {
+  animation: motion-shake 180ms $ease-standard;
+}
+
+// 聊天 / 评论新插入的一条（历史条目不加此类，避免整屏一起冒）
+.motion-message {
+  animation: motion-message-in $duration-base $ease-out-expo both;
+}
+
+.motion-page-enter {
+  animation: motion-page-in $duration-base $ease-standard both;
+}
+
+// --------------------------------------------
+// 图片淡入：由 utils/imageFade.ts 加 .is-loaded / .is-error
+// 未加载完成的图先隐藏，加载完淡入；加载失败直接显示（不留白块）
+// --------------------------------------------
+@media (prefers-reduced-motion: no-preference) {
+  html.motion-ready img:not(.is-loaded):not(.is-error) {
+    opacity: 0;
+  }
+
+  html.motion-ready img.is-loaded {
+    animation: motion-img-in $duration-slow $ease-standard both;
+  }
+}

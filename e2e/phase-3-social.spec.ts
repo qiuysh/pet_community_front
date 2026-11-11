@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { TEST_USERS, clearAuth, loginAsUser, dualSessions, apiWrite } from './fixtures/auth';
+import {
+    clearAuth,
+    loginAsUser,
+    dualSessions,
+    apiWrite,
+    getMyProfile,
+} from './fixtures/auth';
 
 test.describe('Phase3 - 关注功能', () => {
     test.beforeEach(async ({ page }) => {
@@ -106,14 +112,8 @@ test.describe('Phase3 - 关注功能', () => {
         await page.waitForTimeout(500);
     });
 
-    test('V-F7-05 - 拉黑后双方动态屏蔽（§4.2 双向屏蔽）', async ({ page }) => {
-        // 拉黑后双方不可互看动态/主页
-        test.skip(true, '需双账号跨会话验证（A 拉黑 B 后，B 视角不可见 A 动态），跨账号场景待补');
-    });
-
-    test('V-F7-06 - 拉黑后私信屏蔽（§4.2 双向屏蔽）', async ({ page }) => {
-        test.skip(true, '见 V-M1-04；合并到私信模块验证');
-    });
+    // V-F7-05（拉黑后双方动态屏蔽）/ V-F7-06（拉黑后私信屏蔽）需要双账号跨会话，
+    // 已在 phase-3-supplement.spec.ts 用 dualSessions 实现，此处不再保留空壳占位。
 
     test('V-F8-01 - 举报用户', async ({ page }) => {
         await loginAsUser(page);
@@ -184,15 +184,8 @@ test.describe('Phase3 - 私信功能', () => {
         }
     });
 
-    test('V-M1-03 - 仅粉丝可私信权限限制', async ({ page }) => {
-        // §4.7：私信权限「仅粉丝」门禁仅普通关注计入，悄悄关注不满足
-        // 前置：目标用户在 /settings 将「私信权限」设为「仅粉丝」
-        // 此用例验证非粉丝向其发起私信时被拦截
-        test.skip(true, '需先通过 /settings 将目标用户私信权限设为「仅粉丝」并准备非粉丝账号，跨账号场景待补');
-        await loginAsUser(page);
-        await page.goto('/messages/new');
-        await page.waitForTimeout(1500);
-    });
+    // V-M1-03（仅粉丝可私信）需要改目标用户设置 + 非粉丝账号，已在
+    // phase-3-supplement.spec.ts 用 dualSessions + 接口改设置实现。
 
     test('V-M1-04 - 拉黑后私信限制', async ({ page }) => {
         // §4.2：拉黑效果双向屏蔽，双方不可互发私信
@@ -228,18 +221,8 @@ test.describe('Phase3 - 通知功能', () => {
         await expect(page.locator('body')).toContainText(/通知|点赞|评论|关注/, { timeout: 5_000 });
     });
 
-    test('V-N1-01 - 点赞通知生成', async ({ page }) => {
-        // 触发路径：user1 点赞 user2 的动态 → user2 收到点赞通知
-        test.skip(true, '需双账号跨会话验证（user1 点赞 → user2 视角通知），跨账号场景待补');
-    });
-
-    test('V-N2-01 - 评论通知生成', async ({ page }) => {
-        test.skip(true, '需双账号跨会话验证（user1 评论 → user2 视角通知），跨账号场景待补');
-    });
-
-    test('V-N3-01 - @通知生成', async ({ page }) => {
-        test.skip(true, '需双账号跨会话验证（user1 @user2 → user2 视角通知），跨账号场景待补');
-    });
+    // V-N1-01 / V-N2-01 / V-N3-01 需要「actor 触发 + viewer 验证」的双账号视角，
+    // 已在 phase-3-supplement.spec.ts 用 dualSessions 实现（含异步投递重试）。
 
     test('V-N4-01 - 关注通知生成', async ({ browser }) => {
         // 跨账号场景：actor(user1) 关注 viewer(user2) → viewer 收到关注通知
@@ -264,18 +247,18 @@ test.describe('Phase3 - 通知功能', () => {
             await viewer.goto('/notifications');
             await viewer.waitForTimeout(1500);
 
-            // 4. 断言：通知列表含 user1 昵称"萌宠小达人"（关注通知触发者）
+            // 4. 断言：通知列表含 actor 昵称（关注通知触发者）
+            //    昵称取接口实时值——seed 昵称会被历史用例改写，写死"萌宠小达人"会恒失败
             //    通知可能异步投递，用 expect.toContainText 的 timeout 重试
-            await expect(viewer.locator('body')).toContainText('萌宠小达人', { timeout: 15_000 });
+            const { nickname } = await getMyProfile(actor);
+            expect(nickname, '读取 actor 昵称失败').not.toBe('');
+            await expect(viewer.locator('body')).toContainText(nickname, { timeout: 15_000 });
         } finally {
             await cleanup();
         }
     });
 
-    test('V-N4-03 - 悄悄关注不通知（§4.7）', async ({ page }) => {
-        // 悄悄关注 UI 已实现（profile 关注菜单 + 关注列表切换）；本用例需双账号跨会话验证（user1 悄悄关注 user2 → user2 视角无通知），跨账号场景待补
-        test.skip(true, '需双账号跨会话验证，跨账号场景待补');
-    });
+    // V-N4-03（悄悄关注不通知）同理，见 phase-3-supplement.spec.ts。
 
     test('V-N5-01 - 系统通知样式', async ({ page }) => {
         await loginAsUser(page);

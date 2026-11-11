@@ -31,7 +31,6 @@ export function useBlockedList(pageSize = 20) {
   const total = data?.total ?? 0;
 
   const handleUnblock = async (targetId: number) => {
-    if (!window.confirm('确定取消拉黑该用户？')) return;
     try {
       await blockApi.unblockUser(targetId);
       setData((prev) =>

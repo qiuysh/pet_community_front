@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { createAdopt, uploadAdoptPhoto } from '../api/adopt';
 import { useToast } from '../components/toast';
 import { useAsync } from './useAsync';
+import type { FormErrors } from './useFormErrors';
 import { AdoptCreateRequest, PetType, PetGender } from '../types/adopt';
+
+type AdoptField = 'petName' | 'description' | 'photos' | 'location' | 'contactPhone';
 
 /** 是否是 placeholder 占位符（尚未上传成功）的 URL */
 export const isPlaceholderPhoto = (url: string): boolean =>
@@ -25,6 +28,7 @@ export function useAdoptCreate() {
   const toast = useToast();
   const { loading, run } = useAsync();
   const [uploading, setUploading] = useState(false);
+  const [errors, setErrors] = useState<FormErrors<AdoptField>>({});
   const [formData, setFormData] = useState<AdoptCreateRequest>({
     petName: '',
     petType: PetType.CAT,
@@ -38,34 +42,48 @@ export function useAdoptCreate() {
     contactPhone: '',
   });
 
+  const clearError = (field: AdoptField) => {
+    setErrors((prev) => {
+      if (prev[field] === undefined) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
   const handleSubmit = () => {
-    if (!formData.petName) {
-      toast.error('请填写宠物名称');
-      return;
+    const next: FormErrors<AdoptField> = {};
+    if (!formData.petName.trim()) {
+      next.petName = '请填写宠物名称';
     }
-    if (!formData.description) {
-      toast.error('请填写宠物介绍');
-      return;
+    if (!formData.description.trim()) {
+      next.description = '请填写宠物介绍';
+    }
+    if (!formData.location.trim()) {
+      next.location = '请填写所在地区';
+    }
+    if (!formData.contactPhone.trim()) {
+      next.contactPhone = '请填写联系电话';
     }
     if (formData.photos.length === 0) {
-      toast.error('请上传至少一张照片');
+      next.photos = '请上传至少一张照片';
+    }
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
+      const first = Object.keys(next)[0] as AdoptField;
+      requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+      });
       return;
     }
+    setErrors({});
     if (uploading) {
-      toast.error('照片正在上传中，请稍候...');
+      toast.error('照片正在上传中，请稍候…');
       return;
     }
     const placeholders = formData.photos.filter(isPlaceholderPhoto);
     if (placeholders.length > 0) {
       toast.error(`${placeholders.length} 张照片尚未完成上传，请等待上传结束`);
-      return;
-    }
-    if (!formData.location) {
-      toast.error('请填写所在地区');
-      return;
-    }
-    if (!formData.contactPhone) {
-      toast.error('请填写联系电话');
       return;
     }
 
@@ -136,6 +154,8 @@ export function useAdoptCreate() {
     uploading,
     formData,
     setFormData,
+    errors,
+    clearError,
     handleSubmit,
     handlePhotoUpload,
   };

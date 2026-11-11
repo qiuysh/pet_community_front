@@ -16,6 +16,7 @@ import {
 } from '../../api/admin';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { PawPrint, ClipboardList, Eye, Pointer } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminTable } from '../../components/admin/adminTable';
 import { AdminInput, AdminLabel, AdminSelect } from '../../components/admin/adminField';
@@ -384,7 +385,7 @@ export function AdminAdPage() {
                                 ) : positions.length === 0 ? (
                                     <AdminTable.Status>
                                         <div className="mb-2 flex justify-center text-brown-light">
-                                            <ClipboardList size={40} aria-hidden="true" />
+                                            <ClipboardList size={ICON_SIZE.empty} aria-hidden="true" />
                                         </div>
                                         <p>暂无广告位</p>
                                     </AdminTable.Status>
@@ -411,7 +412,7 @@ export function AdminAdPage() {
                                                     </AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap text-brown-muted">{position.size}</AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">
-                                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${position.status === 1 ? 'bg-success/10 text-success' : 'bg-error/10 text-error'}`}>
+                                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${position.status === 1 ? 'bg-success/10 text-success-text' : 'bg-error/10 text-error-text'}`}>
                                                             {position.status === 1 ? '启用' : '禁用'}
                                                         </span>
                                                     </AdminTable.Cell>
@@ -470,7 +471,7 @@ export function AdminAdPage() {
                                 ) : ads.length === 0 ? (
                                     <AdminTable.Status>
                                         <div className="mb-2 flex justify-center text-brown-light">
-                                            <ClipboardList size={40} aria-hidden="true" />
+                                            <ClipboardList size={ICON_SIZE.empty} aria-hidden="true" />
                                         </div>
                                         <p>暂无广告</p>
                                     </AdminTable.Status>
@@ -509,9 +510,9 @@ export function AdminAdPage() {
                                                     </AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-brown-muted inline-flex items-center gap-1"><Eye size={14} aria-hidden="true" /><span>{ad.viewCount}</span></span>
+                                                            <span className="text-brown-muted inline-flex items-center gap-1"><Eye size={ICON_SIZE.inline} aria-hidden="true" /><span>{ad.viewCount}</span></span>
                                                             <span>/</span>
-                                                            <span className="text-secondary inline-flex items-center gap-1"><Pointer size={14} aria-hidden="true" /><span>{ad.clickCount}</span></span>
+                                                            <span className="text-secondary inline-flex items-center gap-1"><Pointer size={ICON_SIZE.inline} aria-hidden="true" /><span>{ad.clickCount}</span></span>
                                                         </div>
                                                     </AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">

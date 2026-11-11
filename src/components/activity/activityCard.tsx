@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
+import { Clock } from 'lucide-react';
 import {
   ActivityInfo,
   ActivityType,
   ActivityTypeOptions,
   getActivityDisplayStatus,
 } from '../../types/activity';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
 interface ActivityCardProps {
   activity: ActivityInfo;
@@ -18,7 +20,7 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
       case 'draft':
         return { text: '草稿', color: 'bg-muted text-brown-muted' };
       case 'upcoming':
-        return { text: '即将开始', color: 'bg-primary-soft text-primary-dark' };
+        return { text: '即将开始', color: 'bg-primary-soft text-primary-text' };
       case 'active':
         return { text: '进行中', color: 'bg-secondary-soft text-secondary-dark' };
       case 'ended':
@@ -49,6 +51,7 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
     >
       <div className="relative">
         <img
+          decoding="async"
           src={activity.cover || '/default-activity-cover.png'}
           alt={activity.title}
           className="w-full h-40 object-cover rounded-t-md"
@@ -68,20 +71,17 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
           )}
         </div>
 
-        <h3 className="text-base font-medium text-brown mb-2 line-clamp-2">{activity.title}</h3>
+        <h3 className="page-section-title mb-2 line-clamp-2">{activity.title}</h3>
 
         <p className="text-sm text-brown-muted mb-3 line-clamp-2">{activity.description}</p>
 
         <div className="flex items-center justify-between text-xs text-brown-muted">
           <div className="flex items-center gap-1">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <Clock
+              size={ICON_SIZE.inline}
+              strokeWidth={iconStroke(ICON_SIZE.inline)}
+              aria-hidden="true"
+            />
             <span>
               {formatTime(activity.startTime)} - {formatTime(activity.endTime)}
             </span>

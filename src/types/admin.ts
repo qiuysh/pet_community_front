@@ -27,11 +27,18 @@ export interface Admin {
 export interface AdminLoginRequest {
     username: string;
     password: string;
+    captchaId?: string;
+    captchaCode?: string;
 }
 
 export interface AdminLoginResponse {
     token: string;
     admin: Admin;
+}
+
+export interface AdminCaptchaResponse {
+    captchaId: string;
+    captchaImage: string;
 }
 
 // Admin User Management Types
@@ -74,12 +81,8 @@ export interface UpdateAdminStatusRequest {
 }
 
 // System Settings Types
-export interface SiteConfig {
-    siteName: string;
-    siteLogo: string;
-    siteDescription: string;
-    siteICP: string;
-}
+// SiteConfig 与前台公开接口同构，定义在 types/site.ts，此处转出以保持既有引用路径
+export type { SiteConfig } from './site';
 
 export interface AuditConfig {
     autoAuditEnabled: boolean;
@@ -220,6 +223,13 @@ export interface ReviewContent {
     username: string;
     avatar: string;
     status: number;
+    /** 动态置顶标记：1=已置顶 */
+    isPinned?: number;
+    /** 动态精选标记：1=已精选 */
+    isFeatured?: number;
+    /** 话题分类（仅 type=topic） */
+    categoryId?: number;
+    categoryName?: string;
     createdAt: string;
 }
 

@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useRanking, RankingPeriod } from '../../hooks/useRanking';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Flame, Heart, MessageCircle, ArrowUpRight } from 'lucide-react';
+import { Flame, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { formatCount } from '../../utils/format';
 import './rankingPage.scss';
 
 const metaIconProps = {
@@ -26,10 +27,11 @@ export const RankingPage = () => {
   return (
     <div className="ranking-page">
       <div className="page-header">
-        <h1 className="flex items-center gap-2">
-          <Flame size={20} aria-hidden="true" />
+        <h1 className="page-content-title flex items-center justify-center gap-2">
+          <Flame size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
           <span>热门排行</span>
         </h1>
+        <p className="header-subtitle">本周最火帖子、人气宠友和热门话题都在这</p>
         <div className="period-tabs flex flex-wrap gap-2">
           {periods.map((p) => (
             <FilterChip
@@ -61,9 +63,9 @@ export const RankingPage = () => {
         <>
           <div className="ranking-section">
             <div className="section-header">
-              <span className="section-title">热门帖子</span>
+              <span className="page-section-title section-title">热门帖子</span>
             </div>
-            <div className="ranking-list">
+            <div className="ranking-list motion-list">
               {(data.posts || []).slice(0, 10).map((post, index) => (
                 <div key={post.id} className={`ranking-item ${index < 3 ? 'top-three' : ''}`}>
                   <span className={`rank ${index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : ''}`}>
@@ -73,14 +75,14 @@ export const RankingPage = () => {
                     <Link to={`/posts/${post.id}`} className="post-link">
                       <div className="post-header">
                         <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="avatar" />
-                        <span className="nickname">{post.userNickname}</span>
+                        <span className="page-section-title nickname">{post.userNickname}</span>
                       </div>
                       <div className="post-content">{post.content}</div>
                     </Link>
-                    <div className="post-stats">
-                      <span className="stat-item flex items-center gap-1"><Heart {...metaIconProps} /><span>{post.likesCount}</span></span>
-                      <span className="stat-item flex items-center gap-1"><MessageCircle {...metaIconProps} /><span>{post.commentsCount}</span></span>
-                      <span className="stat-item flex items-center gap-1"><ArrowUpRight {...metaIconProps} /><span>{post.sharesCount}</span></span>
+                    <div className="post-stats tabular-nums">
+                      <span className="stat-item flex items-center gap-1"><Heart {...metaIconProps} /><span>{formatCount(post.likesCount)}</span></span>
+                      <span className="stat-item flex items-center gap-1"><MessageCircle {...metaIconProps} /><span>{formatCount(post.commentsCount)}</span></span>
+                      <span className="stat-item flex items-center gap-1"><Share2 {...metaIconProps} /><span>{formatCount(post.sharesCount)}</span></span>
                     </div>
                   </div>
                   <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{post.hotScore}</span></span>
@@ -91,9 +93,9 @@ export const RankingPage = () => {
 
           <div className="ranking-section">
             <div className="section-header">
-              <span className="section-title">人气用户</span>
+              <span className="page-section-title section-title">人气用户</span>
             </div>
-            <div className="ranking-list">
+            <div className="ranking-list motion-list">
               {(data.users || []).slice(0, 10).map((user, index) => (
                 <Link key={user.id} to={`/profile/${user.id}`} className="ranking-item user-item">
                   <span className={`rank ${index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : ''}`}>
@@ -101,10 +103,10 @@ export const RankingPage = () => {
                   </span>
                   <Avatar src={user.avatar || getDefaultUserAvatar()} name={user.nickname} className="avatar" />
                   <div className="user-info">
-                    <div className="nickname">{user.nickname}</div>
-                    <div className="stats">
-                      <span>{user.followersCount}粉丝</span>
-                      <span>{user.postsCount}动态</span>
+                    <div className="page-section-title nickname">{user.nickname}</div>
+                    <div className="stats tabular-nums">
+                      <span>{formatCount(user.followersCount)}粉丝</span>
+                      <span>{formatCount(user.postsCount)}动态</span>
                     </div>
                   </div>
                   <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{user.hotScore}</span></span>
@@ -115,20 +117,20 @@ export const RankingPage = () => {
 
           <div className="ranking-section">
             <div className="section-header">
-              <span className="section-title">热门话题</span>
+              <span className="page-section-title section-title">热门话题</span>
             </div>
-            <div className="ranking-list">
+            <div className="ranking-list motion-list">
               {(data.topics || []).slice(0, 10).map((topic, index) => (
                 <Link key={topic.id} to={`/topics/${topic.id}`} className="ranking-item topic-item">
                   <span className={`rank ${index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : ''}`}>
                     {index + 1}
                   </span>
                   <div className="topic-info">
-                    <div className="topic-name">{topic.name}</div>
+                    <div className="page-section-title topic-name">{topic.name}</div>
                     <div className="topic-desc">{topic.description}</div>
                   </div>
-                  <div className="topic-stats">
-                    <span>{topic.postsCount}帖子</span>
+                  <div className="topic-stats tabular-nums">
+                    <span>{formatCount(topic.postsCount)}帖子</span>
                     <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{topic.hotScore}</span></span>
                   </div>
                 </Link>

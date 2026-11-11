@@ -83,8 +83,9 @@ export const createTopic = async (data: TopicCreateRequest): Promise<TopicDetail
   return await post<TopicDetailInfo>('/api/v1/topics', data);
 };
 
-export const shareTopic = async (id: number, platform?: string): Promise<{ shareUrl: string; qrCode?: string }> => {
+// 二维码由分享面板用 shareUrl 本地渲染，接口只返回链接
+export const shareTopic = async (id: number, platform?: string): Promise<{ shareUrl: string }> => {
   const params: Record<string, string> = {};
   if (platform) params.platform = platform;
-  return await get<{ shareUrl: string; qrCode?: string }>(`/api/v1/topics/${id}/share`, { params });
+  return await get<{ shareUrl: string }>(`/api/v1/topics/${id}/share`, { params });
 };

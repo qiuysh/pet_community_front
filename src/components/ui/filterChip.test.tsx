@@ -13,7 +13,7 @@ describe('FilterChip', () => {
   it('applies active primary styles', () => {
     render(<FilterChip active>选中</FilterChip>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveClass('bg-primary');
+    expect(btn).toHaveClass('bg-primary-strong');
     expect(btn).toHaveClass('active');
     expect(btn).toHaveAttribute('aria-pressed', 'true');
   });
@@ -24,7 +24,7 @@ describe('FilterChip', () => {
         进行中
       </FilterChip>
     );
-    expect(screen.getByRole('button')).toHaveClass('bg-secondary');
+    expect(screen.getByRole('button')).toHaveClass('bg-secondary-dark');
   });
 
   it('inactive chip has aria-pressed false', () => {

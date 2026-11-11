@@ -31,13 +31,18 @@ test.describe('Phase1 - 用户注册/登录', () => {
     });
 
     test('V-U2-03 - 验证码登录模式切换', async ({ page }) => {
-        test.skip(true, '手机验证码登录忽略');
         await page.goto('/login');
 
-        await page.getByRole('button', { name: '验证码登录' }).click();
+        // 默认密码模式：密码框在，验证码框不在
+        await expect(page.locator('#login-password')).toBeVisible();
+        await expect(page.locator('#login-code')).toHaveCount(0);
 
-        await expect(page.getByText('验证码')).toBeVisible();
-        await expect(page.getByRole('button', { name: '获取验证码' })).toBeVisible();
+        await page.getByRole('tab', { name: '验证码登录' }).click();
+
+        // 切到验证码模式：验证码输入框 + 获取验证码按钮出现，密码框消失
+        await expect(page.locator('#login-code')).toBeVisible();
+        await expect(page.getByRole('button', { name: /获取验证码/ })).toBeVisible();
+        await expect(page.locator('#login-password')).toHaveCount(0);
     });
 
     test('V-U2-06 - 记住登录状态与Token刷新', async ({ page }) => {
@@ -66,44 +71,26 @@ test.describe('Phase1 - 用户注册/登录', () => {
         expect(refreshToken).toBeTruthy();
     });
 
+    // 第三方登录：后端已走真实 OAuth 授权（service/third_party_auth.go），
+    // 点击会跳出本站，因此 e2e 只验证入口可见，不发起授权跳转。
     test('V-U2-07 - 微信登录入口可见', async ({ page }) => {
         await page.goto('/login');
-        
-        const wechatBtn = page.getByRole('button', { name: /微信|WeChat/ });
-        // 第三方登录按钮可见性检查
-        if (await wechatBtn.isVisible()) {
-            await expect(wechatBtn).toBeVisible();
-        } else {
-            test.skip(true, '微信登录按钮未实现');
-        }
+        await expect(page.getByRole('button', { name: '使用微信登录' })).toBeVisible();
     });
 
     test('V-U2-09 - 微博登录入口可见', async ({ page }) => {
         await page.goto('/login');
-        
-        const weiboBtn = page.getByRole('button', { name: /微博|Weibo/ });
-        if (await weiboBtn.isVisible()) {
-            await expect(weiboBtn).toBeVisible();
-        } else {
-            test.skip(true, '微博登录按钮未实现');
-        }
+        await expect(page.getByRole('button', { name: '使用微博登录' })).toBeVisible();
     });
 
     test('V-U2-10 - QQ登录入口可见', async ({ page }) => {
         await page.goto('/login');
-        
-        const qqBtn = page.getByRole('button', { name: /QQ/ });
-        if (await qqBtn.isVisible()) {
-            await expect(qqBtn).toBeVisible();
-        } else {
-            test.skip(true, 'QQ登录按钮未实现');
-        }
+        await expect(page.getByRole('button', { name: '使用 QQ 登录' })).toBeVisible();
     });
 
-    test('V-U1-05 - 验证码获取频率限制', async ({ page }) => {
-        test.skip(true, '验证码频率限制需要多次请求，e2e环境不适合测试');
-        // 该用例在API测试中验证
-    });
+    // V-U1-05（验证码获取频率限制）不纳入 e2e：需要连续打接口才能触发阈值，
+    // 由后端单测 server/tests/redis_cache_test.go（AllowSendCode → ErrSendTooFrequent）
+    // 与 server/tests/user_service_test.go（SendCode）覆盖。
 
     test('V-U3-01 - 主动登出跳转登录页', async ({ page }) => {
         await loginAsUser(page);

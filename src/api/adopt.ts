@@ -13,8 +13,8 @@ import {
   AdoptionAgreementRequest,
   AdoptionStatusUpdateRequest,
   AdoptionStats,
-  AdoptionFollowUpRecord,
-  AdoptionFollowUpRequest,
+  AdoptionFollowUpInfo,
+  AdoptionFollowUpCreateRequest,
   AdoptionFollowUpListResponse,
 } from '../types/adopt';
 
@@ -122,32 +122,21 @@ export const signAgreement = async (data: AdoptionAgreementRequest): Promise<voi
 
 // ========== 领养回访相关 API ==========
 
-// 获取领养回访记录列表
-export const getFollowUpList = async (
-  applicationId: number,
+// 创建领养回访记录（仅当事双方可提交）
+export const createFollowUp = async (
+  data: AdoptionFollowUpCreateRequest
+): Promise<AdoptionFollowUpInfo> => {
+  return await post<AdoptionFollowUpInfo>('/api/v1/adopts/follow-ups', data);
+};
+
+// 获取领养回访记录列表（仅当事双方可见）
+export const getFollowUpListByAdoption = async (
+  adoptionId: number,
   page = 1,
   pageSize = 10
 ): Promise<AdoptionFollowUpListResponse> => {
   return await get<AdoptionFollowUpListResponse>(
-    `/api/v1/adopts/applications/${applicationId}/follow-ups`,
-    { params: { page, pageSize } }
+    `/api/v1/adopts/${adoptionId}/follow-ups`,
+    { params: { page, page_size: pageSize } }
   );
-};
-
-// 创建领养回访记录
-export const createFollowUp = async (data: AdoptionFollowUpRequest): Promise<AdoptionFollowUpRecord> => {
-  return await post<AdoptionFollowUpRecord>('/api/v1/adopts/applications/follow-ups', data);
-};
-
-// 更新领养回访记录
-export const updateFollowUp = async (
-  id: number,
-  data: Partial<AdoptionFollowUpRequest>
-): Promise<AdoptionFollowUpRecord> => {
-  return await put<AdoptionFollowUpRecord>(`/api/v1/adopts/applications/follow-ups/${id}`, data);
-};
-
-// 删除领养回访记录
-export const deleteFollowUp = async (id: number): Promise<void> => {
-  return await del<void>(`/api/v1/adopts/applications/follow-ups/${id}`);
 };

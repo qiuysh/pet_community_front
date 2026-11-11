@@ -1,15 +1,15 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Check, X, Clock, Star } from 'lucide-react';
+import { Coins, Minus, Plus, Star } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { usePoints } from '../../hooks/usePoints';
-import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Tabs } from '../../components/ui/tabs';
 import './pointsPage.scss';
 
 const PointsPage: React.FC = () => {
-  const navigate = useNavigate();
   const {
     userLevel,
     records,
@@ -23,19 +23,13 @@ const PointsPage: React.FC = () => {
 
   return (
     <div className="points-page">
-      <div className="page-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">积分中心</h1>
-        <div className="placeholder" />
-      </div>
+      <PageHeader title="积分中心" fallbackTo="/profile" />
 
       {userLevel && (
         <Card className="level-card" padding="md">
           <div className="level-info">
             <div className="level-badge">Lv.{userLevel.level}</div>
-            <div className="level-name">{userLevel.levelName}</div>
+            <div className="page-content-title level-name">{userLevel.levelName}</div>
           </div>
           <div className="points-info">
             <div className="points-value">{userLevel.currentPoints}</div>
@@ -80,16 +74,26 @@ const PointsPage: React.FC = () => {
           </div>
         ) : activeTab === 'records' ? (
           records.length === 0 ? (
-            <div className="empty">暂无积分记录</div>
+            <EmptyState compact title="暂无积分记录" />
           ) : (
             <div className="records-list">
               {records.map((record) => (
                 <div key={record.id} className="record-item">
                   <div className="record-icon">
                     {record.points > 0 ? (
-                      <Check size={20} color="var(--color-primary)" />
+                      <Plus
+                        size={ICON_SIZE.action}
+                        strokeWidth={iconStroke(ICON_SIZE.action)}
+                        className="text-primary-text"
+                        aria-hidden="true"
+                      />
                     ) : (
-                      <X size={20} color="var(--color-ink-muted)" />
+                      <Minus
+                        size={ICON_SIZE.action}
+                        strokeWidth={iconStroke(ICON_SIZE.action)}
+                        className="text-brown-muted"
+                        aria-hidden="true"
+                      />
                     )}
                   </div>
                   <div className="record-info">
@@ -105,16 +109,21 @@ const PointsPage: React.FC = () => {
           )
         ) : activeTab === 'rules' ? (
           rules.length === 0 ? (
-            <div className="empty">暂无积分规则</div>
+            <EmptyState compact title="暂无积分规则" />
           ) : (
             <div className="rules-list">
               {rules.map((rule) => (
                 <div key={rule.id} className="rule-item">
                   <div className="rule-icon">
-                    <Clock size={24} color="var(--color-primary)" />
+                    <Coins
+                      size={ICON_SIZE.nav}
+                      strokeWidth={iconStroke(ICON_SIZE.nav)}
+                      className="text-primary-text"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div className="rule-info">
-                    <div className="rule-name">{rule.description}</div>
+                    <div className="page-section-title rule-name">{rule.description}</div>
                     <div className="rule-limit">每日上限 {rule.dailyLimit} 分</div>
                   </div>
                   <div className="rule-points">+{rule.points}</div>
@@ -124,16 +133,21 @@ const PointsPage: React.FC = () => {
           )
         ) : (
           benefits.length === 0 ? (
-            <div className="empty">暂无等级权益</div>
+            <EmptyState compact title="暂无等级权益" />
           ) : (
             <div className="benefits-list">
               {benefits.map((benefit) => (
                 <div key={benefit.id} className="benefit-item">
                   <div className="benefit-icon">
-                    <Star size={24} color="var(--color-warning)" />
+                    <Star
+                      size={ICON_SIZE.nav}
+                      strokeWidth={iconStroke(ICON_SIZE.nav)}
+                      className="text-warning"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div className="benefit-info">
-                    <div className="benefit-name">{benefit.benefitName}</div>
+                    <div className="page-section-title benefit-name">{benefit.benefitName}</div>
                     <div className="benefit-desc">{benefit.benefitDesc}</div>
                   </div>
                   <div className="benefit-level">Lv.{benefit.level}</div>

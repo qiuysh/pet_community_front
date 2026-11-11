@@ -78,7 +78,7 @@ export const AwardSetting = ({ submissions, selectedAward, onAwardChange, onSubm
 
   return (
     <div className="bg-white rounded-lg border border-border-light p-4">
-      <h3 className="text-lg font-semibold text-brown mb-4">设置获奖</h3>
+      <h3 className="page-section-title mb-4">设置获奖</h3>
 
       <div className="mb-4">
         <FieldLabel className="mb-2">奖项等级</FieldLabel>
@@ -115,7 +115,10 @@ export const AwardSetting = ({ submissions, selectedAward, onAwardChange, onSubm
             </div>
           ) : (
             availableSubmissions.map(submission => (
-              <div key={submission.id} className="flex items-center gap-3 p-3 border-b border-border-light last:border-b-0">
+              <label
+                key={submission.id}
+                className="flex items-center gap-3 p-3 border-b border-border-light last:border-b-0 cursor-pointer"
+              >
                 <input
                   type="checkbox"
                   checked={selectedSubmissions.includes(submission.id) || (submission.isAwarded && submission.awardLevel === selectedAward)}
@@ -123,11 +126,11 @@ export const AwardSetting = ({ submissions, selectedAward, onAwardChange, onSubm
                   disabled={submission.isAwarded && submission.awardLevel === selectedAward}
                   className="w-4 h-4 rounded border-border-light"
                 />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-brown truncate">{submission.title}</p>
-                  <p className="text-xs text-brown-muted">{submission.votesCount} 票</p>
-                </div>
-              </div>
+                <span className="flex-1 min-w-0">
+                  <span className="page-section-title block truncate">{submission.title}</span>
+                  <span className="block text-xs text-brown-muted">{submission.votesCount} 票</span>
+                </span>
+              </label>
             ))
           )}
         </div>

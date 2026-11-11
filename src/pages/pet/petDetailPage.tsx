@@ -1,15 +1,24 @@
 import { Link } from 'react-router-dom';
+import { useCallback } from 'react';
 import { usePetDetail } from '../../hooks/usePetDetail';
-import { PetTypeOptions, getPetTypeIcon, PetTypeFallbackIcon } from '../../types/pet';
-import { FileText } from 'lucide-react';
+import { useShare } from '../../hooks/useShare';
+import { PetTypeOptions, PetVisibilityOptions, getPetTypeIcon, PetTypeFallbackIcon } from '../../types/pet';
+import { FileText, Share2 } from 'lucide-react';
 import { PetAlbumSection } from '../../components/pet/petAlbumSection';
 import { PetGrowthSection } from '../../components/pet/petGrowthSection';
-import { Button } from '../../components/ui/button';
+import { ShareSheet } from '../../components/post/shareSheet';
+import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
+import { formatCount } from '../../utils/format';
+import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
+import { ICON_SIZE } from '../../styles/iconSize';
 
 export function PetDetailPage() {
+  const siteName = useSiteConfigStore((s) => s.siteName) || DEFAULT_SITE_NAME;
   const {
     pet,
     loading,
@@ -32,12 +41,32 @@ export function PetDetailPage() {
     removeGrowthRecord,
   } = usePetDetail();
 
+  const {
+    shareOpen,
+    shareUrl,
+    shareTitle,
+    openShare,
+    closeShare,
+    onShare,
+  } = useShare({
+    record: async () => undefined,
+    resolveTarget: () => ({
+      url: `${window.location.origin}/pets/${pet?.id ?? ''}`,
+      title: pet ? `【萌宠】${pet.name}${pet.breedName ? ` · ${pet.breedName}` : ''}` : '宠物档案',
+    }),
+  });
+
+  const handleOpenShare = useCallback(() => {
+    if (!pet) return;
+    openShare();
+  }, [pet, openShare]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-soft flex items-center justify-center">
         <div className="text-center">
           <Spinner className="mx-auto" />
-          <p className="mt-4 text-brown-muted">加载中...</p>
+          <p className="mt-4 text-brown-muted">加载中…</p>
         </div>
       </div>
     );
@@ -51,7 +80,7 @@ export function PetDetailPage() {
             <PetTypeFallbackIcon size={64} aria-hidden="true" />
           </div>
           <p className="text-brown-muted mb-4">宠物不存在或已被删除</p>
-          <Link to="/pets" className="text-primary hover:text-primary-dark font-medium">
+          <Link to="/pets" className="text-primary-text hover:text-primary-text font-medium">
             返回宠物广场
           </Link>
         </div>
@@ -60,6 +89,7 @@ export function PetDetailPage() {
   }
 
   const petTypeInfo = PetTypeOptions.find(t => t.value === pet.petType);
+  const visibilityLabel = PetVisibilityOptions.find((o) => o.value === (pet.visibility ?? 0))?.label;
 
   const tabItems = [
     {
@@ -93,16 +123,25 @@ export function PetDetailPage() {
 
   return (
     <div className="min-h-screen bg-soft">
-      <div className="bg-primary-soft h-64" />
+      <div className="page-hero-surface h-64">
+        <div
+          className="pointer-events-none absolute -bottom-10 right-[14%] h-36 w-36 rounded-full bg-secondary-soft blur-xl"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute bottom-8 left-[12%] h-20 w-20 rounded-full bg-primary/20 blur-md"
+          aria-hidden="true"
+        />
+      </div>
 
-      <div className="max-w-4xl mx-auto px-4 -mt-24">
+      <div className="page-shell -mt-24">
         <Card className="rounded-xl shadow-sm" padding="none">
           <div className="p-6 flex items-end gap-6">
             <div className="w-32 h-32 rounded-full bg-white p-1 shadow-lg overflow-hidden">
               {pet.avatar ? (
-                <img src={pet.avatar} alt={pet.name} className="w-full h-full rounded-full object-cover" />
+                <img src={pet.avatar} alt={pet.name} className="w-full h-full rounded-full object-cover" decoding="async" />
               ) : (
-                <div className="w-full h-full rounded-full bg-linear-to-br from-primary/10 to-primary-dark/10 flex items-center justify-center text-brown">
+                <div className="w-full h-full rounded-full bg-linear-to-br from-cream to-secondary-soft flex items-center justify-center text-brown">
                   {(() => {
                     const PetIcon = getPetTypeIcon(pet.petType);
                     return <PetIcon size={48} aria-hidden="true" />;
@@ -112,9 +151,9 @@ export function PetDetailPage() {
             </div>
             <div className="flex-1 pb-2">
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-brown">{pet.name}</h1>
-                {pet.gender === 1 && <span className="text-xl text-primary">♂</span>}
-                {pet.gender === 2 && <span className="text-xl text-pink-500">♀</span>}
+                <h1 className="page-content-title">{pet.name}</h1>
+                {pet.gender === 1 && <span className="text-xl text-primary-text">♂</span>}
+                {pet.gender === 2 && <span className="text-xl text-error-text">♀</span>}
               </div>
               <div className="flex items-center gap-4 mt-2 text-brown-muted">
                 <span>{petTypeInfo?.label || '未知'}</span>
@@ -132,15 +171,34 @@ export function PetDetailPage() {
               )}
             </div>
             <div className="pb-2 flex gap-3">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="rounded-lg"
+                onClick={handleOpenShare}
+              >
+                <Share2 size={ICON_SIZE.inline} aria-hidden="true" />
+                分享
+              </Button>
               {isOwner && (
-                <Link to={`/pets/${pet.id}/edit`}>
-                  <Button type="button" variant="outline" size="sm" className="rounded-lg">
-                    编辑
-                  </Button>
+                <Link
+                  to={`/pets/${pet.id}/edit`}
+                  className={buttonClass({ variant: 'outline', size: 'sm', className: 'rounded-lg' })}
+                >
+                  编辑
                 </Link>
               )}
             </div>
           </div>
+
+          {isOwner && visibilityLabel && (
+            <div className="px-6 pb-2">
+              <span className="inline-flex text-xs text-brown-muted bg-bg-secondary px-2 py-1 rounded-md">
+                {visibilityLabel}
+              </span>
+            </div>
+          )}
 
           {pet.bio && (
             <div className="px-6 pb-4">
@@ -191,12 +249,7 @@ export function PetDetailPage() {
                   <Spinner />
                 </div>
               ) : relatedPosts.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="mb-3 flex justify-center text-brown-light">
-                    <FileText size={32} aria-hidden="true" />
-                  </div>
-                  <p className="text-brown-muted">暂无相关帖子</p>
-                </div>
+                <EmptyState compact icon={<FileText size={32} />} title="暂无相关帖子" />
               ) : (
                 <ul className="divide-y divide-border-light">
                   {relatedPosts.map((post) => (
@@ -208,9 +261,9 @@ export function PetDetailPage() {
                         <p className="text-sm text-brown line-clamp-2">
                           {post.content || '分享了一条动态'}
                         </p>
-                        <div className="mt-2 flex gap-3 text-xs text-brown-muted">
-                          <span>{post.likesCount} 赞</span>
-                          <span>{post.commentsCount} 评论</span>
+                        <div className="mt-2 flex gap-3 text-xs text-brown-muted tabular-nums">
+                          <span>{formatCount(post.likesCount)} 赞</span>
+                          <span>{formatCount(post.commentsCount)} 评论</span>
                         </div>
                       </Link>
                     </li>
@@ -223,7 +276,7 @@ export function PetDetailPage() {
 
         <div className="mt-6 pb-12">
           <Card className="rounded-xl shadow-sm">
-            <h3 className="font-medium text-brown mb-4">基本信息</h3>
+            <h3 className="page-section-title mb-4">基本信息</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex justify-between py-2 border-b border-border-light">
                 <span className="text-brown-muted">类型</span>
@@ -241,7 +294,9 @@ export function PetDetailPage() {
               </div>
               <div className="flex justify-between py-2 border-b border-border-light">
                 <span className="text-brown-muted">体重</span>
-                <span className="text-brown">{pet.weight || '未知'} kg</span>
+                <span className="text-brown tabular-nums">
+                  {pet.weight > 0 ? `${pet.weight} kg` : '未知'}
+                </span>
               </div>
               <div className="flex justify-between py-2 border-b border-border-light">
                 <span className="text-brown-muted">是否绝育</span>
@@ -253,12 +308,27 @@ export function PetDetailPage() {
               </div>
               <div className="flex justify-between py-2 border-b border-border-light">
                 <span className="text-brown-muted">浏览量</span>
-                <span className="text-brown">{pet.viewCount}</span>
+                <span className="text-brown tabular-nums">{formatCount(pet.viewCount)}</span>
               </div>
             </div>
           </Card>
         </div>
       </div>
+
+      <ShareSheet
+        open={shareOpen}
+        onClose={closeShare}
+        postUrl={shareUrl}
+        postTitle={shareTitle}
+        onShare={(platform) => void onShare(platform)}
+        poster={{
+          siteName,
+          title: shareTitle,
+          coverUrl: pet.avatar,
+          authorName: pet.name,
+          authorAvatar: pet.avatar,
+        }}
+      />
     </div>
   );
 }

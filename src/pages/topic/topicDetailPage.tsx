@@ -3,10 +3,14 @@ import { useTopicDetail } from '../../hooks/useTopicDetail';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { ShareSheet } from '../../components/post/shareSheet';
-import { ChevronLeft, Heart, MessageCircle, Share2, UserPlus, UserCheck } from 'lucide-react';
+import { Heart, MessageCircle, Share2, UserPlus, UserCheck } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Avatar } from '../../components/ui/avatar';
+import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
+import { Pagination } from '../../components/ui/pagination';
 import { Skeleton } from '../../components/ui/skeleton';
 import './topicDetailPage.scss';
 
@@ -18,16 +22,16 @@ export const TopicDetailPage = () => {
     loadingTopic,
     posts,
     loadingPosts,
-    total,
     totalPages,
     page,
     setPage,
     participating,
     toggleParticipate,
     shareOpen,
-    setShareOpen,
     shareUrl,
     openShare,
+    closeShare,
+    onShare,
   } = useTopicDetail(id);
 
   if (loadingTopic || !topic) {
@@ -46,22 +50,20 @@ export const TopicDetailPage = () => {
   return (
     <div className="topic-detail-page">
       <div className="detail-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <span className="title">话题详情</span>
+        <BackButton />
+        <h1 className="page-bar-title title">话题详情</h1>
       </div>
 
       <Card padding="none" className="topic-info-card">
         <div className="topic-cover">
           {topic.cover ? (
-            <img src={topic.cover} alt={topic.name} />
+            <img src={topic.cover} alt={topic.name} decoding="async" />
           ) : (
             <div className="cover-placeholder">#</div>
           )}
         </div>
         <div className="topic-meta">
-          <h2 className="topic-name">{topic.name}</h2>
+          <h2 className="page-content-title topic-name">{topic.name}</h2>
           <p className="topic-desc">{topic.description || '暂无描述'}</p>
           <div className="topic-stats">
             <span>{topic.postsCount} 条动态</span>
@@ -77,19 +79,19 @@ export const TopicDetailPage = () => {
             >
               {topic.isParticipated ? (
                 <>
-                  <UserCheck size={14} aria-hidden="true" />
+                  <UserCheck size={ICON_SIZE.inline} aria-hidden="true" />
                   已参与
                 </>
               ) : (
                 <>
-                  <UserPlus size={14} aria-hidden="true" />
+                  <UserPlus size={ICON_SIZE.inline} aria-hidden="true" />
                   参与话题
                 </>
               )}
             </Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => void openShare()}>
-              <Share2 size={14} aria-hidden="true" />
-              分享
+            <Button type="button" size="sm" variant="outline" onClick={openShare}>
+              <Share2 size={ICON_SIZE.inline} aria-hidden="true" />
+              分享{topic.sharesCount > 0 ? ` ${topic.sharesCount}` : ''}
             </Button>
             <Button
               type="button"
@@ -106,7 +108,7 @@ export const TopicDetailPage = () => {
       <AdBanner location="topic_banner" className="topic-banner-slot" />
 
       <div className="posts-section">
-        <h3 className="section-title">相关动态</h3>
+        <h3 className="page-section-title section-title">相关动态</h3>
 
         <div className="posts-list">
           {loadingPosts && posts.length === 0 && (
@@ -126,14 +128,14 @@ export const TopicDetailPage = () => {
               ))}
             </>
           )}
-          {!loadingPosts && posts.length === 0 && <div className="empty">暂无相关动态</div>}
+          {!loadingPosts && posts.length === 0 && <EmptyState title="暂无相关动态" />}
 
           {posts.map((post) => (
             <Link key={post.id} to={`/posts/${post.id}`} className="post-card">
               <div className="post-header">
                 <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="avatar" />
                 <div className="user-info">
-                  <div className="nickname">{post.userNickname}</div>
+                  <div className="page-section-title nickname">{post.userNickname}</div>
                   <div className="time">{post.createdAt}</div>
                 </div>
               </div>
@@ -142,18 +144,18 @@ export const TopicDetailPage = () => {
                 <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                   {post.images.slice(0, 9).map((img, idx) => (
                     <div key={idx} className="post-image">
-                      <img src={img} alt="" />
+                      <img src={img} alt="" decoding="async" />
                     </div>
                   ))}
                 </div>
               )}
               <div className="post-actions">
                 <span className="action-item">
-                  <span className="icon"><Heart size={16} fill={post.isLiked ? 'currentColor' : 'none'} aria-hidden="true" /></span>
+                  <span className="icon"><Heart size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} fill={post.isLiked ? 'currentColor' : 'none'} aria-hidden="true" /></span>
                   <span>{post.likesCount}</span>
                 </span>
                 <span className="action-item">
-                  <span className="icon"><MessageCircle size={16} aria-hidden="true" /></span>
+                  <span className="icon"><MessageCircle size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" /></span>
                   <span>{post.commentsCount}</span>
                 </span>
               </div>
@@ -161,24 +163,15 @@ export const TopicDetailPage = () => {
           ))}
         </div>
 
-        {total > 10 && (
-          <div className="pagination">
-            <Button type="button" variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>
-              上一页
-            </Button>
-            <span>第 {page} 页 / 共 {totalPages} 页</span>
-            <Button type="button" variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
-              下一页
-            </Button>
-          </div>
-        )}
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       <ShareSheet
         open={shareOpen}
-        onClose={() => setShareOpen(false)}
+        onClose={closeShare}
         postUrl={shareUrl}
         postTitle={topic.name}
+        onShare={(platform) => void onShare(platform)}
       />
     </div>
   );

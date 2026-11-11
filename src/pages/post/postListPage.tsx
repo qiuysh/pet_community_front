@@ -1,13 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../stores/userStore';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
+import { formatRelativeTime } from '../../utils/format';
 import { usePostList, type PostTab } from '../../hooks/usePostList';
+import { MentionText } from '../../components/post/mentionText';
 import { PostActions } from '../../components/post/postActions';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { MapPin, Play } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Avatar } from '../../components/ui/avatar';
+import { EmptyState } from '../../components/ui/emptyState';
+import { Pagination } from '../../components/ui/pagination';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -20,17 +25,17 @@ const TABS: { key: PostTab; label: string }[] = [
 ];
 
 const LocationIcon = () => (
-  <MapPin size={14} aria-hidden="true" />
+  <MapPin size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
 );
 
 const PlayIcon = () => (
-  <Play size={22} fill="currentColor" stroke="none" aria-hidden="true" />
+  <Play size={ICON_SIZE.action} fill="currentColor" stroke="none" aria-hidden="true" />
 );
 
 export const PostListPage = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useUserStore();
-  const { posts, loading, total, totalPages, tab, page, updateQuery } = usePostList();
+  const { posts, loading, totalPages, tab, page, updateQuery } = usePostList();
 
   const handlePublish = () => {
     if (!isLoggedIn) {
@@ -57,7 +62,8 @@ export const PostListPage = () => {
 
       <AdBanner location="home_banner" className="home-banner-slot" />
 
-      <div className="post-list">
+      {/* key 随 tab/页码变化：切筛选或翻页时整列重新错峰进场，等价于一次淡入切换 */}
+      <div className="post-list motion-list" key={`${tab}-${page}`}>
         {loading && posts.length === 0 && (
           <div className="loading-skeleton" role="status" aria-live="polite">
             <Spinner size="sm" label="加载中…" className="mx-auto mb-4" />
@@ -76,7 +82,7 @@ export const PostListPage = () => {
             ))}
           </div>
         )}
-        {!loading && posts.length === 0 && <div className="empty">暂无动态</div>}
+        {!loading && posts.length === 0 && <EmptyState title="暂无动态" />}
         {posts.map((post) => (
           <Card key={post.id} padding="none" className="post-card">
             <article className="post-card-inner">
@@ -94,16 +100,22 @@ export const PostListPage = () => {
                   className="avatar"
                 />
                 <div className="user-info">
-                  <div className="nickname">{post.userNickname}</div>
-                  <div className="time">{post.createdAt}</div>
+                  <div className="page-section-title nickname">{post.userNickname}</div>
+                  <div className="time" title={post.createdAt}>
+                    {formatRelativeTime(post.createdAt)}
+                  </div>
                 </div>
               </div>
-              {post.content && <div className="post-content">{post.content}</div>}
+              {post.content && (
+                <div className="post-content">
+                  <MentionText text={post.content} />
+                </div>
+              )}
               {post.images && post.images.length > 0 && (
                 <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                   {post.images.slice(0, 9).map((img, idx) => (
                     <div key={idx} className="post-image">
-                      <img src={img} alt={`动态配图 ${idx + 1}`} loading="lazy" />
+                      <img src={img} alt={`动态配图 ${idx + 1}`} loading="lazy" decoding="async" />
                     </div>
                   ))}
                 </div>
@@ -135,31 +147,11 @@ export const PostListPage = () => {
         ))}
       </div>
 
-      {total > 0 && (
-        <nav className="pagination" aria-label="分页">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-            onClick={() => updateQuery({ page: page - 1 })}
-            aria-label="上一页"
-          >
-            上一页
-          </Button>
-          <span className="page-info tabular-nums">第 {page} 页 / 共 {totalPages} 页</span>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={page >= totalPages}
-            onClick={() => updateQuery({ page: page + 1 })}
-            aria-label="下一页"
-          >
-            下一页
-          </Button>
-        </nav>
-      )}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={(next) => updateQuery({ page: next })}
+      />
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import { useAdoptCreate, isPlaceholderPhoto } from '../../hooks/useAdoptCreate';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { PetType, PetGender } from '../../types/adopt';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
-import { FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
+import { FieldError, FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
 
 export const AdoptCreatePage = () => {
   const {
@@ -10,37 +11,60 @@ export const AdoptCreatePage = () => {
     uploading,
     formData,
     setFormData,
+    errors,
+    clearError,
     handleSubmit,
     handlePhotoUpload,
   } = useAdoptCreate();
 
+  const isDirty =
+    formData.petName.trim().length > 0 ||
+    formData.description.trim().length > 0 ||
+    formData.location.trim().length > 0 ||
+    formData.contactPhone.trim().length > 0 ||
+    formData.photos.length > 0;
+  const unsavedDialog = useUnsavedChanges(isDirty && !loading, {
+    message: '领养信息尚未发布，离开后填写的内容将丢失。',
+  });
+
   return (
     <div className="bg-cream min-h-screen pb-6">
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
-        <div className="px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-brown">发布领养</h1>
-          <Button size="sm" disabled={loading} onClick={handleSubmit}>
-            {loading ? '发布中...' : '发布'}
+        <div className="page-shell flex items-center justify-between px-4 py-3">
+          <h1 className="page-bar-title">发布领养</h1>
+          <Button size="sm" disabled={loading} loading={loading} onClick={handleSubmit}>
+            {loading ? '发布中' : '发布'}
           </Button>
         </div>
       </div>
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="page-shell space-y-4 px-4 py-4">
         <Card>
-          <h2 className="text-base font-medium text-brown mb-4">基本信息</h2>
+          <h2 className="page-section-title mb-4">基本信息</h2>
           <div className="space-y-3">
             <div>
-              <FieldLabel required>宠物名称</FieldLabel>
+              <FieldLabel htmlFor="adopt-pet-name" required>宠物名称</FieldLabel>
               <Input
+                id="adopt-pet-name"
+                name="petName"
+                autoComplete="off"
                 value={formData.petName}
-                onChange={(e) => setFormData((prev) => ({ ...prev, petName: e.target.value }))}
-                placeholder="请填写宠物名称"
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, petName: e.target.value }));
+                  clearError('petName');
+                }}
+                placeholder="请填写宠物名称…"
+                invalid={!!errors.petName}
+                aria-describedby={errors.petName ? 'adopt-pet-name-error' : undefined}
               />
+              <FieldError id="adopt-pet-name-error">{errors.petName}</FieldError>
             </div>
 
             <div>
-              <FieldLabel required>宠物类型</FieldLabel>
+              <FieldLabel htmlFor="adopt-pet-type" required>宠物类型</FieldLabel>
               <Select
+                id="adopt-pet-type"
+                name="petType"
                 value={formData.petType}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, petType: e.target.value as PetType }))
@@ -55,17 +79,22 @@ export const AdoptCreatePage = () => {
             </div>
 
             <div>
-              <FieldLabel>年龄</FieldLabel>
+              <FieldLabel htmlFor="adopt-pet-age">年龄</FieldLabel>
               <Input
+                id="adopt-pet-age"
+                name="petAge"
+                autoComplete="off"
                 value={formData.petAge}
                 onChange={(e) => setFormData((prev) => ({ ...prev, petAge: e.target.value }))}
-                placeholder="例如：2岁"
+                placeholder="例如：2 岁…"
               />
             </div>
 
             <div>
-              <FieldLabel>性别</FieldLabel>
+              <FieldLabel htmlFor="adopt-pet-gender">性别</FieldLabel>
               <Select
+                id="adopt-pet-gender"
+                name="petGender"
                 value={formData.petGender}
                 onChange={(e) =>
                   setFormData((prev) => ({
@@ -81,28 +110,36 @@ export const AdoptCreatePage = () => {
             </div>
 
             <div>
-              <FieldLabel>健康状况</FieldLabel>
+              <FieldLabel htmlFor="adopt-health">健康状况</FieldLabel>
               <Input
+                id="adopt-health"
+                name="healthStatus"
+                autoComplete="off"
                 value={formData.healthStatus}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, healthStatus: e.target.value }))
                 }
-                placeholder="例如：已绝育、疫苗齐全"
+                placeholder="例如：已绝育、疫苗齐全…"
               />
             </div>
           </div>
         </Card>
 
         <Card>
-          <h2 className="text-base font-medium text-brown mb-4">宠物照片 *</h2>
+          <h2 className="page-section-title mb-4">宠物照片 *</h2>
           <div className="flex items-center gap-2">
             <input
               type="file"
               multiple
-              accept="image/*"
-              onChange={handlePhotoUpload}
-              className="hidden"
+              accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+              onChange={(e) => {
+                handlePhotoUpload(e);
+                clearError('photos');
+              }}
+              className="sr-only"
               id="photo-upload"
+              name="photos"
+              aria-describedby={errors.photos ? 'adopt-photos-error' : undefined}
             />
             <label
               htmlFor="photo-upload"
@@ -110,11 +147,12 @@ export const AdoptCreatePage = () => {
             >
               选择照片
             </label>
-            <span className="text-xs text-brown-muted">最多9张</span>
+            <span className="text-xs text-brown-muted">最多 9 张，单张 ≤5MB</span>
           </div>
+          <FieldError id="adopt-photos-error">{errors.photos}</FieldError>
           {formData.photos.length > 0 && (
             <div className="mt-3 text-sm text-brown-muted">
-              已选择 {formData.photos.length} 张照片{uploading ? '（上传中...）' : ''}
+              已选择 {formData.photos.length} 张照片{uploading ? '（上传中…）' : ''}
             </div>
           )}
           {formData.photos.length > 0 && (
@@ -132,8 +170,9 @@ export const AdoptCreatePage = () => {
                       </div>
                     ) : (
                       <img
+                        decoding="async"
                         src={photo}
-                        alt={`photo-${idx}`}
+                        alt={`宠物照片 ${idx + 1}`}
                         className="w-full h-full object-cover"
                         loading="lazy"
                       />
@@ -161,57 +200,85 @@ export const AdoptCreatePage = () => {
         </Card>
 
         <Card>
-          <h2 className="text-base font-medium text-brown mb-4">详细介绍</h2>
+          <h2 className="page-section-title mb-4">详细介绍</h2>
           <div className="space-y-3">
             <div>
-              <FieldLabel required>宠物介绍</FieldLabel>
+              <FieldLabel htmlFor="adopt-description" required>宠物介绍</FieldLabel>
               <Textarea
+                id="adopt-description"
+                name="description"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, description: e.target.value }))
-                }
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, description: e.target.value }));
+                  clearError('description');
+                }}
                 rows={4}
-                placeholder="请详细描述宠物的情况、性格特点等"
+                placeholder="请详细描述宠物的情况、性格特点等…"
+                invalid={!!errors.description}
+                aria-describedby={errors.description ? 'adopt-description-error' : undefined}
               />
+              <FieldError id="adopt-description-error">{errors.description}</FieldError>
             </div>
             <div>
-              <FieldLabel>领养条件</FieldLabel>
+              <FieldLabel htmlFor="adopt-conditions">领养条件</FieldLabel>
               <Textarea
+                id="adopt-conditions"
+                name="adoptConditions"
                 value={formData.adoptConditions}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, adoptConditions: e.target.value }))
                 }
                 rows={3}
-                placeholder="例如：有稳定住所、定期回访等"
+                placeholder="例如：有稳定住所、定期回访等…"
               />
             </div>
           </div>
         </Card>
 
         <Card>
-          <h2 className="text-base font-medium text-brown mb-4">联系方式</h2>
+          <h2 className="page-section-title mb-4">联系方式</h2>
           <div className="space-y-3">
             <div>
-              <FieldLabel required>所在地区</FieldLabel>
+              <FieldLabel htmlFor="adopt-location" required>所在地区</FieldLabel>
               <Input
+                id="adopt-location"
+                name="location"
+                autoComplete="address-level2"
                 value={formData.location}
-                onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
-                placeholder="例如：北京市朝阳区"
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, location: e.target.value }));
+                  clearError('location');
+                }}
+                placeholder="例如：北京市朝阳区…"
+                invalid={!!errors.location}
+                aria-describedby={errors.location ? 'adopt-location-error' : undefined}
               />
+              <FieldError id="adopt-location-error">{errors.location}</FieldError>
             </div>
             <div>
-              <FieldLabel required>联系电话</FieldLabel>
+              <FieldLabel htmlFor="adopt-contact" required>联系电话</FieldLabel>
               <Input
+                id="adopt-contact"
+                name="contactPhone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
                 value={formData.contactPhone}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, contactPhone: e.target.value }))
-                }
-                placeholder="请填写联系电话"
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, contactPhone: e.target.value }));
+                  clearError('contactPhone');
+                }}
+                placeholder="请填写联系电话…"
+                invalid={!!errors.contactPhone}
+                aria-describedby={errors.contactPhone ? 'adopt-contact-error' : undefined}
               />
+              <FieldError id="adopt-contact-error">{errors.contactPhone}</FieldError>
             </div>
           </div>
         </Card>
       </div>
+
+      {unsavedDialog}
     </div>
   );
 };

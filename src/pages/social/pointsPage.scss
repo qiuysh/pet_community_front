@@ -1,46 +1,31 @@
 @import '../../styles/variables.scss';
 
 .points-page {
+  @extend %page-shell;
   min-height: 100vh;
   background-color: $background-color;
-
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background-color: $background-white;
-    box-shadow: $shadow-card;
-
-    .back-btn {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      color: $text-primary;
-      cursor: pointer;
-    }
-
-    .page-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: $text-primary;
-    }
-
-    .placeholder {
-      width: 40px;
-    }
-  }
 
   .level-card {
     margin: 16px;
     padding: 20px;
-    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    background: $background-white;
+    border: 1px solid $border-light;
     border-radius: 16px;
-    color: $background-white;
+    color: $text-primary;
+    box-shadow: $shadow-card;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, $primary-strong, $primary-light);
+      pointer-events: none;
+    }
 
     .level-info {
       display: flex;
@@ -49,17 +34,14 @@
 
       .level-badge {
         padding: 4px 12px;
-        background-color: rgba($background-white, 0.2);
+        background-color: $primary-strong;
+        color: $background-white;
         border-radius: 20px;
-        font-size: 14px;
+        font-size: $font-size-sm;
         font-weight: 600;
         margin-right: 10px;
       }
 
-      .level-name {
-        font-size: 18px;
-        font-weight: 600;
-      }
     }
 
     .points-info {
@@ -67,35 +49,38 @@
       margin-bottom: 16px;
 
       .points-value {
-        font-size: 48px;
-        font-weight: 700;
+        font-size: $font-size-2xl;
+        font-weight: 600;
+        color: $text-primary;
+        font-variant-numeric: tabular-nums;
       }
 
       .points-label {
-        font-size: 14px;
-        opacity: 0.8;
+        font-size: $font-size-sm;
+        color: $text-secondary;
       }
     }
 
     .progress-bar {
       height: 8px;
-      background-color: rgba($background-white, 0.3);
+      background-color: $background-muted;
       border-radius: 4px;
       overflow: hidden;
 
       .progress-fill {
         height: 100%;
-        background-color: $background-white;
+        background-color: $primary-strong;
         border-radius: 4px;
-        transition: width 0.3s;
+        transition: width $duration-emphasized;
       }
     }
 
     .progress-text {
       text-align: right;
-      font-size: 12px;
+      font-size: $font-size-xs;
       margin-top: 8px;
-      opacity: 0.8;
+      color: $text-muted;
+      font-variant-numeric: tabular-nums;
     }
   }
 
@@ -110,16 +95,16 @@
       flex: 1;
       padding: 12px 0;
       text-align: center;
-      font-size: 15px;
+      font-size: $font-size-base;
       color: $text-secondary;
       background: none;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background-color $duration-base, color $duration-base;
 
       &.active {
-        background-color: $primary-color;
+        background-color: $primary-strong;
         color: $background-white;
       }
     }
@@ -129,11 +114,6 @@
     padding: 16px;
 
     .loading,
-    .empty {
-      text-align: center;
-      padding: 40px;
-      color: $text-muted;
-    }
 
     .records-list {
       .record-item {
@@ -159,23 +139,23 @@
           flex: 1;
 
           .record-desc {
-            font-size: 15px;
+            font-size: $font-size-base;
             color: $text-primary;
           }
 
           .record-time {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             margin-top: 4px;
           }
         }
 
         .record-points {
-          font-size: 16px;
+          font-size: $font-size-large;
           font-weight: 600;
 
           &.gain {
-            color: $primary-color;
+            color: $primary-text;
           }
 
           &.lose {
@@ -208,23 +188,17 @@
         .rule-info {
           flex: 1;
 
-          .rule-name {
-            font-size: 15px;
-            color: $text-primary;
-            font-weight: 600;
-          }
-
           .rule-limit {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             margin-top: 4px;
           }
         }
 
         .rule-points {
-          font-size: 18px;
-          font-weight: 700;
-          color: $primary-color;
+          font-size: $font-size-large;
+          font-weight: 600;
+          color: $primary-text;
         }
       }
     }
@@ -252,14 +226,8 @@
         .benefit-info {
           flex: 1;
 
-          .benefit-name {
-            font-size: 15px;
-            color: $text-primary;
-            font-weight: 600;
-          }
-
           .benefit-desc {
-            font-size: 12px;
+            font-size: $font-size-xs;
             color: $text-muted;
             margin-top: 4px;
           }
@@ -269,7 +237,7 @@
           padding: 4px 10px;
           background-color: $warning-color;
           color: $background-white;
-          font-size: 12px;
+          font-size: $font-size-xs;
           font-weight: 600;
           border-radius: 10px;
         }
@@ -278,9 +246,4 @@
   }
 }
 
-@media (min-width: 768px) {
-  .points-page {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-}
+// 宽度统一由 %page-shell 提供（见 styles/_variables.scss）

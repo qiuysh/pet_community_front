@@ -18,24 +18,9 @@
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid $divider-color;
-    z-index: 10;
-
-    .back-btn {
-      font-size: 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 10px;
-      min-width: 44px;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
+    z-index: $z-index-sticky;
 
     .title {
-      font-size: 16px;
-      font-weight: 600;
       margin-left: 16px;
     }
   }
@@ -63,7 +48,7 @@
       .cover-placeholder {
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, $primary-color, $primary-dark);
+        background: linear-gradient(135deg, $primary-strong, $primary-text);
         color: $background-white;
         display: flex;
         align-items: center;
@@ -78,14 +63,11 @@
       min-width: 0;
 
       .topic-name {
-        font-size: 20px;
-        font-weight: 600;
-        color: $text-primary;
-        margin: 0 0 8px 0;
-      }
+          margin: 0 0 8px 0;
+        }
 
       .topic-desc {
-        font-size: 14px;
+        font-size: $font-size-sm;
         color: $text-secondary;
         margin: 0 0 12px 0;
         line-height: 1.5;
@@ -103,14 +85,11 @@
     padding: 16px;
 
     .section-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: $text-primary;
       margin: 0 0 16px 0;
     }
 
     .posts-list {
-      .loading, .empty {
+      .loading {
         text-align: center;
         padding: 40px;
         color: $text-muted;
@@ -143,14 +122,8 @@
           }
 
           .user-info {
-            .nickname {
-              font-size: 14px;
-              font-weight: 600;
-              color: $text-primary;
-            }
-
             .time {
-              font-size: 12px;
+              font-size: $font-size-xs;
               color: $text-muted;
               margin-top: 2px;
             }
@@ -158,7 +131,7 @@
         }
 
         .post-content {
-          font-size: 15px;
+          font-size: $font-size-base;
           line-height: 1.6;
           color: $text-primary;
           margin-bottom: 12px;
@@ -207,7 +180,7 @@
             color: $text-secondary;
 
             .icon {
-              font-size: 16px;
+              font-size: $font-size-large;
             }
           }
         }
@@ -215,31 +188,6 @@
     }
   }
 
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin-top: 20px;
-
-    button {
-      padding: 8px 16px;
-      border: 1px solid $border-color;
-      background: $background-white;
-      border-radius: $border-radius-xs;
-      cursor: pointer;
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
-    span {
-      color: $text-secondary;
-      font-size: 14px;
-    }
-  }
 }
 
 @media (min-width: 768px) {
@@ -250,13 +198,13 @@
   .topic-detail-page .detail-header {
     padding: 16px 20px;
     margin: 0 auto;
-    max-width: 720px;
+    max-width: $page-max;
   }
 
   .topic-detail-page .topic-info-card {
     padding: 24px;
     margin: 0 auto 12px;
-    max-width: 720px;
+    max-width: $page-max;
     gap: 20px;
   }
 
@@ -265,23 +213,21 @@
     height: 120px;
   }
 
-  .topic-detail-page .topic-info-card .topic-meta .topic-name {
-    font-size: 22px;
-  }
-
   .topic-detail-page .topic-info-card .topic-meta .topic-desc {
-    font-size: 15px;
+    font-size: $font-size-base;
     line-height: 1.6;
   }
 
   .topic-detail-page .posts-section {
     padding: 20px;
     margin: 0 auto;
-    max-width: 720px;
+    max-width: $page-max;
   }
 
-  .topic-detail-page .posts-section .section-title {
-    font-size: 18px;
+  // 广告位在话题卡与动态列表之间，必须与正文同宽（$page-max）
+  .topic-detail-page .topic-banner-slot {
+    margin: 0 auto 12px;
+    max-width: $page-max;
   }
 
   .topic-detail-page .posts-section .posts-list .post-card {
@@ -294,30 +240,21 @@
   }
 
   .topic-detail-page .posts-section .posts-list .post-card .post-content {
-    font-size: 16px;
+    font-size: $font-size-large;
   }
 
   .topic-detail-page .posts-section .posts-list .post-card .post-images &.grid-1 .post-image {
     max-height: 250px;
   }
 
-  .topic-detail-page .pagination {
-    gap: 20px;
-  }
-
-  .topic-detail-page .pagination button {
-    padding: 10px 20px;
-  }
 }
 
 @media (min-width: 1024px) {
   .topic-detail-page .detail-header {
-    max-width: 800px;
     padding: 16px 24px;
   }
 
   .topic-detail-page .topic-info-card {
-    max-width: 800px;
     padding: 28px;
     gap: 24px;
   }
@@ -327,22 +264,13 @@
     height: 140px;
   }
 
-  .topic-detail-page .topic-info-card .topic-meta .topic-name {
-    font-size: 24px;
-  }
-
   .topic-detail-page .topic-info-card .topic-meta .topic-desc {
-    font-size: 16px;
+    font-size: $font-size-base;
     line-height: 1.7;
   }
 
   .topic-detail-page .posts-section {
-    max-width: 800px;
     padding: 24px;
-  }
-
-  .topic-detail-page .posts-section .section-title {
-    font-size: 20px;
   }
 
   .topic-detail-page .posts-section .posts-list {
@@ -363,12 +291,8 @@
     height: 56px;
   }
 
-  .topic-detail-page .posts-section .posts-list .post-card .post-header .user-info .nickname {
-    font-size: 16px;
-  }
-
   .topic-detail-page .posts-section .posts-list .post-card .post-content {
-    font-size: 16px;
+    font-size: $font-size-large;
     line-height: 1.7;
   }
 
@@ -377,26 +301,13 @@
   }
 
   .topic-detail-page .posts-section .posts-list .post-card .post-actions .action-item {
-    font-size: 14px;
+    font-size: $font-size-sm;
   }
 
-  .topic-detail-page .pagination {
-    gap: 24px;
-  }
-
-  .topic-detail-page .pagination button {
-    padding: 12px 24px;
-    font-size: 14px;
-  }
 }
 
 @media (min-width: 1280px) {
-  .topic-detail-page .detail-header {
-    max-width: 900px;
-  }
-
   .topic-detail-page .topic-info-card {
-    max-width: 900px;
     gap: 28px;
   }
 
@@ -405,21 +316,8 @@
     height: 160px;
   }
 
-  .topic-detail-page .topic-info-card .topic-meta .topic-name {
-    font-size: 26px;
-  }
-
-  .topic-detail-page .posts-section {
-    max-width: 900px;
-  }
-
   .topic-detail-page .posts-section .posts-list .post-card .post-header .avatar {
     width: 64px;
     height: 64px;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-content {
-    font-size: 17px;
-    line-height: 1.8;
   }
 }

@@ -1,13 +1,16 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+
 import { usePetForm } from '../../hooks/usePetForm';
-import { PetTypeOptions, GenderOptions, getPetTypeIcon } from '../../types/pet';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
+import { PetTypeOptions, GenderOptions, PetVisibilityOptions, getPetTypeIcon } from '../../types/pet';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Checkbox } from '../../components/ui/checkbox';
-import { FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
+import { FieldError, FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Radio, RadioGroup } from '../../components/ui/radio';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
 export function PetFormPage() {
   const navigate = useNavigate();
@@ -18,35 +21,35 @@ export function PetFormPage() {
     uploadingAvatar,
     breeds,
     formData,
+    errors,
     updateField,
     handleAvatarUpload,
     handleSubmit,
   } = usePetForm();
 
+  const isDirty =
+    formData.name.trim().length > 0 ||
+    (formData.bio ?? '').trim().length > 0 ||
+    (formData.personality ?? '').trim().length > 0 ||
+    (formData.avatar ?? '').trim().length > 0;
+  const unsavedDialog = useUnsavedChanges(isDirty && !loading, {
+    message: '宠物档案尚未保存，离开后填写的内容将丢失。',
+  });
+
   return (
     <div className="min-h-screen bg-cream">
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="p-2 min-w-0 h-auto"
-            aria-label="返回"
-          >
-            <ChevronLeft className="w-5 h-5 text-brown-secondary" />
-          </Button>
-          <h1 className="text-2xl font-bold text-brown">
-            {isEdit ? '编辑宠物档案' : '创建宠物档案'}
-          </h1>
-        </div>
+      <PageHeader
+        title={isEdit ? '编辑宠物档案' : '创建宠物档案'}
+        fallbackTo="/pets"
+      />
 
+      <div className="page-shell px-4 py-4">
         <Card className="space-y-6" padding="lg">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             <div className="flex items-center gap-6">
               <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/10 to-primary-dark/10 flex items-center justify-center text-brown overflow-hidden">
                 {formData.avatar ? (
-                  <img src={formData.avatar} alt="" className="w-full h-full object-cover" />
+                  <img src={formData.avatar} alt="" className="w-full h-full object-cover" decoding="async" />
                 ) : (
                   (() => {
                     const PetIcon = getPetTypeIcon(formData.petType);
@@ -81,40 +84,82 @@ export function PetFormPage() {
             </div>
 
             <div>
-              <FieldLabel>宠物类型</FieldLabel>
-              <div className="grid grid-cols-5 gap-2">
-                {PetTypeOptions.map((type) => (
-                  <Button
-                    key={type.value}
-                    type="button"
-                    variant="ghost"
-                    onClick={() => updateField('petType', type.value)}
-                    className={`flex flex-col items-center gap-1 p-3 h-auto min-h-0 rounded-md border-2 transition-colors ${
-                      formData.petType === type.value
-                        ? 'border-primary bg-primary-soft'
-                        : 'border-border-light hover:border-border'
-                    }`}
-                  >
-                    <span className="text-2xl">{type.emoji}</span>
-                    <span className="text-xs text-brown-secondary">{type.label}</span>
-                  </Button>
-                ))}
+              <FieldLabel htmlFor="pet-type">宠物类型</FieldLabel>
+              <div
+                role="group"
+                aria-labelledby="pet-type-label"
+                className="grid grid-cols-3 gap-3 sm:grid-cols-5"
+              >
+                {PetTypeOptions.map((type) => {
+                  const selected = formData.petType === type.value;
+                  const TypeIcon = type.Icon;
+                  // 原生 button：HeroUI Button 的 button--md 会压扁自定义瓷砖高度
+                  return (
+                    <button
+                      key={type.value}
+                      type="button"
+                      aria-pressed={selected}
+                      aria-label={type.label}
+                      onClick={() => updateField('petType', type.value)}
+                      className={[
+                        'flex w-full aspect-square flex-col items-center justify-center gap-2',
+                        'm-0 cursor-pointer appearance-none px-2 py-3 font-inherit',
+                        'rounded-lg border-2 transition-all',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-text/40 focus-visible:ring-offset-2',
+                        selected
+                          ? 'border-primary-text bg-primary-soft text-primary-text shadow-card'
+                          : 'border-border-light bg-white text-brown-secondary hover:border-secondary/45 hover:bg-secondary-soft/50',
+                      ].join(' ')}
+                    >
+                      <span
+                        className={[
+                          'flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors',
+                          selected
+                            ? 'bg-white text-primary-text'
+                            : 'bg-cream text-brown-secondary',
+                        ].join(' ')}
+                      >
+                        <TypeIcon
+                          size={ICON_SIZE.nav}
+                          strokeWidth={iconStroke(ICON_SIZE.nav)}
+                          aria-hidden="true"
+                        />
+                      </span>
+                      <span
+                        className={[
+                          'text-sm font-medium leading-none',
+                          selected ? 'text-primary-text' : 'text-brown-secondary',
+                        ].join(' ')}
+                      >
+                        {type.label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <div>
-              <FieldLabel>宠物名称</FieldLabel>
+              <FieldLabel htmlFor="pet-name" required>宠物名称</FieldLabel>
               <Input
+                id="pet-name"
+                name="name"
+                autoComplete="off"
                 value={formData.name}
                 onChange={(e) => updateField('name', e.target.value)}
-                placeholder="给你的毛孩子起个名字吧"
+                placeholder="给你的毛孩子起个名字吧…"
                 maxLength={20}
+                invalid={!!errors.name}
+                aria-describedby={errors.name ? 'pet-name-error' : undefined}
               />
+              <FieldError id="pet-name-error">{errors.name}</FieldError>
             </div>
 
             <div>
-              <FieldLabel>品种</FieldLabel>
+              <FieldLabel htmlFor="pet-breed">品种</FieldLabel>
               <Select
+                id="pet-breed"
+                name="breedId"
                 value={formData.breedId || ''}
                 onChange={(e) => {
                   const breedId = parseInt(e.target.value) || 0;
@@ -150,14 +195,22 @@ export function PetFormPage() {
                 </RadioGroup>
               </div>
               <div>
-                <FieldLabel>体重 (kg)</FieldLabel>
+                <FieldLabel htmlFor="pet-weight">体重 (kg)</FieldLabel>
                 <Input
+                  id="pet-weight"
+                  name="weight"
                   type="number"
+                  inputMode="decimal"
                   step="0.1"
+                  min="0"
+                  max="200"
                   value={formData.weight || ''}
                   onChange={(e) => updateField('weight', parseFloat(e.target.value) || 0)}
                   placeholder="0.0"
+                  invalid={!!errors.weight}
+                  aria-describedby={errors.weight ? 'pet-weight-error' : undefined}
                 />
+                <FieldError id="pet-weight-error">{errors.weight}</FieldError>
               </div>
             </div>
 
@@ -165,36 +218,61 @@ export function PetFormPage() {
               <Checkbox
                 checked={formData.isSterilized === 1}
                 onChange={(checked) => updateField('isSterilized', checked ? 1 : 0)}
-                className="p-3 border border-border-light rounded-md hover:border-primary/30 transition-colors"
+                className="p-3 border border-border-light rounded-md hover:border-primary-text/30 transition-colors"
               >
                 已绝育
               </Checkbox>
               <Checkbox
                 checked={formData.isVaccinated === 1}
                 onChange={(checked) => updateField('isVaccinated', checked ? 1 : 0)}
-                className="p-3 border border-border-light rounded-md hover:border-primary/30 transition-colors"
+                className="p-3 border border-border-light rounded-md hover:border-primary-text/30 transition-colors"
               >
                 已接种疫苗
               </Checkbox>
             </div>
 
             <div>
-              <FieldLabel>性格特点</FieldLabel>
+              <FieldLabel>可见范围</FieldLabel>
+              <RadioGroup
+                name="visibility"
+                aria-label="宠物可见范围"
+                className="flex flex-col gap-2"
+                value={String(formData.visibility ?? 0)}
+                onChange={(v) => updateField('visibility', Number(v) as 0 | 1 | 2)}
+              >
+                {PetVisibilityOptions.map((option) => (
+                  <Radio key={option.value} value={String(option.value)} variant="button">
+                    <span className="flex flex-col items-start text-left">
+                      <span>{option.label}</span>
+                      <span className="text-xs text-brown-muted font-normal">{option.hint}</span>
+                    </span>
+                  </Radio>
+                ))}
+              </RadioGroup>
+            </div>
+
+            <div>
+              <FieldLabel htmlFor="pet-personality">性格特点</FieldLabel>
               <Input
+                id="pet-personality"
+                name="personality"
+                autoComplete="off"
                 value={formData.personality}
                 onChange={(e) => updateField('personality', e.target.value)}
-                placeholder="例如：活泼、粘人、贪吃..."
+                placeholder="例如：活泼、粘人、贪吃…"
                 maxLength={100}
               />
             </div>
 
             <div>
-              <FieldLabel>简介</FieldLabel>
+              <FieldLabel htmlFor="pet-bio">简介</FieldLabel>
               <Textarea
+                id="pet-bio"
+                name="bio"
                 value={formData.bio}
                 onChange={(e) => updateField('bio', e.target.value)}
                 rows={4}
-                placeholder="介绍一下你的毛孩子吧..."
+                placeholder="介绍一下你的毛孩子吧…"
                 maxLength={500}
               />
             </div>
@@ -208,13 +286,15 @@ export function PetFormPage() {
               >
                 取消
               </Button>
-              <Button type="submit" className="flex-1" disabled={loading}>
-                {loading ? '保存中...' : isEdit ? '保存修改' : '创建档案'}
+              <Button type="submit" className="flex-1" disabled={loading} loading={loading}>
+                {loading ? '保存中' : isEdit ? '保存修改' : '创建档案'}
               </Button>
             </div>
           </form>
         </Card>
       </div>
+
+      {unsavedDialog}
     </div>
   );
 }

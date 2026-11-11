@@ -3,6 +3,7 @@ import { ActivityType } from '../../types/activity';
 import { ActivityCard } from '../../components/activity';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
 
@@ -18,14 +19,14 @@ export const ActivityListPage = () => {
     handleStatusChange,
   } = useActivityList();
 
-  const totalPages = Math.ceil(total / 10);
+  const totalPages = Math.max(1, Math.ceil(total / 10));
 
   return (
     <div className="bg-cream min-h-screen pb-6">
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
-        <div className="px-4 py-3">
+        <div className="page-shell px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-brown">活动中心</h1>
+            <h1 className="page-bar-title">活动中心</h1>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-2">
@@ -78,7 +79,7 @@ export const ActivityListPage = () => {
         </div>
       </div>
 
-      <div className="px-4 py-4">
+      <div className="page-shell px-4 py-4">
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -92,9 +93,9 @@ export const ActivityListPage = () => {
             ))}
           </div>
         ) : activities.length === 0 ? (
-          <div className="py-16 text-center text-brown-muted">暂无活动</div>
+          <EmptyState title="暂无活动" />
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 motion-list">
             {activities.map((activity) => (
               <ActivityCard key={activity.id} activity={activity} />
             ))}

@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useAdoptList } from '../../hooks/useAdoptList';
 import { PetType, AdoptionStatus } from '../../types/adopt';
-import { Button } from '../../components/ui/button';
+import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 import { FilterChip } from '../../components/ui/filterChip';
 import { Skeleton } from '../../components/ui/skeleton';
+import { formatCount } from '../../utils/format';
 
 export const AdoptListPage = () => {
   const {
@@ -17,7 +19,7 @@ export const AdoptListPage = () => {
     handleTypeChange,
   } = useAdoptList();
 
-  const totalPages = Math.ceil(total / 10);
+  const totalPages = Math.max(1, Math.ceil(total / 10));
 
   const getStatusLabel = (status: AdoptionStatus) => {
     switch (status) {
@@ -37,7 +39,7 @@ export const AdoptListPage = () => {
       case AdoptionStatus.PENDING:
         return 'bg-secondary-soft text-secondary-dark';
       case AdoptionStatus.ADOPTED:
-        return 'bg-primary-soft text-primary-dark';
+        return 'bg-primary-soft text-primary-text';
       case AdoptionStatus.CANCELLED:
         return 'bg-error/10 text-error-dark';
       default:
@@ -65,12 +67,17 @@ export const AdoptListPage = () => {
   return (
     <div className="bg-cream min-h-screen pb-6">
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
-        <div className="px-4 py-3">
+        <div className="page-shell px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-brown">领养中心</h1>
-            <Link to="/adopts/create">
-              <Button size="sm">发布领养</Button>
-            </Link>
+            <h1 className="page-bar-title">领养中心</h1>
+            <div className="flex items-center gap-2">
+              <Link to="/adopts/mine" className={buttonClass({ size: 'sm', variant: 'outline' })}>
+                我的领养
+              </Link>
+              <Link to="/adopts/create" className={buttonClass({ size: 'sm' })}>
+                发布领养
+              </Link>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-2">
@@ -99,7 +106,7 @@ export const AdoptListPage = () => {
         </div>
       </div>
 
-      <div className="px-4">
+      <div className="page-shell px-4">
         {loading ? (
           <div className="space-y-3 mt-4">
             {[1, 2, 3, 4].map((i) => (
@@ -116,15 +123,16 @@ export const AdoptListPage = () => {
             ))}
           </div>
         ) : adopts.length === 0 ? (
-          <div className="text-center py-8 text-brown-muted">暂无领养信息</div>
+          <EmptyState compact title="暂无领养信息" />
         ) : (
-          <div className="space-y-3 mt-4">
+          <div className="space-y-3 mt-4 motion-list">
             {adopts.map((adopt) => (
               <Link key={adopt.id} to={`/adopts/${adopt.id}`} className="block">
                 <Card hoverable padding="none" className="overflow-hidden">
                 <div className="flex">
                   {adopt.photos && adopt.photos.length > 0 && (
                     <img
+                      decoding="async"
                       src={adopt.photos[0]}
                       alt={adopt.petName}
                       className="w-24 h-24 object-cover"
@@ -133,14 +141,14 @@ export const AdoptListPage = () => {
                   <div className="flex-1 p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-base font-medium text-brown">{adopt.petName}</h3>
+                        <h3 className="page-section-title">{adopt.petName}</h3>
                         <span
                           className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(adopt.status)}`}
                         >
                           {getStatusLabel(adopt.status)}
                         </span>
                       </div>
-                      <span className="text-xs text-brown-muted">{adopt.applicationCount} 人申请</span>
+                      <span className="text-xs text-brown-muted tabular-nums">{formatCount(adopt.applicationCount)} 人申请</span>
                     </div>
                     <div className="flex items-center gap-2 mb-2 text-sm text-brown-muted">
                       <span>{getPetTypeLabel(adopt.petType)}</span>

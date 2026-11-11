@@ -1,8 +1,10 @@
 @import '../../styles/variables';
 
 .post-editor-page {
+  // 同动态详情：底色走通栏层，避免宽屏下两侧露出外壳底色
+  @extend %page-bleed;
+  --page-bg: #{$background-muted};
   min-height: 100vh;
-  background: $background-muted;
   padding-bottom: calc(72px + var(--user-tab-bar-offset, 0px));
 
   .editor-header {
@@ -14,12 +16,12 @@
     justify-content: space-between;
     padding: 12px 16px;
     border-bottom: 1px solid $divider-color;
-    z-index: 10;
+    z-index: $z-index-sticky;
 
     .back-btn {
       background: none;
       border: none;
-      font-size: 15px;
+      font-size: $font-size-base;
       color: $text-secondary;
       cursor: pointer;
       padding: 10px 12px;
@@ -30,22 +32,17 @@
       justify-content: center;
     }
 
-    .title {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
     .publish-btn {
-      background: $primary-color;
+      background: $primary-strong;
       color: $background-white;
       border: none;
       padding: 6px 18px;
       border-radius: $border-radius-base;
-      font-size: 14px;
+      font-size: $font-size-sm;
       cursor: pointer;
       font-weight: 500;
       box-shadow: $shadow-brand;
-      transition: background 0.2s ease, box-shadow 0.2s ease;
+      transition: background $duration-base ease, box-shadow $duration-base ease;
 
       &:hover:not(:disabled) {
         background: $primary-dark;
@@ -69,16 +66,22 @@
       width: 100%;
       border: none;
       outline: none;
-      font-size: 16px;
+      font-size: $font-size-large;
       line-height: 1.6;
       resize: none;
       min-height: 120px;
       box-sizing: border-box;
+      border-radius: $border-radius-xs;
+
+      &:focus-visible {
+        outline: 2px solid $primary-text;
+        outline-offset: 2px;
+      }
     }
 
     .char-count {
       text-align: right;
-      font-size: 12px;
+      font-size: $font-size-xs;
       color: $text-muted;
       margin-top: 4px;
     }
@@ -94,7 +97,7 @@
         align-items: center;
         gap: 4px;
         background: $primary-soft;
-        color: $primary-color;
+        color: $primary-text;
         padding: 4px 10px;
         border-radius: $border-radius-sm;
         font-size: 13px;
@@ -102,9 +105,9 @@
         button {
           background: none;
           border: none;
-          color: $primary-color;
+          color: $primary-text;
           cursor: pointer;
-          font-size: 16px;
+          font-size: $font-size-large;
           padding: 0;
           line-height: 1;
         }
@@ -113,6 +116,12 @@
 
     .media-section {
       margin: 16px 0;
+
+      .image-reorder-hint {
+        margin: 0 0 8px;
+        font-size: $font-size-xs;
+        color: $text-muted;
+      }
 
       .image-grid {
         display: grid;
@@ -124,30 +133,102 @@
           aspect-ratio: 1;
           border-radius: $border-radius-xs;
           overflow: hidden;
+          cursor: grab;
+          transition: opacity $duration-base ease, transform $duration-base ease, box-shadow $duration-base ease;
+
+          &:active {
+            cursor: grabbing;
+          }
+
+          &.is-dragging {
+            opacity: 0.5;
+            transform: scale(0.96);
+          }
+
+          &.is-over {
+            box-shadow: 0 0 0 2px $primary-text;
+          }
 
           img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            pointer-events: none;
+          }
+
+          .cover-badge {
+            position: absolute;
+            left: 4px;
+            top: 4px;
+            z-index: 1;
+            padding: 2px 6px;
+            border-radius: $border-radius-xs;
+            background: rgba(0, 0, 0, 0.55);
+            color: $background-white;
+            font-size: 10px;
+            line-height: 1.2;
+          }
+
+          .drag-handle {
+            position: absolute;
+            left: 4px;
+            bottom: 4px;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: $border-radius-xs;
+            background: rgba(0, 0, 0, 0.45);
+            color: $background-white;
+            pointer-events: none;
           }
 
           .remove-btn {
             position: absolute;
             top: 4px;
             right: 4px;
+            z-index: 2;
             width: 20px;
             height: 20px;
+            min-width: 20px;
+            min-height: 20px;
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.5);
             color: $background-white;
             border: none;
             cursor: pointer;
-            font-size: 14px;
+            font-size: $font-size-sm;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 0;
             line-height: 1;
+          }
+
+          .reorder-actions {
+            position: absolute;
+            right: 4px;
+            bottom: 4px;
+            z-index: 2;
+            display: flex;
+            gap: 2px;
+          }
+
+          .reorder-btn {
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            min-height: 22px;
+            padding: 0;
+            border-radius: $border-radius-xs;
+            background: rgba(0, 0, 0, 0.5);
+            color: $background-white;
+
+            &:disabled {
+              opacity: 0.35;
+            }
           }
         }
 
@@ -160,6 +241,10 @@
           justify-content: center;
           cursor: pointer;
           background: $background-soft;
+          padding: 0;
+          width: 100%;
+          font: inherit;
+          appearance: none;
 
           .plus {
             font-size: 32px;
@@ -189,7 +274,7 @@
           color: $background-white;
           border: none;
           cursor: pointer;
-          font-size: 16px;
+          font-size: $font-size-large;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -216,7 +301,7 @@
           color: $text-secondary;
 
           .icon {
-            font-size: 24px;
+            font-size: $font-size-xl;
           }
         }
       }
@@ -231,7 +316,13 @@
         align-items: center;
         gap: 12px;
         padding: 12px 0;
+        border: none;
         border-bottom: 1px solid $background-muted;
+        background: none;
+        width: 100%;
+        font: inherit;
+        text-align: left;
+        color: inherit;
         cursor: pointer;
         position: relative;
 
@@ -240,24 +331,24 @@
         }
 
         .option-icon {
-          font-size: 18px;
+          font-size: $font-size-large;
           width: 24px;
           text-align: center;
         }
 
         .option-label {
           flex: 1;
-          font-size: 15px;
+          font-size: $font-size-base;
           color: $text-primary;
         }
 
         .option-value {
-          font-size: 14px;
+          font-size: $font-size-sm;
           color: $text-muted;
         }
 
         .option-arrow {
-          font-size: 18px;
+          font-size: $font-size-large;
           color: $text-light;
         }
 
@@ -269,28 +360,22 @@
           width: 150px;
           border: none;
           text-align: right;
-          font-size: 14px;
+          font-size: $font-size-sm;
           color: $text-secondary;
           outline: none;
           background: transparent;
+          border-radius: $border-radius-xs;
+
+          &:focus-visible {
+            outline: 2px solid $primary-text;
+            outline-offset: 2px;
+          }
         }
       }
 
       .pet-picker {
         padding: 12px 0;
         border-bottom: 1px solid $background-muted;
-
-        .empty-pets {
-          text-align: center;
-          color: $text-muted;
-          font-size: 14px;
-          padding: 12px;
-
-          a {
-            color: $primary-color;
-            text-decoration: none;
-          }
-        }
 
         .pet-options {
           display: flex;
@@ -306,9 +391,12 @@
             border-radius: $border-radius-xs;
             cursor: pointer;
             border: 2px solid transparent;
+            background: none;
+            font: inherit;
+            color: inherit;
 
             &.selected {
-              border-color: $primary-color;
+              border-color: $primary-text;
               background: $primary-soft;
             }
 
@@ -321,7 +409,7 @@
             }
 
             span {
-              font-size: 12px;
+              font-size: $font-size-xs;
               color: $text-primary;
             }
           }
@@ -337,12 +425,17 @@
           padding: 10px 12px;
           border: 1px solid $border-color;
           border-radius: $border-radius-xs;
-          font-size: 14px;
+          font-size: $font-size-sm;
           box-sizing: border-box;
           outline: none;
 
           &:focus {
-            border-color: $primary-color;
+            border-color: $primary-text;
+          }
+
+          &:focus-visible {
+            outline: 2px solid $primary-text;
+            outline-offset: 2px;
           }
         }
 
@@ -356,18 +449,18 @@
             padding: 10px 12px;
             cursor: pointer;
             border-radius: $border-radius-xs;
+            border: none;
+            background: none;
+            width: 100%;
+            font: inherit;
+            text-align: left;
 
             &:hover {
               background: $background-muted;
             }
 
-            .topic-name {
-              color: $primary-color;
-              font-size: 14px;
-            }
-
             .topic-count {
-              font-size: 12px;
+              font-size: $font-size-xs;
               color: $text-muted;
             }
           }
@@ -385,26 +478,34 @@
           padding: 12px;
           cursor: pointer;
           border-radius: $border-radius-xs;
+          border: none;
+          background: none;
+          width: 100%;
+          font: inherit;
+          text-align: left;
+          color: inherit;
 
           &.selected {
             background: $primary-soft;
           }
 
           .vis-label {
-            font-size: 14px;
+            display: block;
+            font-size: $font-size-sm;
             color: $text-primary;
             font-weight: 500;
           }
 
           .vis-desc {
-            font-size: 12px;
+            display: block;
+            font-size: $font-size-xs;
             color: $text-muted;
             margin-top: 2px;
           }
 
           .check {
-            color: $primary-color;
-            font-size: 16px;
+            color: $primary-text;
+            font-size: $font-size-large;
           }
         }
       }
@@ -424,11 +525,11 @@
           padding: 4px 14px;
           border-radius: $border-radius-sm;
           cursor: pointer;
-          transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, font-weight 0.2s ease;
+          transition: background-color $duration-base ease, color $duration-base ease, box-shadow $duration-base ease, font-weight $duration-base ease;
 
           &.active {
             background: $background-white;
-            color: $primary-color;
+            color: $primary-text;
             font-weight: 500;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
           }
@@ -449,7 +550,7 @@
     background: $background-white;
     padding: 12px 16px;
     border-top: 1px solid $divider-color;
-    z-index: 20;
+    z-index: $z-index-dropdown;
 
     .draft-btn {
       flex: 1;
@@ -459,13 +560,23 @@
       color: $text-secondary;
       border: none;
       border-radius: $border-radius-lg;
-      font-size: 14px;
+      font-size: $font-size-sm;
       cursor: pointer;
 
       &:disabled {
         opacity: 0.5;
       }
     }
+  }
+
+  // 可点击行/选项的键盘焦点反馈
+  .add-image-btn:focus-visible,
+  .option-item:focus-visible,
+  .pet-option:focus-visible,
+  .topic-suggestion:focus-visible,
+  .visibility-option:focus-visible {
+    outline: 2px solid $primary-text;
+    outline-offset: 2px;
   }
 }
 
@@ -481,33 +592,37 @@
   .post-editor-page .editor-header {
     padding: 16px 20px;
     margin: 0 auto;
-    max-width: 720px;
+    max-width: $page-max;
   }
 
   .post-editor-page .editor-body {
     padding: 20px;
     margin: 12px auto;
-    max-width: 720px;
+    max-width: $page-max;
   }
 
   .post-editor-page .editor-body .content-input {
-    font-size: 17px;
+    font-size: $font-size-large;
     line-height: 1.7;
     min-height: 150px;
   }
 
+  // 固定底栏与页头/正文同宽：左右各让出外壳的水平内边距（$spacing-lg），
+  // 剩余空间由 auto margin 居中并受 max-width 约束。
+  // 不要用 left:50% + translateX(-50%)：那样宽度会取 50vw，被 max-width 截断后比正文窄。
   .post-editor-page .editor-footer {
     padding: 16px 20px;
-    max-width: 720px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: $spacing-lg;
+    right: $spacing-lg;
+    margin: 0 auto;
+    max-width: $page-max;
     border-radius: $border-radius-sm $border-radius-sm 0 0;
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
   }
 
   .post-editor-page .editor-footer .draft-btn {
     padding: 12px;
-    font-size: 15px;
+    font-size: $font-size-base;
   }
 }
 
@@ -517,19 +632,17 @@
   }
 
   .post-editor-page .editor-header {
-    max-width: 800px;
     padding: 16px 24px;
   }
 
   .post-editor-page .editor-body {
-    max-width: 800px;
     padding: 24px;
     margin: 16px auto;
   }
 
   .post-editor-page .editor-body .content-input {
-    font-size: 18px;
-    line-height: 1.8;
+    font-size: $font-size-large;
+    line-height: 1.7;
     min-height: 200px;
   }
 
@@ -544,7 +657,7 @@
   .post-editor-page .editor-body .media-section .image-grid .image-item .remove-btn {
     width: 24px;
     height: 24px;
-    font-size: 16px;
+    font-size: $font-size-large;
   }
 
   .post-editor-page .editor-body .media-section .image-grid .add-image-btn {
@@ -557,12 +670,12 @@
   }
 
   .post-editor-page .editor-body .extra-options .option-item .option-icon {
-    font-size: 20px;
+    font-size: $font-size-title;
     width: 28px;
   }
 
   .post-editor-page .editor-body .extra-options .option-item .option-label {
-    font-size: 16px;
+    font-size: $font-size-large;
   }
 
   .post-editor-page .editor-body .extra-options .pet-picker .pet-options .pet-option {
@@ -579,32 +692,16 @@
     font-size: 13px;
   }
 
-  .post-editor-page .editor-footer {
-    max-width: 800px;
-  }
-
   .post-editor-page .editor-footer .draft-btn {
     padding: 14px;
-    font-size: 16px;
+    font-size: $font-size-large;
   }
 }
 
 @media (min-width: 1280px) {
-  .post-editor-page .editor-header {
-    max-width: 900px;
-  }
-
-  .post-editor-page .editor-body {
-    max-width: 900px;
-  }
-
-  .post-editor-page .editor-footer {
-    max-width: 900px;
-  }
-
   .post-editor-page .editor-body .content-input {
-    font-size: 18px;
-    line-height: 1.9;
+    font-size: $font-size-large;
+    line-height: 1.7;
     min-height: 220px;
   }
 

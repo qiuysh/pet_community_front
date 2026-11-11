@@ -1,4 +1,6 @@
+import { CirclePlay, X } from 'lucide-react';
 import type { ReviewContent } from '../../types/admin';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { AdminButton } from './adminButton';
 import { AdminChip } from './adminChip';
 import { adminUi } from '../../styles/adminUi';
@@ -24,9 +26,11 @@ export function ReviewPreview({ content, onClose }: ReviewPreviewProps) {
             className="text-brown-muted hover:text-brown transition-colors"
             aria-label="关闭"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X
+              size={ICON_SIZE.action}
+              strokeWidth={iconStroke(ICON_SIZE.action)}
+              aria-hidden="true"
+            />
           </AdminButton>
         </div>
 
@@ -68,10 +72,12 @@ export function ReviewPreview({ content, onClose }: ReviewPreviewProps) {
 
           {content.video && (
             <div className="bg-muted rounded-md p-4 mb-4 flex items-center justify-center">
-              <svg className="w-12 h-12 text-brown-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <CirclePlay
+                size={ICON_SIZE.empty}
+                strokeWidth={iconStroke(ICON_SIZE.empty)}
+                className="text-brown-muted"
+                aria-hidden="true"
+              />
             </div>
           )}
 

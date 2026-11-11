@@ -1,5 +1,13 @@
 import { useMemo } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { AdminButton } from './adminButton';
+
+const chevronProps = {
+  size: ICON_SIZE.inline,
+  strokeWidth: iconStroke(ICON_SIZE.inline),
+  'aria-hidden': true as const,
+};
 
 interface PaginationProps {
   /** 当前页码（从 1 开始） */
@@ -59,9 +67,7 @@ export function Pagination({ currentPage, total, pageSize, onPageChange }: Pagin
             onClick={() => onPageChange(Math.max(1, currentPage - 1))}
             className="min-w-9 px-2"
           >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ChevronLeft {...chevronProps} />
           </AdminButton>
           {pageNumbers.map((pageNum) => (
             <AdminButton
@@ -85,9 +91,7 @@ export function Pagination({ currentPage, total, pageSize, onPageChange }: Pagin
             onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
             className="min-w-9 px-2"
           >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            <ChevronRight {...chevronProps} />
           </AdminButton>
         </nav>
       </div>

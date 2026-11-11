@@ -1,10 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Plus, MessageCircle } from 'lucide-react';
+import { Plus, MessageCircle } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useConversationList } from '../../hooks/useConversationList';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
+import { EmptyState } from '../../components/ui/emptyState';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
 import './messageListPage.scss';
 
@@ -38,28 +41,33 @@ const MessageListPage: React.FC = () => {
 
   return (
     <div className="message-list-page">
-      <div className="page-header">
-        <Button type="button" variant="ghost" className="back-btn" onClick={() => navigate(-1)} aria-label="返回">
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Button>
-        <h1 className="page-title">消息</h1>
-        <Button type="button" variant="ghost" className="new-btn" onClick={handleNewMessage} aria-label="新建私信">
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      </div>
+      <PageHeader
+        title="消息"
+        fallbackTo="/"
+        right={
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-10 w-10 rounded-full p-0"
+            onClick={handleNewMessage}
+            aria-label="新建私信"
+          >
+            <Plus size={ICON_SIZE.nav} strokeWidth={iconStroke(ICON_SIZE.nav)} aria-hidden="true" />
+          </Button>
+        }
+      />
 
       {loading && conversations.length === 0 ? (
         <div className="conversation-list">
           <ConversationListSkeleton />
         </div>
       ) : conversations.length === 0 ? (
-        <div className="empty">
-          <MessageCircle size={64} color="var(--color-ink-light)" strokeWidth={1.5} />
-          <p>暂无消息</p>
-          <Button type="button" className="start-btn" onClick={handleNewMessage}>
-            发起对话
-          </Button>
-        </div>
+        <EmptyState
+          icon={<MessageCircle size={ICON_SIZE.empty} strokeWidth={1.5} />}
+          title="暂无消息"
+          action={<Button onClick={handleNewMessage}>发起对话</Button>}
+        />
       ) : (
         <div className="conversation-list">
           {conversations.map((conv) => (
@@ -77,7 +85,7 @@ const MessageListPage: React.FC = () => {
               />
               <div className="conversation-info">
                 <div className="conversation-header">
-                  <span className="user-name">{conv.targetUser.nickname}</span>
+                  <span className="page-section-title user-name">{conv.targetUser.nickname}</span>
                   <span className="message-time">{conv.lastMessageTime}</span>
                 </div>
                 <div className="last-message">{conv.lastMessage}</div>

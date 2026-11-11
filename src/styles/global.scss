@@ -1,5 +1,6 @@
 /* Tailwind / HeroUI 样式见 app.css（由 Vite + @tailwindcss/vite 处理） */
 @import './_variables.scss';
+@import './motion';
 
 // ============================================
 // 设计 Token（CSS 变量 = Tailwind / 内联样式单一事实来源）
@@ -11,6 +12,8 @@
   --color-primary-light: #{$primary-light};
   --color-primary-dark: #{$primary-dark};
   --color-primary-soft: #{$primary-soft};
+  --color-primary-strong: #{$primary-strong};
+  --color-primary-text: #{$primary-text};
 
   --color-secondary: #{$secondary-color};
   --color-secondary-light: #{$secondary-light};
@@ -34,10 +37,18 @@
   --color-success: #{$success-color};
   --color-success-dark: #{$success-dark};
   --color-success-soft: #{$success-soft};
+  --color-success-text: #{$success-text};
   --color-warning: #{$warning-color};
+  --color-warning-text: #{$warning-text};
   --color-error: #{$error-color};
   --color-error-dark: #{$error-dark};
+  --color-error-text: #{$error-text};
   --color-info: #{$info-color};
+  --color-info-text: #{$info-text};
+
+  --color-brand-wechat: #{$brand-wechat};
+  --color-brand-weibo: #{$brand-weibo};
+  --color-brand-qq: #{$brand-qq};
 
   --shadow-brand: #{$shadow-brand};
   --shadow-brand-hover: #{$shadow-brand-hover};
@@ -46,6 +57,18 @@
   --radius-card: #{$border-radius-sm};
   --radius-sheet: #{$border-radius-base};
   --radius-container: #{$border-radius-lg};
+
+  // 字号阶梯（吸顶页头等 Tailwind 工具类用）
+  --font-size-xs: #{$font-size-xs};
+  --font-size-sm: #{$font-size-sm};
+  --font-size-base: #{$font-size-base};
+  --font-size-large: #{$font-size-large};
+  --font-size-title: #{$font-size-title};
+  --font-size-xl: #{$font-size-xl};
+  --font-size-2xl: #{$font-size-2xl};
+
+  // 动效（供内联样式与页面 scss 覆盖；Keyframes 见 _motion.scss）
+  --motion-distance: #{$motion-distance-md};
 }
 
 // ============================================
@@ -75,7 +98,7 @@ html {
 }
 
 body {
-  font-size: $font-size-base;
+  font-size: $font-size-sm;
   min-height: 100vh;
   min-height: 100dvh;
   background-color: $background-color;
@@ -89,35 +112,40 @@ body {
 // ============================================
 // 文字样式
 // ============================================
+// 必须 @layer base：未分层的 h1{20/600} 会压过 @layer components 的
+// .page-bar-title{15/500}，导致 PageHeader（h1）比动态详情（span）更粗更大。
 
-h1, h2, h3, h4, h5, h6 {
-  color: $text-primary;
-  font-weight: 600;
-  line-height: 1.4;
-}
+@layer base {
+  // 前台社区密度：标题偏克制。2xl/xl 留给数据大数与营销数字，不作默认页标题。
+  h1, h2, h3, h4, h5, h6 {
+    color: $text-primary;
+    font-weight: 600;
+    line-height: 1.4;
+  }
 
-h1 { font-size: $font-size-2xl; letter-spacing: -0.02em; }
-h2 { font-size: $font-size-xl; letter-spacing: -0.01em; }
-h3 { font-size: $font-size-title; }
-h4 { font-size: $font-size-large; }
-h5 { font-size: $font-size-base; }
-h6 { font-size: $font-size-xs; }
+  h1 { font-size: $font-size-title; letter-spacing: -0.01em; } // 20px 页面/内容标题
+  h2 { font-size: $font-size-large; } // 16px 区块标题
+  h3 { font-size: $font-size-large; }
+  h4 { font-size: $font-size-base; font-weight: 500; } // 15px
+  h5 { font-size: $font-size-sm; font-weight: 500; }
+  h6 { font-size: $font-size-xs; font-weight: 500; }
 
-p {
-  color: $text-secondary;
+  p {
+    color: $text-secondary;
+  }
 }
 
 // 链接默认主色；必须放在 @layer base，否则会压过 Tailwind @layer utilities
 // （后台侧栏 text-brown-secondary 等会被刷成蜜桃色）
 @layer base {
   :where(a) {
-    color: $primary-color;
+    color: $primary-text;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color $duration-base ease;
   }
 
   :where(a):hover {
-    color: $primary-dark;
+    color: $primary-text;
   }
 }
 
@@ -155,14 +183,16 @@ html {
 // ============================================
 
 // 移除默认 outline 仅在 :focus-visible 时显示自定义焦点环
+// 注意：这里不要设置 border-radius，否则聚焦瞬间会把药丸/大圆角控件压成 4px（形状跳变）
 :focus {
   outline: none;
 }
 
+// 焦点环用 $primary-text：原 $primary-color 在 cream 底上仅 2.79:1，
+// 不达 WCAG 1.4.11 非文本对比 3:1。实底按钮的环另在 app.css 覆盖为白色内环。
 :focus-visible {
-  outline: 2px solid $primary-color;
+  outline: 2px solid $primary-text;
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 // Skip link 跳到主要内容
@@ -170,14 +200,14 @@ html {
   position: absolute;
   top: -100px;
   left: 0;
-  z-index: 9999;
+  z-index: $z-index-toast;
   padding: $spacing-sm $spacing-md;
-  background: $primary-color;
+  background: $primary-strong;
   color: $background-white;
   border-radius: 0 0 $border-radius-sm 0;
   text-decoration: none;
   font-weight: 500;
-  transition: top 0.2s ease;
+  transition: top $duration-base ease;
 
   &:focus-visible {
     top: 0;
@@ -186,25 +216,8 @@ html {
 
 // ============================================
 // 动画效果
+// keyframes 与工具类统一在 _motion.scss（本文件不再新增）
 // ============================================
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.animate-slideIn {
-  animation: slideIn 0.4s ease-out;
-}
 
 // 减少动画（用户偏好）
 @media (prefers-reduced-motion: reduce) {
@@ -212,6 +225,7 @@ html {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
@@ -227,15 +241,27 @@ a,
 }
 
 // ============================================
+// 页面宽度容器（全站唯一宽度入口）
+// 必须放在 @layer 之外：无 layer 的规则优先于 @layer utilities，
+// 才能压掉页面里残留的 max-w-* / px-* 工具类。
+// ============================================
+
+.page-shell {
+  @extend %page-shell;
+
+  // 会话列：聊天
+  &--read {
+    max-width: $page-max-read;
+  }
+}
+
+// ============================================
 // 响应式调整
 // ============================================
 
 @media (max-width: 768px) {
+  // 仅用根字号微调；勿再单独把 h1/h2 抬到 xl/title（会比桌面默认更大）
   html {
     font-size: 13px;
   }
-  
-  h1 { font-size: $font-size-xl; }
-  h2 { font-size: $font-size-title; }
-  h3 { font-size: $font-size-large; }
 }

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { followApi } from '../api/social';
 import { useAsyncEffect } from './useAsync';
 import { useUserStore } from '../stores/userStore';
+import { reportError } from '../utils/errorReport';
 
 export interface FollowUser {
   id: number;
@@ -37,7 +38,7 @@ export function useFollows(pageSize = 50) {
       return followApi.getFollowing(userId, { page: 1, pageSize }) as Promise<{ list: FollowUser[]; total: number }>;
     },
     [userId, pageSize],
-    { onError: (e) => console.error('获取关注列表失败', e) },
+    { onError: (e) => reportError('获取关注列表失败', e) },
   );
 
   const follows: FollowUser[] = data?.list ?? [];

@@ -1,3 +1,5 @@
+import { formatNumber } from './format';
+
 /** 较昨日环比文案与方向 */
 export function dayOverDayChange(today: number, yesterday: number): {
   change: string;
@@ -21,6 +23,10 @@ export function dayOverDayChange(today: number, yesterday: number): {
   };
 }
 
+/**
+ * 后台看板计数：输出千分位，语义等同 `formatNumber`。
+ * 历史命名保留以兼容既有调用，新代码请直接用 `utils/format` 的 `formatNumber` / `formatCount`。
+ */
 export function formatCount(value: number | undefined | null): string {
-  return (value ?? 0).toLocaleString('zh-CN');
+  return formatNumber(value ?? 0);
 }

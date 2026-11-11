@@ -1,14 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { Phone, Lock, Send } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { useAdoptDetail } from '../../hooks/useAdoptDetail';
 import { useUserStore } from '../../stores/userStore';
 import { maskContact } from '../../utils/contactPrivacy';
 import { PetType, AdoptionStatus, PetGender, ApplicationStatus } from '../../types/adopt';
 import { AdoptionApplyForm } from '../../components/adopt/adoptionApplyForm';
 import { AdoptionReview } from '../../components/adopt/adoptionReview';
+import { AdoptionFollowUpPanel } from '../../components/adopt/adoptionFollowUpPanel';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
 
 export const AdoptDetailPage = () => {
   const navigate = useNavigate();
@@ -19,6 +22,11 @@ export const AdoptDetailPage = () => {
     isOwner,
     applications,
     appsLoading,
+    followUps,
+    followUpsLoading,
+    refetchFollowUps,
+    canSeeFollowUps,
+    followUpApplicationId,
     showApplyForm,
     setShowApplyForm,
     showReviewModal,
@@ -76,7 +84,7 @@ export const AdoptDetailPage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-text"></div>
       </div>
     );
   }
@@ -95,6 +103,7 @@ export const AdoptDetailPage = () => {
       {adopt.photos && adopt.photos.length > 0 && (
         <div className="bg-white">
           <img
+            decoding="async"
             src={adopt.photos[0]}
             alt={adopt.petName}
             className="w-full h-64 object-cover"
@@ -102,15 +111,15 @@ export const AdoptDetailPage = () => {
         </div>
       )}
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="page-shell space-y-4 px-4 py-4">
         <Card>
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-brown">{adopt.petName}</h1>
+            <h1 className="page-content-title">{adopt.petName}</h1>
             <span className={`px-2 py-1 rounded-full text-sm font-medium ${
               adopt.status === AdoptionStatus.PENDING
                 ? 'bg-secondary-soft text-secondary-dark'
                 : adopt.status === AdoptionStatus.ADOPTED
-                ? 'bg-primary-soft text-primary-dark'
+                ? 'bg-primary-soft text-primary-text'
                 : 'bg-error/10 text-error-dark'
             }`}>
               {getStatusLabel(adopt.status)}
@@ -137,13 +146,13 @@ export const AdoptDetailPage = () => {
         </Card>
 
         <Card>
-          <h2 className="text-base font-medium text-brown mb-2">宠物介绍</h2>
+          <h2 className="page-section-title mb-2">宠物介绍</h2>
           <p className="text-sm text-brown-muted">{adopt.description}</p>
         </Card>
 
         {adopt.adoptConditions && (
           <Card>
-            <h2 className="text-base font-medium text-brown mb-2">领养条件</h2>
+            <h2 className="page-section-title mb-2">领养条件</h2>
             <p className="text-sm text-brown-muted">{adopt.adoptConditions}</p>
           </Card>
         )}
@@ -151,12 +160,13 @@ export const AdoptDetailPage = () => {
         <Card>
           <div className="flex items-center gap-3">
             <img
+              decoding="async"
               src={adopt.userAvatar || getDefaultUserAvatar()}
               alt={adopt.userNickname}
               className="w-10 h-10 rounded-full"
             />
             <div>
-              <div className="text-sm font-medium text-brown">{adopt.userNickname}</div>
+              <div className="page-section-title">{adopt.userNickname}</div>
               <div className="text-xs text-brown-muted">{adopt.createdAt}</div>
             </div>
           </div>
@@ -166,11 +176,11 @@ export const AdoptDetailPage = () => {
         <Card>
           <div className="flex flex-wrap items-center gap-2 text-sm text-brown-muted">
             <p className="flex items-center gap-2" data-testid="adopt-contact">
-              <Phone size={14} aria-hidden="true" />
+              <Phone size={ICON_SIZE.inline} aria-hidden="true" />
               <span>{displayContact || '未提供'}</span>
               {!contactVisible && (
                 <span className="inline-flex items-center gap-1 text-xs text-brown-muted">
-                  <Lock size={12} aria-hidden="true" />
+                  <Lock size={ICON_SIZE.inline} aria-hidden="true" />
                   登录后查看完整联系方式
                 </span>
               )}
@@ -183,7 +193,7 @@ export const AdoptDetailPage = () => {
                 onClick={handleContactCta}
                 aria-label={isLoggedIn ? '私信联系发布者' : '登录后查看联系方式'}
               >
-                <Send size={14} aria-hidden="true" />
+                <Send size={ICON_SIZE.inline} aria-hidden="true" />
                 {isLoggedIn ? '私信联系' : '登录查看'}
               </Button>
             )}
@@ -192,11 +202,11 @@ export const AdoptDetailPage = () => {
 
         {isOwner && (
           <Card>
-            <h2 className="text-base font-medium text-brown mb-3">领养申请</h2>
+            <h2 className="page-section-title mb-3">领养申请</h2>
             {appsLoading ? (
               <p className="text-sm text-brown-muted">加载中…</p>
             ) : applications.length === 0 ? (
-              <p className="text-sm text-brown-muted">暂无申请</p>
+              <EmptyState compact title="暂无申请" />
             ) : (
               <ul className="space-y-3">
                 {applications.map((app) => (
@@ -207,11 +217,12 @@ export const AdoptDetailPage = () => {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <img
+                          decoding="async"
                           src={app.userAvatar || getDefaultUserAvatar()}
                           alt=""
                           className="h-8 w-8 rounded-full object-cover"
                         />
-                        <span className="text-sm font-medium text-brown truncate">
+                        <span className="page-section-title truncate">
                           {app.userNickname}
                         </span>
                         <span className="text-xs text-brown-muted shrink-0">
@@ -239,6 +250,60 @@ export const AdoptDetailPage = () => {
                 ))}
               </ul>
             )}
+          </Card>
+        )}
+
+        {canSeeFollowUps && (
+          <Card>
+            <h2 className="page-section-title mb-3">领养回访</h2>
+            {followUpApplicationId ? (
+              <AdoptionFollowUpPanel
+                adoptionId={adopt.id}
+                applicationId={followUpApplicationId}
+                onSuccess={refetchFollowUps}
+              />
+            ) : (
+              <p className="text-sm text-brown-muted">完成领养协议签署后可提交回访记录。</p>
+            )}
+
+            <div className="mt-4 space-y-3">
+              {followUpsLoading ? (
+                <p className="text-sm text-brown-muted">加载中…</p>
+              ) : followUps.length === 0 ? (
+                <EmptyState compact title="暂无回访记录" />
+              ) : (
+                followUps.map((item) => (
+                  <div key={item.id} className="rounded-lg bg-cream p-3">
+                    <div className="flex items-center gap-2">
+                      <img
+                        decoding="async"
+                        src={item.userAvatar || getDefaultUserAvatar()}
+                        alt=""
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                      <span className="page-section-title">{item.userNickname}</span>
+                      <span className="ml-auto text-xs text-brown-muted">{item.createdAt}</span>
+                    </div>
+                    <p className="mt-2 whitespace-pre-wrap text-sm text-brown-secondary">
+                      {item.content}
+                    </p>
+                    {item.photos && item.photos.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {item.photos.map((url, index) => (
+                          <img
+                            key={`${url}-${index}`}
+                            loading="lazy"
+                            src={url}
+                            alt={`回访照片 ${index + 1}`}
+                            className="h-20 w-20 rounded-md object-cover"
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </Card>
         )}
 

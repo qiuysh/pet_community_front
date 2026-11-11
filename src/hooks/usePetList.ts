@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getPetList } from '../api/pet';
 import { useAsyncEffect } from './useAsync';
 import { PetInfo, PetListParams } from '../types/pet';
+import { reportError } from '../utils/errorReport';
 
 /**
  * 宠物列表 hook
@@ -25,7 +26,7 @@ export function usePetList(pageSize = 20) {
   const { loading, data } = useAsyncEffect(
     () => getPetList(params),
     [petType, keyword],
-    { onError: (err) => console.error('获取宠物列表失败', err) },
+    { onError: (err) => reportError('获取宠物列表失败', err) },
   );
 
   const pets: PetInfo[] = data?.list ?? [];

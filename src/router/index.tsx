@@ -39,6 +39,10 @@ const MessageListPage = lazyDefault(() => import('../pages/social/messageListPag
 const NewMessagePage = lazyDefault(() => import('../pages/social/newMessagePage'));
 const ChatPage = lazyDefault(() => import('../pages/social/chatPage'));
 const NotificationListPage = lazyDefault(() => import('../pages/social/notificationListPage'));
+const MyReportListPage = lazyNamed(
+  () => import('../pages/social/myReportListPage'),
+  'MyReportListPage',
+);
 const NotificationSettingsPage = lazyDefault(
   () => import('../pages/social/notificationSettingsPage'),
 );
@@ -75,6 +79,7 @@ const ActivitySignInPage = lazyNamed(
   'ActivitySignInPage',
 );
 const AdoptListPage = lazyNamed(() => import('../pages/adopt/adoptListPage'), 'AdoptListPage');
+const MyAdoptPage = lazyNamed(() => import('../pages/adopt/myAdoptPage'), 'MyAdoptPage');
 const AdoptDetailPage = lazyNamed(
   () => import('../pages/adopt/adoptDetailPage'),
   'AdoptDetailPage',
@@ -227,6 +232,7 @@ const appRoutes: RouteObject[] = [
 
   { path: '/notifications', element: withUser(<NotificationListPage />, true) },
   { path: '/notification-settings', element: withUser(<NotificationSettingsPage />, true) },
+  { path: '/my-reports', element: withUser(<MyReportListPage />, true) },
   { path: '/points', element: withUser(<PointsPage />, true) },
 
   { path: '/search', element: withUser(<SearchPage />) },
@@ -239,6 +245,7 @@ const appRoutes: RouteObject[] = [
   { path: '/activities/:id/sign-in', element: bare(<ActivitySignInPage />, true) },
 
   { path: '/adopts', element: withUser(<AdoptListPage />) },
+  { path: '/adopts/mine', element: withUser(<MyAdoptPage />, true) },
   { path: '/adopts/:id', element: withUser(<AdoptDetailPage />) },
   { path: '/adopts/create', element: withUser(<AdoptCreatePage />, true) },
 

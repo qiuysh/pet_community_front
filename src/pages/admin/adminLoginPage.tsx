@@ -1,6 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { RefreshCw, ShieldCheck } from 'lucide-react';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useAdminStore } from '../../stores/adminStore';
+import { useSiteConfigStore } from '../../stores/siteConfigStore';
+import { getAdminCaptcha } from '../../api/admin';
+import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { validators, validateForm } from '../../utils/validators';
 import {
   getRememberedAdminUsername,
@@ -14,24 +19,51 @@ import { adminUi } from '../../styles/adminUi';
 
 export function AdminLoginPage() {
   const navigate = useNavigate();
+  const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
   const [username, setUsername] = useState(() => getRememberedAdminUsername());
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(
     () => isAdminRemembered() || !!getRememberedAdminUsername(),
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [requireCaptcha, setRequireCaptcha] = useState(false);
+  const [captchaId, setCaptchaId] = useState('');
+  const [captchaImage, setCaptchaImage] = useState('');
+  const [captchaCode, setCaptchaCode] = useState('');
+  const [captchaLoading, setCaptchaLoading] = useState(false);
 
   const { login, isLoading, error, fetchPublicKey } = useAdminStore();
+
+  const refreshCaptcha = useCallback(async () => {
+    setCaptchaLoading(true);
+    try {
+      const res = await getAdminCaptcha();
+      setCaptchaId(res.captchaId);
+      setCaptchaImage(res.captchaImage);
+      setCaptchaCode('');
+    } catch {
+      setCaptchaId('');
+      setCaptchaImage('');
+    } finally {
+      setCaptchaLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchPublicKey();
   }, [fetchPublicKey]);
 
+  useEffect(() => {
+    if (requireCaptcha) {
+      void refreshCaptcha();
+    }
+  }, [requireCaptcha, refreshCaptcha]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = { username, password };
-    const validationRules = {
+    const formData = { username, password, captchaCode };
+    const validationRules: Record<string, ReturnType<typeof validators.required>[]> = {
       username: [
         validators.required('请输入用户名'),
         validators.minLength(3, '用户名至少3个字符'),
@@ -43,6 +75,9 @@ export function AdminLoginPage() {
         validators.maxLength(50, '密码最多50个字符'),
       ],
     };
+    if (requireCaptcha) {
+      validationRules.captchaCode = [validators.required('请输入验证码')];
+    }
 
     const formErrors = validateForm(formData, validationRules);
     setErrors(formErrors);
@@ -51,11 +86,27 @@ export function AdminLoginPage() {
       return;
     }
 
-    const success = await login({ username, password }, { remember });
+    const result = await login(
+      {
+        username,
+        password,
+        captchaId: requireCaptcha ? captchaId : undefined,
+        captchaCode: requireCaptcha ? captchaCode : undefined,
+      },
+      { remember },
+    );
 
-    if (success) {
+    if (result.ok) {
       setRememberedAdminUsername(remember ? username : null);
       navigate('/admin/dashboard', { replace: true });
+      return;
+    }
+
+    if (result.requireCaptcha) {
+      setRequireCaptcha(true);
+      void refreshCaptcha();
+    } else if (requireCaptcha) {
+      void refreshCaptcha();
     }
   };
 
@@ -67,16 +118,14 @@ export function AdminLoginPage() {
       <div className="bg-white rounded-md shadow-card w-full max-w-md p-8 relative animate-fadeIn">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-secondary-soft rounded-sm flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-              />
-            </svg>
+            <ShieldCheck
+              size={ICON_SIZE.feature}
+              strokeWidth={iconStroke(ICON_SIZE.feature)}
+              className="text-secondary"
+              aria-hidden="true"
+            />
           </div>
-          <h1 className={adminUi.pageTitle}>宠物社区管理后台</h1>
+          <h1 className={adminUi.pageTitle}>{siteName}管理后台</h1>
           <p className="text-brown-secondary mt-2">请登录您的管理员账号</p>
         </div>
 
@@ -100,10 +149,10 @@ export function AdminLoginPage() {
               spellCheck={false}
               className="h-11 px-4"
             />
-            {errors.username ? <AdminHint className="text-error">{errors.username}</AdminHint> : null}
+            {errors.username ? <AdminHint className="text-error-text">{errors.username}</AdminHint> : null}
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <AdminLabel htmlFor="admin-password">密码</AdminLabel>
             <AdminInput
               id="admin-password"
@@ -121,8 +170,58 @@ export function AdminLoginPage() {
               name="password"
               className="h-11 px-4"
             />
-            {errors.password ? <AdminHint className="text-error">{errors.password}</AdminHint> : null}
+            {errors.password ? <AdminHint className="text-error-text">{errors.password}</AdminHint> : null}
           </div>
+
+          {requireCaptcha && (
+            <div className="mb-4">
+              <AdminLabel htmlFor="admin-captcha">验证码</AdminLabel>
+              <div className="flex gap-2 items-stretch">
+                <AdminInput
+                  id="admin-captcha"
+                  type="text"
+                  value={captchaCode}
+                  invalid={!!errors.captchaCode}
+                  onChange={(e) => {
+                    setCaptchaCode(e.target.value.toUpperCase());
+                    if (errors.captchaCode) {
+                      setErrors((prev) => ({ ...prev, captchaCode: '' }));
+                    }
+                  }}
+                  placeholder="输入图中字符"
+                  autoComplete="off"
+                  name="captchaCode"
+                  spellCheck={false}
+                  className="h-11 px-4 flex-1"
+                  maxLength={4}
+                  aria-label="图形验证码"
+                />
+                <button
+                  type="button"
+                  className="shrink-0 h-11 w-[120px] rounded-md border border-border-light bg-soft overflow-hidden flex items-center justify-center"
+                  onClick={() => void refreshCaptcha()}
+                  disabled={captchaLoading}
+                  aria-label="刷新验证码"
+                  title="点击刷新"
+                >
+                  {captchaImage ? (
+                    <img src={captchaImage} alt="验证码" className="h-full w-full object-cover" />
+                  ) : (
+                    <RefreshCw
+                      size={ICON_SIZE.inline}
+                      className={captchaLoading ? 'animate-spin text-brown-muted' : 'text-brown-muted'}
+                      aria-hidden="true"
+                    />
+                  )}
+                </button>
+              </div>
+              {errors.captchaCode ? (
+                <AdminHint className="text-error-text">{errors.captchaCode}</AdminHint>
+              ) : (
+                <AdminHint>连续失败后需填写验证码，点击图片可刷新</AdminHint>
+              )}
+            </div>
+          )}
 
           <div className="flex items-center justify-between mb-6">
             <AdminCheckbox
@@ -133,13 +232,11 @@ export function AdminLoginPage() {
             >
               记住我
             </AdminCheckbox>
-            <a href="#" className="text-sm text-secondary hover:text-secondary-dark font-medium">
-              忘记密码？
-            </a>
+            <span className="text-sm text-brown-muted">忘记密码请联系超级管理员重置</span>
           </div>
 
           {error && (
-            <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error text-sm">
+            <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
               {error}
             </div>
           )}
@@ -152,9 +249,7 @@ export function AdminLoginPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-brown-muted">
             还没有账号？{' '}
-            <a href="#" className="text-secondary hover:text-secondary-dark font-medium">
-              联系管理员
-            </a>
+            <span className="text-secondary">后台账号由超级管理员创建</span>
           </p>
         </div>
       </div>

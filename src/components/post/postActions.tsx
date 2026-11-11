@@ -3,17 +3,30 @@ import { Heart, MessageCircle, Bookmark, Share2 } from 'lucide-react';
 import { PostInfo } from '../../types/post';
 import { usePostActions } from '../../hooks/usePostActions';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { formatCount } from '../../utils/format';
 import { Button } from '../ui/button';
+import { ShareSheet } from './shareSheet';
 
 /**
  * 帖子四按钮：点赞 / 评论 / 收藏 / 分享
  * - compact=true：列表卡（ICON_SIZE.action）
  * - compact=false：详情正文内联（同档 action，间距略大）
+ *
+ * 分享行为与详情页保持一致：点击分享打开分享面板（微信/微博/复制链接/二维码），
+ * 选择平台后再上报分享数。传入 onShareOverride 时由外部接管（详情页复用自身 state）。
  */
+
+/** 可展示的操作按钮，默认全展示 */
+export type PostActionKey = 'like' | 'comment' | 'favorite' | 'share';
+
+const DEFAULT_ITEMS: PostActionKey[] = ['like', 'comment', 'favorite', 'share'];
+
 export interface PostActionsProps {
   post: PostInfo;
   compact?: boolean;
   className?: string;
+  /** 展示哪些按钮；摘要卡（如分类页）可只保留 like/comment/share */
+  items?: PostActionKey[];
   /** 详情页：聚焦评论区，不 navigate */
   onCommentOverride?: () => void;
   /** 详情页：打开分享面板等 */
@@ -28,12 +41,13 @@ export const PostActions: React.FC<PostActionsProps> = ({
   post,
   compact = false,
   className,
+  items = DEFAULT_ITEMS,
   onCommentOverride,
   onShareOverride,
   onLikeOverride,
   onFavoriteOverride,
 }) => {
-  const { state, onLike, onFavorite, onShare, onComment } = usePostActions(post);
+  const { state, onLike, onFavorite, onComment, share } = usePostActions(post);
 
   // 详情页传入 override 时以 post 为准，避免与 usePostDetail 双份状态
   const isLiked = onLikeOverride ? !!post.isLiked : state.isLiked;
@@ -53,71 +67,96 @@ export const PostActions: React.FC<PostActionsProps> = ({
   ].join(' ');
 
   return (
-    <div
-      className={`post-actions flex items-center ${compact ? 'justify-around gap-2 text-sm py-2' : 'gap-6 text-base py-3'} text-brown-secondary ${className ?? ''}`}
-      role="group"
-      aria-label="动态操作"
-    >
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        aria-label="点赞"
-        aria-pressed={isLiked}
-        className={`${itemClass} ${isLiked ? 'text-primary' : ''}`}
-        onClick={onLikeOverride ?? onLike}
+    <>
+      <div
+        className={`post-actions flex items-center ${compact ? 'justify-around gap-2 text-sm py-2' : 'gap-6 text-base py-3'} text-brown-secondary ${className ?? ''}`}
+        role="group"
+        aria-label="动态操作"
       >
-        <Heart
-          size={iconPx}
-          strokeWidth={stroke}
-          fill={isLiked ? 'currentColor' : 'none'}
-          aria-hidden="true"
+        {items.includes('like') && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="点赞"
+            aria-pressed={isLiked}
+            className={`${itemClass} ${isLiked ? 'text-primary-text' : ''}`}
+            onClick={onLikeOverride ?? onLike}
+          >
+            <span className={isLiked ? 'motion-pop inline-flex' : 'inline-flex'}>
+              <Heart
+                size={iconPx}
+                strokeWidth={stroke}
+                fill={isLiked ? 'currentColor' : 'none'}
+                aria-hidden="true"
+              />
+            </span>
+            <span className="tabular-nums">{formatCount(likesCount)}</span>
+          </Button>
+        )}
+
+        {items.includes('comment') && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="评论"
+            className={itemClass}
+            onClick={onCommentOverride ?? onComment}
+          >
+            <MessageCircle size={iconPx} strokeWidth={stroke} aria-hidden="true" />
+            <span className="tabular-nums">{formatCount(commentsCount)}</span>
+          </Button>
+        )}
+
+        {items.includes('favorite') && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="收藏"
+            aria-pressed={isFavorited}
+            className={`${itemClass} ${isFavorited ? 'text-primary-text' : ''}`}
+            onClick={onFavoriteOverride ?? onFavorite}
+          >
+            <span className={isFavorited ? 'motion-pop inline-flex' : 'inline-flex'}>
+              <Bookmark
+                size={iconPx}
+                strokeWidth={stroke}
+                fill={isFavorited ? 'currentColor' : 'none'}
+                aria-hidden="true"
+              />
+            </span>
+            <span className="tabular-nums">{formatCount(favoritesCount)}</span>
+          </Button>
+        )}
+
+        {items.includes('share') && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="分享"
+            className={itemClass}
+            onClick={onShareOverride ?? share.openShare}
+          >
+            <Share2 size={iconPx} strokeWidth={stroke} aria-hidden="true" />
+            <span className="tabular-nums">{formatCount(sharesCount)}</span>
+          </Button>
+        )}
+      </div>
+
+      {/* 默认（列表场景）自带分享面板，与详情页保持一致；override 时由外部渲染 */}
+      {!onShareOverride && (
+        <ShareSheet
+          open={share.shareOpen}
+          onClose={share.closeShare}
+          postUrl={share.shareUrl}
+          postTitle={share.shareTitle}
+          onShare={(platform) => void share.onShare(platform)}
         />
-        <span className="tabular-nums">{likesCount}</span>
-      </Button>
-
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        aria-label="评论"
-        className={itemClass}
-        onClick={onCommentOverride ?? onComment}
-      >
-        <MessageCircle size={iconPx} strokeWidth={stroke} aria-hidden="true" />
-        <span className="tabular-nums">{commentsCount}</span>
-      </Button>
-
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        aria-label="收藏"
-        aria-pressed={isFavorited}
-        className={`${itemClass} ${isFavorited ? 'text-primary' : ''}`}
-        onClick={onFavoriteOverride ?? onFavorite}
-      >
-        <Bookmark
-          size={iconPx}
-          strokeWidth={stroke}
-          fill={isFavorited ? 'currentColor' : 'none'}
-          aria-hidden="true"
-        />
-        <span className="tabular-nums">{favoritesCount}</span>
-      </Button>
-
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        aria-label="分享"
-        className={itemClass}
-        onClick={onShareOverride ?? (() => onShare('copy'))}
-      >
-        <Share2 size={iconPx} strokeWidth={stroke} aria-hidden="true" />
-        <span className="tabular-nums">{sharesCount}</span>
-      </Button>
-    </div>
+      )}
+    </>
   );
 };
 
