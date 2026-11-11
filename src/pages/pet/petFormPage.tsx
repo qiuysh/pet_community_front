@@ -4,12 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { usePetForm } from '../../hooks/usePetForm';
 import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { PetTypeOptions, GenderOptions, PetVisibilityOptions, getPetTypeIcon } from '../../types/pet';
-import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Checkbox } from '../../components/ui/checkbox';
 import { FieldError, FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Radio, RadioGroup } from '../../components/ui/radio';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
 export function PetFormPage() {
   const navigate = useNavigate();
@@ -37,14 +38,12 @@ export function PetFormPage() {
 
   return (
     <div className="min-h-screen bg-cream">
-      <div className="page-shell px-4 py-8">
-        <div className="flex items-center gap-4 mb-6">
-          <BackButton />
-          <h1 className="page-content-title">
-            {isEdit ? '编辑宠物档案' : '创建宠物档案'}
-          </h1>
-        </div>
+      <PageHeader
+        title={isEdit ? '编辑宠物档案' : '创建宠物档案'}
+        fallbackTo="/pets"
+      />
 
+      <div className="page-shell px-4 py-4">
         <Card className="space-y-6" padding="lg">
           <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             <div className="flex items-center gap-6">
@@ -85,24 +84,58 @@ export function PetFormPage() {
             </div>
 
             <div>
-              <FieldLabel>宠物类型</FieldLabel>
-              <div className="grid grid-cols-5 gap-2">
-                {PetTypeOptions.map((type) => (
-                  <Button
-                    key={type.value}
-                    type="button"
-                    variant="ghost"
-                    onClick={() => updateField('petType', type.value)}
-                    className={`flex flex-col items-center gap-1 p-3 h-auto min-h-0 rounded-md border-2 transition-colors ${
-                      formData.petType === type.value
-                        ? 'border-primary-text bg-primary-soft'
-                        : 'border-border-light hover:border-border'
-                    }`}
-                  >
-                    <span className="text-2xl">{type.emoji}</span>
-                    <span className="text-xs text-brown-secondary">{type.label}</span>
-                  </Button>
-                ))}
+              <FieldLabel htmlFor="pet-type">宠物类型</FieldLabel>
+              <div
+                role="group"
+                aria-labelledby="pet-type-label"
+                className="grid grid-cols-3 gap-3 sm:grid-cols-5"
+              >
+                {PetTypeOptions.map((type) => {
+                  const selected = formData.petType === type.value;
+                  const TypeIcon = type.Icon;
+                  // 原生 button：HeroUI Button 的 button--md 会压扁自定义瓷砖高度
+                  return (
+                    <button
+                      key={type.value}
+                      type="button"
+                      aria-pressed={selected}
+                      aria-label={type.label}
+                      onClick={() => updateField('petType', type.value)}
+                      className={[
+                        'flex w-full aspect-square flex-col items-center justify-center gap-2',
+                        'm-0 cursor-pointer appearance-none px-2 py-3 font-inherit',
+                        'rounded-lg border-2 transition-all',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-text/40 focus-visible:ring-offset-2',
+                        selected
+                          ? 'border-primary-text bg-primary-soft text-primary-text shadow-card'
+                          : 'border-border-light bg-white text-brown-secondary hover:border-secondary/45 hover:bg-secondary-soft/50',
+                      ].join(' ')}
+                    >
+                      <span
+                        className={[
+                          'flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors',
+                          selected
+                            ? 'bg-white text-primary-text'
+                            : 'bg-cream text-brown-secondary',
+                        ].join(' ')}
+                      >
+                        <TypeIcon
+                          size={ICON_SIZE.nav}
+                          strokeWidth={iconStroke(ICON_SIZE.nav)}
+                          aria-hidden="true"
+                        />
+                      </span>
+                      <span
+                        className={[
+                          'text-sm font-medium leading-none',
+                          selected ? 'text-primary-text' : 'text-brown-secondary',
+                        ].join(' ')}
+                      >
+                        {type.label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { usePetList } from '../../hooks/usePetList';
 import { PetTypeOptions, getPetTypeIcon, PetTypeFallbackIcon } from '../../types/pet';
-import { ICON_SIZE } from '../../styles/iconSize';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useUserStore } from '../../stores/userStore';
 import { buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -35,15 +35,23 @@ export function PetListPage() {
               <FilterChip active={petType === 0} onClick={() => setPetType(0)}>
                 全部
               </FilterChip>
-              {PetTypeOptions.map((type) => (
-                <FilterChip
-                  key={type.value}
-                  active={petType === type.value}
-                  onClick={() => setPetType(type.value)}
-                >
-                  {type.emoji} {type.label}
-                </FilterChip>
-              ))}
+              {PetTypeOptions.map((type) => {
+                const TypeIcon = type.Icon;
+                return (
+                  <FilterChip
+                    key={type.value}
+                    active={petType === type.value}
+                    onClick={() => setPetType(type.value)}
+                  >
+                    <TypeIcon
+                      size={ICON_SIZE.action}
+                      strokeWidth={iconStroke(ICON_SIZE.action)}
+                      aria-hidden="true"
+                    />
+                    {type.label}
+                  </FilterChip>
+                );
+              })}
             </div>
             <div className="flex-1 min-w-[200px]">
               <Input

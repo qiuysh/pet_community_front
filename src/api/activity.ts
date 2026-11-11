@@ -230,6 +230,6 @@ export const publishReview = async (
   return await post<ActivityReviewInfo>(`/api/v1/admin/activities/${activityId}/review`, payload);
 };
 
-export const getReview = async (activityId: number): Promise<ActivityReviewInfo> => {
-  return await get<ActivityReviewInfo>(`/api/v1/activities/${activityId}/review`);
+export const getReview = async (activityId: number): Promise<ActivityReviewInfo | null> => {
+  return await get<ActivityReviewInfo | null>(`/api/v1/activities/${activityId}/review`);
 };
