@@ -78,6 +78,17 @@
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+
+          .notification-detail-hint {
+            color: $primary-text;
+            font-weight: 500;
+          }
+        }
+
+        &[aria-expanded='true'] .notification-desc {
+          white-space: normal;
+          overflow: visible;
+          text-overflow: unset;
         }
 
         .notification-time {

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTopicSquare } from '../../hooks/useTopicSquare';
 import { useUserStore } from '../../stores/userStore';
@@ -18,6 +19,7 @@ export const TopicSquarePage = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn } = useUserStore();
   const canCreateTopic = !!user && (user.level ?? 0) >= TOPIC_CREATE_MIN_LEVEL;
+  const [brokenCovers, setBrokenCovers] = useState<Record<number, boolean>>({});
 
   const getTagSize = (hot: number) => {
     if (hot >= 100) return 'large';
@@ -59,7 +61,7 @@ export const TopicSquarePage = () => {
           }
           onClick={() => {
             if (!isLoggedIn) {
-              navigate('/login');
+              navigate('/login', { state: { from: '/topics/create' } });
               return;
             }
             if (!canCreateTopic) {
@@ -113,9 +115,10 @@ export const TopicSquarePage = () => {
           <div className="section">
             <div className="section-header">
               <h2 className="page-section-title section-title">热门标签</h2>
-              <span className="section-subtitle">大家都在讨论这些</span>
+              <span className="section-subtitle">点标签去搜索相关内容</span>
             </div>
             <div className="tag-cloud motion-list">
+              {tags.length === 0 && <EmptyState compact title="暂无热门标签" />}
               {tags.map((tag) => (
                 <Link
                   key={tag.id}
@@ -123,7 +126,9 @@ export const TopicSquarePage = () => {
                   className={`tag-item ${getTagSize(tag.hot)} ${getTagColorClass(tag.hot)}`}
                 >
                   <span className="tag-name">{tag.name}</span>
-                  <span className="tag-count tabular-nums">{formatCount(tag.count)}</span>
+                  {tag.count > 0 && (
+                    <span className="tag-count tabular-nums">{formatCount(tag.count)}</span>
+                  )}
                 </Link>
               ))}
             </div>
@@ -131,12 +136,17 @@ export const TopicSquarePage = () => {
 
           <div className="section">
             <div className="section-header">
-              <h2 className="page-section-title section-title">热门话题</h2>
-              <span className="section-subtitle">参与度最高的话题</span>
+              <h2 className="page-section-title section-title">广场热议</h2>
+              <span className="section-subtitle">
+                参与度最高 ·{' '}
+                <Link to="/topics" className="text-primary-text">
+                  全部话题库
+                </Link>
+              </span>
             </div>
             <div className="hot-topics">
               {hotTopics.length === 0 && (
-                <EmptyState compact title="暂无热门话题" />
+                <EmptyState compact title="暂无热议话题" description="去话题库逛逛，或稍后再来" />
               )}
               {hotTopics.map((topic, index) => (
                 <Link
@@ -147,8 +157,14 @@ export const TopicSquarePage = () => {
                 >
                   <span className={`rank rank-${index + 1}`}>{index + 1}</span>
                   <div className="topic-icon" aria-hidden="true">
-                    {topic.cover ? (
-                      <img src={topic.cover} alt="" className="topic-cover-thumb" decoding="async" />
+                    {topic.cover && !brokenCovers[topic.id] ? (
+                      <img
+                        src={topic.cover}
+                        alt=""
+                        className="topic-cover-thumb"
+                        decoding="async"
+                        onError={() => setBrokenCovers((prev) => ({ ...prev, [topic.id]: true }))}
+                      />
                     ) : (
                       <Hash
                         size={ICON_SIZE.action}
@@ -163,7 +179,13 @@ export const TopicSquarePage = () => {
                     <div className="topic-desc">{topic.description || '暂无描述'}</div>
                   </div>
                   <div className="topic-meta">
-                    <span className="posts-count tabular-nums">{formatCount(topic.postsCount)} 动态</span>
+                    {topic.postsCount > 0 ? (
+                      <span className="posts-count tabular-nums">
+                        {formatCount(topic.postsCount)} 动态
+                      </span>
+                    ) : (
+                      <span className="posts-count text-brown-muted">抢先参与</span>
+                    )}
                     <span className="topic-arrow" aria-hidden="true">
                       <ChevronRight size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} />
                     </span>

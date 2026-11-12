@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCategory } from '../../hooks/useCategory';
 import { PetIcon, PostIcon } from '../../components/discovery/filterIcons';
@@ -12,6 +13,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { Spinner } from '../../components/ui/spinner';
 import { PostActions } from '../../components/post/postActions';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { formatRelativeTime } from '../../utils/format';
 import type { PostInfo } from '../../types/post';
 import type { RecommendPostInfo } from '../../types/discovery';
 import './categoryPage.scss';
@@ -56,6 +58,7 @@ export const CategoryPage = () => {
   } = useCategory();
 
   const totalPages = Math.ceil(total / 10);
+  const [petFiltersExpanded, setPetFiltersExpanded] = useState(false);
 
   const petTypes = [
     { value: '', label: '全部' },
@@ -72,6 +75,13 @@ export const CategoryPage = () => {
     { value: 'video', label: '视频', icon: 'video' },
     { value: 'text', label: '文字', icon: 'text' },
   ];
+
+  const visiblePetTypes = useMemo(() => {
+    const primary = petTypes.slice(0, 4); // 全部 + 狗狗 + 猫咪 + 鸟类
+    if (petFiltersExpanded) return petTypes;
+    const selectedHidden = petTypes.slice(4).find((pt) => pt.value === petType);
+    return selectedHidden ? [...primary, selectedHidden] : primary;
+  }, [petFiltersExpanded, petType]);
 
   return (
     <div className="category-page">
@@ -110,7 +120,7 @@ export const CategoryPage = () => {
         <div className="filter-row">
           <span className="filter-label">宠物</span>
           <div className="filter-chips">
-            {petTypes.map((pt) => (
+            {visiblePetTypes.map((pt) => (
               <FilterChip
                 key={pt.value}
                 active={petType === pt.value}
@@ -121,6 +131,13 @@ export const CategoryPage = () => {
                 <span>{pt.label}</span>
               </FilterChip>
             ))}
+            <FilterChip
+              active={petFiltersExpanded}
+              onClick={() => setPetFiltersExpanded((v) => !v)}
+              className="filter-chip"
+            >
+              <span>{petFiltersExpanded ? '收起' : '更多'}</span>
+            </FilterChip>
           </div>
         </div>
         <div className="filter-row">
@@ -203,7 +220,7 @@ export const CategoryPage = () => {
               <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="post-avatar" />
               <div className="post-user-info">
                 <span className="page-section-title post-nickname">{post.userNickname}</span>
-                <span className="post-time">{post.createdAt}</span>
+                <span className="post-time">{formatRelativeTime(post.createdAt)}</span>
               </div>
             </div>
             {post.content && <div className="post-content">{post.content}</div>}
@@ -211,7 +228,15 @@ export const CategoryPage = () => {
               <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                 {post.images.slice(0, 9).map((img, idx) => (
                   <div key={idx} className="post-image">
-                    <img src={img} alt="" decoding="async" />
+                    <img
+                      src={img}
+                      alt=""
+                      decoding="async"
+                      onError={(e) => {
+                        e.currentTarget.style.visibility = 'hidden';
+                        e.currentTarget.parentElement?.classList.add('is-broken');
+                      }}
+                    />
                     {post.images!.length > 9 && idx === 8 && (
                       <div className="image-more">+{post.images!.length - 9}</div>
                     )}

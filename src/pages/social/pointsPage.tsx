@@ -28,8 +28,13 @@ const PointsPage: React.FC = () => {
       {userLevel && (
         <Card className="level-card" padding="md">
           <div className="level-info">
-            <div className="level-badge">Lv.{userLevel.level}</div>
-            <div className="page-content-title level-name">{userLevel.levelName}</div>
+            <div className="page-content-title level-name">
+              Lv.{userLevel.level}
+              {userLevel.levelName &&
+                !String(userLevel.levelName).includes(String(userLevel.level)) && (
+                  <span className="text-brown-secondary font-medium"> · {userLevel.levelName}</span>
+                )}
+            </div>
           </div>
           <div className="points-info">
             <div className="points-value">{userLevel.currentPoints}</div>

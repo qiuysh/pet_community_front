@@ -105,10 +105,19 @@ const FollowListPage: React.FC = () => {
 
   const emptyText =
     activeTab === 'following' ? '关注' : activeTab === 'followers' ? '粉丝' : '悄悄关注';
+  const headerTitle = isOwnList
+    ? activeTab === 'followers'
+      ? '我的粉丝'
+      : activeTab === 'secret-following'
+        ? '悄悄关注'
+        : '我的关注'
+    : activeTab === 'followers'
+      ? '粉丝列表'
+      : '关注列表';
 
   return (
     <div className="follow-list-page">
-      <PageHeader title="关系列表" fallbackTo="/profile" />
+      <PageHeader title={headerTitle} fallbackTo="/profile" />
 
       <div className="tab-bar">
         <Tabs

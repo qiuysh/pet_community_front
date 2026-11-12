@@ -1,8 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, MessageCircle } from 'lucide-react';
+import { Bell, Plus, MessageCircle } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useConversationList } from '../../hooks/useConversationList';
+import { useNavUnreadCounts } from '../../hooks/useNavUnreadCounts';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
@@ -30,6 +31,7 @@ function ConversationListSkeleton() {
 const MessageListPage: React.FC = () => {
   const navigate = useNavigate();
   const { conversations, loading } = useConversationList();
+  const { notificationUnread } = useNavUnreadCounts();
 
   const handleConversationClick = (conversationId: number, targetUserId: number) => {
     navigate(`/messages/${conversationId}/${targetUserId}`);
@@ -45,16 +47,35 @@ const MessageListPage: React.FC = () => {
         title="消息"
         fallbackTo="/"
         right={
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-10 w-10 rounded-full p-0"
-            onClick={handleNewMessage}
-            aria-label="新建私信"
-          >
-            <Plus size={ICON_SIZE.nav} strokeWidth={iconStroke(ICON_SIZE.nav)} aria-hidden="true" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-10 w-10 rounded-full p-0 relative"
+              onClick={() => navigate('/notifications')}
+              aria-label={
+                notificationUnread > 0
+                  ? `通知，${notificationUnread}条未读`
+                  : '通知'
+              }
+            >
+              <Bell size={ICON_SIZE.nav} strokeWidth={iconStroke(ICON_SIZE.nav)} aria-hidden="true" />
+              {notificationUnread > 0 && (
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-10 w-10 rounded-full p-0"
+              onClick={handleNewMessage}
+              aria-label="新建私信"
+            >
+              <Plus size={ICON_SIZE.nav} strokeWidth={iconStroke(ICON_SIZE.nav)} aria-hidden="true" />
+            </Button>
+          </div>
         }
       />
 

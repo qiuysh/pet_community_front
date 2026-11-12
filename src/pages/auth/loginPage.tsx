@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
+import { getLoginContextCopy } from '../../utils/loginContext';
 import { useVerificationCode } from '../../hooks/useVerificationCode';
 import {
   getRememberedUserAccount,
@@ -22,6 +23,9 @@ import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
 export function LoginPage() {
   const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
+  const loginCopy = getLoginContextCopy(from);
   const [loginType, setLoginType] = useState<'password' | 'code'>('password');
   const [account, setAccount] = useState(() => getRememberedUserAccount());
   const [password, setPassword] = useState('');
@@ -82,7 +86,7 @@ export function LoginPage() {
             />
           </div>
           <h1 className="page-content-title">欢迎来到{siteName}</h1>
-          <p className="text-sm text-brown-secondary mt-1">登录您的账号，与宠友分享快乐</p>
+          <p className="text-sm text-brown-secondary mt-1">{loginCopy.subtitle}</p>
         </div>
 
         <div className="mb-4">

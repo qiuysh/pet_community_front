@@ -3,15 +3,24 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 const mockUseUserStore = vi.fn();
+const mockUseNavUnreadCounts = vi.fn(() => ({
+  messageUnread: 0,
+  notificationUnread: 0,
+  refresh: vi.fn(),
+}));
 
 vi.mock('../../stores/userStore', () => ({
   useUserStore: () => mockUseUserStore(),
 }));
 
+vi.mock('../../hooks/useNavUnreadCounts', () => ({
+  useNavUnreadCounts: () => mockUseNavUnreadCounts(),
+}));
+
 import { UserTabBar } from './userTabBar';
 
 const renderWithRouter = (initialPath: string = '/', loggedIn: boolean = false) => {
-  mockUseUserStore.mockReturnValue({ isLoggedIn: loggedIn });
+  mockUseUserStore.mockReturnValue({ isLoggedIn: loggedIn, user: null });
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <UserTabBar />
@@ -28,7 +37,7 @@ describe('UserTabBar', () => {
     renderWithRouter();
     expect(screen.getByText('首页')).toBeInTheDocument();
     expect(screen.getByText('发现')).toBeInTheDocument();
-    expect(screen.getByText('活动')).toBeInTheDocument();
+    expect(screen.getByText('消息')).toBeInTheDocument();
     expect(screen.getByText('领养')).toBeInTheDocument();
     expect(screen.getByText('我的')).toBeInTheDocument();
   });
@@ -49,7 +58,8 @@ describe('UserTabBar', () => {
     expect(homeLink).toHaveClass('active');
   });
 
-  it('/posts 路由也激活首页', () => {
+  it('/posts 重定向前仍可识别首页匹配逻辑', () => {
+    // 路由层已将 /posts → /；此处仍覆盖 isActive 对 /posts pathname 的兼容
     renderWithRouter('/posts');
     const homeLink = screen.getByText('首页').closest('a');
     expect(homeLink).toHaveClass('active');
@@ -67,10 +77,16 @@ describe('UserTabBar', () => {
     expect(adoptLink).toHaveClass('active');
   });
 
-  it('活动路由激活', () => {
-    renderWithRouter('/activities');
-    const activityLink = screen.getByText('活动').closest('a');
-    expect(activityLink).toHaveClass('active');
+  it('消息路由激活', () => {
+    renderWithRouter('/messages');
+    const messagesLink = screen.getByText('消息').closest('a');
+    expect(messagesLink).toHaveClass('active');
+  });
+
+  it('通知路由也激活消息中枢', () => {
+    renderWithRouter('/notifications');
+    const messagesLink = screen.getByText('消息').closest('a');
+    expect(messagesLink).toHaveClass('active');
   });
 
   it('settings 路由激活我的', () => {
@@ -95,7 +111,7 @@ describe('UserTabBar', () => {
     renderWithRouter();
     expect(screen.getByText('首页').closest('a')).toHaveAttribute('href', '/');
     expect(screen.getByText('发现').closest('a')).toHaveAttribute('href', '/discover');
-    expect(screen.getByText('活动').closest('a')).toHaveAttribute('href', '/activities');
+    expect(screen.getByText('消息').closest('a')).toHaveAttribute('href', '/messages');
     expect(screen.getByText('领养').closest('a')).toHaveAttribute('href', '/adopts');
     // 「我的」走个人主页 /profile（/settings 是设置页，由 isActive 额外判定）
     expect(screen.getByText('我的').closest('a')).toHaveAttribute('href', '/profile');

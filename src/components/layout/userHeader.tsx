@@ -116,27 +116,36 @@ export function UserHeader() {
             items={mobileMoreItems}
             onAction={(key) => navigate(key)}
           />
+          <Link to="/search" className="action-link" aria-label="搜索">
+            <Search {...actionIconProps} />
+            <span className="action-link-text">搜索</span>
+          </Link>
+          <Link
+            to="/notifications"
+            className="action-link action-link--secondary"
+            aria-label={
+              isLoggedIn && notificationUnread > 0
+                ? `通知，${notificationUnread}条未读`
+                : '通知'
+            }
+          >
+            <Bell {...actionIconProps} />
+            <span className="action-link-text">通知</span>
+            {isLoggedIn && <UnreadBadge count={notificationUnread} label="未读通知" />}
+          </Link>
+          <Link
+            to="/messages"
+            className="action-link action-link--secondary"
+            aria-label={
+              isLoggedIn && messageUnread > 0 ? `私信，${messageUnread}条未读` : '私信'
+            }
+          >
+            <MessageCircle {...actionIconProps} />
+            <span className="action-link-text">私信</span>
+            {isLoggedIn && <UnreadBadge count={messageUnread} label="未读私信" />}
+          </Link>
           {isLoggedIn ? (
             <div className="user-menu">
-              <Link to="/search" className="action-link" aria-label="搜索">
-                <Search {...actionIconProps} />
-              </Link>
-              <Link
-                to="/notifications"
-                className="action-link action-link--secondary"
-                aria-label={notificationUnread > 0 ? `通知，${notificationUnread}条未读` : '通知'}
-              >
-                <Bell {...actionIconProps} />
-                <UnreadBadge count={notificationUnread} label="未读通知" />
-              </Link>
-              <Link
-                to="/messages"
-                className="action-link action-link--secondary"
-                aria-label={messageUnread > 0 ? `私信，${messageUnread}条未读` : '私信'}
-              >
-                <MessageCircle {...actionIconProps} />
-                <UnreadBadge count={messageUnread} label="未读私信" />
-              </Link>
               <Dropdown
                 aria-label="用户菜单"
                 trigger={

@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTopicDetail } from '../../hooks/useTopicDetail';
+import { useUserStore } from '../../stores/userStore';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { ShareSheet } from '../../components/post/shareSheet';
@@ -17,6 +18,7 @@ import './topicDetailPage.scss';
 export const TopicDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isLoggedIn } = useUserStore();
   const {
     topic,
     loadingTopic,
@@ -34,7 +36,11 @@ export const TopicDetailPage = () => {
     onShare,
   } = useTopicDetail(id);
 
-  if (loadingTopic || !topic) {
+  const requireLogin = (nextPath: string) => {
+    navigate('/login', { state: { from: nextPath } });
+  };
+
+  if (loadingTopic) {
     return (
       <div className="topic-detail-page">
         <Skeleton className="h-12 w-full mb-4" />
@@ -43,6 +49,23 @@ export const TopicDetailPage = () => {
           <Skeleton className="h-6 w-40 mb-2" />
           <Skeleton className="h-4 w-full" />
         </Card>
+      </div>
+    );
+  }
+
+  if (!topic) {
+    return (
+      <div className="topic-detail-page">
+        <div className="detail-header">
+          <BackButton />
+          <h1 className="page-bar-title title">话题详情</h1>
+        </div>
+        <EmptyState title="话题不存在或已下架" description="回话题库看看其他话题吧" />
+        <div className="mt-4 flex justify-center">
+          <Button type="button" variant="outline" onClick={() => navigate('/topics')}>
+            去话题库
+          </Button>
+        </div>
       </div>
     );
   }
@@ -85,7 +108,7 @@ export const TopicDetailPage = () => {
               ) : (
                 <>
                   <UserPlus size={ICON_SIZE.inline} aria-hidden="true" />
-                  参与话题
+                  {isLoggedIn ? '参与话题' : '登录后参与'}
                 </>
               )}
             </Button>
@@ -97,9 +120,16 @@ export const TopicDetailPage = () => {
               type="button"
               size="sm"
               variant="ghost"
-              onClick={() => navigate(`/posts/create?topicId=${topic.id}`)}
+              onClick={() => {
+                const path = `/posts/create?topicId=${topic.id}`;
+                if (!isLoggedIn) {
+                  requireLogin(path);
+                  return;
+                }
+                navigate(path);
+              }}
             >
-              发动态
+              {isLoggedIn ? '发动态' : '登录后发动态'}
             </Button>
           </div>
         </div>

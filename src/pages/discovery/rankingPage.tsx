@@ -4,6 +4,7 @@ import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Flame, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Avatar } from '../../components/ui/avatar';
 import { FilterChip } from '../../components/ui/filterChip';
+import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { formatCount } from '../../utils/format';
@@ -23,6 +24,7 @@ export const RankingPage = () => {
     { value: 'week', label: '本周' },
     { value: 'month', label: '本月' },
   ];
+  const periodLabel = periods.find((p) => p.value === period)?.label ?? '今日';
 
   return (
     <div className="ranking-page">
@@ -31,7 +33,7 @@ export const RankingPage = () => {
           <Flame size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
           <span>热门排行</span>
         </h1>
-        <p className="header-subtitle">本周最火帖子、人气宠友和热门话题都在这</p>
+        <p className="header-subtitle">{periodLabel}最火动态、人气宠友与话题热度都在这</p>
         <div className="period-tabs flex flex-wrap gap-2">
           {periods.map((p) => (
             <FilterChip
@@ -59,11 +61,13 @@ export const RankingPage = () => {
             </div>
           ))}
         </div>
-      ) : data && (
+      ) : !data ? (
+        <EmptyState title="暂时排不上榜" description="换个时段试试，或稍后再来" />
+      ) : (
         <>
           <div className="ranking-section">
             <div className="section-header">
-              <span className="page-section-title section-title">热门帖子</span>
+              <span className="page-section-title section-title">热门动态</span>
             </div>
             <div className="ranking-list motion-list">
               {(data.posts || []).slice(0, 10).map((post, index) => (
@@ -117,7 +121,7 @@ export const RankingPage = () => {
 
           <div className="ranking-section">
             <div className="section-header">
-              <span className="page-section-title section-title">热门话题</span>
+              <span className="page-section-title section-title">话题热度</span>
             </div>
             <div className="ranking-list motion-list">
               {(data.topics || []).slice(0, 10).map((topic, index) => (
@@ -130,7 +134,7 @@ export const RankingPage = () => {
                     <div className="topic-desc">{topic.description}</div>
                   </div>
                   <div className="topic-stats tabular-nums">
-                    <span>{formatCount(topic.postsCount)}帖子</span>
+                    <span>{formatCount(topic.postsCount)} 动态</span>
                     <span className="hot-score flex items-center gap-1"><Flame {...metaIconProps} /><span>{topic.hotScore}</span></span>
                   </div>
                 </Link>

@@ -16,6 +16,8 @@ import { MentionTextarea } from '../../components/post/mentionTextarea';
 import { ShareSheet } from '../../components/post/shareSheet';
 import { PostActions } from '../../components/post/postActions';
 import { PostLocationLink } from '../../components/post/postLocationLink';
+import { PostImage } from '../../components/post/postImage';
+import '../../components/post/postImage.scss';
 import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Avatar } from '../../components/ui/avatar';
@@ -183,7 +185,7 @@ export const PostDetailPage = () => {
                 onClick={() => setPreviewImage(img)}
                 aria-label={`查看配图 ${idx + 1}`}
               >
-                <img src={img} alt="" decoding="async" />
+                <PostImage src={img} alt={`动态配图 ${idx + 1}`} loading="eager" />
               </button>
             ))}
           </div>
@@ -312,6 +314,12 @@ export const PostDetailPage = () => {
                     variant="ghost"
                     size="sm"
                     className={`like-btn ${comment.isLiked ? 'active' : ''}`}
+                    aria-label={
+                      comment.likesCount > 0
+                        ? `点赞评论，已有 ${comment.likesCount} 人点赞`
+                        : '点赞评论'
+                    }
+                    aria-pressed={comment.isLiked}
                     onClick={() => onCommentLike(comment.id)}
                   >
                     <Heart
@@ -320,7 +328,7 @@ export const PostDetailPage = () => {
                       fill={comment.isLiked ? 'currentColor' : 'none'}
                       aria-hidden="true"
                     />{' '}
-                    <span>{comment.likesCount}</span>
+                    <span aria-hidden="true">{comment.likesCount}</span>
                   </Button>
                   <Button
                     type="button"
@@ -363,6 +371,12 @@ export const PostDetailPage = () => {
                               variant="ghost"
                               size="sm"
                               className={`like-btn ${reply.isLiked ? 'active' : ''}`}
+                              aria-label={
+                                reply.likesCount > 0
+                                  ? `点赞回复，已有 ${reply.likesCount} 人点赞`
+                                  : '点赞回复'
+                              }
+                              aria-pressed={reply.isLiked}
                               onClick={() => onCommentLike(reply.id)}
                             >
                               <Heart
@@ -371,7 +385,7 @@ export const PostDetailPage = () => {
                                 fill={reply.isLiked ? 'currentColor' : 'none'}
                                 aria-hidden="true"
                               />{' '}
-                              <span>{reply.likesCount}</span>
+                              <span aria-hidden="true">{reply.likesCount}</span>
                             </Button>
                             <Button
                               type="button"

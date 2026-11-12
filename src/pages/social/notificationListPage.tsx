@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AtSign, Bell, Heart, MessageCircle, ShieldAlert, UserPlus } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useNotificationList } from '../../hooks/useNotificationList';
 import { useConfirm } from '../../hooks/useConfirm';
 import { formatRelativeTime } from '../../utils/format';
+import { summarizeSecurityNotification } from '../../utils/notificationDisplay';
 import { Button } from '../../components/ui/button';
 import { EmptyState } from '../../components/ui/emptyState';
+import { FilterChip } from '../../components/ui/filterChip';
 import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
 import './notificationListPage.scss';
+
+type NotifyFilter = 'all' | 'social' | 'security';
 
 const NotificationListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,6 +27,14 @@ const NotificationListPage: React.FC = () => {
     markAllAsRead,
   } = useNotificationList();
   const { confirm, confirmDialog } = useConfirm();
+  const [filter, setFilter] = useState<NotifyFilter>('all');
+  const [expandedSecurityIds, setExpandedSecurityIds] = useState<Record<number, boolean>>({});
+
+  const visibleNotifications = useMemo(() => {
+    if (filter === 'all') return notifications;
+    if (filter === 'security') return notifications.filter((n) => n.type === 'security');
+    return notifications.filter((n) => n.type !== 'security');
+  }, [filter, notifications]);
 
   const handleMarkAllRead = async () => {
     const confirmed = await confirm({
@@ -35,13 +47,20 @@ const NotificationListPage: React.FC = () => {
     markAllAsRead();
   };
 
-  const handleNotificationClick = (notification: typeof notifications[0]) => {
+  const handleNotificationClick = (notification: (typeof notifications)[0]) => {
     if (!notification.isRead) {
       markAsRead(notification.id);
     }
-    if (notification.triggerType === 'post') {
-      navigate(`/posts/${notification.triggerID}`);
-    } else if (notification.triggerType === 'comment') {
+
+    if (notification.type === 'security') {
+      setExpandedSecurityIds((prev) => ({
+        ...prev,
+        [notification.id]: !prev[notification.id],
+      }));
+      return;
+    }
+
+    if (notification.triggerType === 'post' || notification.triggerType === 'comment') {
       navigate(`/posts/${notification.triggerID}`);
     } else if (notification.triggerType === 'user') {
       navigate(`/profile/${notification.triggerUserID}`);
@@ -74,13 +93,37 @@ const NotificationListPage: React.FC = () => {
     <div className="notification-list-page">
       <PageHeader
         title="通知"
-        fallbackTo="/"
+        fallbackTo="/messages"
         right={
-          <Button type="button" variant="ghost" size="sm" className="shrink-0 text-primary-text" onClick={handleMarkAllRead}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="shrink-0 text-primary-text"
+            onClick={handleMarkAllRead}
+          >
             全部已读
           </Button>
         }
       />
+
+      <div className="notification-filters flex flex-wrap gap-2 px-4 pb-3">
+        {(
+          [
+            { key: 'all', label: '全部' },
+            { key: 'social', label: '互动' },
+            { key: 'security', label: '安全' },
+          ] as const
+        ).map((item) => (
+          <FilterChip
+            key={item.key}
+            active={filter === item.key}
+            onClick={() => setFilter(item.key)}
+          >
+            {item.label}
+          </FilterChip>
+        ))}
+      </div>
 
       {loading && notifications.length === 0 ? (
         <div className="notification-list">
@@ -95,36 +138,61 @@ const NotificationListPage: React.FC = () => {
             </div>
           ))}
         </div>
-      ) : notifications.length === 0 ? (
-        <EmptyState icon={<Bell size={ICON_SIZE.empty} strokeWidth={1.5} />} title="暂无通知" />
+      ) : visibleNotifications.length === 0 ? (
+        <EmptyState
+          icon={<Bell size={ICON_SIZE.empty} strokeWidth={1.5} />}
+          title={filter === 'security' ? '暂无安全通知' : '暂无通知'}
+          description={
+            filter === 'social' ? '点赞、评论与关注会出现在这里' : undefined
+          }
+        />
       ) : (
         <div className="notification-list motion-list">
-          {notifications.map((notification) => (
-            <button
-              type="button"
-              key={notification.id}
-              className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
-              onClick={() => handleNotificationClick(notification)}
-            >
-              <span className="notification-icon">{getIcon(notification.type)}</span>
-              <span className="notification-content">
-                <span className="page-section-title notification-title">{notification.title}</span>
-                <span className="notification-desc">{notification.content}</span>
-                <span className="notification-time" title={notification.createdAt}>
-                  {formatRelativeTime(notification.createdAt)}
+          {visibleNotifications.map((notification) => {
+            const security =
+              notification.type === 'security'
+                ? summarizeSecurityNotification(notification.content)
+                : null;
+            const expanded = !!expandedSecurityIds[notification.id];
+            const desc = security
+              ? expanded
+                ? security.detail || security.summary
+                : security.summary
+              : notification.content;
+
+            return (
+              <button
+                type="button"
+                key={notification.id}
+                className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
+                onClick={() => handleNotificationClick(notification)}
+                aria-expanded={security ? expanded : undefined}
+              >
+                <span className="notification-icon">{getIcon(notification.type)}</span>
+                <span className="notification-content">
+                  <span className="page-section-title notification-title">
+                    {notification.title}
+                  </span>
+                  <span className="notification-desc">
+                    {desc}
+                    {security && !expanded && (
+                      <span className="notification-detail-hint"> · 查看详情</span>
+                    )}
+                  </span>
+                  <span className="notification-time" title={notification.createdAt}>
+                    {formatRelativeTime(notification.createdAt)}
+                  </span>
                 </span>
-              </span>
-              {!notification.isRead && (
-                <span className="unread-dot" />
-              )}
-            </button>
-          ))}
+                {!notification.isRead && <span className="unread-dot" />}
+              </button>
+            );
+          })}
         </div>
       )}
 
       {total > page * 20 && !loading && (
         <div className="load-more">
-          <Button type="button" variant="outline" onClick={() => setPage(prev => prev + 1)}>
+          <Button type="button" variant="outline" onClick={() => setPage((prev) => prev + 1)}>
             加载更多
           </Button>
         </div>

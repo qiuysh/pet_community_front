@@ -35,7 +35,9 @@ export function PostLocationLink({
         }
         openSystemMap({ latitude, longitude, label: location });
       }}
-      aria-label={canOpenMap ? `在地图中查看 ${location}` : location}
+      aria-label={
+        canOpenMap ? `在地图中查看位置：${location}` : `发布位置：${location}（暂无精确坐标）`
+      }
     >
       <MapPin size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
       <span>{location}</span>

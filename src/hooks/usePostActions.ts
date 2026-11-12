@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { togglePostLike, togglePostFavorite, recordPostShare } from '../api/post';
 import { useToast } from '../components/toast';
 import { FavoriteResult, LikeResult, PostInfo } from '../types/post';
 import { useUserStore } from '../stores/userStore';
+import { showInfoToast } from '../utils/toastManager';
 import { useShare } from './useShare';
 
 /**
@@ -24,6 +25,7 @@ export function usePostActions(post: PostInfo) {
   const { isLoggedIn } = useUserStore();
   const toast = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [state, setState] = useState<PostActionsState>(() => ({
     likesCount: post.likesCount,
@@ -37,12 +39,15 @@ export function usePostActions(post: PostInfo) {
   const requireLogin = useCallback(
     (): boolean => {
       if (!isLoggedIn) {
-        navigate('/login');
+        showInfoToast('登录后可继续点赞、评论与收藏');
+        navigate('/login', {
+          state: { from: `${location.pathname}${location.search}` },
+        });
         return false;
       }
       return true;
     },
-    [isLoggedIn, navigate],
+    [isLoggedIn, navigate, location.pathname, location.search],
   );
 
   const onLike = useCallback(async () => {

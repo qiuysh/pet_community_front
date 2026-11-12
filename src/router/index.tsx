@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { createBrowserRouter, Outlet, type RouteObject } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet, type RouteObject } from 'react-router-dom';
 import { AdminLayout, UserLayout, ProtectedRoute, AdminProtectedRoute } from '../components/layout';
 import { DocumentTitleSync } from '../components/documentTitleSync';
 import { lazyDefault, lazyNamed, PageSuspense } from './lazyPage';
@@ -204,7 +204,8 @@ const appRoutes: RouteObject[] = [
   { path: '/pets/:id', element: withUser(<PetDetailPage />, true) },
   { path: '/pets/:id/edit', element: withUser(<PetFormPage />, true) },
 
-  { path: '/posts', element: withUser(<PostListPage />) },
+  // `/posts` 与首页同 Feed：统一落到 `/`，避免双 URL + 导航 current 歧义
+  { path: '/posts', element: <Navigate to="/" replace /> },
   { path: '/posts/create', element: withUser(<PostEditorPage />, true) },
   { path: '/posts/drafts', element: withUser(<DraftListPage />, true) },
   { path: '/posts/drafts/:draftId', element: withUser(<PostEditorPage />, true) },
@@ -215,9 +216,10 @@ const appRoutes: RouteObject[] = [
   { path: '/lost-pets/create', element: withUser(<LostPetCreatePage />, true) },
   { path: '/lost-pets/:id', element: withUser(<LostPetDetailPage />) },
 
-  { path: '/topics', element: withUser(<TopicListPage />, true) },
+  // 话题列表/详情游客可只读；创建仍须登录（参与/发动态在页内二次鉴权）
+  { path: '/topics', element: withUser(<TopicListPage />) },
   { path: '/topics/create', element: withUser(<TopicCreatePage />, true) },
-  { path: '/topics/:id', element: withUser(<TopicDetailPage />, true) },
+  { path: '/topics/:id', element: withUser(<TopicDetailPage />) },
 
   { path: '/follow', element: withUser(<FollowIndexRedirect />, true) },
   { path: '/follow/:userId/:type', element: withUser(<FollowListPage />, true) },

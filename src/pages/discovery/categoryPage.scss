@@ -390,6 +390,15 @@
           background: $background-muted;
           position: relative;
 
+          &.is-broken::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+              linear-gradient(135deg, transparent 46%, rgba($text-light, 0.45) 50%, transparent 54%),
+              $background-muted;
+          }
+
           img {
             width: 100%;
             height: 100%;

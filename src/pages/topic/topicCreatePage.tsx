@@ -66,14 +66,14 @@ export function TopicCreatePage() {
     setLoading(true);
     try {
       const selectedCategory = Number(categoryId) || 0;
-      const created = await createTopic({
+      await createTopic({
         name: trimmedName,
         description: description.trim() || undefined,
         categoryId: selectedCategory > 0 ? selectedCategory : undefined,
       });
       showSuccessToast('话题已提交，等待管理员审核');
-      // 待审核话题不可走公开详情；回到话题广场
-      navigate(`/topics/${created.id}`, { replace: true });
+      // 待审核话题不可走公开详情；回发现广场并给出确认感
+      navigate('/discover', { replace: true });
     } catch (err) {
       showErrorToast((err as Error).message || '创建失败');
     } finally {

@@ -17,6 +17,8 @@ import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 import { Skeleton } from '../../components/ui/skeleton';
 import { PostLocationLink } from '../../components/post/postLocationLink';
+import { PostImage } from '../../components/post/postImage';
+import '../../components/post/postImage.scss';
 import './postListPage.scss';
 
 const TABS: { key: PostTab; label: string }[] = [
@@ -36,7 +38,7 @@ export const PostListPage = () => {
 
   const handlePublish = () => {
     if (!isLoggedIn) {
-      navigate('/login');
+      navigate('/login', { state: { from: '/posts/create' } });
       return;
     }
     navigate('/posts/create');
@@ -112,7 +114,7 @@ export const PostListPage = () => {
                 <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                   {post.images.slice(0, 9).map((img, idx) => (
                     <div key={idx} className="post-image">
-                      <img src={img} alt={`动态配图 ${idx + 1}`} loading="lazy" decoding="async" />
+                      <PostImage src={img} alt={`动态配图 ${idx + 1}`} />
                     </div>
                   ))}
                 </div>

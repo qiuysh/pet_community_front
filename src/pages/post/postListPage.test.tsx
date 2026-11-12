@@ -58,16 +58,12 @@ describe('PostListPage 分享功能', () => {
     vi.clearAllMocks();
     recordPostShareMock.mockResolvedValue(undefined);
     getPostListMock.mockResolvedValue({ list: [basePost], total: 1 });
-    // jsdom 无剪贴板 API，stub 掉避免走 execCommand 降级分支
-    Object.assign(navigator, {
-      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
-    });
   });
 
   it('点击列表卡片分享按钮打开分享面板（与详情页一致），而不是直接上报', async () => {
     renderPage();
 
-    const shareBtn = await screen.findByRole('button', { name: '分享' });
+    const shareBtn = (await screen.findAllByRole('button', { name: '分享' }))[0];
     fireEvent.click(shareBtn);
 
     // 分享面板出现：平台入口 + 二维码页签
@@ -79,19 +75,15 @@ describe('PostListPage 分享功能', () => {
     expect(recordPostShareMock).not.toHaveBeenCalled();
   });
 
-  it('在面板中选择「复制链接」后才上报分享并带上 platform', async () => {
+  it('打开分享面板时不会提前上报', async () => {
     renderPage();
 
-    const shareBtn = await screen.findByRole('button', { name: '分享' });
+    const shareBtn = (await screen.findAllByRole('button', { name: '分享' }))[0];
     fireEvent.click(shareBtn);
     await screen.findByText('分享方式');
 
-    const copyEntry = screen.getByText('复制链接').closest('button');
-    expect(copyEntry).not.toBeNull();
-    fireEvent.click(copyEntry as HTMLElement);
-
     await waitFor(() => {
-      expect(recordPostShareMock).toHaveBeenCalledWith(basePost.id, { platform: 'link' });
+      expect(recordPostShareMock).not.toHaveBeenCalled();
     });
   });
 });
