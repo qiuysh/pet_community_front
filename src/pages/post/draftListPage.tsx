@@ -83,7 +83,7 @@ export function DraftListPage() {
         }
       />
 
-      <div className="space-y-3 px-4 py-4">
+      <div className="space-y-3 py-4">
         {loading && drafts.length === 0 ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (

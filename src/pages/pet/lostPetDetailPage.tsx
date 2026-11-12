@@ -123,7 +123,7 @@ export function LostPetDetailPage() {
         </div>
       </div>
 
-      <div className="page-shell space-y-4 px-4 py-4">
+      <div className="page-shell space-y-4 py-4">
         <Card className="rounded-xl shadow-card p-5">
           <div className="flex justify-between items-start gap-3">
             <h2 className="page-content-title">{item.petName}</h2>

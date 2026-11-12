@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .topic-detail-page {
+  @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
 
@@ -196,15 +197,12 @@
   }
 
   .topic-detail-page .detail-header {
-    padding: 16px 20px;
-    margin: 0 auto;
-    max-width: $page-max;
+    padding: 16px $spacing-md;
   }
 
   .topic-detail-page .topic-info-card {
     padding: 24px;
-    margin: 0 auto 12px;
-    max-width: $page-max;
+    margin: 0 0 12px;
     gap: 20px;
   }
 
@@ -220,14 +218,11 @@
 
   .topic-detail-page .posts-section {
     padding: 20px;
-    margin: 0 auto;
-    max-width: $page-max;
   }
 
-  // 广告位在话题卡与动态列表之间，必须与正文同宽（$page-max）
+  // 广告位在话题卡与动态列表之间，与根列同宽
   .topic-detail-page .topic-banner-slot {
-    margin: 0 auto 12px;
-    max-width: $page-max;
+    margin: 0 0 12px;
   }
 
   .topic-detail-page .posts-section .posts-list .post-card {

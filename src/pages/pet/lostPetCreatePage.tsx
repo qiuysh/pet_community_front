@@ -146,7 +146,7 @@ export function LostPetCreatePage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} ref={formRef} className="page-shell px-4 py-4" noValidate>
+      <form onSubmit={handleSubmit} ref={formRef} className="page-shell py-4" noValidate>
         <Card className="space-y-4 rounded-xl">
           <div>
             <FieldLabel htmlFor="lost-pet-name" required>宠物名称</FieldLabel>

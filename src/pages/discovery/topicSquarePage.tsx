@@ -75,7 +75,7 @@ export const TopicSquarePage = () => {
         </Button>
       </div>
 
-      <div className="section px-4 pt-4">
+      <div className="section pt-4">
         <div className="flex flex-wrap gap-2">
           <Link
             to="/activities"
@@ -95,7 +95,7 @@ export const TopicSquarePage = () => {
       </div>
 
       {loading ? (
-        <div className="section px-4 space-y-6">
+        <div className="section space-y-6">
           <div>
             <Skeleton className="h-6 w-32 mb-4" />
             <div className="categories-grid">

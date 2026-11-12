@@ -3,6 +3,7 @@
 .post-editor-page {
   // 同动态详情：底色走通栏层，避免宽屏下两侧露出外壳底色
   @extend %page-bleed;
+  @extend %page-shell;
   --page-bg: #{$background-muted};
   min-height: 100vh;
   padding-bottom: calc(72px + var(--user-tab-bar-offset, 0px));
@@ -593,15 +594,12 @@
   }
 
   .post-editor-page .editor-header {
-    padding: 16px 20px;
-    margin: 0 auto;
-    max-width: $page-max;
+    padding: 16px $spacing-md;
   }
 
   .post-editor-page .editor-body {
     padding: 20px;
-    margin: 12px auto;
-    max-width: $page-max;
+    margin: 12px 0;
   }
 
   .post-editor-page .editor-body .content-input {

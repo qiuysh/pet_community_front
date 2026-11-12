@@ -26,6 +26,7 @@ const PointsPage: React.FC = () => {
     <div className="points-page">
       <PageHeader title="积分中心" fallbackTo="/profile" />
 
+      <div className="points-main">
       {userLevel && (
         <Card className="level-card" padding="md">
           <div className="level-info">
@@ -162,6 +163,7 @@ const PointsPage: React.FC = () => {
             </div>
           )
         )}
+      </div>
       </div>
     </div>
   );

@@ -298,8 +298,10 @@
 
 .form-wrapper {
   padding: $spacing-lg;
-  max-width: 520px;
-  margin: 0 auto;
+  // 与 settings-container / page-shell 同列，不再收成 520
+  width: 100%;
+  max-width: none;
+  margin: 0;
 
   .avatar-section {
     display: flex;

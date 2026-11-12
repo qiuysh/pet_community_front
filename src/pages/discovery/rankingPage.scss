@@ -4,15 +4,15 @@
   @extend %page-shell;
   min-height: 100vh;
   background: $background-color;
-  padding-bottom: 80px;
+  padding-bottom: $spacing-2xl;
 
   .page-header {
     @extend %page-hero-surface;
-    padding: 24px 16px;
+    padding: $spacing-xl $spacing-md $spacing-lg;
     text-align: center;
 
     h1 {
-      margin-bottom: 8px;
+      margin-bottom: $spacing-xs;
 
       svg {
         color: $primary-text;
@@ -20,7 +20,7 @@
     }
 
     .header-subtitle {
-      margin: 0 auto 16px;
+      margin: 0 auto $spacing-md;
       max-width: 22rem;
       font-size: $font-size-sm;
       color: $text-secondary;
@@ -29,10 +29,10 @@
     .period-tabs {
       display: flex;
       justify-content: center;
-      gap: 12px;
+      gap: $spacing-sm;
 
       .period-tab {
-        padding: 6px 16px;
+        padding: 6px $spacing-md;
         background: $background-soft;
         border: 1px solid $border-color;
         border-radius: $border-radius-base;
@@ -62,16 +62,24 @@
     }
   }
 
+  // 正文与根列等宽；仅保留纵向间距（水平边距交给 .user-content）
+  .ranking-main {
+    padding: $spacing-md 0;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
   .loading {
     text-align: center;
-    padding: 48px;
+    padding: $spacing-2xl;
     color: $text-muted;
   }
 
   .ranking-section {
     background: white;
-    margin: 16px;
-    border-radius: 12px;
+    margin: 0;
+    border-radius: $border-radius-lg;
     overflow: hidden;
 
     .section-header {

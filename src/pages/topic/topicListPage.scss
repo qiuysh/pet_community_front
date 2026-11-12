@@ -87,7 +87,8 @@
   .topic-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: $spacing-sm;
+    padding: 0 0 $spacing-md;
 
     .loading {
       text-align: center;

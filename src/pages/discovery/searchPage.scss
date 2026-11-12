@@ -78,7 +78,7 @@
   }
 
   .search-content {
-    padding: 16px;
+    padding: $spacing-md 0;
 
     .section {
       margin-bottom: 24px;
@@ -220,7 +220,7 @@
   }
 
   .search-result {
-    padding: 16px;
+    padding: $spacing-md 0;
 
     .loading {
       text-align: center;

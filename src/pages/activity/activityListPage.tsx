@@ -80,7 +80,7 @@ export const ActivityListPage = () => {
         </div>
       </div>
 
-      <div className="page-shell px-4 py-4">
+      <div className="page-shell py-4">
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
