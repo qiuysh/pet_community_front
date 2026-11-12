@@ -86,14 +86,15 @@ $border-radius-base: 16px;
 $border-radius-lg: 20px;
 $border-radius-xl: 24px;
 
-// 字号阶梯（必须逐级递增，否则命名会误导：xs < sm < base < large < title < xl < 2xl）
-$font-size-xs: 12px; // 辅助说明、计数单位
-$font-size-sm: 14px; // 次要正文、密集列表
-$font-size-base: 15px; // 正文基准
-$font-size-large: 16px; // 强调正文、卡片标题
-$font-size-title: 20px; // 页面/区块标题
-$font-size-xl: 24px; // 首屏大标题
-$font-size-2xl: 28px; // 数据大数、营销标题
+// 字号阶梯（必须逐级递增：xs < sm < base < large < title < xl < 2xl）
+// 2026-11 typeset：抬高正文基准并拉开标题级差（12/14/16/18/22/28/34）
+$font-size-xs: 12px; // Caption / 元数据
+$font-size-sm: 14px; // 次要正文、密集控件、后台 block 标题
+$font-size-base: 16px; // 正文基准、吸顶页名
+$font-size-large: 18px; // 区块 / 卡片标题
+$font-size-title: 22px; // 页面主标题 / 实体名
+$font-size-xl: 28px; // 展示副级 / 大数旁注
+$font-size-2xl: 34px; // 数据大数、营销数字
 
 $spacing-xs: 8px;
 $spacing-sm: 12px;

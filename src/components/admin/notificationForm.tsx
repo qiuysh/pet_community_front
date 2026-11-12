@@ -97,7 +97,7 @@ export function NotificationForm({ notification, onClose, onSuccess }: Notificat
     <div className={adminUi.overlay}>
       <div className="bg-white rounded-md shadow-hover w-full max-w-lg mx-4 animate-scaleIn max-h-[90vh] overflow-hidden flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border-light bg-white shrink-0">
-          <h2 className="text-lg font-semibold text-brown">
+          <h2 className="page-section-title">
             {notification ? '编辑通知' : '发布通知'}
           </h2>
           <AdminButton variant="ghost" type="button" onClick={onClose} aria-label="关闭" className="text-brown-muted hover:text-brown transition-colors">
@@ -197,7 +197,7 @@ export function NotificationPreview({ title, content, type, onClose }: Notificat
     <div className={adminUi.overlay}>
       <div className={adminUi.modalDialog}>
         <div className="flex items-center justify-between px-6 py-4 border-b border-border-light">
-          <h2 className="text-lg font-semibold text-brown">通知预览</h2>
+          <h2 className="page-section-title">通知预览</h2>
           <AdminButton variant="ghost" type="button" onClick={onClose} aria-label="关闭" className="text-brown-muted hover:text-brown transition-colors">
             <X size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
           </AdminButton>
@@ -208,7 +208,7 @@ export function NotificationPreview({ title, content, type, onClose }: Notificat
             <AdminChip tone={type === 3 ? 'warning' : 'secondary'}>{typeLabel}</AdminChip>
           </div>
 
-          <h3 className="text-xl font-semibold text-brown mb-4">{title}</h3>
+          <h3 className="page-content-title mb-4">{title}</h3>
 
           <div className="bg-soft rounded-md p-4">
             <p className="text-brown-secondary whitespace-pre-wrap break-all">{content}</p>

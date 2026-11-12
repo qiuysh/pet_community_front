@@ -45,7 +45,7 @@ export function BatchReportHandle({ selectedIds, onSuccess, onCancel }: BatchRep
     <div className={adminUi.overlay}>
       <div className={adminUi.modalDialog}>
         <div className="px-6 py-4 border-b border-border-light">
-          <h3 className="text-lg font-semibold text-brown">批量处理举报</h3>
+          <h3 className="page-section-title">批量处理举报</h3>
           <p className="text-sm text-brown-muted mt-1">已选择 {selectedIds.length} 条记录</p>
         </div>
 

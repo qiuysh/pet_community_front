@@ -91,14 +91,14 @@ html {
                'Helvetica Neue', sans-serif;
   color: $text-primary;
   background-color: $background-color;
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
 body {
-  font-size: $font-size-sm;
+  font-size: $font-size-base;
   min-height: 100vh;
   min-height: 100dvh;
   background-color: $background-color;
@@ -113,7 +113,7 @@ body {
 // 文字样式
 // ============================================
 // 必须 @layer base：未分层的 h1{20/600} 会压过 @layer components 的
-// .page-bar-title{15/500}，导致 PageHeader（h1）比动态详情（span）更粗更大。
+// .page-bar-title{16/500}，导致 PageHeader（h1）比动态详情（span）更粗更大。
 
 @layer base {
   // 前台社区密度：标题偏克制。2xl/xl 留给数据大数与营销数字，不作默认页标题。
@@ -121,17 +121,19 @@ body {
     color: $text-primary;
     font-weight: 600;
     line-height: 1.4;
+    text-wrap: balance;
   }
 
-  h1 { font-size: $font-size-title; letter-spacing: -0.01em; } // 20px 页面/内容标题
-  h2 { font-size: $font-size-large; } // 16px 区块标题
+  h1 { font-size: $font-size-title; letter-spacing: -0.01em; } // 22px 页面/内容标题
+  h2 { font-size: $font-size-large; } // 18px 区块标题
   h3 { font-size: $font-size-large; }
-  h4 { font-size: $font-size-base; font-weight: 500; } // 15px
+  h4 { font-size: $font-size-base; font-weight: 500; } // 16px
   h5 { font-size: $font-size-sm; font-weight: 500; }
   h6 { font-size: $font-size-xs; font-weight: 500; }
 
   p {
     color: $text-secondary;
+    text-wrap: pretty;
   }
 }
 

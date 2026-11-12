@@ -17,7 +17,7 @@ export function ReviewPreview({ content, onClose }: ReviewPreviewProps) {
     <div className={adminUi.overlay}>
       <div className="bg-white rounded-md shadow-hover w-full max-w-lg mx-4 animate-scaleIn">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border-light">
-          <h2 className="text-lg font-semibold text-brown">
+          <h2 className="page-section-title">
             {content.type === 'post' ? '动态预览' : '评论预览'}
           </h2>
           <AdminButton variant="ghost"

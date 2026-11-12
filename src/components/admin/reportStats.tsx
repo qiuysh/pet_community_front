@@ -44,7 +44,7 @@ export function ReportStats({ stats, loading }: ReportStatsProps) {
         {cards.map((card) => (
           <div key={card.label} className="bg-soft rounded-md p-4">
             <div className="text-xs text-brown-muted mb-1">{card.label}</div>
-            <div className={`text-xl font-bold ${card.color}`}>{card.value}</div>
+            <div className={`text-[length:var(--font-size-title)] font-semibold tabular-nums ${card.color}`}>{card.value}</div>
           </div>
         ))}
       </div>

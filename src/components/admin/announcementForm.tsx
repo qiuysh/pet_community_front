@@ -84,7 +84,7 @@ export function AnnouncementForm({ announcement, onClose, onSuccess }: Announcem
     <div className={adminUi.overlay}>
       <div className="bg-white rounded-md shadow-hover w-full max-w-lg mx-4 animate-scaleIn max-h-[90vh] overflow-hidden flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border-light bg-white shrink-0">
-          <h2 className="text-lg font-semibold text-brown">
+          <h2 className="page-section-title">
             {announcement ? '编辑公告' : '发布公告'}
           </h2>
           <AdminButton variant="ghost" type="button" onClick={onClose} aria-label="关闭" className="text-brown-muted hover:text-brown transition-colors">

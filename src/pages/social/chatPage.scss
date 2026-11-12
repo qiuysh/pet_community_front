@@ -161,7 +161,7 @@
 
         .recalled-message {
           padding: 8px 16px;
-          font-size: 13px;
+          font-size: $font-size-sm;
           color: $text-muted;
           font-style: italic;
         }
@@ -437,7 +437,7 @@
       border-radius: 12px;
       background-color: $background-white;
       box-shadow: $shadow-soft;
-      font-size: 13px;
+      font-size: $font-size-sm;
       color: $text-secondary;
     }
 

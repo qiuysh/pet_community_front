@@ -79,7 +79,7 @@ export const FrontUserDetailDialog = ({ userId, onClose }: FrontUserDetailDialog
       ) : user ? (
         <div className="space-y-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-soft text-lg font-semibold text-secondary">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-soft text-[length:var(--font-size-large)] font-semibold text-secondary">
               {user.nickname?.charAt(0).toUpperCase() || '?'}
             </div>
             <div>

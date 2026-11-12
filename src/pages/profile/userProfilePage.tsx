@@ -168,7 +168,7 @@ export function UserProfilePage() {
               <Avatar
                 src={displayUser?.avatar}
                 name={displayUser?.nickname || '宠友'}
-                className="!size-full h-full w-full bg-primary-strong text-2xl font-bold text-white sm:text-3xl"
+                className="!size-full h-full w-full bg-primary-strong text-[length:var(--font-size-xl)] font-semibold text-white sm:text-[length:var(--font-size-2xl)]"
               />
             </div>
             <div className="min-w-0 flex-1 text-center sm:text-left">

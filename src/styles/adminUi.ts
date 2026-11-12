@@ -30,12 +30,12 @@ export const adminUi = {
    */
   pageHeader: 'flex flex-col gap-3 px-6 py-4 border-b border-border-light',
   pageHeaderTop: 'flex flex-row items-start justify-between gap-3',
-  /** 后台页标题：20px（! 钉死字号，避免被其它工具类打断） */
-  pageTitle: '!text-[20px] font-semibold leading-snug text-brown text-balance',
-  /** 分区标题（h2）：16px，小于页标题 */
-  sectionTitle: '!text-[16px] font-semibold leading-snug text-brown text-balance',
-  /** 卡片/图表块标题（h3）：14px，小于分区标题 */
-  blockTitle: '!text-sm font-semibold leading-snug text-brown text-balance',
+  /** 后台页标题：与前台 .page-content-title 同档（22/600） */
+  pageTitle: 'page-content-title leading-snug',
+  /** 分区标题（h2）：与前台 .page-section-title 同档（18/600） */
+  sectionTitle: 'page-section-title leading-snug',
+  /** 卡片/图表块标题（h3）：sm/600，小于分区标题 */
+  blockTitle: 'text-sm font-semibold leading-snug text-brown text-balance',
   pageDesc: 'mt-1 text-sm text-brown-muted',
   /** 主操作区：始终靠右，与 Tabs 分行 */
   pageHeaderActions: 'flex shrink-0 flex-wrap items-center gap-2 sm:justify-end',

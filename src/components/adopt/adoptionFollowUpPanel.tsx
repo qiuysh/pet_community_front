@@ -119,7 +119,7 @@ export function AdoptionFollowUpPanel({
           </div>
         ))}
         {photos.length < MAX_PHOTOS && (
-          <label className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-border text-2xl text-brown-light focus-within:ring-2 focus-within:ring-primary/40">
+          <label className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-border text-[length:var(--font-size-xl)] text-brown-light focus-within:ring-2 focus-within:ring-primary/40">
             <input
               type="file"
               multiple

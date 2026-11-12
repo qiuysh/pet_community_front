@@ -30,7 +30,7 @@ export function DashboardCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm text-brown-muted">{label}</p>
-          <p className="mt-1 text-xl font-bold tabular-nums text-brown">{value}</p>
+          <p className="mt-1 text-[length:var(--font-size-title)] font-semibold tabular-nums text-brown">{value}</p>
           {hint ? <p className="mt-1 truncate text-xs text-brown-muted">{hint}</p> : null}
         </div>
         <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm ${iconTone}`} aria-hidden="true">{icon}</div>

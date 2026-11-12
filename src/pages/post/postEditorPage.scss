@@ -100,7 +100,7 @@
         color: $primary-text;
         padding: 4px 10px;
         border-radius: $border-radius-sm;
-        font-size: 13px;
+        font-size: $font-size-sm;
 
         button {
           background: none;
@@ -165,7 +165,7 @@
             border-radius: $border-radius-xs;
             background: rgba(0, 0, 0, 0.55);
             color: $background-white;
-            font-size: 10px;
+            font-size: $font-size-xs;
             line-height: 1.2;
           }
 
@@ -247,7 +247,7 @@
           appearance: none;
 
           .plus {
-            font-size: 32px;
+            font-size: $font-size-2xl;
             color: $text-light;
           }
         }
@@ -297,7 +297,7 @@
           background: none;
           border: none;
           cursor: pointer;
-          font-size: 13px;
+          font-size: $font-size-sm;
           color: $text-secondary;
 
           .icon {
@@ -519,7 +519,7 @@
           border: none;
           background: transparent;
           color: $text-muted;
-          font-size: 13px;
+          font-size: $font-size-sm;
           padding: 4px 14px;
           border-radius: $border-radius-sm;
           cursor: pointer;
@@ -687,7 +687,7 @@
   }
 
   .post-editor-page .editor-body .extra-options .pet-picker .pet-options .pet-option span {
-    font-size: 13px;
+    font-size: $font-size-sm;
   }
 
   .post-editor-page .editor-footer .draft-btn {

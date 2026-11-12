@@ -107,7 +107,7 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
 
   return (
     <div className={`${adminUi.panel} p-6`}>
-      <h2 className="text-xl font-bold text-brown mb-6">{ad ? '编辑广告' : '创建广告'}</h2>
+      <h2 className="page-content-title mb-6">{ad ? '编辑广告' : '创建广告'}</h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

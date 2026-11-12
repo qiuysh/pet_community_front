@@ -306,7 +306,7 @@ export function AdminAdPage() {
                 <div className="px-6">
                     {showPositionModal ? (
                         <div className="bg-white rounded-md shadow-card p-6">
-                            <h2 className="text-xl font-bold text-brown mb-6">
+                            <h2 className="page-content-title mb-6">
                                 {editingPosition ? '编辑广告位' : '创建广告位'}
                             </h2>
                             <div className="space-y-5">

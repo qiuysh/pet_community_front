@@ -53,7 +53,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 48px;
+        font-size: $font-size-2xl;
         font-weight: 600;
       }
     }
@@ -74,7 +74,7 @@
       }
 
       .topic-stats {
-        font-size: 13px;
+        font-size: $font-size-sm;
         color: $text-muted;
       }
     }
@@ -176,7 +176,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 13px;
+            font-size: $font-size-sm;
             color: $text-secondary;
 
             .icon {

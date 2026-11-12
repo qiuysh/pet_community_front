@@ -207,7 +207,7 @@
           border-radius: 999px;
           background: $error-color;
           color: #fff;
-          font-size: 10px;
+          font-size: $font-size-xs;
           font-weight: 600;
           line-height: 16px;
           text-align: center;
@@ -512,7 +512,7 @@
     }
 
     .tab-label {
-      font-size: 10px;
+      font-size: $font-size-xs;
       line-height: 1.2;
       font-weight: 400;
       max-width: 100%;

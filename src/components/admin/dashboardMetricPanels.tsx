@@ -53,7 +53,7 @@ export function DashboardInteractionPanel({
                     {item.icon ? <span className="text-secondary/80" aria-hidden="true">{item.icon}</span> : null}
                     <span className="truncate">{item.label}</span>
                   </div>
-                  <p className="mt-1 text-lg font-semibold tabular-nums text-brown">{item.value}</p>
+                  <p className="mt-1 text-[length:var(--font-size-large)] font-semibold tabular-nums text-brown">{item.value}</p>
                   <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
                     {item.change ? (
                       <span className={`tabular-nums ${changeClass(item.changeType)}`}>

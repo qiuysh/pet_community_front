@@ -52,14 +52,14 @@ export function AdStats({ startDate, endDate }: AdStatsProps) {
 
     return (
         <div className="bg-white rounded-md shadow-card p-6">
-            <h2 className="text-xl font-bold text-brown mb-6">广告统计</h2>
+            <h2 className="page-content-title mb-6">广告统计</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div className="bg-secondary-soft rounded-md p-5">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-brown-muted mb-1">总展示量</p>
-                            <p className="text-2xl font-bold text-secondary">{stats.totalViews.toLocaleString()}</p>
+                            <p className="text-[length:var(--font-size-xl)] font-semibold tabular-nums text-secondary">{stats.totalViews.toLocaleString()}</p>
                         </div>
                         <div className="w-12 h-12 bg-secondary-soft rounded-md flex items-center justify-center text-secondary">
                             <Eye size={20} aria-hidden="true" />
@@ -71,7 +71,7 @@ export function AdStats({ startDate, endDate }: AdStatsProps) {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-brown-muted mb-1">总点击量</p>
-                            <p className="text-2xl font-bold text-success-text">{stats.totalClicks.toLocaleString()}</p>
+                            <p className="text-[length:var(--font-size-xl)] font-semibold tabular-nums text-success-text">{stats.totalClicks.toLocaleString()}</p>
                         </div>
                         <div className="w-12 h-12 bg-success/10 rounded-md flex items-center justify-center text-success-text">
                             <Pointer size={20} aria-hidden="true" />
@@ -83,7 +83,7 @@ export function AdStats({ startDate, endDate }: AdStatsProps) {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-brown-muted mb-1">点击率 (CTR)</p>
-                            <p className="text-2xl font-bold text-info-text">{stats.ctr.toFixed(2)}%</p>
+                            <p className="text-[length:var(--font-size-xl)] font-semibold tabular-nums text-info-text">{stats.ctr.toFixed(2)}%</p>
                         </div>
                         <div className="w-12 h-12 bg-info/10 rounded-md flex items-center justify-center text-info-text">
                             <TrendingUp size={20} aria-hidden="true" />
@@ -93,7 +93,7 @@ export function AdStats({ startDate, endDate }: AdStatsProps) {
             </div>
 
             <div className="mb-8">
-                <h3 className="text-lg font-medium text-brown-secondary mb-4">按日期统计</h3>
+                <h3 className="page-section-title mb-4 text-brown-secondary">按日期统计</h3>
                 {stats.statsByDay.length > 0 ? (
                     <div className="space-y-3">
                         {stats.statsByDay.map((item) => (
@@ -117,7 +117,7 @@ export function AdStats({ startDate, endDate }: AdStatsProps) {
             </div>
 
             <div>
-                <h3 className="text-lg font-medium text-brown-secondary mb-4">按广告位统计</h3>
+                <h3 className="page-section-title mb-4 text-brown-secondary">按广告位统计</h3>
                 {stats.statsByPosition.length > 0 ? (
                     <div className="space-y-3">
                         {stats.statsByPosition.map((item) => (

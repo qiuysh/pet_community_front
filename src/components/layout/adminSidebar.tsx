@@ -216,7 +216,7 @@ export function AdminSidebar() {
             </div>
             <div className="min-w-0 leading-tight">
               <span className="block truncate text-base font-semibold tracking-tight text-brown">{siteName}</span>
-              <span className="block text-[11px] font-medium text-brown-muted">运营管理台</span>
+              <span className="block text-xs font-medium text-brown-muted">运营管理台</span>
             </div>
           </Link>
         ) : (
@@ -235,7 +235,7 @@ export function AdminSidebar() {
           {visibleGroups.map((group) => (
             <div key={group.key} className="admin-sidebar__group">
               {!sidebarCollapsed && (
-                <p className="admin-sidebar__group-label mb-1 px-3 text-[11px] font-medium tracking-wide text-brown-muted">
+                <p className="admin-sidebar__group-label mb-1 px-3 text-xs font-medium tracking-wide text-brown-muted">
                   {group.label}
                 </p>
               )}

@@ -27,7 +27,7 @@ export function AdminNotFoundPage() {
         >
           <FileQuestion size={ICON_SIZE.empty} strokeWidth={iconStroke(ICON_SIZE.empty)} />
         </div>
-        <p className="text-4xl font-bold tabular-nums text-secondary">404</p>
+        <p className="text-[length:var(--font-size-2xl)] font-semibold tabular-nums text-secondary">404</p>
         <h1 id="admin-not-found-title" className={`${adminUi.pageTitle} mt-3`}>
           页面不存在
         </h1>

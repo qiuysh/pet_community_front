@@ -94,7 +94,7 @@ export function UserBanAction({ userId, userName, isBanned, onSuccess }: UserBan
                                     )}
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-brown">
+                                    <h3 className="page-section-title">
                                         {isBanned ? '确认解封' : '确认封禁'}
                                     </h3>
                                     <p className="text-sm text-brown-muted">

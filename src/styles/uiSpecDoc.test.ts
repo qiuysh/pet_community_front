@@ -43,7 +43,7 @@ const EMOJI = /[\u2190-\u21FF\u2600-\u27BF\u{1F300}-\u{1FAFF}]/u;
 
 describe('UI 设计规范与代码一致', () => {
   it('版本号与四处 Token 落点已登记', () => {
-    expect(spec).toMatch(/\*\*版本\*\*\s*\|\s*v2\.5/);
+    expect(spec).toMatch(/\*\*版本\*\*\s*\|\s*v2\.6/);
     expect(spec).toContain('`front/src/styles/app.css`');
     expect(spec).toContain('`front/tailwind.config.js`');
   });
@@ -56,7 +56,7 @@ describe('UI 设计规范与代码一致', () => {
   });
 
   it('h1 默认样式须在 @layer base，避免压过 page-bar-title', () => {
-    // 回归：未分层 h1{20/600} 曾压过 @layer components 的 .page-bar-title{15/500}，
+    // 回归：未分层 h1{title/600} 曾压过 @layer components 的 .page-bar-title{base/500}，
     // 导致 PageHeader（消息/通知）比动态详情更粗更大。
     expect(appCssSource).toMatch(/@layer components[\s\S]*\.page-bar-title\s*\{/);
     const baseBlocks = [...globalSource.matchAll(/@layer\s+base\s*\{([\s\S]*?)\n\}/g)].map((m) => m[1]);
@@ -73,11 +73,11 @@ describe('UI 设计规范与代码一致', () => {
     const documented = [...section('3.2').matchAll(/\|\s*(\d+)px\s*\|/g)].map((m) => Number(m[1]));
     expect(ladder.length).toBeGreaterThan(0);
     expect(documented.sort((a, b) => a - b)).toEqual(ladder.sort((a, b) => a - b));
-    // 旧的「Body 1 = 16px」不得回潮
+    // Body 1 必须与 $font-size-base（16px）一致，禁止回潮到 15px
     const body = section('3.2');
     expect(body).toContain('$font-size-base');
-    expect(body).toContain('15px');
-    expect(body).not.toMatch(/Body 1\s*\|\s*16px/);
+    expect(body).toContain('16px');
+    expect(body).not.toMatch(/Body 1[^|\n]*\|\s*15px/);
   });
 
   it('3.4 间距表带 SCSS Token 映射', () => {
