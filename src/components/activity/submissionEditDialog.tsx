@@ -6,6 +6,10 @@ import { useToast } from '../toast';
 import { Button } from '../ui/button';
 import { FieldLabel, Input, Textarea } from '../ui/input';
 import { Modal } from '../ui/modal';
+import {
+  ACTIVITY_SUBMISSION_DESCRIPTION_MAX,
+  ACTIVITY_SUBMISSION_TITLE_MAX,
+} from '../../constants/activity';
 
 interface SubmissionEditDialogProps {
   submission: SubmissionInfo;
@@ -65,7 +69,7 @@ export const SubmissionEditDialog = ({
           <Input
             id="submission-title"
             value={title}
-            maxLength={50}
+            maxLength={ACTIVITY_SUBMISSION_TITLE_MAX}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="给作品起个名字"
           />
@@ -76,7 +80,7 @@ export const SubmissionEditDialog = ({
             id="submission-description"
             value={description}
             rows={4}
-            maxLength={300}
+            maxLength={ACTIVITY_SUBMISSION_DESCRIPTION_MAX}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="介绍一下你的作品"
           />

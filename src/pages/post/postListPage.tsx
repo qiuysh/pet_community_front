@@ -6,8 +6,8 @@ import { usePostList, type PostTab } from '../../hooks/usePostList';
 import { MentionText } from '../../components/post/mentionText';
 import { PostActions } from '../../components/post/postActions';
 import { AdBanner } from '../../components/ad/AdBanner';
-import { MapPin, Play } from 'lucide-react';
-import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { Play } from 'lucide-react';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Avatar } from '../../components/ui/avatar';
@@ -16,6 +16,7 @@ import { Pagination } from '../../components/ui/pagination';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 import { Skeleton } from '../../components/ui/skeleton';
+import { PostLocationLink } from '../../components/post/postLocationLink';
 import './postListPage.scss';
 
 const TABS: { key: PostTab; label: string }[] = [
@@ -23,10 +24,6 @@ const TABS: { key: PostTab; label: string }[] = [
   { key: 'image', label: '图文' },
   { key: 'video', label: '视频' },
 ];
-
-const LocationIcon = () => (
-  <MapPin size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
-);
 
 const PlayIcon = () => (
   <Play size={ICON_SIZE.action} fill="currentColor" stroke="none" aria-hidden="true" />
@@ -136,10 +133,11 @@ export const PostListPage = () => {
                 </div>
               )}
               {post.location && (
-                <div className="post-location">
-                  <LocationIcon />
-                  <span>{post.location}</span>
-                </div>
+                <PostLocationLink
+                  location={post.location}
+                  latitude={post.latitude}
+                  longitude={post.longitude}
+                />
               )}
               <PostActions post={post} compact className="post-actions-plain" />
             </article>

@@ -16,8 +16,9 @@ import {
   RegistrationInfo,
   ActivityStatus,
   getActivityDisplayStatus,
-  isSubmissionActivityType,
+  getActivityCapabilities,
 } from '../types/activity';
+import { ACTIVITY_DEFAULT_PAGE_SIZE } from '../constants/activity';
 
 export type ActivityDetailTab = 'detail' | 'submissions' | 'album' | 'review' | 'registrations';
 
@@ -45,11 +46,11 @@ export function useActivityDetail() {
       const activityData = await getActivityDetail(activityId);
 
       let submissionsData: SubmissionInfo[] = [];
-      if (isSubmissionActivityType(activityData.type)) {
+      if (getActivityCapabilities(activityData.type).allowsSubmission) {
         const subs = await getSubmissionList({
           activityId,
           sort: 'votes',
-          pageSize: 20,
+          pageSize: ACTIVITY_DEFAULT_PAGE_SIZE,
         });
         submissionsData = subs.list;
       }
@@ -88,12 +89,14 @@ export function useActivityDetail() {
 
   const isSubmissionOpen = () => {
     if (!activity) return false;
+    if (!getActivityCapabilities(activity.type).allowsSubmission) return false;
     if (!activity.isRegistered) return false;
     return getActivityDisplayStatus(activity) === 'active';
   };
 
   const isVoteOpen = () => {
     if (!activity) return false;
+    if (!getActivityCapabilities(activity.type).allowsVote) return false;
     return getActivityDisplayStatus(activity) === 'active';
   };
 

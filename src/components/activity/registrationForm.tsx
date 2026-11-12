@@ -6,6 +6,11 @@ import { useAsync } from '../../hooks/useAsync';
 import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
 import { Button } from '../ui/button';
 import { FieldError, FieldLabel, Input, Textarea } from '../ui/input';
+import {
+  ACTIVITY_REGISTRATION_MESSAGE_MAX,
+  ACTIVITY_REGISTRATION_NAME_MAX,
+  ACTIVITY_REGISTRATION_PHONE_MAX,
+} from '../../constants/activity';
 
 interface RegistrationFormProps {
   activity: ActivityInfo;
@@ -70,7 +75,7 @@ export const RegistrationForm = ({ activity, onSuccess }: RegistrationFormProps)
             clearError('name');
           }}
           placeholder="请输入真实姓名…"
-          maxLength={50}
+          maxLength={ACTIVITY_REGISTRATION_NAME_MAX}
           invalid={!!errors.name}
           aria-describedby={errors.name ? 'reg-name-error' : undefined}
         />
@@ -91,7 +96,7 @@ export const RegistrationForm = ({ activity, onSuccess }: RegistrationFormProps)
             clearError('phone');
           }}
           placeholder="请输入手机号…"
-          maxLength={20}
+          maxLength={ACTIVITY_REGISTRATION_PHONE_MAX}
           invalid={!!errors.phone}
           aria-describedby={errors.phone ? 'reg-phone-error' : undefined}
         />
@@ -107,9 +112,11 @@ export const RegistrationForm = ({ activity, onSuccess }: RegistrationFormProps)
           onChange={(e) => setMessage(e.target.value)}
           placeholder="可补充报名说明…"
           rows={3}
-          maxLength={200}
+          maxLength={ACTIVITY_REGISTRATION_MESSAGE_MAX}
         />
-        <div className="text-xs text-brown-muted mt-1 text-right">{message.length}/200</div>
+        <div className="text-xs text-brown-muted mt-1 text-right">
+          {message.length}/{ACTIVITY_REGISTRATION_MESSAGE_MAX}
+        </div>
       </div>
 
       <Button type="submit" block loading={loading} disabled={loading}>

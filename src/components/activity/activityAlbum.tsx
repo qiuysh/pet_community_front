@@ -3,6 +3,7 @@ import { getAlbumPhotoList, uploadAlbumPhoto, deleteAlbumPhoto } from '../../api
 import { AlbumPhotoInfo, AlbumPhotoCreateRequest } from '../../types/activity';
 import { useUserStore } from '../../stores/userStore';
 import { useToast } from '../../components/toast';
+import { ACTIVITY_ALBUM_PHOTO_DESCRIPTION_MAX, ACTIVITY_DEFAULT_PAGE_SIZE } from '../../constants/activity';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { useAsync, useAsyncEffect } from '../../hooks/useAsync';
 import { useConfirm } from '../../hooks/useConfirm';
@@ -30,7 +31,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
     description: '',
   });
   const { loading, refetch: refetchPhotos } = useAsyncEffect(
-    () => getAlbumPhotoList(activityId, 1, page, 20),
+    () => getAlbumPhotoList(activityId, 1, page, ACTIVITY_DEFAULT_PAGE_SIZE),
     [activityId, page],
     {
       onSuccess: (result) => {
@@ -148,7 +149,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
         </div>
       )}
 
-      {total > 20 && (
+      {total > ACTIVITY_DEFAULT_PAGE_SIZE && (
         <div className="mt-4 flex items-center justify-center gap-2">
           <Button
             type="button"
@@ -165,7 +166,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
             variant="ghost"
             size="sm"
             onClick={() => setPage(page + 1)}
-            disabled={page * 20 >= total}
+            disabled={page * ACTIVITY_DEFAULT_PAGE_SIZE >= total}
           >
             下一页
           </Button>
@@ -207,7 +208,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
               onChange={(e) => setUploadData({ ...uploadData, description: e.target.value })}
               placeholder="照片描述（可选）…"
               rows={3}
-              maxLength={100}
+              maxLength={ACTIVITY_ALBUM_PHOTO_DESCRIPTION_MAX}
             />
           </div>
         </div>

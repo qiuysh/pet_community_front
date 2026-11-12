@@ -10,6 +10,7 @@ import { X, Image, Video, PawPrint, Hash, MapPin, Eye, ChevronRight, Check, Cloc
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { SchedulePicker } from '../../components/post/schedulePicker';
 import { PostImageGrid } from '../../components/post/postImageGrid';
+import { LocationPicker } from '../../components/post/locationPicker';
 import { Button, buttonClass } from '../../components/ui/button';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Input } from '../../components/ui/input';
@@ -31,7 +32,7 @@ export const PostEditorPage = () => {
     setVideo,
     setSelectedPets,
     setSelectedTopics,
-    setLocation,
+    setPostLocation,
     setVisibility,
     setPublishMode,
     setPublishTime,
@@ -51,6 +52,7 @@ export const PostEditorPage = () => {
   const [showTopicPicker, setShowTopicPicker] = useState(false);
   const [showPetPicker, setShowPetPicker] = useState(false);
   const [showVisibilityPicker, setShowVisibilityPicker] = useState(false);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -325,18 +327,19 @@ export const PostEditorPage = () => {
             </div>
           )}
 
-          <div className="option-item">
+          <button
+            type="button"
+            className="option-item option-item-button"
+            onClick={() => setShowLocationPicker(true)}
+            aria-label="选择所在位置"
+          >
             <span className="option-icon"><MapPin size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" /></span>
             <span className="option-label">所在位置</span>
-            <Input
-              type="text"
-              className="location-input"
-              value={state.location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="添加位置"
-              aria-label="所在位置"
-            />
-          </div>
+            <span className={`location-input ${state.location ? '' : 'text-brown-muted'}`}>
+              {state.location || '添加位置'}
+            </span>
+            <ChevronRight size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
+          </button>
 
           <div className="option-item">
             <span className="option-icon"><Clock size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" /></span>
@@ -432,6 +435,17 @@ export const PostEditorPage = () => {
           草稿箱
         </Button>
       </div>
+
+      <LocationPicker
+        open={showLocationPicker}
+        onClose={() => setShowLocationPicker(false)}
+        value={{
+          location: state.location,
+          latitude: state.latitude,
+          longitude: state.longitude,
+        }}
+        onChange={setPostLocation}
+      />
 
       {unsavedDialog}
     </div>

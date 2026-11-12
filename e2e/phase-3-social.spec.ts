@@ -108,27 +108,28 @@ test.describe('Phase3 - 关注功能', () => {
         const unblockBtn = page.getByRole('button', { name: /取消拉黑/ }).first();
         test.skip(!(await unblockBtn.isVisible()), '拉黑列表为空');
 
+        const unblockPromise = page.waitForResponse(
+            (r) => r.request().method() === 'DELETE' && r.url().includes('/api/v1/social/block/'),
+            { timeout: 10_000 },
+        );
         await unblockBtn.click();
-        await page.waitForTimeout(500);
+        const unblockResp = await unblockPromise;
+        expect(unblockResp.ok(), `取消拉黑失败: ${unblockResp.status()}`).toBeTruthy();
     });
 
     // V-F7-05（拉黑后双方动态屏蔽）/ V-F7-06（拉黑后私信屏蔽）需要双账号跨会话，
     // 已在 phase-3-supplement.spec.ts 用 dualSessions 实现，此处不再保留空壳占位。
 
-    test('V-F8-01 - 举报用户', async ({ page }) => {
+    test('V-F8-01 - 我的举报入口（R11；他人主页举报按钮未上线）', async ({ page }) => {
+        // 他人主页目前没有「举报用户」按钮（specs 未勾项），旧用例用 test.skip 静默略过。
+        // 改为验证已上线的 /my-reports 入口与页面，避免能力上线却永久漏测。
         await loginAsUser(page);
-        await page.goto('/profile/2');
-        await page.waitForTimeout(2000);
-
-        const reportBtn = page.getByRole('button', { name: /举报/ }).first();
-        test.skip(!(await reportBtn.isVisible()), '举报入口未渲染');
-
-        await reportBtn.click();
-        await page.waitForTimeout(500);
-
-        // 举报弹窗应包含举报类型选择
-        const reportDialog = (await page.locator('body').textContent()) || '';
-        expect(reportDialog).toMatch(/举报|类型|原因/);
+        await page.goto('/profile');
+        const myReports = page.getByRole('link', { name: '我的举报' });
+        await expect(myReports).toBeVisible({ timeout: 10_000 });
+        await myReports.click();
+        await expect(page).toHaveURL(/\/my-reports/, { timeout: 10_000 });
+        await expect(page.getByText('我的举报').first()).toBeVisible();
     });
 });
 
@@ -172,16 +173,19 @@ test.describe('Phase3 - 私信功能', () => {
         expect(page.url()).toContain('/messages');
     });
 
-    test('V-M5-06 - 在线状态显示', async ({ page }) => {
+    test('V-M5-06 - 在线状态接口（R8 前端入口待做）', async ({ page }) => {
+        // R8 前端在线状态入口尚未上线，原用例 if(isVisible()) 空转、恒通过。
+        // 改为断言后端「连接态」口径：1=有 WS 连接 / 2=24h 内登录 / 0=离线。
         await loginAsUser(page);
-        await page.goto('/messages');
-        await page.waitForTimeout(2000);
-
-        // 检查在线状态标识
-        const onlineStatus = page.locator('[class*="online"], [data-testid="online-status"]').first();
-        if (await onlineStatus.isVisible()) {
-            await expect(onlineStatus).toBeVisible();
-        }
+        const res = await apiWrite(page, 'get', '/api/v1/social/follow/2/online');
+        expect(res.ok(), `在线状态接口失败: ${res.status()}`).toBeTruthy();
+        const body = (await res.json()) as {
+            code?: number;
+            message?: string;
+            data?: { onlineStatus?: number };
+        };
+        expect(body.code, `在线状态业务失败: ${body.message}`).toBe(0);
+        expect([0, 1, 2], '在线状态应为连接态三值之一').toContain(body.data?.onlineStatus);
     });
 
     // V-M1-03（仅粉丝可私信）需要改目标用户设置 + 非粉丝账号，已在
@@ -282,10 +286,22 @@ test.describe('Phase3 - 通知功能', () => {
         await page.waitForTimeout(2000);
 
         const readAllBtn = page.getByRole('button', { name: /全部已读/ }).first();
-        if (await readAllBtn.isVisible()) {
-            await readAllBtn.click();
-            await page.waitForTimeout(500);
-        }
+        await expect(readAllBtn).toBeVisible({ timeout: 10_000 });
+        await readAllBtn.click();
+
+        // 全部已读走二次确认弹窗（useConfirm），确认后才会发 POST；旧用例直接等 POST 会超时
+        const dialog = page.getByRole('dialog');
+        await expect(dialog).toBeVisible({ timeout: 5_000 });
+        const confirmBtn = dialog.getByRole('button', { name: /全部已读|确认/ }).last();
+        const readAllPromise = page.waitForResponse(
+            (r) => r.request().method() === 'POST' && r.url().includes('/api/v1/notifications/read-all'),
+            { timeout: 10_000 },
+        );
+        await confirmBtn.click();
+        const readAllResp = await readAllPromise;
+        expect(readAllResp.ok(), `标记全部已读失败: ${readAllResp.status()}`).toBeTruthy();
+        const readAllBody = (await readAllResp.json()) as { code?: number; message?: string };
+        expect(readAllBody.code, `标记全部已读业务失败: ${readAllBody.message}`).toBe(0);
     });
 
     test('V-N8-01 - 通知设置可访问', async ({ page }) => {

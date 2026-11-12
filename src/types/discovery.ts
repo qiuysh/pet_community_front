@@ -78,6 +78,9 @@ export interface RecommendPostInfo {
   content: string;
   images?: string[];
   video?: string;
+  location?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   likesCount: number;
   commentsCount: number;
   sharesCount: number;

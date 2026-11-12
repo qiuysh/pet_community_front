@@ -9,6 +9,7 @@ import {
   cancelRegistration,
   getActivityDetail,
   getAlbumPhotoList,
+  getActivityRatings,
   getReview,
   getSubmissionList,
 } from '../../api/activity';
@@ -18,6 +19,9 @@ vi.mock('../../api/activity', () => ({
   getSubmissionList: vi.fn(),
   getReview: vi.fn(),
   getAlbumPhotoList: vi.fn(),
+  getActivityRatings: vi.fn(),
+  upsertActivityRating: vi.fn(),
+  deleteActivityRating: vi.fn(),
   cancelRegistration: vi.fn(),
   deleteSubmission: vi.fn(),
   updateSubmission: vi.fn(),
@@ -69,6 +73,13 @@ describe('ActivityDetailPage 报名与内容入口', () => {
     vi.mocked(getSubmissionList).mockResolvedValue({ list: [], total: 0 } as never);
     vi.mocked(getAlbumPhotoList).mockResolvedValue({ list: [], total: 0 } as never);
     vi.mocked(getReview).mockResolvedValue(null as never);
+    vi.mocked(getActivityRatings).mockResolvedValue({
+      list: [],
+      total: 0,
+      page: 1,
+      pageSize: 20,
+      average: 0,
+    } as never);
     vi.mocked(cancelRegistration).mockResolvedValue(undefined as never);
   });
 
@@ -91,7 +102,19 @@ describe('ActivityDetailPage 报名与内容入口', () => {
     });
   });
 
-  it('提供活动相册入口，切换后加载相册数据', async () => {
+  it('非线下活动不展示活动相册入口', async () => {
+    renderPage();
+    await screen.findByText('萌宠摄影大赛');
+    expect(screen.queryByRole('tab', { name: /活动相册/ })).not.toBeInTheDocument();
+  });
+
+  it('线下活动提供活动相册入口，切换后加载相册数据', async () => {
+    vi.mocked(getActivityDetail).mockResolvedValue({
+      ...activity,
+      type: ActivityType.OFFLINE_MEET,
+      title: '宠物线下聚会',
+    } as never);
+
     renderPage();
 
     fireEvent.click(await screen.findByRole('tab', { name: /活动相册/ }));

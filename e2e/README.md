@@ -21,7 +21,8 @@ e2e/
 ├── phase-2-supplement.spec.ts         # 草稿箱闭环 V-D8、视频/话题/定位编辑 V-D2/D3/D6、删除动态闭环 V-I7
 ├── phase-3-supplement.spec.ts         # 跨账号通知生成 V-N1/N2/N3/N4-03、拉黑屏蔽 V-F7-05、私信门禁 V-M1-03、通知设置 V-N8、等级积分 V-L1/L2/L4、私信纵深 V-M6/M7/M9
 ├── phase-4-supplement.spec.ts         # 列表翻页加载 V-R2、话题创建门禁/提交 V-T5
-└── phase-5-supplement.spec.ts         # 活动报名/作品/投票结果断言 V-A3/A4/A5、领养发布与申请闭环 V-A8
+├── phase-5-supplement.spec.ts         # 活动报名/作品/投票结果断言 V-A3/A4/A5、领养发布与申请闭环 V-A8
+└── phase-6-incremental.spec.ts        # 增量功能覆盖：R5 私密宠物越权、R2 寻宠分享面板、M3/M4 私信图片·语音入口、M8 聊天记录搜索入口
 
 playwright.config.ts                   # Playwright 配置
 tsconfig.e2e.json                      # E2E 专用 tsconfig
@@ -76,9 +77,10 @@ tsconfig.e2e.json                      # E2E 专用 tsconfig
 | Phase3 补充 | `phase-3-supplement.spec.ts` | 13 | 点赞/评论/@ 通知生成、悄悄关注不通知、拉黑后动态屏蔽、仅粉丝私信门禁、通知开关保存与持久化、等级/积分记录/等级权益、私信未读清零/撤回/删除会话 |
 | Phase4 补充 | `phase-4-supplement.spec.ts` | 2 | 动态列表翻页加载、话题创建（Lv5+ 门禁提示或提交成功） |
 | Phase5 补充 | `phase-5-supplement.spec.ts` | 5 | 活动报名结果断言、提交作品结果断言、投票结果断言、发布领养、申请领养 |
-| **合计** | | **192** | |
+| Phase6 增量功能 | `phase-6-incremental.spec.ts` | 4 | R5 私密宠物越权、R2 寻宠分享面板、M3/M4 私信图片·语音入口、M8 聊天记录搜索入口 |
+| **合计** | | **196** | |
 
-> 用例数按 `CI=1 playwright test --list` 实测（2026-11-11）：**192 条**；不含 `test.skip(true, ...)` 空壳（已全部移除，见下节）。
+> 用例数按 `CI=1 playwright test --list` 实测（2026-11-11）：**196 条**；不含 `test.skip(true, ...)` 空壳（已全部移除，见下节）。
 >
 > **跨账号场景落地进度**：跨账号用例已全部启用真实双会话（`dualSessions` + `actor.request` 触发 + viewer 侧 UI 验证）。2026-11-11 执行中 N1-01 / N2-01 / F7-05 / M1-03 通过，N3-01 / N4-03 失败待复核（见 `docs/specs/index.md` §1.1）。
 >
@@ -86,12 +88,14 @@ tsconfig.e2e.json                      # E2E 专用 tsconfig
 
 > **2026-10-16 补充覆盖**：按 [e2e-coverage-audit.md](../../docs/specs/e2e-coverage-audit.md) 的建议新增 5 个 supplement 文件（35 例），补齐此前只有"页面可达"或纯 skip 的主流程：宠物创建/编辑/相册/成长记录、设置保存闭环、草稿箱闭环、动态删除闭环、跨账号通知生成（N1/N2/N3/N4-03）、拉黑双向屏蔽、仅粉丝私信门禁、通知开关持久化、等级积分、私信未读/撤回/删除会话、列表翻页、话题创建门禁、活动报名/作品/投票结果断言、领养发布与申请。
 >
-> **仍未覆盖（受前端实现限制，非测试缺口）**：M3 图片消息、M4 语音消息、M8 消息搜索 —— `api/social.ts` 已有接口但 `chatPage` 无对应 UI，需先补前端交互才能写 UI 级用例。
+> **待补用例（2026-11-11 复核更正）**：M3 图片消息、M4 语音消息、M8 消息搜索 —— 前端 UI **已上线**（`components/chat/chatComposer.tsx` 接入 `hooks/useVoiceRecorder.ts`、`pages/social/chatPage.tsx` 接入 `ChatSearchBar` 与高亮定位），此前「`chatPage` 无对应 UI」的结论已过时；**本轮已由 `phase-6-incremental.spec.ts` 补齐 UI 级用例（M3/M4/M8 入口断言）**，不再属于缺口。
 
 ## 最近一次全量执行（2026-11-11）
 
 `CI=1 playwright test --reporter=list --workers=2 --retries=0`：**192 条 → 154 通过 / 14 失败 / 24 跳过**（7.2min）。
 前置服务：前端 `:3000`、后端 `:8083`、MySQL `:3306`。失败归因与 `verify.md` 回填状态见 [docs/specs/index.md](../../docs/specs/index.md) §1.1。
+
+> **2026-11-11 用例层修复（待实跑确认）**：14 条历史失败 + phase-6 的 R5/R2 问题，经复查**全部为测试用例自身的选择器/流程缺陷，零功能缺陷**，已在用例层修复（见 [e2e-remediation-report-2026-11-11.md](../../docs/specs/e2e-remediation-report-2026-11-11.md)）。同期新增 `phase-6-incremental.spec.ts`（4 条），用例总数 **192 → 196**。修复文件均通过 TypeScript 类型校验；**全量实跑为最终确认闸门**，需在具备 MySQL + Go 后端的环境执行。
 
 ## 注意事项
 

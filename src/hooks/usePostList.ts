@@ -1,21 +1,22 @@
 import { useSearchParams } from 'react-router-dom';
 import { useAsyncEffect } from './useAsync';
 import { useToast } from '../components/toast';
-import { getPostList } from '../api/post';
-import { PostInfo, PostListParams, PostListResponse } from '../types/post';
+import { getRecommendPosts } from '../api/discovery';
+import { PostInfo, PostListResponse } from '../types/post';
+import { recommendToPostListResponse } from '../utils/homeFeed';
 
 /**
- * 动态列表 hook
+ * 首页动态列表（HomeFeed）
  *
- * 封装动态列表的查询参数解析、数据加载、分页状态。
- * 查询参数(tab/page)与 URL searchParams 同步,支持浏览器前进后退。
- *
- * 用法:
- *   const { posts, loading, total, totalPages, tab, page, updateQuery } = usePostList();
+ * 规格 Phase-4 R1/R3：首页「推荐 / 图文 / 视频」统一走 Discovery `/recommend`，
+ * 不再误用时间序 `/posts`。查询参数 (tab/page) 与 URL 同步。
  */
 export type PostTab = 'all' | 'image' | 'video';
 
-export function usePostList(defaultPageSize = 10) {
+/** 规格默认每次 20 条 */
+export const HOME_FEED_PAGE_SIZE = 20;
+
+export function usePostList(defaultPageSize = HOME_FEED_PAGE_SIZE) {
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -29,15 +30,14 @@ export function usePostList(defaultPageSize = 10) {
     setSearchParams(params, { replace: true });
   };
 
-  const params: PostListParams = {
-    page,
-    pageSize: defaultPageSize,
-    type: tab === 'all' ? undefined : tab,
-  };
+  const postType = tab === 'all' ? undefined : tab;
 
   const { loading, data } = useAsyncEffect(
-    () => getPostList(params),
-    [page, tab],
+    async () => {
+      const raw = await getRecommendPosts(page, defaultPageSize, postType);
+      return recommendToPostListResponse(raw);
+    },
+    [page, tab, defaultPageSize],
     { onError: () => toast.error('加载动态失败') },
   );
 

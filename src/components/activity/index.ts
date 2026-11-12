@@ -6,3 +6,4 @@ export { QRCodeGenerator } from './qrCodeGenerator';
 export { QrCodeScanner } from './qrCodeScanner';
 export { ActivityAlbum } from './activityAlbum';
 export { SubmissionEditDialog } from './submissionEditDialog';
+export { ActivityRatings } from './activityRatings';

@@ -8,18 +8,19 @@ import { ActivityInfo } from '../../types/activity';
 import { useAsync } from '../../hooks/useAsync';
 import { Button } from '../ui/button';
 import { FieldLabel, Input, Textarea } from '../ui/input';
+import {
+  ACTIVITY_SUBMISSION_DESCRIPTION_MAX,
+  ACTIVITY_SUBMISSION_IMAGE_EXTS,
+  ACTIVITY_SUBMISSION_MAX_IMAGE_BYTES,
+  ACTIVITY_SUBMISSION_MAX_IMAGES,
+  ACTIVITY_SUBMISSION_MAX_VIDEO_BYTES,
+  ACTIVITY_SUBMISSION_TITLE_MAX,
+} from '../../constants/activity';
 
 interface SubmissionUploaderProps {
   activity: ActivityInfo;
   onSuccess?: () => void;
 }
-
-/** 作品图片上限（与后端 utils.MaxPostImageBytes 一致） */
-const MAX_IMAGES = 9;
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
-/** 允许的扩展名（与后端 UploadService 白名单一致） */
-const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
 
 /** 取小写扩展名，无扩展名返回空串 */
 function extOf(fileName: string): string {
@@ -42,22 +43,22 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
     input.value = '';
     if (files.length === 0) return;
 
-    const remain = MAX_IMAGES - images.length;
+    const remain = ACTIVITY_SUBMISSION_MAX_IMAGES - images.length;
     if (remain <= 0) {
-      toast.warning(`最多上传 ${MAX_IMAGES} 张图片`);
+      toast.warning(`最多上传 ${ACTIVITY_SUBMISSION_MAX_IMAGES} 张图片`);
       return;
     }
     if (files.length > remain) {
-      toast.warning(`最多上传 ${MAX_IMAGES} 张图片，本次仅上传前 ${remain} 张`);
+      toast.warning(`最多上传 ${ACTIVITY_SUBMISSION_MAX_IMAGES} 张图片，本次仅上传前 ${remain} 张`);
     }
 
     const results = await Promise.all(
       files.slice(0, remain).map(async (file) => {
-        if (!IMAGE_EXTS.includes(extOf(file.name))) {
+        if (!(ACTIVITY_SUBMISSION_IMAGE_EXTS as readonly string[]).includes(extOf(file.name))) {
           toast.error(`${file.name} 格式不支持，仅支持 jpg/png/gif/webp/bmp`);
           return null;
         }
-        if (file.size > MAX_IMAGE_BYTES) {
+        if (file.size > ACTIVITY_SUBMISSION_MAX_IMAGE_BYTES) {
           toast.error(`${file.name} 超过 5MB`);
           return null;
         }
@@ -87,7 +88,7 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
       toast.error('视频仅支持 MP4 格式');
       return;
     }
-    if (file.size > MAX_VIDEO_BYTES) {
+    if (file.size > ACTIVITY_SUBMISSION_MAX_VIDEO_BYTES) {
       toast.error('视频大小不得超过 50MB');
       return;
     }
@@ -159,9 +160,11 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="请输入作品标题…"
-          maxLength={50}
+          maxLength={ACTIVITY_SUBMISSION_TITLE_MAX}
         />
-        <div className="text-xs text-brown-muted mt-1 text-right">{title.length}/50</div>
+        <div className="text-xs text-brown-muted mt-1 text-right">
+          {title.length}/{ACTIVITY_SUBMISSION_TITLE_MAX}
+        </div>
       </div>
 
       <div>
@@ -173,9 +176,11 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
           onChange={(e) => setDescription(e.target.value)}
           placeholder="请描述你的作品…"
           rows={3}
-          maxLength={200}
+          maxLength={ACTIVITY_SUBMISSION_DESCRIPTION_MAX}
         />
-        <div className="text-xs text-brown-muted mt-1 text-right">{description.length}/200</div>
+        <div className="text-xs text-brown-muted mt-1 text-right">
+          {description.length}/{ACTIVITY_SUBMISSION_DESCRIPTION_MAX}
+        </div>
       </div>
 
       <div>
@@ -197,7 +202,7 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
             </div>
           ))}
         </div>
-        {images.length < MAX_IMAGES && (
+        {images.length < ACTIVITY_SUBMISSION_MAX_IMAGES && (
           <label className="flex items-center justify-center w-16 h-16 border-2 border-dashed border-border rounded-sm cursor-pointer hover:border-brown-muted focus-within:ring-2 focus-within:ring-primary/40">
             <input
               type="file"
@@ -216,7 +221,7 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
           </label>
         )}
         <p className="text-xs text-brown-muted mt-1">
-          最多 {MAX_IMAGES} 张，单张 ≤5MB；视频 MP4 ≤50MB
+          最多 {ACTIVITY_SUBMISSION_MAX_IMAGES} 张，单张 ≤5MB；视频 MP4 ≤50MB
         </p>
       </div>
 

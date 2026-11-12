@@ -2,16 +2,18 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useActivityDetail } from '../../hooks/useActivityDetail';
 import { useConfirm } from '../../hooks/useConfirm';
-import { isSubmissionActivityType } from '../../types/activity';
+import { getActivityCapabilities, getActivityDisplayStatus } from '../../types/activity';
 import {
   ActivityAlbum,
+  ActivityRatings,
   RegistrationForm,
   SubmissionEditDialog,
   SubmissionUploader,
   VoteButton,
 } from '../../components/activity';
+import { DEFAULT_ACTIVITY_COVER, DEFAULT_SUBMISSION_IMAGE } from '../../constants/activity';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
-import { Clock, Users, Check, Trophy, Pencil, Trash2 } from 'lucide-react';
+import { Clock, Users, Check, Trophy, Pencil, Trash2, Star } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -63,12 +65,16 @@ export const ActivityDetailPage = () => {
     return <div className="min-h-screen flex items-center justify-center">加载中…</div>;
   }
 
+  const bannerSrc = activity.banner || activity.cover || DEFAULT_ACTIVITY_COVER;
+  const displayStatus = getActivityDisplayStatus(activity);
+  const activityEnded = displayStatus === 'ended';
+
   return (
     <div className="bg-cream min-h-screen pb-6">
       <div className="bg-white">
         <img
           decoding="async"
-          src={activity.cover || '/default-activity-cover.png'}
+          src={bannerSrc}
           alt={activity.title}
           className="w-full h-48 object-cover"
         />
@@ -86,6 +92,19 @@ export const ActivityDetailPage = () => {
                 <Users className="w-4 h-4" aria-hidden="true" />
                 <span>
                   {activity.participantsCount}/{activity.maxParticipants} 人参与
+                </span>
+              </div>
+            )}
+            {(activity.ratingCount ?? 0) > 0 && (
+              <div className="flex items-center gap-2">
+                <Star
+                  size={ICON_SIZE.inline}
+                  strokeWidth={iconStroke(ICON_SIZE.inline)}
+                  className="fill-warning text-warning"
+                  aria-hidden="true"
+                />
+                <span>
+                  {(activity.ratingAvg ?? 0).toFixed(1)} · {activity.ratingCount} 条评价
                 </span>
               </div>
             )}
@@ -163,10 +182,12 @@ export const ActivityDetailPage = () => {
             onSelectionChange={(key) => setActiveTab(key as typeof activeTab)}
             items={[
               { key: 'detail', title: '活动详情' },
-              ...(isSubmissionActivityType(activity.type)
+              ...(getActivityCapabilities(activity.type).allowsSubmission
                 ? [{ key: 'submissions', title: '作品展示' }]
                 : []),
-              { key: 'album', title: '活动相册' },
+              ...(getActivityCapabilities(activity.type).allowsOffline
+                ? [{ key: 'album', title: '活动相册' }]
+                : []),
               ...(review ? [{ key: 'review', title: '活动回顾' }] : []),
             ]}
           />
@@ -175,26 +196,37 @@ export const ActivityDetailPage = () => {
 
       <div className="page-shell px-4 py-4">
         {activeTab === 'detail' && (
-          <Card>
-            {activity.rules && (
-              <div className="mb-4">
-                <h3 className="page-section-title mb-2">活动规则</h3>
-                <p className="text-sm text-brown-muted">{activity.rules}</p>
-              </div>
-            )}
-            {activity.prizes && (
-              <div className="mb-4">
-                <h3 className="page-section-title mb-2">奖品设置</h3>
-                <p className="text-sm text-brown-muted">{activity.prizes}</p>
-              </div>
-            )}
-            {(activity.votesPerDay ?? 0) > 0 && (
-              <div className="mb-4">
-                <h3 className="page-section-title mb-2">投票规则</h3>
-                <p className="text-sm text-brown-muted">每人每天最多可投票 {activity.votesPerDay} 次</p>
-              </div>
-            )}
-          </Card>
+          <div className="space-y-4">
+            <Card>
+              {activity.rules && (
+                <div className="mb-4">
+                  <h3 className="page-section-title mb-2">活动规则</h3>
+                  <p className="text-sm text-brown-muted">{activity.rules}</p>
+                </div>
+              )}
+              {activity.prizes && (
+                <div className="mb-4">
+                  <h3 className="page-section-title mb-2">奖品设置</h3>
+                  <p className="text-sm text-brown-muted">{activity.prizes}</p>
+                </div>
+              )}
+              {(activity.votesPerDay ?? 0) > 0 && (
+                <div className="mb-4">
+                  <h3 className="page-section-title mb-2">投票规则</h3>
+                  <p className="text-sm text-brown-muted">每人每天最多可投票 {activity.votesPerDay} 次</p>
+                </div>
+              )}
+            </Card>
+            <Card>
+              <ActivityRatings
+                activityId={activity.id}
+                ended={activityEnded}
+                canRate={!!activity.isRegistered}
+                isLoggedIn={isLoggedIn}
+                onLoginRequired={() => navigate('/login')}
+              />
+            </Card>
+          </div>
         )}
 
         {activeTab === 'submissions' && (
@@ -207,7 +239,7 @@ export const ActivityDetailPage = () => {
                   <Card key={submission.id} padding="none">
                     <img
                       decoding="async"
-                      src={submission.images?.[0] || '/default-submission.png'}
+                      src={submission.images?.[0] || DEFAULT_SUBMISSION_IMAGE}
                       alt={submission.title}
                       className="w-full h-32 object-cover"
                     />

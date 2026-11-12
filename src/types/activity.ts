@@ -39,6 +39,8 @@ export interface ActivityInfo {
   description: string;
   type: ActivityType | string;
   cover: string;
+  /** 详情顶栏横幅；空则前端回落 cover（R12） */
+  banner?: string;
   status: ActivityStatus | number;
   startTime: string;
   endTime: string;
@@ -54,6 +56,9 @@ export interface ActivityInfo {
   submissionsCount: number;
   isRegistered?: boolean;
   hasSubmitted?: boolean;
+  /** 星评均分（一位小数）；无评价为 0 */
+  ratingAvg?: number;
+  ratingCount?: number;
 }
 
 export interface ActivityCreateRequest {
@@ -61,6 +66,7 @@ export interface ActivityCreateRequest {
   description: string;
   type: ActivityType | string;
   cover?: string;
+  banner?: string;
   startTime: string;
   endTime: string;
   rules?: string;
@@ -75,6 +81,7 @@ export interface ActivityUpdateRequest {
   title?: string;
   description?: string;
   cover?: string;
+  banner?: string;
   startTime?: string;
   endTime?: string;
   rules?: string;
@@ -257,17 +264,40 @@ export const ActivityTypeCreateOptions = [
   { value: ActivityType.ADOPT, label: '领养活动' },
 ];
 
-/** 投票/征集类：可投稿与作品展示（含历史别名） */
-export function isSubmissionActivityType(type: string): boolean {
-  return (
-    type === ActivityType.ONLINE_VOTE ||
-    type === ActivityType.VOTING ||
-    type === ActivityType.CONTEST
-  );
+/** 活动类型 → 能力（与签到/相册 BE 门闸、投稿消费侧对齐） */
+export interface ActivityCapabilities {
+  /** 可投稿 / 作品展示（投票评选、话题征集及历史别名） */
+  allowsSubmission: boolean;
+  /** 可投票展示（投票类；征集类默认不强调投票 UI，仍可由 votesPerDay 控制） */
+  allowsVote: boolean;
+  /** 线下签到 / 相册（仅 offline_meet） */
+  allowsOffline: boolean;
 }
 
+export function getActivityCapabilities(type: string): ActivityCapabilities {
+  const t = (type || '').trim();
+  const allowsOffline = t === ActivityType.OFFLINE_MEET;
+  const allowsSubmission =
+    t === ActivityType.ONLINE_VOTE ||
+    t === ActivityType.ONLINE_COLLECT ||
+    t === ActivityType.VOTING ||
+    t === ActivityType.CONTEST ||
+    t === ActivityType.COLLECTION;
+  const allowsVote =
+    t === ActivityType.ONLINE_VOTE ||
+    t === ActivityType.VOTING ||
+    t === ActivityType.CONTEST;
+  return { allowsSubmission, allowsVote, allowsOffline };
+}
+
+/** @deprecated 使用 getActivityCapabilities(type).allowsSubmission */
+export function isSubmissionActivityType(type: string): boolean {
+  return getActivityCapabilities(type).allowsSubmission;
+}
+
+/** @deprecated 使用 getActivityCapabilities(type).allowsOffline */
 export function isOfflineMeetActivityType(type: string): boolean {
-  return type === ActivityType.OFFLINE_MEET;
+  return getActivityCapabilities(type).allowsOffline;
 }
 
 export const ActivityStatusOptions = [
@@ -346,6 +376,10 @@ export interface AlbumPhotoListResponse {
   pageSize: number;
 }
 
+/**
+ * 活动官方回顾（运营图文总结）。
+ * 注意：这不是 R12「活动评价/星评」——星评需独立表与接口，禁止复用本类型。
+ */
 export interface ActivityReviewInfo {
   id: number;
   activityId: number;
@@ -357,11 +391,41 @@ export interface ActivityReviewInfo {
   createdAt: string;
 }
 
+/** @deprecated 语义别名，强调「官方回顾」≠ ActivityRating */
+export type ActivityOfficialReview = ActivityReviewInfo;
+
 export interface ActivityReviewCreateRequest {
   activityId: number;
   title: string;
   content: string;
   photos?: string[];
+}
+
+/** 活动星评（R12）；与官方回顾 ActivityReviewInfo 分离 */
+export interface ActivityRatingInfo {
+  id: number;
+  activityId: number;
+  userId: number;
+  userNickname: string;
+  userAvatar: string;
+  score: number;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ActivityRatingUpsertRequest {
+  score: number;
+  comment?: string;
+}
+
+export interface ActivityRatingListResponse {
+  list: ActivityRatingInfo[];
+  total: number;
+  page: number;
+  pageSize: number;
+  average: number;
+  myRating?: ActivityRatingInfo | null;
 }
 
 /** 根据发布时间与起止时间推导展示态 */

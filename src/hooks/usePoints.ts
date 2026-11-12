@@ -3,6 +3,15 @@ import { pointsApi } from '../api/social';
 import { useAsyncEffect } from './useAsync';
 import { showErrorToast } from '../utils/toastManager';
 import { reportError } from '../utils/errorReport';
+import {
+  levelProgressPercent,
+  toLevelBenefitView,
+  toUserLevelView,
+  type LevelBenefitApi,
+  type LevelBenefitView,
+  type UserLevelApi,
+  type UserLevelView,
+} from '../utils/pointsView';
 
 export interface PointsRecord {
   id: number;
@@ -24,21 +33,7 @@ export interface PointsRule {
   dailyLimit: number;
 }
 
-export interface LevelBenefit {
-  id: number;
-  level: number;
-  benefitName: string;
-  benefitDesc: string;
-  icon: string;
-}
-
-export interface UserLevel {
-  level: number;
-  levelName: string;
-  minPoints: number;
-  maxPoints: number;
-  currentPoints: number;
-}
+export type { LevelBenefitView as LevelBenefit, UserLevelView as UserLevel };
 
 export type PointsTab = 'records' | 'rules' | 'benefits';
 
@@ -46,20 +41,20 @@ export type PointsTab = 'records' | 'rules' | 'benefits';
  * 积分中心 hook
  *
  * 管理:
- * - 用户等级(getUserLevel)
+ * - 用户等级(getUserLevel) → PointsView 适配 BE JSON
  * - 按 tab 加载 records/rules/benefits
- *
- * 用法:
- *   const { userLevel, records, rules, benefits, loading, activeTab, setActiveTab } = usePoints();
  */
 export function usePoints(pageSize = 50) {
   const [activeTab, setActiveTab] = useState<PointsTab>('records');
   const [records, setRecords] = useState<PointsRecord[]>([]);
   const [rules, setRules] = useState<PointsRule[]>([]);
-  const [benefits, setBenefits] = useState<LevelBenefit[]>([]);
+  const [benefits, setBenefits] = useState<LevelBenefitView[]>([]);
 
   const { data: userLevelData } = useAsyncEffect(
-    () => pointsApi.getUserLevel() as Promise<UserLevel>,
+    async () => {
+      const raw = (await pointsApi.getUserLevel()) as UserLevelApi;
+      return toUserLevelView(raw);
+    },
     [activeTab],
     { onError: (error) => reportError('获取用户等级失败', error) },
   );
@@ -69,32 +64,36 @@ export function usePoints(pageSize = 50) {
     async () => {
       switch (activeTab) {
         case 'records': {
-          const recordsRes = await pointsApi.getPointsRecords({ page: 1, pageSize }) as { list: PointsRecord[] };
+          const recordsRes = (await pointsApi.getPointsRecords({ page: 1, pageSize })) as {
+            list: PointsRecord[];
+          };
           setRecords(recordsRes.list || []);
           break;
         }
         case 'rules': {
-          const rulesRes = await pointsApi.getPointsRules() as PointsRule[];
+          const rulesRes = (await pointsApi.getPointsRules()) as PointsRule[];
           setRules(rulesRes || []);
           break;
         }
         case 'benefits': {
-          const benefitsRes = await pointsApi.getBenefits() as LevelBenefit[];
-          setBenefits(benefitsRes || []);
+          const benefitsRes = (await pointsApi.getBenefits()) as LevelBenefitApi[];
+          setBenefits((benefitsRes || []).map(toLevelBenefitView));
           break;
         }
       }
     },
     [activeTab],
-    { onError: (error) => {
-      reportError('获取数据失败', error);
-      showErrorToast('获取数据失败');
-    } },
+    {
+      onError: (error) => {
+        reportError('获取数据失败', error);
+        showErrorToast('获取数据失败');
+      },
+    },
   );
 
   const getProgress = () => {
     if (!userLevel) return 0;
-    return ((userLevel.currentPoints - userLevel.minPoints) / (userLevel.maxPoints - userLevel.minPoints)) * 100;
+    return levelProgressPercent(userLevel);
   };
 
   return {

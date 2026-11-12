@@ -26,9 +26,15 @@ const VIEWER_ID = 2; // user2：铲屎官小王
 async function createPostViaApi(page: Page, content: string): Promise<number> {
     const res = await apiWrite(page, 'post', '/api/v1/posts', { data: { content } });
     expect(res.ok(), `接口发布动态失败: ${res.status()}`).toBeTruthy();
-    const body = (await res.json().catch(() => ({}))) as { data?: { id?: number }; id?: number };
+    const body = (await res.json()) as {
+        code?: number;
+        message?: string;
+        data?: { id?: number };
+        id?: number;
+    };
+    expect(body.code, `接口发布动态业务失败: ${body.message}`).toBe(0);
     const id = Number(body?.data?.id ?? body?.id ?? 0);
-    expect(id, '发布响应缺少 id').toBeGreaterThan(0);
+    expect(id, `发布响应缺少 id（code=${body.code}）`).toBeGreaterThan(0);
     return id;
 }
 
@@ -108,13 +114,17 @@ test.describe('Phase3 补充 - 通知生成（V-N1/N2/N3/N4-03）', () => {
             // 昵称必须用接口实时值：seed 昵称会被历史用例改写，写死则解析不到被 @ 人
             const { nickname } = await getMyProfile(viewer);
             expect(nickname, '读取 viewer 昵称失败').not.toBe('');
-            const postId = await createPostViaApi(actor, `@${nickname} e2e@通知_${Date.now()}`);
-            const filter = { type: 'at', triggerId: postId };
+            // 发帖子本身就是触发动作：基线必须在发帖「之前」取。
+            // 更稳的口径是新帖 id 唯一，直接断言存在 type=at 且 triggerId=postId 的通知，
+            // 不受历史通知刷满分页影响。
+            const filter = { type: 'at' };
             const before = await countActorNotifications(actor, viewer, filter);
+            const postId = await createPostViaApi(actor, `@${nickname} e2e@通知_${Date.now()}`);
 
             await viewer.waitForTimeout(2_000);
-            const after = await countActorNotifications(actor, viewer, filter);
-            expect(after, '被 @ 后通知数应增加').toBeGreaterThan(before);
+            const after = await countActorNotifications(actor, viewer, { type: 'at', triggerId: postId });
+            expect(after, '被 @ 后应生成 type=at 且 triggerId=新帖 id 的通知').toBeGreaterThan(0);
+            expect(before, '基线仅用于确认通知接口可读').toBeGreaterThanOrEqual(0);
         } finally {
             await cleanup();
         }
@@ -127,16 +137,25 @@ test.describe('Phase3 补充 - 通知生成（V-N1/N2/N3/N4-03）', () => {
             await apiWrite(actor, 'delete', `/api/v1/social/follow/${VIEWER_ID}`);
             await actor.waitForTimeout(500);
 
+            // 悄悄关注要求已存在关注关系（后端 SetSecretFollow 对「未关注该用户」返回 500），
+            // 故先建立普通关注，再置为悄悄关注；此时不应产生额外的 follow 通知。
+            const followRes = await apiWrite(actor, 'post', `/api/v1/social/follow/${VIEWER_ID}`);
+            expect(followRes.ok(), `关注失败: ${followRes.status()}`).toBeTruthy();
+            await viewer.waitForTimeout(2_000);
+
+            // 基线：在悄悄关注「之前」统计 follow 通知（已含刚才普通关注产生的 1 条）
             const before = await countActorNotifications(actor, viewer, { type: 'follow' });
 
-            const secretRes = await apiWrite(actor, 'post', `/api/v1/social/follow/${VIEWER_ID}`, {
-                data: { secret: true },
+            // 悄悄关注是独立路由 + isSecret 字段；旧写法 { secret: true } 会被 controller
+            // 忽略并退化成普通关注，从而误报「悄悄关注仍产生 follow 通知」。
+            const secretRes = await apiWrite(actor, 'post', `/api/v1/social/follow/${VIEWER_ID}/secret`, {
+                data: { isSecret: true },
             });
             expect(secretRes.ok(), `悄悄关注失败: ${secretRes.status()}`).toBeTruthy();
 
             await viewer.waitForTimeout(2_000);
             const after = await countActorNotifications(actor, viewer, { type: 'follow' });
-            expect(after, '悄悄关注不应产生通知').toBe(before);
+            expect(after, '悄悄关注不应产生额外通知').toBe(before);
 
             // 还原关注状态
             await apiWrite(actor, 'delete', `/api/v1/social/follow/${VIEWER_ID}`);
@@ -209,9 +228,12 @@ test.describe('Phase3 补充 - 通知设置与积分等级（V-N8/V-L1/V-L2/V-L4
         await loginAsUser(page);
         await page.goto('/notification-settings');
 
-        const firstItem = page.locator('.setting-item').first();
-        const toggle = firstItem.locator('.toggle-switch');
-        const clsBefore = (await toggle.getAttribute('class')) ?? '';
+        // 开关是 HeroUI Switch（role=switch + aria-label），真实可点的可见滑块是
+        // [data-slot="switch-control"]，checkbox 被它挡住，直接 click switch 会被拦截而不触发 onChange。
+        const toggle = page.getByRole('switch', { name: '点赞通知' });
+        await expect(toggle).toBeVisible({ timeout: 10_000 });
+        const toggleControl = toggle.locator('[data-slot="switch-control"]').first();
+        const checkedBefore = await toggle.isChecked();
 
         const putPromise = page.waitForResponse(
             (r) =>
@@ -219,18 +241,17 @@ test.describe('Phase3 补充 - 通知设置与积分等级（V-N8/V-L1/V-L2/V-L4
                 r.request().method() === 'PUT',
             { timeout: 10_000 },
         );
-        await firstItem.click();
+        await toggleControl.click();
         const putResp = await putPromise;
         expect(putResp.ok(), `保存通知设置失败: ${putResp.status()}`).toBeTruthy();
-
-        await expect(toggle).not.toHaveClass(clsBefore, { timeout: 5_000 });
+        await expect(toggle).toBeChecked({ checked: !checkedBefore, timeout: 5_000 });
 
         // 刷新后仍保持新状态（落库校验）
         await page.reload();
-        await expect(page.locator('.setting-item').first().locator('.toggle-switch')).not.toHaveClass(
-            clsBefore,
-            { timeout: 10_000 },
-        );
+        await expect(page.getByRole('switch', { name: '点赞通知' })).toBeChecked({
+            checked: !checkedBefore,
+            timeout: 10_000,
+        });
 
         // 还原初始开关状态
         const restorePromise = page.waitForResponse(
@@ -239,8 +260,12 @@ test.describe('Phase3 补充 - 通知设置与积分等级（V-N8/V-L1/V-L2/V-L4
                 r.request().method() === 'PUT',
             { timeout: 10_000 },
         );
-        await page.locator('.setting-item').first().click();
+        await page.getByRole('switch', { name: '点赞通知' }).locator('[data-slot="switch-control"]').first().click();
         expect((await restorePromise).ok()).toBeTruthy();
+        await expect(page.getByRole('switch', { name: '点赞通知' })).toBeChecked({
+            checked: checkedBefore,
+            timeout: 5_000,
+        });
     });
 
     test('V-L1-01 - 用户等级展示', async ({ page }) => {

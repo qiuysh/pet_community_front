@@ -353,23 +353,21 @@
         }
 
         .location-input {
-          position: absolute;
-          right: 28px;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 150px;
+          flex: 1;
+          min-width: 0;
           border: none;
           text-align: right;
           font-size: $font-size-sm;
           color: $text-secondary;
           outline: none;
           background: transparent;
-          border-radius: $border-radius-xs;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
 
-          &:focus-visible {
-            outline: 2px solid $primary-text;
-            outline-offset: 2px;
-          }
+        .option-label {
+          flex: 0 0 auto;
         }
       }
 

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { TEST_USERS, ADMIN_USERS, clearAuth, loginAsUser, loginAsAdmin, firstDetailLink } from './fixtures/auth';
+import { ADMIN_USERS, clearAuth, loginAsUser, loginAsAdmin, firstDetailLink } from './fixtures/auth';
 
 test.describe('Phase5 - 领养中心', () => {
     test.beforeEach(async ({ page }) => {
@@ -15,13 +15,17 @@ test.describe('Phase5 - 领养中心', () => {
         await page.goto('/adopts');
         await page.waitForTimeout(1500);
 
-        await page.getByRole('button', { name: '猫咪' }).click();
-        await page.waitForTimeout(500);
+        const catChip = page.getByRole('button', { name: '猫咪' });
+        await expect(catChip).toBeVisible({ timeout: 10_000 });
+        await catChip.click();
+        await expect(catChip).toHaveAttribute('aria-pressed', 'true');
+        await expect(page.getByText('领养中心')).toBeVisible();
     });
 
     test('V-A8-01 - 未登录访问发布领养跳转登录', async ({ page }) => {
         await page.goto('/adopts/create');
         await page.waitForURL((url) => url.pathname.includes('/login'), { timeout: 10_000 });
+        await expect(page).toHaveURL(/\/login/);
     });
 
     test('V-A8-03 - 领养详情页可访问', async ({ page }) => {
@@ -75,10 +79,10 @@ test.describe('Phase5 - 活动中心', () => {
         await page.waitForTimeout(1500);
 
         const allBtn = page.getByRole('button', { name: '全部' }).first();
-        if (await allBtn.isVisible()) {
-            await allBtn.click();
-            await page.waitForTimeout(500);
-        }
+        await expect(allBtn).toBeVisible({ timeout: 10_000 });
+        await allBtn.click();
+        await expect(allBtn).toHaveAttribute('aria-pressed', 'true');
+        await expect(page.getByText('活动中心')).toBeVisible();
     });
 
     test('V-A2-02 - 活动详情页渲染', async ({ page }) => {
@@ -120,10 +124,14 @@ test.describe('Phase5 - 活动中心', () => {
         await firstLink.click();
         await page.waitForTimeout(1500);
 
+        // 作品提交入口仅投票/征集类活动有；无论是否渲染，详情页本身必须加载完成
+        await expect(page.locator('body')).toContainText(/活动|报名|详情|作品/, { timeout: 10_000 });
         const uploadBtn = page.getByRole('button', { name: /上传|提交作品/ }).first();
         if (await uploadBtn.isVisible()) {
             await uploadBtn.click();
-            await page.waitForTimeout(1000);
+            await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5_000 });
+        } else {
+            await expect(page).toHaveURL(/\/activities\/\d+/);
         }
     });
 
@@ -139,10 +147,17 @@ test.describe('Phase5 - 活动中心', () => {
         await firstLink.click();
         await page.waitForTimeout(1500);
 
-        const voteBtn = page.getByRole('button', { name: /投票/ }).first();
+        await expect(page).toHaveURL(/\/activities\/\d+/);
+        const voteBtn = page.getByRole('button', { name: /^投票$/ }).first();
         if (await voteBtn.isVisible()) {
+            const votePromise = page.waitForResponse(
+                (r) => r.request().method() === 'POST' && r.url().includes('/activities/vote'),
+                { timeout: 10_000 },
+            );
             await voteBtn.click();
-            await page.waitForTimeout(500);
+            expect((await votePromise).ok(), '投票请求失败').toBeTruthy();
+        } else {
+            await expect(page.locator('body')).toContainText(/活动|报名|作品/);
         }
     });
 
@@ -229,6 +244,7 @@ test.describe('Phase5 - 后台管理', () => {
             await rejectBtn.click();
             await page.waitForTimeout(500);
         }
+        await expect(page.locator('body')).toContainText(/待审核|审核|内容/, { timeout: 5_000 });
     });
 
     test('V-Ad1-05/V-Ad1-06 - 批量审核', async ({ page }) => {
@@ -241,6 +257,7 @@ test.describe('Phase5 - 后台管理', () => {
             await batchBtn.click();
             await page.waitForTimeout(500);
         }
+        await expect(page.locator('body')).toContainText(/审核|内容|待审核/, { timeout: 5_000 });
     });
 
     test('V-Ad1-10 - 自动审核通过正常内容', async ({ page }) => {
@@ -254,6 +271,7 @@ test.describe('Phase5 - 后台管理', () => {
         if (await autoAuditBadge.isVisible()) {
             await expect(autoAuditBadge).toBeVisible();
         }
+        await expect(page.locator('body')).toContainText(/审核|内容|自动/, { timeout: 5_000 });
     });
 
     test('V-Ad2-01 - 前台用户列表展示', async ({ page }) => {
@@ -268,10 +286,10 @@ test.describe('Phase5 - 后台管理', () => {
         await page.waitForTimeout(1000);
 
         const searchInput = page.locator('input[type="search"], input[placeholder*="搜索"]').first();
-        if (await searchInput.isVisible()) {
-            await searchInput.fill('测试');
-            await page.waitForTimeout(500);
-        }
+        await expect(searchInput).toBeVisible({ timeout: 10_000 });
+        await searchInput.fill('测试');
+        await expect(searchInput).toHaveValue('测试');
+        await expect(page.locator('body')).toContainText(/前台|用户|昵称/);
     });
 
     test('V-Ad2-04/V-Ad2-05 - 用户封禁与解封', async ({ page }) => {
@@ -290,6 +308,7 @@ test.describe('Phase5 - 后台管理', () => {
             await unbanBtn.click();
             await page.waitForTimeout(500);
         }
+        await expect(page.locator('body')).toContainText(/前台|用户|昵称|封禁/, { timeout: 5_000 });
     });
 
     test('V-Ad2-07 - 举报处理', async ({ page }) => {
@@ -302,6 +321,7 @@ test.describe('Phase5 - 后台管理', () => {
             await reportBtn.click();
             await page.waitForTimeout(500);
         }
+        await expect(page.locator('body')).toContainText(/前台|用户|昵称|举报/, { timeout: 5_000 });
     });
 
     test('V-Ad0-2-01 - 后台管理员列表', async ({ page }) => {
@@ -318,7 +338,9 @@ test.describe('Phase5 - 后台管理', () => {
         const editBtn = page.getByRole('button', { name: /编辑/ }).first();
         if (await editBtn.isVisible()) {
             await editBtn.click();
-            await page.waitForTimeout(1000);
+            await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5_000 });
+        } else {
+            await expect(page.locator('body')).toContainText(/管理员|用户|账号/);
         }
     });
 
@@ -335,11 +357,16 @@ test.describe('Phase5 - 后台管理', () => {
         await page.goto('/admin/analytics');
         await page.waitForTimeout(1500);
 
-        const periodBtn = page.getByRole('button', { name: /今日|本周|本月|近7天/ }).first();
-        if (await periodBtn.isVisible()) {
-            await periodBtn.click();
-            await page.waitForTimeout(500);
-        }
+        // AdminSelect 是 HeroUI Select：#analytics-period 是 button 触发器（aria-haspopup=listbox），
+        // 不是原生 <select>，selectOption 会报 “Element is not a <select>”。点击触发器后选 option。
+        const periodSelect = page.locator('#analytics-period');
+        await expect(periodSelect).toBeVisible({ timeout: 10_000 });
+        await periodSelect.click();
+        const option = page.getByRole('option', { name: '30 天' });
+        await expect(option).toBeVisible({ timeout: 5_000 });
+        await option.click();
+        // 选中后触发器应展示 “30 天”
+        await expect(periodSelect).toContainText('30 天', { timeout: 5_000 });
     });
 
     test('V-Ad3-06 - 数据导出', async ({ page }) => {
@@ -347,11 +374,19 @@ test.describe('Phase5 - 后台管理', () => {
         await page.goto('/admin/analytics');
         await page.waitForTimeout(2000);
 
-        const exportBtn = page.getByRole('button', { name: /导出|下载/ }).first();
-        if (await exportBtn.isVisible()) {
-            await exportBtn.click();
-            await page.waitForTimeout(1000);
-        }
+        const exportBtn = page.getByRole('button', { name: '导出数据' });
+        await expect(exportBtn).toBeVisible({ timeout: 10_000 });
+
+        // 先登记 download，再点开菜单并点菜单项；菜单项是 HeroUI 桥接按钮（label=概览统计），
+        // 用 getByText 命中，避免 role=button 名匹配不到 menuitem。
+        const downloadPromise = page.waitForEvent('download', { timeout: 20_000 });
+        await exportBtn.click();
+        const overviewItem = page.getByText('概览统计', { exact: true }).last();
+        await expect(overviewItem).toBeVisible({ timeout: 5_000 });
+        await overviewItem.click();
+        const download = await downloadPromise;
+        // Excelize 导出：analytics_<type>_<start>_<end>.xlsx
+        expect(download.suggestedFilename(), '导出文件应为 xlsx').toMatch(/\.xlsx$/);
     });
 
     test('V-Ad4-01 - 举报管理列表', async ({ page }) => {
@@ -378,6 +413,7 @@ test.describe('Phase5 - 后台管理', () => {
             await batchBtn.click();
             await page.waitForTimeout(500);
         }
+        await expect(page.locator('body')).toContainText(/举报管理|待处理|举报/, { timeout: 5_000 });
     });
 
     test('V-Ad6-01 - 广告位管理', async ({ page }) => {

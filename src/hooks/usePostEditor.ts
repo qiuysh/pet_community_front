@@ -46,6 +46,8 @@ export interface PostEditorState {
   selectedPets: number[];
   selectedTopics: TopicInfo[];
   location: string;
+  latitude: number | null;
+  longitude: number | null;
   visibility: number;
   publishMode: PublishMode;
   publishTime: string;
@@ -58,6 +60,8 @@ export const initialEditorState: PostEditorState = {
   selectedPets: [],
   selectedTopics: [],
   location: '',
+  latitude: null,
+  longitude: null,
   visibility: 0,
   publishMode: 'now',
   publishTime: '',
@@ -110,6 +114,17 @@ export function usePostEditor() {
   const setSelectedPets = useCallback((v: number[]) => update('selectedPets', v), [update]);
   const setSelectedTopics = useCallback((v: TopicInfo[]) => update('selectedTopics', v), [update]);
   const setLocation = useCallback((v: string) => update('location', v), [update]);
+  const setPostLocation = useCallback(
+    (next: { location: string; latitude: number | null; longitude: number | null }) => {
+      setState((s) => ({
+        ...s,
+        location: next.location,
+        latitude: next.latitude,
+        longitude: next.longitude,
+      }));
+    },
+    [],
+  );
   const setVisibility = useCallback((v: number) => update('visibility', v), [update]);
   const setPublishMode = useCallback((v: PublishMode) => {
     setState((s) => {
@@ -138,6 +153,8 @@ export function usePostEditor() {
       selectedPets: res.petIds || [],
       selectedTopics: res.topics || [],
       location: res.location || '',
+      latitude: res.latitude ?? null,
+      longitude: res.longitude ?? null,
       visibility: res.visibility,
       publishMode: res.publishAt ? 'scheduled' : 'now',
       publishTime: res.publishAt ? toLocalDatetimeInput(res.publishAt) : '',
@@ -152,6 +169,8 @@ export function usePostEditor() {
       video: res.video || '',
       selectedPets: res.petIds || [],
       location: res.location || '',
+      latitude: res.latitude ?? null,
+      longitude: res.longitude ?? null,
       visibility: res.visibility,
     }));
   }, []);
@@ -246,6 +265,8 @@ export function usePostEditor() {
       petIds: state.selectedPets,
       topicIds: state.selectedTopics.map((t) => t.id),
       location: state.location,
+      latitude: state.latitude,
+      longitude: state.longitude,
       visibility: state.visibility,
       publishAt,
     };
@@ -286,6 +307,8 @@ export function usePostEditor() {
       petIds: state.selectedPets,
       topicIds: state.selectedTopics.map((t) => t.id),
       location: state.location,
+      latitude: state.latitude,
+      longitude: state.longitude,
       visibility: state.visibility,
     };
 
@@ -329,6 +352,8 @@ export function usePostEditor() {
         selectedPets: state.selectedPets,
         selectedTopics: state.selectedTopics.map((t) => t.id),
         location: state.location,
+        latitude: state.latitude,
+        longitude: state.longitude,
         visibility: state.visibility,
       });
       if (snapshot === lastAutoSnapshot.current) return;
@@ -341,6 +366,8 @@ export function usePostEditor() {
         petIds: state.selectedPets,
         topicIds: state.selectedTopics.map((t) => t.id),
         location: state.location,
+        latitude: state.latitude,
+        longitude: state.longitude,
         visibility: state.visibility,
       };
       try {
@@ -400,6 +427,7 @@ export function usePostEditor() {
     setSelectedPets,
     setSelectedTopics,
     setLocation,
+    setPostLocation,
     setVisibility,
     setPublishMode,
     setPublishTime,

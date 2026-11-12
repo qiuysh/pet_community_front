@@ -37,7 +37,8 @@ export const getRecommendPosts = async (
   pageSize = 20,
   postType?: string
 ): Promise<RecommendResponse> => {
-  const params: Record<string, string | number> = { page, pageSize };
+  // 同时传 pageSize / page_size，与 discovery 控制器双口径兼容
+  const params: Record<string, string | number> = { page, pageSize, page_size: pageSize };
   if (postType) params.type = postType;
   return await get<RecommendResponse>('/api/v1/recommend', { params });
 };

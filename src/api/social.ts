@@ -18,6 +18,12 @@ export const followApi = {
     get(`/api/v1/social/follow/secret/list`, { params }),
   /** 关注状态：isFollowing / isSecret / isMutual + 计数 */
   getFollowStatus: (targetId: number) => get<FollowStatus>(`/api/v1/social/follow/status/${targetId}`),
+  /**
+   * 在线状态（R8）：1=WebSocket 在线，2=24h 内最近活跃，0=离线
+   * 展示口径为连接态优先，不做「永久在线」承诺。
+   */
+  getOnlineStatus: (userId: number) =>
+    get<{ onlineStatus: number }>(`/api/v1/social/follow/${userId}/online`),
 }
 
 export const blockApi = {

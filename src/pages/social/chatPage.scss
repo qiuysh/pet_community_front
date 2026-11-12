@@ -47,6 +47,22 @@
         object-fit: cover;
       }
 
+      .user-meta {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .user-presence {
+        font-size: $font-size-xs;
+        color: $text-muted;
+        line-height: 1.2;
+
+        &.status-1 {
+          color: $secondary-dark;
+        }
+      }
+
     }
 
     .placeholder {

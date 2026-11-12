@@ -8,31 +8,27 @@ vi.mock('../components/toast', () => ({
   useToast: () => ({ error: toastError }),
 }));
 
-const getPostListMock = vi.fn();
+const getRecommendPostsMock = vi.fn();
 
-vi.mock('../api/post', () => ({
-  getPostList: (...args: unknown[]) => getPostListMock(...args),
+vi.mock('../api/discovery', () => ({
+  getRecommendPosts: (...args: unknown[]) => getRecommendPostsMock(...args),
 }));
 
-import { usePostList } from './usePostList';
-import { PostInfo } from '../types/post';
+import { HOME_FEED_PAGE_SIZE, usePostList } from './usePostList';
 
-const buildPost = (id: number): PostInfo => ({
+const buildRecommendItem = (id: number) => ({
   id,
   userId: id,
   userNickname: `user${id}`,
   userAvatar: '',
   content: `content ${id}`,
-  visibility: 0,
   likesCount: 0,
   commentsCount: 0,
   sharesCount: 0,
-  favoritesCount: 0,
   isPinned: 0,
   isFeatured: 0,
   isLiked: false,
   isFavorited: false,
-  status: 1,
   createdAt: '2026-01-01 10:00:00',
 });
 
@@ -48,13 +44,13 @@ const renderWithRouter = (initialPath = '/') => {
   );
 };
 
-describe('usePostList', () => {
+describe('usePostList (HomeFeed → /recommend)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('默认查询参数为 tab=all, page=1', async () => {
-    getPostListMock.mockResolvedValue({ list: [buildPost(1)], total: 1 });
+  it('默认走推荐流：tab=all, page=1, pageSize=20', async () => {
+    getRecommendPostsMock.mockResolvedValue({ list: [buildRecommendItem(1)], total: 1, page: 1, pageSize: 20 });
 
     const { result } = renderWithRouter();
 
@@ -62,17 +58,17 @@ describe('usePostList', () => {
     expect(result.current.hook.page).toBe(1);
 
     await waitFor(() => {
-      expect(getPostListMock).toHaveBeenCalledWith({
-        page: 1,
-        pageSize: 10,
-        type: undefined,
-      });
+      expect(getRecommendPostsMock).toHaveBeenCalledWith(1, HOME_FEED_PAGE_SIZE, undefined);
     });
   });
 
-  it('成功加载动态列表', async () => {
-    const posts = [buildPost(1), buildPost(2)];
-    getPostListMock.mockResolvedValue({ list: posts, total: 2 });
+  it('成功加载并映射为 PostInfo 列表', async () => {
+    getRecommendPostsMock.mockResolvedValue({
+      list: [buildRecommendItem(1), buildRecommendItem(2)],
+      total: 2,
+      page: 1,
+      pageSize: 20,
+    });
 
     const { result } = renderWithRouter();
 
@@ -80,11 +76,12 @@ describe('usePostList', () => {
       expect(result.current.hook.posts).toHaveLength(2);
       expect(result.current.hook.total).toBe(2);
       expect(result.current.hook.totalPages).toBe(1);
+      expect(result.current.hook.posts[0].status).toBe(1);
     });
   });
 
   it('加载失败时显示错误提示', async () => {
-    getPostListMock.mockRejectedValue(new Error('加载失败'));
+    getRecommendPostsMock.mockRejectedValue(new Error('加载失败'));
 
     const { result } = renderWithRouter();
 
@@ -94,28 +91,28 @@ describe('usePostList', () => {
     expect(result.current.hook.posts).toEqual([]);
   });
 
-  it('type 参数随 tab 变化(image)', async () => {
-    getPostListMock.mockResolvedValue({ list: [], total: 0 });
+  it('图文 tab 把 type=image 传给推荐接口', async () => {
+    getRecommendPostsMock.mockResolvedValue({ list: [], total: 0, page: 1, pageSize: 20 });
 
     renderWithRouter('/?tab=image&page=1');
 
     await waitFor(() => {
-      expect(getPostListMock).toHaveBeenCalledWith(expect.objectContaining({ type: 'image' }));
+      expect(getRecommendPostsMock).toHaveBeenCalledWith(1, HOME_FEED_PAGE_SIZE, 'image');
     });
   });
 
-  it('totalPages 基于 pageSize 计算', async () => {
-    getPostListMock.mockResolvedValue({ list: [], total: 25 });
+  it('totalPages 基于推荐默认 pageSize=20 计算', async () => {
+    getRecommendPostsMock.mockResolvedValue({ list: [], total: 45, page: 1, pageSize: 20 });
 
     const { result } = renderWithRouter();
 
     await waitFor(() => {
-      expect(result.current.hook.totalPages).toBe(3); // 25/10 = 2.5 -> 3
+      expect(result.current.hook.totalPages).toBe(3);
     });
   });
 
   it('空列表时 posts 与 total 均为 0', async () => {
-    getPostListMock.mockResolvedValue({ list: [], total: 0 });
+    getRecommendPostsMock.mockResolvedValue({ list: [], total: 0, page: 1, pageSize: 20 });
 
     const { result } = renderWithRouter();
 
@@ -126,7 +123,9 @@ describe('usePostList', () => {
   });
 
   it('loading 状态在请求完成后切换为 false', async () => {
-    getPostListMock.mockImplementation(() => new Promise((resolve) => setTimeout(() => resolve({ list: [], total: 0 }), 10)));
+    getRecommendPostsMock.mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve({ list: [], total: 0, page: 1, pageSize: 20 }), 10)),
+    );
 
     const { result } = renderWithRouter();
 

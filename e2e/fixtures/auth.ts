@@ -10,8 +10,12 @@ export function firstDetailLink(
     page: Page,
     base: 'pets' | 'lost-pets' | 'adopts' | 'posts',
 ) {
+    // /adopts/mine 是受保护的「我的领养」，不是详情链接；游客点中会被重定向到 /login。
+    // 同时排除 /create、/edit，避免点到发布/编辑入口。
     return page
-        .locator(`a[href^="/${base}/"]:not([href$="/create"]):not([href*="/edit"])`)
+        .locator(
+            `a[href^="/${base}/"]:not([href$="/create"]):not([href$="/mine"]):not([href*="/edit"])`,
+        )
         .first();
 }
 
@@ -167,7 +171,18 @@ export async function loginAsAdmin(
     await page.getByPlaceholder(/用户名|账号|username/i).first().fill(admin.username);
     await page.getByPlaceholder(/密码|password/i).first().fill(admin.password);
     await page.getByRole('button', { name: /登录/ }).click();
-    await page.waitForURL((url) => !url.pathname.includes('/admin/login'), { timeout: 15_000 });
+    try {
+        await page.waitForURL((url) => !url.pathname.includes('/admin/login'), { timeout: 15_000 });
+    } catch (err) {
+        // R9：后台连续失败 ≥3 次强制图形验证码，自动化无法识别图片。
+        // 给出明确诊断，避免把失败计数污染误判成登录功能缺陷或 15s 超时。
+        if (await page.getByLabel('图形验证码').isVisible().catch(() => false)) {
+            throw new Error(
+                `后台账号 ${admin.username} 已触发图形验证码（连续失败 ≥3 次）；请清理登录失败计数或换账号后重跑`,
+            );
+        }
+        throw err;
+    }
 }
 
 /** 登出并清理 localStorage */

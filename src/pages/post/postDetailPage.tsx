@@ -8,13 +8,14 @@ import { formatRelativeTime } from '../../utils/format';
 import { usePostDetail } from '../../hooks/usePostDetail';
 import { usePostComments } from '../../hooks/usePostComments';
 import { ReportReasonOptions } from '../../types/post';
-import { MoreHorizontal, MapPin, Heart } from 'lucide-react';
+import { MoreHorizontal, Heart } from 'lucide-react';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { ImageLightbox } from '../../components/chat/imageLightbox';
 import { MentionText } from '../../components/post/mentionText';
 import { MentionTextarea } from '../../components/post/mentionTextarea';
 import { ShareSheet } from '../../components/post/shareSheet';
 import { PostActions } from '../../components/post/postActions';
+import { PostLocationLink } from '../../components/post/postLocationLink';
 import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Avatar } from '../../components/ui/avatar';
@@ -203,10 +204,11 @@ export const PostDetailPage = () => {
         )}
 
         {post.location && (
-          <div className="post-location">
-            <MapPin size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
-            <span>{post.location}</span>
-          </div>
+          <PostLocationLink
+            location={post.location}
+            latitude={post.latitude}
+            longitude={post.longitude}
+          />
         )}
 
         <PostActions

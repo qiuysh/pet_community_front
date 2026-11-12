@@ -22,6 +22,12 @@ import { AdminButton } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { AdminChip } from '../../components/admin/adminChip';
 import { adminUi } from '../../styles/adminUi';
+import {
+  ACTIVITY_DEFAULT_MAX_SUBMISSIONS,
+  ACTIVITY_DEFAULT_VOTES_PER_DAY,
+  ACTIVITY_DESCRIPTION_MAX,
+  ACTIVITY_TITLE_MAX,
+} from '../../constants/activity';
 
 export const ActivityEditPage = () => {
   const navigate = useNavigate();
@@ -37,11 +43,12 @@ export const ActivityEditPage = () => {
           description: data.description,
           type: (data.type as ActivityType) || ActivityType.ONLINE_VOTE,
           cover: data.cover || '',
+          banner: data.banner || '',
           startTime: toDateTimeLocal(data.startTime),
           endTime: toDateTimeLocal(data.endTime),
           maxParticipants: data.maxParticipants?.toString() || '',
-          maxSubmissions: data.maxSubmissions?.toString() || '1',
-          votesPerDay: data.votesPerDay?.toString() || '10',
+          maxSubmissions: data.maxSubmissions?.toString() || String(ACTIVITY_DEFAULT_MAX_SUBMISSIONS),
+          votesPerDay: data.votesPerDay?.toString() || String(ACTIVITY_DEFAULT_VOTES_PER_DAY),
           rules: data.rules || '',
           prizes: data.prizes || '',
           requireApproval: !!data.requireApproval,
@@ -63,11 +70,12 @@ export const ActivityEditPage = () => {
     description: '',
     type: ActivityType.ONLINE_VOTE,
     cover: '',
+    banner: '',
     startTime: '',
     endTime: '',
     maxParticipants: '',
-    maxSubmissions: '1',
-    votesPerDay: '10',
+    maxSubmissions: String(ACTIVITY_DEFAULT_MAX_SUBMISSIONS),
+    votesPerDay: String(ACTIVITY_DEFAULT_VOTES_PER_DAY),
     rules: '',
     prizes: '',
     requireApproval: false,
@@ -77,7 +85,12 @@ export const ActivityEditPage = () => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadImage = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: 'cover' | 'banner',
+    successMsg: string,
+    failMsg: string,
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -90,12 +103,18 @@ export const ActivityEditPage = () => {
         body: formDataUpload,
       });
       const result = await response.json();
-      setFormData((prev) => ({ ...prev, cover: result.data.url }));
-      toast.success('封面上传成功');
+      setFormData((prev) => ({ ...prev, [field]: result.data.url }));
+      toast.success(successMsg);
     } catch {
-      toast.error('封面上传失败');
+      toast.error(failMsg);
     }
   };
+
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) =>
+    uploadImage(e, 'cover', '封面上传成功', '封面上传失败');
+
+  const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) =>
+    uploadImage(e, 'banner', '横幅上传成功', '横幅上传失败');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,11 +138,16 @@ export const ActivityEditPage = () => {
           title: formData.title.trim(),
           description: formData.description.trim(),
           cover: formData.cover || undefined,
+          banner: formData.banner || undefined,
           startTime: toRFC3339(formData.startTime),
           endTime: toRFC3339(formData.endTime),
           maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants, 10) : 0,
-          maxSubmissions: formData.maxSubmissions ? parseInt(formData.maxSubmissions, 10) : 1,
-          votesPerDay: formData.votesPerDay ? parseInt(formData.votesPerDay, 10) : 10,
+          maxSubmissions: formData.maxSubmissions
+            ? parseInt(formData.maxSubmissions, 10)
+            : ACTIVITY_DEFAULT_MAX_SUBMISSIONS,
+          votesPerDay: formData.votesPerDay
+            ? parseInt(formData.votesPerDay, 10)
+            : ACTIVITY_DEFAULT_VOTES_PER_DAY,
           rules: formData.rules.trim() || undefined,
           prizes: formData.prizes.trim() || undefined,
           requireApproval: formData.requireApproval,
@@ -195,7 +219,7 @@ export const ActivityEditPage = () => {
             value={formData.title}
             onChange={(e) => setField('title', e.target.value)}
             placeholder="请输入活动标题…"
-            maxLength={100}
+            maxLength={ACTIVITY_TITLE_MAX}
             disabled={!isDraft}
           />
         </div>
@@ -220,37 +244,67 @@ export const ActivityEditPage = () => {
             onChange={(e) => setField('description', e.target.value)}
             placeholder="请输入活动描述…"
             rows={4}
-            maxLength={500}
+            maxLength={ACTIVITY_DESCRIPTION_MAX}
             disabled={!isDraft}
           />
         </div>
 
-        <div>
-          <AdminLabel>活动封面</AdminLabel>
-          {formData.cover ? (
-            <div className="relative inline-block">
-              <img src={formData.cover} alt="封面" width={128} height={128} className="w-32 h-32 object-cover rounded-sm" />
-              {isDraft && (
-                <AdminButton
-                  type="button"
-                  variant="danger"
-                  size="sm"
-                  aria-label="移除封面"
-                  onClick={() => setFormData((prev) => ({ ...prev, cover: '' }))}
-                  className="!absolute !top-0 !right-0 !h-6 !min-h-6 !w-6 !p-0 !rounded-full"
-                >
-                  ×
-                </AdminButton>
-              )}
-            </div>
-          ) : (
-            isDraft && (
-              <label className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-border-light rounded-sm cursor-pointer hover:border-border">
-                <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
-                <span className="text-xs text-brown-muted">上传封面</span>
-              </label>
-            )
-          )}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <AdminLabel>活动封面</AdminLabel>
+            {formData.cover ? (
+              <div className="relative inline-block">
+                <img src={formData.cover} alt="封面" width={128} height={128} className="w-32 h-32 object-cover rounded-sm" />
+                {isDraft && (
+                  <AdminButton
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    aria-label="移除封面"
+                    onClick={() => setFormData((prev) => ({ ...prev, cover: '' }))}
+                    className="!absolute !top-0 !right-0 !h-6 !min-h-6 !w-6 !p-0 !rounded-full"
+                  >
+                    ×
+                  </AdminButton>
+                )}
+              </div>
+            ) : (
+              isDraft && (
+                <label className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-border-light rounded-sm cursor-pointer hover:border-border">
+                  <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
+                  <span className="text-xs text-brown-muted">上传封面</span>
+                </label>
+              )
+            )}
+          </div>
+          <div>
+            <AdminLabel>详情横幅</AdminLabel>
+            <AdminHint>可选；留空则详情页使用封面</AdminHint>
+            {formData.banner ? (
+              <div className="relative inline-block mt-1">
+                <img src={formData.banner} alt="横幅" width={192} height={96} className="w-48 h-24 object-cover rounded-sm" />
+                {isDraft && (
+                  <AdminButton
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    aria-label="移除横幅"
+                    onClick={() => setFormData((prev) => ({ ...prev, banner: '' }))}
+                    className="!absolute !top-0 !right-0 !h-6 !min-h-6 !w-6 !p-0 !rounded-full"
+                  >
+                    ×
+                  </AdminButton>
+                )}
+              </div>
+            ) : (
+              isDraft && (
+                <label className="mt-1 flex items-center justify-center w-48 h-24 border-2 border-dashed border-border-light rounded-sm cursor-pointer hover:border-border">
+                  <input type="file" accept="image/*" onChange={handleBannerUpload} className="hidden" />
+                  <span className="text-xs text-brown-muted">上传横幅</span>
+                </label>
+              )
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

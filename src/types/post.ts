@@ -26,6 +26,8 @@ export interface PostInfo {
     accessible?: boolean;
   }>;
   location?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   visibility: number;
   likesCount: number;
   commentsCount: number;
@@ -47,6 +49,8 @@ export interface PostCreateRequest {
   petIds?: number[];
   topicIds?: number[];
   location?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   visibility?: number;
   atUsers?: number[];
   publishAt?: string;
@@ -58,6 +62,8 @@ export interface PostUpdateRequest {
   petIds?: number[];
   topicIds?: number[];
   location?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   visibility?: number;
   atUsers?: number[];
   publishAt?: string;
@@ -133,6 +139,8 @@ export interface DraftInfo {
   petIds?: number[];
   topicIds?: number[];
   location?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   visibility: number;
   createdAt: string;
   updatedAt: string;
@@ -145,6 +153,8 @@ export interface DraftCreateRequest {
   petIds?: number[];
   topicIds?: number[];
   location?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   visibility?: number;
 }
 

@@ -16,7 +16,7 @@ import { ChatSearchResults } from '../../components/chat/chatSearchResults';
 import { ChatImagePreview } from '../../components/chat/chatImagePreview';
 import { ImageLightbox } from '../../components/chat/imageLightbox';
 import { getPublicProfile } from '../../api/user';
-import { messageApi } from '../../api/social';
+import { followApi, messageApi } from '../../api/social';
 import type { ChatMessage } from '../../types/social';
 import { getUserAvatar } from '../../utils/avatarUtils';
 import { showInfoToast, showSuccessToast, showErrorToast } from '../../utils/toastManager';
@@ -64,6 +64,8 @@ const ChatPage: React.FC = () => {
   const resetSearch = search.reset;
 
   const [peer, setPeer] = useState<{ nickname: string; avatar: string } | null>(null);
+  /** R8：1 在线 / 2 最近活跃 / 0 离线；null=未拉取 */
+  const [peerOnlineStatus, setPeerOnlineStatus] = useState<number | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [locatingId, setLocatingId] = useState<number | null>(null);
   const [preview, setPreview] = useState<ImagePreviewState | null>(null);
@@ -113,6 +115,7 @@ const ChatPage: React.FC = () => {
     let cancelled = false;
     if (!peerUserId) {
       setPeer(null);
+      setPeerOnlineStatus(null);
       return;
     }
     getPublicProfile(peerUserId)
@@ -124,10 +127,21 @@ const ChatPage: React.FC = () => {
       .catch(() => {
         if (!cancelled) setPeer(null);
       });
+    followApi
+      .getOnlineStatus(peerUserId)
+      .then((res) => {
+        if (!cancelled) setPeerOnlineStatus(res.onlineStatus);
+      })
+      .catch(() => {
+        if (!cancelled) setPeerOnlineStatus(null);
+      });
     return () => {
       cancelled = true;
     };
   }, [peerUserId]);
+
+  const peerPresenceLabel =
+    peerOnlineStatus === 1 ? '在线' : peerOnlineStatus === 2 ? '最近活跃' : peerOnlineStatus === 0 ? '离线' : '';
 
   const openSearch = () => setSearchOpen(true);
 
@@ -172,7 +186,17 @@ const ChatPage: React.FC = () => {
           <BackButton />
           <Link to={`/profile/${peerUserId}`} className="user-info">
             <img className="user-avatar" src={getUserAvatar(peer?.avatar)} alt="" decoding="async" />
-            <span className="page-bar-title user-name">{peer?.nickname || '宠友'}</span>
+            <span className="user-meta">
+              <span className="page-bar-title user-name">{peer?.nickname || '宠友'}</span>
+              {peerPresenceLabel && (
+                <span
+                  className={`user-presence status-${peerOnlineStatus}`}
+                  title="连接态：在线=当前 WebSocket；最近活跃=24 小时内登录过"
+                >
+                  {peerPresenceLabel}
+                </span>
+              )}
+            </span>
           </Link>
           <Button
             type="button"
@@ -191,7 +215,7 @@ const ChatPage: React.FC = () => {
             onClick={async () => {
               const ok = await confirm({
                 title: '删除会话',
-                description: '删除后该会话将从你的列表中移除，对方不受影响，历史消息不可恢复。',
+                description: '删除后该会话将从你的列表中移除，对方不受影响；若对方再发消息，会话会重新出现。',
                 confirmText: '删除',
                 tone: 'danger',
               });

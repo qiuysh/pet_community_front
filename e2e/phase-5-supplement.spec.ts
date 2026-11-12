@@ -50,13 +50,17 @@ test.describe('Phase5 补充 - 活动参与闭环（V-A3/A4/A5）', () => {
         await loginAsUser(page);
         await gotoFirstActivity(page);
 
+        // 作品提交入口仅在投票/征集/评选类活动渲染；跳过前先断言详情页已真正加载，
+        // 避免选择器写错或页面未渲染时被静默略过。
+        await expect(page.locator('body')).toContainText(/活动|报名|详情|作品/, { timeout: 10_000 });
         const uploadBtn = page.getByRole('button', { name: '提交作品' });
         test.skip(!(await uploadBtn.isVisible()), '当前活动作品提交未开放或已提交');
 
         await uploadBtn.click();
         const dialog = page.getByRole('dialog');
         await dialog.getByPlaceholder('请输入作品标题').fill(`e2e作品_${Date.now() % 100000}`);
-        await dialog.getByPlaceholder('请描述你的作品...').fill('e2e 自动化提交的作品');
+        // placeholder 用 U+2026 省略号，不是 ASCII '...'
+        await dialog.getByPlaceholder(/请描述你的作品/).fill('e2e 自动化提交的作品');
 
         const postPromise = page.waitForResponse(
             (r) => r.request().method() === 'POST' && r.url().includes('/activities/submissions'),

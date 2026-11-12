@@ -1,5 +1,28 @@
-import { test, expect } from '@playwright/test';
-import { clearAuth, loginAsUser, firstDetailLink } from './fixtures/auth';
+import { test, expect, type Page } from '@playwright/test';
+import {
+    clearAuth,
+    loginAsUser,
+    firstDetailLink,
+    apiWrite,
+    dualSessions,
+} from './fixtures/auth';
+
+/** 通过接口创建一条当前登录用户的动态，返回动态 ID（编辑/删除/举报/位置用例复用） */
+async function createOwnPost(page: Page, content: string, location?: string): Promise<number> {
+    const res = await apiWrite(page, 'post', '/api/v1/posts', {
+        data: { content, ...(location ? { location } : {}) },
+    });
+    expect(res.ok(), `创建动态失败: ${res.status()}`).toBeTruthy();
+    const body = (await res.json()) as {
+        code?: number;
+        message?: string;
+        data?: { id?: number };
+    };
+    expect(body.code, `创建动态业务失败: ${body.message}`).toBe(0);
+    const id = Number(body.data?.id ?? 0);
+    expect(id, '创建动态响应缺少 id').toBeGreaterThan(0);
+    return id;
+}
 
 test.describe('Phase2 - 动态列表', () => {
     test.beforeEach(async ({ page }) => {
@@ -170,39 +193,46 @@ test.describe('Phase2 - 动态管理', () => {
 
     test('V-I7-01 - 编辑自己的动态', async ({ page }) => {
         await loginAsUser(page);
-        await page.goto('/profile/1');
-        await page.waitForTimeout(2000);
+        const postId = await createOwnPost(page, `e2e可编辑_${Date.now()}`);
 
-        const editBtn = page.getByRole('button', { name: /编辑/ }).first();
-        if (await editBtn.isVisible()) {
-            await editBtn.click();
-            await page.waitForTimeout(1000);
-        }
+        // 自己的动态才有「编辑」菜单项；旧用例在 /profile/1 里 if(isVisible()) 空转，
+        // 既不保证命中自己的帖，也没有任何断言。
+        await page.goto(`/posts/${postId}`);
+        await page.getByRole('button', { name: '更多操作' }).click();
+        await page.getByRole('menuitem', { name: '编辑' }).click();
+        await expect(page).toHaveURL(new RegExp(`/posts/${postId}/edit`), { timeout: 10_000 });
     });
 
-    test('V-I7-02 - 删除自己的动态', async ({ page }) => {
+    test('V-I7-02 - 删除自己的动态需二次确认', async ({ page }) => {
         await loginAsUser(page);
-        await page.goto('/profile/1');
-        await page.waitForTimeout(2000);
+        const content = `e2e删除确认_${Date.now()}`;
+        const postId = await createOwnPost(page, content);
 
-        const deleteBtn = page.getByRole('button', { name: /删除/ }).first();
-        if (await deleteBtn.isVisible()) {
-            await deleteBtn.click();
-            await page.waitForTimeout(500);
-        }
+        await page.goto(`/posts/${postId}`);
+        await page.getByRole('button', { name: '更多操作' }).click();
+        await page.getByRole('menuitem', { name: '删除' }).click();
+        // 破坏性操作必须弹二次确认；真正的删除闭环在 phase-2-supplement.spec.ts
+        await expect(page.getByRole('dialog')).toContainText(/删除这条动态|无法恢复/, {
+            timeout: 5_000,
+        });
+        await expect(page.getByRole('button', { name: '取消' })).toBeVisible();
     });
 
-    test('V-D3-01 - 关联已有话题（§4.3 D3-03 已迁出至 T5）', async ({ page }) => {
-        // §4.3：Phase-2 D3 仅支持关联已有话题，不交付用户建话题
+    test('V-D3-01 - 关联已有话题', async ({ page }) => {
+        // 迁出至 T5 的只是「用户建话题」；D3 关联已有话题仍在发布页。
+        // 搜索框要先点「添加话题」展开 showTopicPicker，旧用例直接找输入框会恒 skip。
         await loginAsUser(page);
         await page.goto('/posts/create');
-        await page.waitForTimeout(1500);
 
-        const topicInput = page.locator('input[placeholder*="话题"], input[placeholder*="#"]').first();
-        test.skip(!(await topicInput.isVisible()), '话题关联入口未渲染');
-
+        await page.getByText('添加话题').click();
+        const topicInput = page.getByPlaceholder('搜索话题');
+        await expect(topicInput).toBeVisible({ timeout: 10_000 });
         await topicInput.fill('猫');
-        await page.waitForTimeout(500);
+        await expect(topicInput).toHaveValue('猫');
+        // 无 seed 话题时建议列表不渲染，但话题选择器必须处于展开态
+        const picker = page.locator('.topic-picker');
+        await expect(picker).toBeVisible();
+        expect(await picker.locator('.topic-suggestion').count()).toBeLessThanOrEqual(10);
     });
 
     test('V-D4-01 - @用户输入', async ({ page }) => {
@@ -212,15 +242,20 @@ test.describe('Phase2 - 动态管理', () => {
 
         // 主内容输入框 className="content-input"（见 postEditorPage.tsx:152）
         const editor = page.locator('.content-input').first();
-        test.skip(!(await editor.isVisible()), '动态编辑器未渲染');
+        await expect(editor).toBeVisible({ timeout: 10_000 });
 
-        // 输入 @ 触发用户搜索建议
-        await editor.fill('@');
-        await page.waitForTimeout(500);
-        // 用户搜索建议出现即通过（无数据不强断言）
-        const suggestion = page.locator('[class*="mention"], [data-testid="mention-suggestion"]').first();
-        if (await suggestion.isVisible()) {
-            await expect(suggestion).toBeVisible();
+        // 只输入 '@' 时 query 为空、不发搜索（MentionTextarea 有明确分支）；
+        // 必须带昵称前缀才会打开 listbox，并校验「建议最多 10 条」。
+        await editor.fill('@e');
+        await expect(editor).toHaveValue('@e');
+        const listbox = page.getByRole('listbox', { name: '用户搜索建议' });
+        await expect(listbox).toBeVisible({ timeout: 5_000 });
+        const optionCount = await listbox.getByRole('option').count();
+        expect(optionCount, '@ 建议最多 10 条').toBeLessThanOrEqual(10);
+        if (optionCount === 0) {
+            await expect(listbox).toContainText(/未找到匹配用户|输入昵称搜索/);
+        } else {
+            await expect(listbox.getByRole('option').first()).toBeVisible();
         }
     });
 
@@ -241,28 +276,27 @@ test.describe('Phase2 - 动态管理', () => {
 
         await shareBtn.click();
         await page.waitForTimeout(500);
-        await expect(page.locator('body')).toContainText(/微信|微博|复制链接|QQ/, { timeout: 3_000 });
+        // 分享面板是 Modal（标题「分享」），平台为 微信/微博/复制链接/二维码/生成海报；
+        // 旧断言里的 QQ 分享从未上线。
+        await expect(page.getByRole('dialog')).toContainText(/分享方式|复制链接|二维码/, {
+            timeout: 5_000,
+        });
     });
 
-    test('V-I6-01 - 举报动态', async ({ page }) => {
-        await loginAsUser(page);
-        await page.goto('/posts');
-        await page.waitForTimeout(2000);
-
-        const firstCard = firstDetailLink(page, 'posts');
-        const count = await firstCard.count();
-        test.skip(count === 0, '暂无动态数据');
-
-        await firstCard.click();
-        await page.waitForTimeout(1500);
-
-        const reportBtn = page.getByRole('button', { name: /举报/ }).first();
-        test.skip(!(await reportBtn.isVisible()), '举报入口未渲染');
-
-        await reportBtn.click();
-        await page.waitForTimeout(500);
-        // 举报弹窗应包含举报类型
-        await expect(page.locator('body')).toContainText(/举报|类型|原因/, { timeout: 3_000 });
+    test('V-I6-01 - 举报他人动态', async ({ browser }) => {
+        // 举报入口只出现在「他人」动态的更多操作菜单里（自己的是编辑/删除）。
+        // 旧用例从 /posts 随机点第一条，命中自己帖子时菜单里没有举报 → 恒 skip。
+        const { actor, viewer, cleanup } = await dualSessions(browser);
+        try {
+            const postId = await createOwnPost(viewer, `e2e待举报_${Date.now()}`);
+            await actor.goto(`/posts/${postId}`);
+            await actor.getByRole('button', { name: '更多操作' }).click();
+            await actor.getByRole('menuitem', { name: '举报' }).click();
+            await expect(actor.getByRole('dialog')).toContainText(/举报动态/, { timeout: 5_000 });
+            await expect(actor.getByRole('button', { name: '提交举报' })).toBeDisabled();
+        } finally {
+            await cleanup();
+        }
     });
 
     test('已登录访问收藏列表', async ({ page }) => {
@@ -287,35 +321,46 @@ test.describe('Phase2 - 动态管理', () => {
     });
 });
 
-test.describe('Phase2 - 定位功能', () => {
+test.describe('Phase2 - 位置文案（R14 地图选点未上线，仅覆盖文本位置）', () => {
     test.beforeEach(async ({ page }) => {
         await clearAuth(page);
     });
 
-    test('V-D6-01 - 定位功能入口可见', async ({ page }) => {
+    test('V-LOC-01 - 位置文案可输入', async ({ page }) => {
         await loginAsUser(page);
         await page.goto('/posts/create');
-        await page.waitForTimeout(1500);
 
-        // 定位是 Input 而非 button：aria-label="所在位置"，placeholder="添加位置"（见 postEditorPage.tsx:306）
-        const locationInput = page.getByLabel('所在位置').first();
-        test.skip(!(await locationInput.isVisible()), '定位输入框未渲染');
+        // 位置通过 LocationPicker 弹窗设置（R14 地图选点未上线，仅文案）：
+        // 触发按钮 aria-label="选择所在位置" → 弹窗内手输地名 → 使用文案。
+        // 旧断言直接 fill .location-input（span）会报「Element is not <input>」。
+        const locationTrigger = page.getByRole('button', { name: '选择所在位置' });
+        await expect(locationTrigger).toBeVisible({ timeout: 10_000 });
+        await locationTrigger.click();
 
-        // 填入位置并验证可输入
-        await locationInput.fill('北京市朝阳区');
-        await page.waitForTimeout(300);
-        await expect(locationInput).toHaveValue(/北京市朝阳区/);
+        const modal = page.getByRole('dialog');
+        await expect(modal).toBeVisible({ timeout: 5_000 });
+        const manualInput = modal.getByLabel('手输地名');
+        await expect(manualInput).toBeVisible();
+        await manualInput.fill('北京市朝阳区');
+        await modal.getByRole('button', { name: '使用文案' }).click();
+
+        // 选点后，「所在位置」展示已选文案（.location-input 为渲染文案的 span）
+        await expect(page.locator('.location-input').first()).toContainText(/北京市朝阳区/, {
+            timeout: 5_000,
+        });
     });
 
-    test('V-D6-03 - 定位展示', async ({ page }) => {
-        await page.goto('/posts');
-        await page.waitForTimeout(2000);
+    test('V-LOC-03 - 位置文案在动态详情展示', async ({ page }) => {
+        await loginAsUser(page);
+        const location = `北京市朝阳区e2e${Date.now() % 100000}`;
+        const postId = await createOwnPost(page, `e2e位置展示_${Date.now()}`, location);
 
-        // 查看动态是否显示定位信息
-        const locationIcon = page.locator('[class*="location"], [data-testid="location"]').first();
-        if (await locationIcon.isVisible()) {
-            await expect(locationIcon).toBeVisible();
-        }
+        const detailResp = await apiWrite(page, 'get', `/api/v1/posts/${postId}`);
+        const detail = (await detailResp.json()) as { data?: { location?: string } };
+        expect(detail.data?.location, '位置未落库').toBe(location);
+
+        await page.goto(`/posts/${postId}`);
+        await expect(page.locator('body')).toContainText(location, { timeout: 10_000 });
     });
 });
 
@@ -331,7 +376,8 @@ test.describe('Phase2 - 定时发布', () => {
 
         // 定时发布 toggle：FilterChip 渲染为 button，文案"立即"/"定时"（见 postEditorPage.tsx）
         const scheduleToggle = page.getByRole('button', { name: '定时', exact: true }).first();
-        test.skip(!(await scheduleToggle.isVisible()), '定时发布 toggle 未渲染');
+        // 控件存在就必须渲染：不再用条件 skip 把「选择器失配」伪装成通过
+        await expect(scheduleToggle).toBeVisible({ timeout: 10_000 });
 
         await scheduleToggle.click();
         await page.waitForTimeout(500);
@@ -348,7 +394,8 @@ test.describe('Phase2 - 定时发布', () => {
         await page.waitForTimeout(1500);
 
         const scheduleToggle = page.getByRole('button', { name: '定时', exact: true }).first();
-        test.skip(!(await scheduleToggle.isVisible()), '定时发布 toggle 未渲染');
+        // 控件存在就必须渲染：不再用条件 skip 把「选择器失配」伪装成通过
+        await expect(scheduleToggle).toBeVisible({ timeout: 10_000 });
 
         await scheduleToggle.click();
         await page.waitForTimeout(500);
@@ -370,16 +417,13 @@ test.describe('Phase2 - 视频封面', () => {
         await page.goto('/posts/create');
         await page.waitForTimeout(1500);
 
-        // 检查视频上传区域
-        const videoTab = page.getByRole('button', { name: /视频/ });
+        // 未上传视频时不会出现封面选项，但发布页与发布按钮必须可用
+        await expect(page.locator('.content-input').first()).toBeVisible({ timeout: 10_000 });
+        await expect(page.locator('.publish-btn').first()).toBeVisible();
+        const videoTab = page.getByRole('button', { name: /视频/ }).first();
         if (await videoTab.isVisible()) {
             await videoTab.click();
-            await page.waitForTimeout(500);
-            // 视频上传后应显示封面设置选项
-            const coverOption = page.getByText(/封面|Cover/);
-            if (await coverOption.isVisible()) {
-                await expect(coverOption).toBeVisible();
-            }
+            await expect(page.locator('.publish-btn').first()).toBeVisible();
         }
     });
 });
@@ -396,14 +440,14 @@ test.describe('Phase2 - 可见范围 D5（§4.6 三档）', () => {
 
         // 触发器文案为"谁可以看"，使用文本定位（避免依赖 .option-item CSS 类）
         const visibilityBtn = page.getByText('谁可以看').first();
-        test.skip(!(await visibilityBtn.isVisible()), '可见范围选择器未渲染');
+        await expect(visibilityBtn).toBeVisible({ timeout: 10_000 });
 
         await visibilityBtn.click();
         await page.waitForTimeout(300);
 
         // 在弹出的选择器中点击"公开"（VisibilityOptions value=0 → label "公开"）
         const publicOpt = page.getByText('公开', { exact: true }).first();
-        test.skip(!(await publicOpt.isVisible()), '"公开"选项未渲染');
+        await expect(publicOpt).toBeVisible({ timeout: 10_000 });
 
         await publicOpt.click();
         await page.waitForTimeout(300);
@@ -418,13 +462,13 @@ test.describe('Phase2 - 可见范围 D5（§4.6 三档）', () => {
         await page.waitForTimeout(1500);
 
         const visibilityBtn = page.getByText('谁可以看').first();
-        test.skip(!(await visibilityBtn.isVisible()), '可见范围选择器未渲染');
+        await expect(visibilityBtn).toBeVisible({ timeout: 10_000 });
 
         await visibilityBtn.click();
         await page.waitForTimeout(300);
 
         const followersOpt = page.getByText('仅粉丝', { exact: true }).first();
-        test.skip(!(await followersOpt.isVisible()), '"仅粉丝"选项未渲染（Phase-3 关注未上线前等同公开，见 id-traceability §五）');
+        await expect(followersOpt).toBeVisible({ timeout: 10_000 });
 
         await followersOpt.click();
         await page.waitForTimeout(300);
@@ -438,13 +482,13 @@ test.describe('Phase2 - 可见范围 D5（§4.6 三档）', () => {
         await page.waitForTimeout(1500);
 
         const visibilityBtn = page.getByText('谁可以看').first();
-        test.skip(!(await visibilityBtn.isVisible()), '可见范围选择器未渲染');
+        await expect(visibilityBtn).toBeVisible({ timeout: 10_000 });
 
         await visibilityBtn.click();
         await page.waitForTimeout(300);
 
         const privateOpt = page.getByText('私密', { exact: true }).first();
-        test.skip(!(await privateOpt.isVisible()), '"私密"选项未渲染');
+        await expect(privateOpt).toBeVisible({ timeout: 10_000 });
 
         await privateOpt.click();
         await page.waitForTimeout(300);

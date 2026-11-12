@@ -10,7 +10,8 @@ test.describe('Phase1 - 用户注册/登录', () => {
         const user = TEST_USERS.user1;
         await page.goto('/login');
 
-        await expect(page.getByText('欢迎来到宠物社区')).toBeVisible();
+        // 站点名来自后台配置（当前为「UU社区」），不写死旧名
+        await expect(page.getByText(/欢迎来到/)).toBeVisible();
 
         await page.getByPlaceholder('请输入手机号或邮箱').fill(user.account);
         await page.getByPlaceholder('请输入密码').fill(user.password);
@@ -71,8 +72,8 @@ test.describe('Phase1 - 用户注册/登录', () => {
         expect(refreshToken).toBeTruthy();
     });
 
-    // 第三方登录：后端已走真实 OAuth 授权（service/third_party_auth.go），
-    // 点击会跳出本站，因此 e2e 只验证入口可见，不发起授权跳转。
+    // 第三方登录当前为 development 演示模式（useAuth.ts 本地造 demo code + confirm），
+    // 不会跳出本站；真实 OAuth 需配置平台凭据后才能验跳转/回调，这里只验证入口可见。
     test('V-U2-07 - 微信登录入口可见', async ({ page }) => {
         await page.goto('/login');
         await expect(page.getByRole('button', { name: '使用微信登录' })).toBeVisible();
@@ -219,16 +220,18 @@ test.describe('Phase1 - 宠物档案', () => {
         await page.getByRole('button', { name: '全部' }).first().click();
         await page.waitForTimeout(500);
 
+        const allBtn = page.getByRole('button', { name: '全部' }).first();
+        await expect(allBtn).toHaveAttribute('aria-pressed', 'true');
         const dogBtn = page.getByRole('button', { name: '狗狗' });
-        if (await dogBtn.isVisible()) {
-            await dogBtn.click();
-            await page.waitForTimeout(500);
-        }
+        await expect(dogBtn).toBeVisible({ timeout: 10_000 });
+        await dogBtn.click();
+        await expect(dogBtn).toHaveAttribute('aria-pressed', 'true');
     });
 
     test('V-P1-01 - 未登录访问创建宠物跳转登录', async ({ page }) => {
         await page.goto('/pets/create');
         await page.waitForURL((url) => url.pathname.includes('/login'), { timeout: 10_000 });
+        await expect(page).toHaveURL(/\/login/);
     });
 
     test('V-P1-07 - 已登录访问宠物详情页', async ({ page }) => {
@@ -319,6 +322,7 @@ test.describe('Phase1 - 宠物寻回', () => {
     test('V-P6-01 - 未登录发布寻宠跳转登录', async ({ page }) => {
         await page.goto('/lost-pets/create');
         await page.waitForURL((url) => url.pathname.includes('/login'), { timeout: 10_000 });
+        await expect(page).toHaveURL(/\/login/);
     });
 
     test('V-P6-05 - 已登录发布寻宠页含多图上传', async ({ page }) => {
@@ -381,7 +385,8 @@ test.describe('Phase1 - 页签标题', () => {
         await clearAuth(page);
         await page.goto('/');
         await page.waitForTimeout(1000);
-        await expect(page).toHaveTitle(/宠物社区/);
+        // 站点名由后台配置注入（当前「UU社区」），只断言标题含社区且非后台页
+        await expect(page).toHaveTitle(/社区/);
         expect(await page.title()).not.toMatch(/管理后台/);
     });
 
@@ -406,7 +411,7 @@ test.describe('Phase1 - 后台基础', () => {
     test('V-Ad0-1-01 - 后台正确账号密码登录', async ({ page }) => {
         await page.goto('/admin/login');
 
-        await expect(page.getByText('宠物社区管理后台')).toBeVisible();
+        await expect(page.getByRole('heading', { name: /管理后台/ })).toBeVisible();
 
         await page.getByPlaceholder('请输入用户名').fill(ADMIN_USERS.super.username);
         await page.getByPlaceholder('请输入密码').fill(ADMIN_USERS.super.password);

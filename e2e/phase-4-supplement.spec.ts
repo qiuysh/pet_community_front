@@ -14,14 +14,18 @@ test.describe('Phase4 补充 - 列表加载（V-R2）', () => {
 
     test('V-R2-01 - 动态列表翻页加载', async ({ page }) => {
         await page.goto('/posts');
-        const pageInfo = page.locator('.page-info');
-        await expect(pageInfo).toBeVisible({ timeout: 10_000 });
+        // Pagination 组件是 nav[aria-label="分页"] + 页码按钮 aria-label="第 N 页"，
+        // 全库已无 .page-info；总页数 ≤1 时组件整体返回 null。
+        const pagination = page.locator('nav[aria-label="分页"]');
+        test.skip((await pagination.count()) === 0, '动态列表仅一页，无分页控件');
+        await expect(pagination).toBeVisible({ timeout: 10_000 });
 
-        const firstPageText = (await pageInfo.innerText()).trim();
-        const nextBtn = page.getByRole('button', { name: '下一页' });
-
-        // 只有一页时无法验证翻页，跳过而非静默通过
-        test.skip(await nextBtn.isDisabled(), '动态列表仅一页，无法验证翻页');
+        const nextBtn = pagination.getByRole('button', { name: '下一页' });
+        test.skip(await nextBtn.isDisabled(), '已在最后一页，无法验证翻页');
+        await expect(pagination.getByRole('button', { name: '第 1 页' })).toHaveAttribute(
+            'aria-current',
+            'page',
+        );
 
         const listRespPromise = page.waitForResponse(
             (r) => r.url().includes('/api/v1/posts') && r.request().method() === 'GET',
@@ -31,8 +35,11 @@ test.describe('Phase4 补充 - 列表加载（V-R2）', () => {
         const listResp = await listRespPromise;
         expect(listResp.ok(), `翻页请求失败: ${listResp.status()}`).toBeTruthy();
 
-        await expect(pageInfo).not.toHaveText(firstPageText, { timeout: 10_000 });
-        await expect(pageInfo).toContainText('第 2 页', { timeout: 10_000 });
+        await expect(pagination.getByRole('button', { name: '第 2 页' })).toHaveAttribute(
+            'aria-current',
+            'page',
+            { timeout: 10_000 },
+        );
     });
 });
 

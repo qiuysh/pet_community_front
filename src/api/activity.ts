@@ -1,6 +1,9 @@
 import { get, post, put, del } from './axios';
 import {
   ActivityInfo,
+  ActivityRatingInfo,
+  ActivityRatingListResponse,
+  ActivityRatingUpsertRequest,
   ActivityCreateRequest,
   ActivityUpdateRequest,
   ActivityListParams,
@@ -32,6 +35,7 @@ import {
   ActivityReviewInfo,
   ActivityReviewCreateRequest,
 } from '../types/activity';
+import { ACTIVITY_DEFAULT_PAGE_SIZE } from '../constants/activity';
 
 function listQuery(params?: ActivityListParams) {
   if (!params) return undefined;
@@ -145,7 +149,7 @@ export const cancelVote = async (submissionId: number): Promise<void> => {
 export const getVoteHistory = async (
   activityId: number,
   page = 1,
-  pageSize = 20,
+  pageSize = ACTIVITY_DEFAULT_PAGE_SIZE,
 ): Promise<{ list: VoteRecord[]; total: number }> => {
   return await get<{ list: VoteRecord[]; total: number }>(`/api/v1/activities/${activityId}/votes/history`, {
     params: { page, page_size: pageSize },
@@ -184,7 +188,7 @@ export const signIn = async (activityId: number, data: SignInRequest): Promise<S
 export const getSignInList = async (
   activityId: number,
   page = 1,
-  pageSize = 20,
+  pageSize = ACTIVITY_DEFAULT_PAGE_SIZE,
 ): Promise<SignInListResponse> => {
   return await get<SignInListResponse>(`/api/v1/activities/${activityId}/sign-ins`, {
     params: { page, page_size: pageSize },
@@ -206,14 +210,15 @@ export const uploadAlbumPhoto = async (
 };
 
 export const deleteAlbumPhoto = async (activityId: number, photoId: number): Promise<void> => {
-  return await del<void>(`/api/v1/admin/activities/${activityId}/album/photos/${photoId}`);
+  // 社区用户相册删除走用户面路由（非 /admin），避免普通登录 403
+  return await del<void>(`/api/v1/activities/${activityId}/album/photos/${photoId}`);
 };
 
 export const getAlbumPhotoList = async (
   activityId: number,
   status?: number,
   page = 1,
-  pageSize = 20,
+  pageSize = ACTIVITY_DEFAULT_PAGE_SIZE,
 ): Promise<AlbumPhotoListResponse> => {
   return await get<AlbumPhotoListResponse>(`/api/v1/activities/${activityId}/album`, {
     params: { status, page, page_size: pageSize },
@@ -232,4 +237,27 @@ export const publishReview = async (
 
 export const getReview = async (activityId: number): Promise<ActivityReviewInfo | null> => {
   return await get<ActivityReviewInfo | null>(`/api/v1/activities/${activityId}/review`);
+};
+
+// ========== 活动星评（R12）==========
+
+export const getActivityRatings = async (
+  activityId: number,
+  page = 1,
+  pageSize = ACTIVITY_DEFAULT_PAGE_SIZE,
+): Promise<ActivityRatingListResponse> => {
+  return await get<ActivityRatingListResponse>(`/api/v1/activities/${activityId}/ratings`, {
+    params: { page, page_size: pageSize },
+  });
+};
+
+export const upsertActivityRating = async (
+  activityId: number,
+  data: ActivityRatingUpsertRequest,
+): Promise<ActivityRatingInfo> => {
+  return await post<ActivityRatingInfo>(`/api/v1/activities/${activityId}/ratings`, data);
+};
+
+export const deleteActivityRating = async (activityId: number): Promise<void> => {
+  return await del<void>(`/api/v1/activities/${activityId}/ratings`);
 };

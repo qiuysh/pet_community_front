@@ -28,7 +28,14 @@ async function createPetAndGetId(page: Page, name: string): Promise<number> {
     const resp = await respPromise;
     expect(resp.ok(), `创建宠物失败: ${resp.status()}`).toBeTruthy();
 
-    const body = (await resp.json().catch(() => ({}))) as { data?: { id?: number }; id?: number };
+    // 不再用 resp.json().catch(() => ({})) 吞异常：先校验业务 code，再取 id
+    const body = (await resp.json()) as {
+        code?: number;
+        message?: string;
+        data?: { id?: number };
+        id?: number;
+    };
+    expect(body.code, `创建宠物业务失败: ${body.message}`).toBe(0);
     const id = Number(body?.data?.id ?? body?.id ?? 0);
     expect(id, '创建宠物响应缺少 id').toBeGreaterThan(0);
     return id;
@@ -43,7 +50,7 @@ test.describe('Phase1 补充 - 注册表单校验（V-U1）', () => {
         await page.goto('/register');
         await page.getByPlaceholder('请输入手机号').fill('13900000001');
         await page.getByPlaceholder('请输入验证码').fill('123456');
-        await page.getByPlaceholder('请设置6-20位密码').fill('user123456');
+        await page.getByPlaceholder(/请设置\s*6-20\s*位密码/).fill('user123456');
         await page.getByPlaceholder('请再次输入密码').fill('user654321');
 
         await page.getByRole('button', { name: /^注册$/ }).click();
@@ -54,7 +61,7 @@ test.describe('Phase1 补充 - 注册表单校验（V-U1）', () => {
     test('V-U1-04 - 未填验证码时提示', async ({ page }) => {
         await page.goto('/register');
         await page.getByPlaceholder('请输入手机号').fill('13900000001');
-        await page.getByPlaceholder('请设置6-20位密码').fill('user123456');
+        await page.getByPlaceholder(/请设置\s*6-20\s*位密码/).fill('user123456');
         await page.getByPlaceholder('请再次输入密码').fill('user123456');
 
         await page.getByRole('button', { name: /^注册$/ }).click();
@@ -93,11 +100,24 @@ test.describe('Phase1 补充 - 用户设置保存闭环（V-U6/U7/U8）', () => 
 
     test('V-U8-02/V-U8-03 - 私信权限设为「仅粉丝」并保存（结束后恢复「所有人」）', async ({ page }) => {
         await loginAsUser(page);
+
+        // 隐私设置是异步加载的：必须等 GET 返回后再点选，否则刚点的值会被
+        // useProfileSettings.loadPrivacy 覆盖，保存的仍是旧值（历史读回 0 的真因）。
+        const privacyLoaded = page.waitForResponse(
+            (r) => r.url().includes('/api/v1/user/privacy') && r.request().method() === 'GET',
+            { timeout: 10_000 },
+        );
         await page.goto('/settings');
         await page.getByRole('button', { name: '隐私设置' }).click();
+        await privacyLoaded;
 
         const permGroup = page.locator('[aria-label="私信权限"]');
-        await permGroup.getByText('仅粉丝').click();
+        await expect(permGroup).toBeVisible();
+        // HeroUI Radio 真实控件是隐藏 input，可见的是 label 卡片；直接 click input 会被卡片挡住，
+        // 改为点击可见文案（value=1 → 仅粉丝），再断言隐藏 input 的 checked 状态。
+        await permGroup.getByText('仅粉丝', { exact: true }).click();
+        const followersRadio = permGroup.getByRole('radio', { name: /仅粉丝/ });
+        await expect(followersRadio, '点选后「仅粉丝」应处于选中态').toBeChecked();
 
         const putPromise = page.waitForResponse(
             (r) => r.url().includes('/api/v1/user/privacy') && r.request().method() === 'PUT',
@@ -106,18 +126,32 @@ test.describe('Phase1 补充 - 用户设置保存闭环（V-U6/U7/U8）', () => 
         await page.getByRole('button', { name: '保存隐私设置' }).click();
         const putResp = await putPromise;
         expect(putResp.ok(), `保存隐私设置失败: ${putResp.status()}`).toBeTruthy();
+        const putBody = (await putResp.json()) as { code?: number; message?: string };
+        expect(putBody.code, `保存隐私设置业务失败: ${putBody.message}`).toBe(0);
 
-        // 接口层校验：messagePermission = 1（仅粉丝）
+        // 接口层校验：messagePermission = 1（仅粉丝）；业务 code 也必须校验，
+        // 后端业务错误同样是 HTTP 200，只看 resp.ok() 会把失败伪装成读回 0。
         const readResp = await apiWrite(page, 'get', '/api/v1/user/privacy');
-        const privacy = (await readResp.json().catch(() => ({}))) as {
+        const privacy = (await readResp.json()) as {
+            code?: number;
+            message?: string;
             data?: { messagePermission?: number };
         };
-        expect(privacy?.data?.messagePermission).toBe(1);
+        expect(privacy.code, `读取隐私设置失败: ${privacy.message}`).toBe(0);
+        expect(privacy.data?.messagePermission).toBe(1);
 
         // 恢复为「所有人」，避免影响 M1-03 之外的其它用例
+        const reloadLoaded = page.waitForResponse(
+            (r) => r.url().includes('/api/v1/user/privacy') && r.request().method() === 'GET',
+            { timeout: 10_000 },
+        );
         await page.reload();
         await page.getByRole('button', { name: '隐私设置' }).click();
-        await page.locator('[aria-label="私信权限"]').getByText('所有人').click();
+        await reloadLoaded;
+        const allRadio = page.locator('[aria-label="私信权限"]').getByRole('radio', { name: /所有人/ });
+        // 同样改为点击可见文案，避免被 label 卡片拦截
+        await page.locator('[aria-label="私信权限"]').getByText('所有人', { exact: true }).click();
+        await expect(allRadio).toBeChecked();
         const restorePromise = page.waitForResponse(
             (r) => r.url().includes('/api/v1/user/privacy') && r.request().method() === 'PUT',
             { timeout: 10_000 },
@@ -132,7 +166,7 @@ test.describe('Phase1 补充 - 用户设置保存闭环（V-U6/U7/U8）', () => 
         await page.getByRole('button', { name: '修改密码' }).click();
 
         await page.getByPlaceholder('请输入原密码').fill('wrong-old-pwd');
-        await page.getByPlaceholder('请输入6-20位新密码').fill('newpass123');
+        await page.getByPlaceholder(/请输入\s*6-20\s*位新密码/).fill('newpass123');
         await page.getByPlaceholder('请再次输入新密码').fill('newpass456');
 
         const submitBtn = page.getByRole('button', { name: /提交|确认|保存|修改密码$/ }).last();
@@ -164,7 +198,7 @@ test.describe('Phase1 补充 - 宠物档案主流程（V-P1/P2/P3）', () => {
         const id = await createPetAndGetId(page, origin);
         const updated = `e2e改名${Date.now() % 100000}`;
 
-        await page.goto(`/pets/${id}/edit`);
+        await page.goto(`/pets/${id}/edit`, { waitUntil: 'domcontentloaded' });
         await page.getByPlaceholder('给你的毛孩子起个名字吧').fill(updated);
 
         const putPromise = page.waitForResponse(
@@ -175,7 +209,8 @@ test.describe('Phase1 补充 - 宠物档案主流程（V-P1/P2/P3）', () => {
         const putResp = await putPromise;
         expect(putResp.ok(), `编辑宠物失败: ${putResp.status()}`).toBeTruthy();
 
-        await page.goto(`/pets/${id}`);
+        // 宠物详情页偶有资源迟迟不触发 load 事件，改用 domcontentloaded 避免 30s 超时
+        await page.goto(`/pets/${id}`, { waitUntil: 'domcontentloaded' });
         await expect(page.locator('body')).toContainText(updated, { timeout: 10_000 });
     });
 

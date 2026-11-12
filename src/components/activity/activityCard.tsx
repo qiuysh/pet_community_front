@@ -7,6 +7,7 @@ import {
   getActivityDisplayStatus,
 } from '../../types/activity';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { DEFAULT_ACTIVITY_COVER } from '../../constants/activity';
 
 interface ActivityCardProps {
   activity: ActivityInfo;
@@ -52,7 +53,7 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
       <div className="relative">
         <img
           decoding="async"
-          src={activity.cover || '/default-activity-cover.png'}
+          src={activity.cover || DEFAULT_ACTIVITY_COVER}
           alt={activity.title}
           className="w-full h-40 object-cover rounded-t-md"
         />
