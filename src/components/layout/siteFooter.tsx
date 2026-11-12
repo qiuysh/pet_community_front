@@ -16,7 +16,9 @@ export function SiteFooter() {
 
   return (
     <footer className="site-footer">
-      {siteDescription && <p className="site-footer-desc">{siteDescription}</p>}
+      {siteDescription && (
+        <p className="site-footer-desc break-words line-clamp-3">{siteDescription}</p>
+      )}
       <p className="site-footer-meta">
         <span>© {new Date().getFullYear()} {siteName}</span>
         {siteICP && (
