@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useActivityDetail } from '../../hooks/useActivityDetail';
 import { useConfirm } from '../../hooks/useConfirm';
@@ -13,12 +13,17 @@ import {
 } from '../../components/activity';
 import { DEFAULT_ACTIVITY_COVER, DEFAULT_SUBMISSION_IMAGE } from '../../constants/activity';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
+import { formatActivityPrizes } from '../../utils/activityPrizes';
 import { Clock, Users, Check, Trophy, Pencil, Trash2, Star } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { PostImage } from '../../components/post/postImage';
+import '../../components/post/postImage.scss';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Modal } from '../../components/ui/modal';
+import { PageHeader } from '../../components/ui/pageHeader';
+import { Spinner } from '../../components/ui/spinner';
 import { Tabs } from '../../components/ui/tabs';
 
 export const ActivityDetailPage = () => {
@@ -61,22 +66,48 @@ export const ActivityDetailPage = () => {
     });
   };
 
-  if (loading || !activity) {
-    return <div className="min-h-screen flex items-center justify-center">加载中…</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-cream">
+        <Spinner />
+        <p className="text-brown-muted">加载中…</p>
+      </div>
+    );
+  }
+
+  if (!activity) {
+    return (
+      <div className="bg-cream min-h-screen">
+        <PageHeader title="活动详情" fallbackTo="/activities" />
+        <EmptyState
+          title="活动不存在"
+          description="可能已下架或链接失效"
+          action={
+            <Link to="/activities" className="font-medium text-primary-text">
+              返回活动中心
+            </Link>
+          }
+        />
+      </div>
+    );
   }
 
   const bannerSrc = activity.banner || activity.cover || DEFAULT_ACTIVITY_COVER;
   const displayStatus = getActivityDisplayStatus(activity);
   const activityEnded = displayStatus === 'ended';
+  const prizeLines = formatActivityPrizes(activity.prizes);
+  const loginFrom = `/activities/${activity.id}`;
 
   return (
     <div className="bg-cream min-h-screen pb-6">
+      <PageHeader title="活动详情" fallbackTo="/activities" />
       <div className="bg-white">
-        <img
-          decoding="async"
+        <PostImage
           src={bannerSrc}
           alt={activity.title}
-          className="w-full h-48 object-cover"
+          className="w-full h-48"
+          imgClassName="w-full h-48 object-cover"
+          loading="eager"
         />
         <div className="page-shell px-4 py-4">
           <h1 className="page-content-title mb-2">{activity.title}</h1>
@@ -116,7 +147,7 @@ export const ActivityDetailPage = () => {
                 className="flex-1"
                 onClick={() => {
                   if (!isLoggedIn) {
-                    navigate('/login');
+                    navigate('/login', { state: { from: loginFrom } });
                     return;
                   }
                   setShowRegistrationForm(true);
@@ -131,7 +162,7 @@ export const ActivityDetailPage = () => {
                 className="flex-1"
                 onClick={() => {
                   if (!isLoggedIn) {
-                    navigate('/login');
+                    navigate('/login', { state: { from: loginFrom } });
                     return;
                   }
                   setShowSubmissionForm(true);
@@ -204,10 +235,14 @@ export const ActivityDetailPage = () => {
                   <p className="text-sm text-brown-muted">{activity.rules}</p>
                 </div>
               )}
-              {activity.prizes && (
+              {prizeLines.length > 0 && (
                 <div className="mb-4">
                   <h3 className="page-section-title mb-2">奖品设置</h3>
-                  <p className="text-sm text-brown-muted">{activity.prizes}</p>
+                  <ul className="text-sm text-brown-muted space-y-1 list-disc pl-5">
+                    {prizeLines.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
               {(activity.votesPerDay ?? 0) > 0 && (
@@ -223,7 +258,7 @@ export const ActivityDetailPage = () => {
                 ended={activityEnded}
                 canRate={!!activity.isRegistered}
                 isLoggedIn={isLoggedIn}
-                onLoginRequired={() => navigate('/login')}
+                onLoginRequired={() => navigate('/login', { state: { from: loginFrom } })}
               />
             </Card>
           </div>

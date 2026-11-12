@@ -51,7 +51,17 @@ describe('UserHeader 导航覆盖', () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole('button', { name: '更多导航' })).toBeInTheDocument();
-    // 底栏没有的三项必须在更多清单里
-    expect(USER_MOBILE_MORE_NAV.map((i) => i.label)).toEqual(['宠物', '话题', '排行榜']);
+    // 底栏没有的入口必须在更多清单里（含活动、寻宠）
+    expect(USER_MOBILE_MORE_NAV.map((i) => i.label)).toEqual([
+      '宠物',
+      '活动',
+      '寻宠',
+      '话题',
+      '排行榜',
+    ]);
+  });
+
+  it('PC 主导航含寻宠', () => {
+    expect(USER_HEADER_NAV.some((i) => i.path === '/lost-pets' && i.label === '寻宠')).toBe(true);
   });
 });

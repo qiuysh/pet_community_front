@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom';
+import { Lock, MapPin } from 'lucide-react';
 import { useAdoptList } from '../../hooks/useAdoptList';
+import { useUserStore } from '../../stores/userStore';
 import { PetType, AdoptionStatus } from '../../types/adopt';
+import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
+import { PostImage } from '../../components/post/postImage';
+import '../../components/post/postImage.scss';
 import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -9,6 +14,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { formatCount } from '../../utils/format';
 
 export const AdoptListPage = () => {
+  const { isLoggedIn } = useUserStore();
   const {
     adopts,
     loading,
@@ -69,14 +75,35 @@ export const AdoptListPage = () => {
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
         <div className="page-shell px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="page-bar-title">领养中心</h1>
-            <div className="flex items-center gap-2">
-              <Link to="/adopts/mine" className={buttonClass({ size: 'sm', variant: 'outline' })}>
-                我的领养
-              </Link>
-              <Link to="/adopts/create" className={buttonClass({ size: 'sm' })}>
-                发布领养
-              </Link>
+            <div className="min-w-0">
+              <h1 className="page-bar-title">领养中心</h1>
+              <p className="text-xs text-brown-secondary mt-0.5">给毛孩一个温暖的家</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {isLoggedIn ? (
+                <>
+                  <Link to="/adopts/mine" className={buttonClass({ size: 'sm', variant: 'outline' })}>
+                    我的领养
+                  </Link>
+                  <Link to="/adopts/create" className={buttonClass({ size: 'sm' })}>
+                    发布领养
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  state={{ from: '/adopts/create' }}
+                  className={buttonClass({ size: 'sm', variant: 'outline' })}
+                >
+                  <Lock
+                    size={ICON_SIZE.inline}
+                    strokeWidth={iconStroke(ICON_SIZE.inline)}
+                    className="mr-1"
+                    aria-hidden="true"
+                  />
+                  登录后发布
+                </Link>
+              )}
             </div>
           </div>
 
@@ -131,11 +158,11 @@ export const AdoptListPage = () => {
                 <Card hoverable padding="none" className="overflow-hidden">
                 <div className="flex">
                   {adopt.photos && adopt.photos.length > 0 && (
-                    <img
-                      decoding="async"
+                    <PostImage
                       src={adopt.photos[0]}
                       alt={adopt.petName}
-                      className="w-24 h-24 object-cover"
+                      className="w-24 h-24 shrink-0"
+                      imgClassName="w-24 h-24 object-cover"
                     />
                   )}
                   <div className="flex-1 p-3">
@@ -158,7 +185,7 @@ export const AdoptListPage = () => {
                     </div>
                     <div className="text-sm text-brown-muted truncate">{adopt.description}</div>
                     <div className="flex items-center gap-2 mt-2 text-xs text-brown-light">
-                      <span className="icon-location" />
+                      <MapPin size={ICON_SIZE.inline} aria-hidden="true" />
                       <span>{adopt.location}</span>
                     </div>
                   </div>

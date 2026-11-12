@@ -14,12 +14,15 @@ export const USER_HEADER_NAV = [
   { path: '/activities', label: '活动' },
   { path: '/topics', label: '话题' },
   { path: '/adopts', label: '领养' },
+  { path: '/lost-pets', label: '寻宠' },
   { path: '/ranking', label: '排行榜' },
 ] as const;
 
-/** 底栏已有：首页 / 发现 / 活动 / 领养 / 我的 —— 移动端「更多」只补缺口 */
+/** 底栏已有：首页 / 发现 / 消息 / 领养 / 我的 —— 移动端「更多」补缺口（含活动、寻宠） */
 export const USER_MOBILE_MORE_NAV = [
   { path: '/pets', label: '宠物' },
+  { path: '/activities', label: '活动' },
+  { path: '/lost-pets', label: '寻宠' },
   { path: '/topics', label: '话题' },
   { path: '/ranking', label: '排行榜' },
 ] as const;

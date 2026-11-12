@@ -26,12 +26,15 @@ export const ActivityListPage = () => {
       <div className="sticky top-[var(--user-header-offset,56px)] bg-white z-10 shadow-card">
         <div className="page-shell px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="page-bar-title">活动中心</h1>
+            <div className="min-w-0">
+              <h1 className="page-bar-title">活动中心</h1>
+              <p className="text-xs text-brown-secondary mt-0.5">线下聚会、摄影赛与社区玩法</p>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-2">
             <FilterChip active={!filters.type} onClick={() => handleTypeChange(undefined)}>
-              全部
+              全部类型
             </FilterChip>
             {ActivityTypeCreateOptions.map((option) => (
               <FilterChip
@@ -45,6 +48,13 @@ export const ActivityListPage = () => {
           </div>
 
           <div className="flex flex-wrap gap-2">
+            <FilterChip
+              tone="secondary"
+              active={!filters.status}
+              onClick={() => handleStatusChange(undefined)}
+            >
+              全部状态
+            </FilterChip>
             <FilterChip
               tone="secondary"
               active={filters.status === 'active'}
@@ -84,7 +94,21 @@ export const ActivityListPage = () => {
             ))}
           </div>
         ) : activities.length === 0 ? (
-          <EmptyState title="暂无活动" />
+          <EmptyState
+            title={filters.status === 'active' ? '暂无进行中的活动' : '暂无活动'}
+            description={
+              filters.status
+                ? '试试切换状态筛选，或稍后再来看看'
+                : '新活动上线后会出现在这里'
+            }
+            action={
+              filters.status ? (
+                <Button type="button" variant="outline" size="sm" onClick={() => handleStatusChange(undefined)}>
+                  查看全部活动
+                </Button>
+              ) : undefined
+            }
+          />
         ) : (
           <div className="space-y-3 motion-list">
             {activities.map((activity) => (

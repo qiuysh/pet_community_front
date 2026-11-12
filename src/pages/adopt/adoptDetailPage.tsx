@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom';
-import { Phone, Lock, Send } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Phone, Lock, MapPin, Send } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
 import { useAdoptDetail } from '../../hooks/useAdoptDetail';
 import { useUserStore } from '../../stores/userStore';
@@ -9,9 +9,13 @@ import { AdoptionApplyForm } from '../../components/adopt/adoptionApplyForm';
 import { AdoptionReview } from '../../components/adopt/adoptionReview';
 import { AdoptionFollowUpPanel } from '../../components/adopt/adoptionFollowUpPanel';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
+import { PostImage } from '../../components/post/postImage';
+import '../../components/post/postImage.scss';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
+import { PageHeader } from '../../components/ui/pageHeader';
+import { Spinner } from '../../components/ui/spinner';
 
 export const AdoptDetailPage = () => {
   const navigate = useNavigate();
@@ -44,7 +48,7 @@ export const AdoptDetailPage = () => {
   const handleContactCta = () => {
     if (!adopt) return;
     if (!isLoggedIn) {
-      navigate('/login');
+      navigate('/login', { state: { from: `/adopts/${adopt.id}` } });
       return;
     }
     navigate(
@@ -83,30 +87,42 @@ export const AdoptDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-text"></div>
+      <div className="flex flex-col justify-center items-center min-h-[40vh] gap-3 bg-cream">
+        <Spinner />
+        <p className="text-brown-muted">加载中…</p>
       </div>
     );
   }
 
   if (!adopt) {
     return (
-      <div className="text-center py-12 text-brown-muted">
-        领养信息不存在
+      <div className="bg-cream min-h-screen">
+        <PageHeader title="领养详情" fallbackTo="/adopts" />
+        <EmptyState
+          title="领养信息不存在"
+          description="可能已下架或链接失效"
+          action={
+            <Link to="/adopts" className="font-medium text-primary-text">
+              返回领养中心
+            </Link>
+          }
+        />
       </div>
     );
   }
 
   return (
     <div className="bg-cream min-h-screen pb-6">
+      <PageHeader title="领养详情" fallbackTo="/adopts" />
       {/* 照片展示 */}
       {adopt.photos && adopt.photos.length > 0 && (
         <div className="bg-white">
-          <img
-            decoding="async"
+          <PostImage
             src={adopt.photos[0]}
             alt={adopt.petName}
-            className="w-full h-64 object-cover"
+            className="w-full h-64"
+            imgClassName="w-full h-64 object-cover"
+            loading="eager"
           />
         </div>
       )}
@@ -140,7 +156,7 @@ export const AdoptDetailPage = () => {
           )}
 
           <div className="flex items-center gap-2 text-sm text-brown-muted">
-            <span className="icon-location" />
+            <MapPin size={ICON_SIZE.inline} aria-hidden="true" />
             <span>{adopt.location}</span>
           </div>
         </Card>
@@ -309,8 +325,18 @@ export const AdoptDetailPage = () => {
 
         {adopt.status === AdoptionStatus.PENDING && !isOwner && (
           <Card>
-            <Button block size="lg" onClick={() => setShowApplyForm(true)}>
-              申请领养
+            <Button
+              block
+              size="lg"
+              onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login', { state: { from: `/adopts/${adopt.id}` } });
+                  return;
+                }
+                setShowApplyForm(true);
+              }}
+            >
+              {isLoggedIn ? '申请领养' : '登录后申请领养'}
             </Button>
           </Card>
         )}

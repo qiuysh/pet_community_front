@@ -10,6 +10,10 @@ describe('getLoginContextCopy', () => {
     expect(getLoginContextCopy('/posts/create').subtitle).toContain('发布');
   });
 
+  it('宠物档案创建路径给出档案上下文', () => {
+    expect(getLoginContextCopy('/pets/create').subtitle).toContain('宠物档案');
+  });
+
   it('无来源时用默认欢迎语', () => {
     expect(getLoginContextCopy(undefined).subtitle).toContain('宠友');
   });

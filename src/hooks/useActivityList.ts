@@ -12,7 +12,7 @@ import {
 
 /** 合法的活动类型筛选值，非法值回退「全部」 */
 const ACTIVITY_TYPES = Object.values(ActivityType) as string[];
-/** 合法的状态筛选值；缺省为 active（与列表默认视角一致） */
+/** 合法的状态筛选值；缺省不筛选（避免「进行中」空列表误以为无活动） */
 const STATUS_FILTERS: ActivityListStatusFilter[] = [
   'active',
   'upcoming',
@@ -39,21 +39,28 @@ export function useActivityList(pageSize = 10) {
   const rawType = searchParams.get('type');
   const type = rawType && ACTIVITY_TYPES.includes(rawType) ? (rawType as ActivityType) : undefined;
   const rawStatus = searchParams.get('status');
-  const status: ActivityListStatusFilter =
+  const status: ActivityListStatusFilter | undefined =
     rawStatus && STATUS_FILTERS.includes(rawStatus as ActivityListStatusFilter)
       ? (rawStatus as ActivityListStatusFilter)
-      : 'active';
+      : undefined;
   const page = parsePage(searchParams.get('page'));
 
   const updateQuery = useCallback(
-    (next: { type?: ActivityType; status?: ActivityListStatusFilter; page?: number }) => {
+    (next: {
+      type?: ActivityType;
+      status?: ActivityListStatusFilter | undefined;
+      page?: number;
+      clearStatus?: boolean;
+    }) => {
       const params = new URLSearchParams(searchParams);
-      if (next.type === undefined) {
+      if (next.type === undefined && 'type' in next) {
         params.delete('type');
-      } else {
+      } else if (next.type !== undefined) {
         params.set('type', next.type);
       }
-      if (next.status !== undefined) {
+      if (next.clearStatus || (next.status === undefined && 'status' in next)) {
+        params.delete('status');
+      } else if (next.status !== undefined) {
         params.set('status', next.status);
       }
       if (next.page !== undefined) {

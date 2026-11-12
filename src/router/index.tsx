@@ -199,9 +199,10 @@ const appRoutes: RouteObject[] = [
   { path: '/profile/:id', element: withUser(<UserProfilePage />) },
   { path: '/settings', element: withUser(<ProfileSettingsPage />, true) },
 
-  { path: '/pets', element: withUser(<PetListPage />, true) },
+  // 宠物广场列表/详情游客可只读；创建/编辑须登录（相册写操作在页内二次鉴权）
+  { path: '/pets', element: withUser(<PetListPage />) },
   { path: '/pets/create', element: withUser(<PetFormPage />, true) },
-  { path: '/pets/:id', element: withUser(<PetDetailPage />, true) },
+  { path: '/pets/:id', element: withUser(<PetDetailPage />) },
   { path: '/pets/:id/edit', element: withUser(<PetFormPage />, true) },
 
   // `/posts` 与首页同 Feed：统一落到 `/`，避免双 URL + 导航 current 歧义

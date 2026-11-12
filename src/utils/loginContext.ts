@@ -18,6 +18,18 @@ export function getLoginContextCopy(from?: string | null): {
   if (/^\/posts\/[^/]+\/edit$/.test(path)) {
     return { subtitle: '登录后继续编辑这篇动态' };
   }
+  if (path.startsWith('/pets/create') || /^\/pets\/[^/]+\/edit$/.test(path)) {
+    return { subtitle: '登录后继续发布或编辑宠物档案' };
+  }
+  if (path.startsWith('/adopts/create') || path.startsWith('/adopts/mine')) {
+    return { subtitle: '登录后发布送养或管理我的领养' };
+  }
+  if (path.startsWith('/lost-pets/create')) {
+    return { subtitle: '登录后发布寻宠启事' };
+  }
+  if (/^\/activities\/[^/]+/.test(path)) {
+    return { subtitle: '登录后参与活动报名或签到' };
+  }
   if (path.startsWith('/points')) {
     return { subtitle: '登录后查看积分与等级权益' };
   }

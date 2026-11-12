@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
+import { MapPin } from 'lucide-react';
 import { AdoptInfo, PetType, AdoptionStatus } from '../../types/adopt';
+import { ICON_SIZE } from '../../styles/iconSize';
 import { formatCount } from '../../utils/format';
+import { PostImage } from '../post/postImage';
+import '../post/postImage.scss';
 
 interface AdoptCardProps {
   adopt: AdoptInfo;
@@ -43,11 +47,11 @@ export const AdoptCard = ({ adopt }: AdoptCardProps) => {
     >
       <div className="flex">
         {adopt.photos && adopt.photos.length > 0 && (
-          <img
-            decoding="async"
+          <PostImage
             src={adopt.photos[0]}
             alt={adopt.petName}
-            className="w-24 h-24 object-cover"
+            className="w-24 h-24 shrink-0"
+            imgClassName="w-24 h-24 object-cover"
           />
         )}
         <div className="flex-1 p-3">
@@ -68,7 +72,7 @@ export const AdoptCard = ({ adopt }: AdoptCardProps) => {
           </div>
           <div className="text-sm text-brown-muted truncate">{adopt.description}</div>
           <div className="flex items-center gap-2 mt-2 text-xs text-brown-light">
-            <span className="icon-location"></span>
+            <MapPin size={ICON_SIZE.inline} aria-hidden="true" />
             <span>{adopt.location}</span>
           </div>
         </div>

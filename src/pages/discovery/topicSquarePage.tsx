@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTopicSquare } from '../../hooks/useTopicSquare';
 import { useUserStore } from '../../stores/userStore';
-import { ChevronRight, Hash, PawPrint } from 'lucide-react';
+import { CalendarDays, ChevronRight, Hash, MapPin, PawPrint } from 'lucide-react';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -73,6 +73,25 @@ export const TopicSquarePage = () => {
         >
           {canCreateTopic ? '创建话题' : '创建话题 (Lv5+)'}
         </Button>
+      </div>
+
+      <div className="section px-4 pt-4">
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to="/activities"
+            className="inline-flex items-center gap-1.5 rounded-md bg-secondary-soft px-3 py-2 text-sm text-secondary-dark hover:bg-secondary/20"
+          >
+            <CalendarDays size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
+            去活动中心看看
+          </Link>
+          <Link
+            to="/lost-pets"
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary-soft/60 px-3 py-2 text-sm text-primary-text hover:bg-primary-soft"
+          >
+            <MapPin size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
+            寻宠互助
+          </Link>
+        </div>
       </div>
 
       {loading ? (
