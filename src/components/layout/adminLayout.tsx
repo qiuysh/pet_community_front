@@ -23,7 +23,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     <div className="flex h-dvh max-h-dvh overflow-hidden bg-cream">
       <a
         href="#admin-main"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-secondary focus:text-white focus:rounded-sm"
+        className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2 focus-visible:left-2 focus-visible:z-50 focus-visible:px-4 focus-visible:py-2 focus-visible:bg-secondary focus-visible:text-white focus-visible:rounded-sm"
       >
         跳到主要内容
       </a>

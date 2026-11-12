@@ -10,10 +10,12 @@ import { AdminInput, AdminSelect } from '../../components/admin/adminField';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminChip } from '../../components/admin/adminChip';
 import { adminUi } from '../../styles/adminUi';
+import { useConfirm } from '../../hooks/useConfirm';
 
 export const ActivityVotePage = () => {
   const { id } = useParams<{ id: string }>();
   const toast = useToast();
+  const { confirm, confirmDialog } = useConfirm();
   const { loading, data: awardData, refetch } = useAsyncEffect(
     () => getAwardPage(parseInt(id!)),
     [id],
@@ -35,15 +37,19 @@ export const ActivityVotePage = () => {
     }
   };
 
-  const handlePublishAwards = () => {
+  const handlePublishAwards = async () => {
     if (!awardData || awardData.awardedCount === 0) {
       toast.warning('请先设置获奖作品');
       return;
     }
 
-    if (!window.confirm('确定要发布评选结果吗？发布后将通知所有获奖用户。')) {
-      return;
-    }
+    const ok = await confirm({
+      title: '发布评选结果？',
+      description: '发布后将通知所有获奖用户。',
+      confirmText: '发布',
+      tone: 'primary',
+    });
+    if (!ok) return;
 
     runPublish(
       () => publishAwards(parseInt(id!)),
@@ -200,6 +206,7 @@ export const ActivityVotePage = () => {
           />
         </div>
       </div>
+      {confirmDialog}
     </div>
   );
 };

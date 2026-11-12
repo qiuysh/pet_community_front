@@ -53,6 +53,9 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
       <div className="relative">
         <img
           decoding="async"
+          loading="lazy"
+          width={640}
+          height={160}
           src={activity.cover || DEFAULT_ACTIVITY_COVER}
           alt={activity.title}
           className="w-full h-40 object-cover rounded-t-md"

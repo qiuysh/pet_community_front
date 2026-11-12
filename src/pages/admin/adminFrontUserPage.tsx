@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FrontUser } from '../../types/admin';
 import { getFrontUserList, batchBanFrontUsers } from '../../api/admin';
 import { Pagination } from '../../components/admin/pagination';
@@ -13,18 +13,29 @@ import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip'
 import { AdminTable } from '../../components/admin/adminTable';
 import { FrontUserDetailDialog } from '../../components/admin/frontUserDetailDialog';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
+
+const FRONT_USER_QUERY = {
+  page: { kind: 'number', default: 1 },
+  keyword: { kind: 'string', default: '' },
+  status: { kind: 'string', default: 'all', values: ['all', '0', '1'] as const },
+} as const;
+
+const PAGE_SIZE = 20;
 
 export function AdminFrontUserPage() {
+  const [query, setQuery] = useSyncedSearchParams(FRONT_USER_QUERY, {
+    resetPageOn: ['keyword', 'status'],
+  });
+  const currentPage = query.page;
+  const keyword = query.keyword;
+  const statusFilter = query.status === 'all' ? -1 : Number(query.status);
   const [users, setUsers] = useState<FrontUser[]>([]);
   const [detailUserId, setDetailUserId] = useState<number | null>(null);
   const [total, setTotal] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [keywordInput, setKeywordInput] = useState('');
-  const [keyword, setKeyword] = useState('');
-  const [statusFilter, setStatusFilter] = useState(-1);
+  const [keywordInput, setKeywordInput] = useState(keyword);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [showBatchBanModal, setShowBatchBanModal] = useState(false);
   const [batchBanReason, setBatchBanReason] = useState('');
@@ -32,8 +43,13 @@ export function AdminFrontUserPage() {
   const [batchError, setBatchError] = useState('');
 
   useEffect(() => {
-    fetchUserList();
-  }, [currentPage, pageSize, keyword, statusFilter]);
+    setKeywordInput(keyword);
+  }, [keyword]);
+
+  useEffect(() => {
+    void fetchUserList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, keyword, statusFilter]);
 
   const fetchUserList = async () => {
     setIsLoading(true);
@@ -43,7 +59,7 @@ export function AdminFrontUserPage() {
         keyword: keyword || undefined,
         status: statusFilter >= 0 ? statusFilter : undefined,
         page: currentPage,
-        page_size: pageSize,
+        page_size: PAGE_SIZE,
       });
       setUsers(response.list);
       setTotal(response.total);
@@ -59,17 +75,18 @@ export function AdminFrontUserPage() {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setQuery({ page });
   };
 
   const handleKeywordSearch = () => {
-    setKeyword(keywordInput);
-    setCurrentPage(1);
+    setQuery({ keyword: keywordInput.trim(), page: 1 });
   };
 
   const handleStatusFilterChange = (status: number) => {
-    setStatusFilter(status);
-    setCurrentPage(1);
+    setQuery({
+      status: status < 0 ? 'all' : (String(status) as '0' | '1'),
+      page: 1,
+    });
   };
 
   const toggleSelectUser = (id: number) => {
@@ -200,7 +217,11 @@ export function AdminFrontUserPage() {
       </div>
 
       {error && (
-        <div className="mb-6 mx-6 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
+        <div
+          className="mb-6 mx-6 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm"
+          role="alert"
+          aria-live="assertive"
+        >
           {error}
         </div>
       )}
@@ -285,7 +306,7 @@ export function AdminFrontUserPage() {
       <Pagination
         currentPage={currentPage}
         total={total}
-        pageSize={pageSize}
+        pageSize={PAGE_SIZE}
         onPageChange={handlePageChange}
       />
 
@@ -317,7 +338,7 @@ export function AdminFrontUserPage() {
                 <AdminTextarea
                   value={batchBanReason}
                   onChange={(e) => setBatchBanReason(e.target.value)}
-                  placeholder="请输入封禁原因，该原因将记录到操作日志中"
+                  placeholder="请输入封禁原因，该原因将记录到操作日志中…"
                   rows={3}
                 />
               </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
+import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
 import { DEFAULT_SITE_NAME } from '../../utils/documentTitle';
 import { getLoginContextCopy } from '../../utils/loginContext';
@@ -21,12 +22,18 @@ import { Spinner } from '../../components/ui/spinner';
 import { BrandSocialIcon } from '../../components/icons/brandSocialIcons';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
+const LOGIN_MODES = ['password', 'code'] as const;
+
 export function LoginPage() {
   const siteName = useSiteConfigStore((state) => state.siteName) || DEFAULT_SITE_NAME;
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from;
   const loginCopy = getLoginContextCopy(from);
-  const [loginType, setLoginType] = useState<'password' | 'code'>('password');
+  const [loginType, setLoginType] = useAdminTabQuery<'password' | 'code'>(
+    'password',
+    LOGIN_MODES,
+    'mode',
+  );
   const [account, setAccount] = useState(() => getRememberedUserAccount());
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');

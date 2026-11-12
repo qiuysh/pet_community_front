@@ -4,6 +4,7 @@ import { AtSign, Bell, Heart, MessageCircle, ShieldAlert, UserPlus } from 'lucid
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useNotificationList } from '../../hooks/useNotificationList';
 import { useConfirm } from '../../hooks/useConfirm';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { formatRelativeTime } from '../../utils/format';
 import { summarizeSecurityNotification } from '../../utils/notificationDisplay';
 import { Button } from '../../components/ui/button';
@@ -15,8 +16,18 @@ import './notificationListPage.scss';
 
 type NotifyFilter = 'all' | 'social' | 'security';
 
+const NOTIFY_FILTER_QUERY = {
+  filter: {
+    kind: 'string',
+    default: 'all',
+    values: ['all', 'social', 'security'] as const,
+  },
+} as const;
+
 const NotificationListPage: React.FC = () => {
   const navigate = useNavigate();
+  const [filterQuery, setFilterQuery] = useSyncedSearchParams(NOTIFY_FILTER_QUERY);
+  const filter = filterQuery.filter as NotifyFilter;
   const {
     notifications,
     loading,
@@ -27,7 +38,6 @@ const NotificationListPage: React.FC = () => {
     markAllAsRead,
   } = useNotificationList();
   const { confirm, confirmDialog } = useConfirm();
-  const [filter, setFilter] = useState<NotifyFilter>('all');
   const [expandedSecurityIds, setExpandedSecurityIds] = useState<Record<number, boolean>>({});
 
   const visibleNotifications = useMemo(() => {
@@ -118,7 +128,7 @@ const NotificationListPage: React.FC = () => {
           <FilterChip
             key={item.key}
             active={filter === item.key}
-            onClick={() => setFilter(item.key)}
+            onClick={() => setFilterQuery({ filter: item.key })}
           >
             {item.label}
           </FilterChip>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { notificationApi } from '../api/social';
 import { useAsyncEffect } from './useAsync';
+import { useSyncedSearchParams } from './useSyncedSearchParams';
 import { showErrorToast } from '../utils/toastManager';
 import { reportError } from '../utils/errorReport';
 
@@ -16,23 +17,33 @@ export interface NotificationItem {
   createdAt: string;
 }
 
+const NOTIFY_PAGE_QUERY = {
+  page: { kind: 'number', default: 1 },
+} as const;
+
 /**
  * 通知列表 hook
  *
  * 支持分页追加模式(page>1 追加到已有列表),
  * 提供 markAsRead / markAllAsRead 操作(本地更新)。
+ * page 与 URL ?page= 同步。
  *
  * 用法:
  *   const { notifications, loading, total, page, setPage, markAsRead, markAllAsRead } = useNotificationList();
  */
 export function useNotificationList(pageSize = 20) {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useSyncedSearchParams(NOTIFY_PAGE_QUERY);
+  const page = query.page;
+  const setPage = (next: number | ((prev: number) => number)) => {
+    const target = typeof next === 'function' ? next(page) : next;
+    setQuery({ page: Math.max(1, target) });
+  };
   const [total, setTotal] = useState(0);
 
   const { loading } = useAsyncEffect(
     () => notificationApi.getNotifications({ page, pageSize }) as Promise<{ list: NotificationItem[]; total: number }>,
-    [page],
+    [page, pageSize],
     {
       onError: (error) => {
         reportError('获取通知列表失败', error);

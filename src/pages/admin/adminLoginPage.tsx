@@ -188,7 +188,7 @@ export function AdminLoginPage() {
                       setErrors((prev) => ({ ...prev, captchaCode: '' }));
                     }
                   }}
-                  placeholder="输入图中字符"
+                  placeholder="输入图中字符…"
                   autoComplete="off"
                   name="captchaCode"
                   spellCheck={false}
@@ -205,7 +205,13 @@ export function AdminLoginPage() {
                   title="点击刷新"
                 >
                   {captchaImage ? (
-                    <img src={captchaImage} alt="验证码" className="h-full w-full object-cover" />
+                    <img
+                      src={captchaImage}
+                      alt="验证码"
+                      width={120}
+                      height={44}
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <RefreshCw
                       size={ICON_SIZE.inline}
@@ -236,7 +242,11 @@ export function AdminLoginPage() {
           </div>
 
           {error && (
-            <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
+            <div
+              className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm"
+              role="alert"
+              aria-live="assertive"
+            >
               {error}
             </div>
           )}

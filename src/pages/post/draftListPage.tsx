@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FileEdit, Trash2 } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { getDraftList, deleteDraft } from '../../api/post';
 import { useAsyncEffect } from '../../hooks/useAsync';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { DraftInfo } from '../../types/post';
 import { formatRelativeTime } from '../../utils/format';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
-import { Button } from '../../components/ui/button';
+import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { ConfirmDialog } from '../../components/ui/confirmDialog';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -20,15 +21,20 @@ function draftPreview(content: string): string {
   return text.length > 80 ? `${text.slice(0, 80)}…` : text;
 }
 
+const DRAFT_QUERY = {
+  page: { kind: 'number', default: 1 },
+} as const;
+
+const PAGE_SIZE = 10;
+
 export function DraftListPage() {
-  const navigate = useNavigate();
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const [query, setQuery] = useSyncedSearchParams(DRAFT_QUERY);
+  const page = query.page;
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   const { loading, data, setData } = useAsyncEffect(
-    () => getDraftList(page, pageSize),
+    () => getDraftList(page, PAGE_SIZE),
     [page],
     { onError: () => showErrorToast('获取草稿失败') },
   );
@@ -64,15 +70,16 @@ export function DraftListPage() {
         title="草稿箱"
         fallbackTo="/posts/create"
         right={
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="text-primary-text"
-            onClick={() => navigate('/posts/create')}
+          <Link
+            to="/posts/create"
+            className={buttonClass({
+              variant: 'ghost',
+              size: 'sm',
+              className: 'text-primary-text',
+            })}
           >
             写动态
-          </Button>
+          </Link>
         }
       />
 
@@ -104,20 +111,21 @@ export function DraftListPage() {
                 </p>
               </div>
               <div className="flex flex-row gap-1 shrink-0">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="p-2 rounded-lg text-primary-text"
+                <Link
+                  to={`/posts/drafts/${draft.id}`}
+                  className={buttonClass({
+                    variant: 'ghost',
+                    size: 'sm',
+                    className: 'p-2 rounded-lg text-primary-text',
+                  })}
                   aria-label="继续编辑"
-                  onClick={() => navigate(`/posts/drafts/${draft.id}`)}
                 >
                   <FileEdit
                     size={ICON_SIZE.action}
                     strokeWidth={iconStroke(ICON_SIZE.action)}
                     aria-hidden="true"
                   />
-                </Button>
+                </Link>
                 <Button
                   type="button"
                   variant="ghost"
@@ -137,9 +145,14 @@ export function DraftListPage() {
           ))
         )}
 
-        {total > page * pageSize && (
+        {total > page * PAGE_SIZE && (
           <div className="text-center pt-2">
-            <Button type="button" variant="ghost" size="sm" onClick={() => setPage((p) => p + 1)}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setQuery({ page: page + 1 })}
+            >
               加载更多
             </Button>
           </div>

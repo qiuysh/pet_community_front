@@ -69,6 +69,8 @@ const AdBannerItem: React.FC<AdBannerItemProps> = ({ ad, eager = false }) => {
       <img
         src={ad.imageUrl}
         alt={ad.title}
+        width={750}
+        height={300}
         loading={eager ? 'eager' : 'lazy'}
         fetchPriority={eager ? 'high' : 'auto'}
         decoding="async"

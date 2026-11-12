@@ -65,7 +65,7 @@ export function PetDetailPage() {
     return (
       <div className="min-h-screen bg-soft flex items-center justify-center">
         <div className="text-center">
-          <Spinner className="mx-auto" />
+          <Spinner className="mx-auto" label="加载中…" />
           <p className="mt-4 text-brown-muted">加载中…</p>
         </div>
       </div>
@@ -139,7 +139,14 @@ export function PetDetailPage() {
           <div className="p-6 flex items-end gap-6">
             <div className="w-32 h-32 rounded-full bg-white p-1 shadow-lg overflow-hidden">
               {pet.avatar ? (
-                <img src={pet.avatar} alt={pet.name} className="w-full h-full rounded-full object-cover" decoding="async" />
+                <img
+                  src={pet.avatar}
+                  alt={pet.name}
+                  width={96}
+                  height={96}
+                  className="w-full h-full rounded-full object-cover"
+                  decoding="async"
+                />
               ) : (
                 <div className="w-full h-full rounded-full bg-linear-to-br from-cream to-secondary-soft flex items-center justify-center text-brown">
                   {(() => {

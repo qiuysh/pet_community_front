@@ -3,6 +3,7 @@ import { getReportList, getReportDetail } from '../../api/post';
 import { ReportReasonOptions } from '../../types/post';
 import type { ReportInfo } from '../../types/post';
 import { useAsync, useAsyncEffect } from '../../hooks/useAsync';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -10,6 +11,10 @@ import { PageHeader } from '../../components/ui/pageHeader';
 import { Skeleton } from '../../components/ui/skeleton';
 
 const PAGE_SIZE = 10;
+
+const REPORT_LIST_QUERY = {
+  page: { kind: 'number', default: 1 },
+} as const;
 
 function statusLabel(status: number) {
   if (status === 0) return '待处理';
@@ -33,12 +38,18 @@ function reasonLabel(type: string) {
 
 function formatTime(value: string) {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+  return Number.isNaN(date.getTime())
+    ? value
+    : new Intl.DateTimeFormat('zh-CN', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      }).format(date);
 }
 
 /** 我的举报：查看自己提交的举报与处理结果（R11）。 */
 export function MyReportListPage() {
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useSyncedSearchParams(REPORT_LIST_QUERY);
+  const page = query.page;
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [detail, setDetail] = useState<ReportInfo | null>(null);
   const { loading, data } = useAsyncEffect(() => getReportList(page, PAGE_SIZE), [page]);
@@ -106,7 +117,9 @@ export function MyReportListPage() {
               {expandedId === report.id && (
                 <div className="rounded-md bg-cream p-3 text-sm text-brown-secondary">
                   {detailLoading ? (
-                    '加载中…'
+                    <span role="status" aria-live="polite">
+                      加载中…
+                    </span>
                   ) : (
                     <>
                       <p>处理结果：{detail?.handleResult || '处理中'}</p>
@@ -131,11 +144,11 @@ export function MyReportListPage() {
             variant="outline"
             size="sm"
             disabled={page <= 1 || loading}
-            onClick={() => setPage((p) => p - 1)}
+            onClick={() => setQuery({ page: page - 1 })}
           >
             上一页
           </Button>
-          <span className="text-sm text-brown-muted">
+          <span className="text-sm text-brown-muted tabular-nums">
             {page} / {maxPage}
           </span>
           <Button
@@ -143,7 +156,7 @@ export function MyReportListPage() {
             variant="outline"
             size="sm"
             disabled={page >= maxPage || loading}
-            onClick={() => setPage((p) => p + 1)}
+            onClick={() => setQuery({ page: page + 1 })}
           >
             下一页
           </Button>

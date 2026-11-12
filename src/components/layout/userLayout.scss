@@ -139,7 +139,7 @@
       gap: 2px;
     }
 
-    // PC 顶栏已有完整主导航；移动端用「更多」补宠物/话题/排行榜（及通知/私信）
+    // PC 顶栏已有完整主导航；移动端用「更多」补宠物/话题/排行榜
     // class 打在 Dropdown Trigger（button）上
     .mobile-nav-more {
       display: none;
@@ -157,6 +157,63 @@
         color: $primary-text;
         background: rgba($primary-color, 0.08);
       }
+
+      svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        stroke: currentColor;
+      }
+    }
+
+    // 搜索 / 通知 / 私信（仅 a；勿命中「更多」Button 上的 action-link）
+    > a.action-link {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: $text-secondary;
+      border-radius: $border-radius-sm;
+      text-decoration: none;
+      transition: color $duration-base ease, background-color $duration-base ease, transform $duration-base ease;
+
+      svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        stroke: currentColor;
+      }
+
+      &:hover {
+        color: $primary-text;
+        background: rgba($primary-color, 0.08);
+        transform: translateY(-1px);
+      }
+
+      &:focus-visible {
+        color: $primary-text;
+        background: rgba($primary-color, 0.08);
+      }
+
+      .nav-unread-badge {
+        position: absolute;
+        top: 2px;
+        right: 0;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        border-radius: 999px;
+        background: $error-color;
+        color: #fff;
+        font-size: $font-size-xs;
+        font-weight: 600;
+        line-height: 16px;
+        text-align: center;
+        pointer-events: none;
+      }
     }
 
     .user-menu {
@@ -166,68 +223,6 @@
 
       @media (max-width: 768px) {
         gap: 2px;
-      }
-
-      .action-link {
-        position: relative;
-        width: auto;
-        min-width: 40px;
-        height: 40px;
-        padding: 0 8px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        color: $text-secondary;
-        border-radius: $border-radius-sm;
-        text-decoration: none;
-        transition: color $duration-base ease, background-color $duration-base ease, transform $duration-base ease;
-
-        .action-link-text {
-          display: none;
-          font-size: $font-size-xs;
-          font-weight: 500;
-          line-height: 1;
-
-          @media (min-width: 1024px) {
-            display: inline;
-          }
-        }
-
-        &:hover {
-          color: $primary-text;
-          background: rgba($primary-color, 0.08);
-          transform: translateY(-1px);
-        }
-
-        &:focus-visible {
-          color: $primary-text;
-          background: rgba($primary-color, 0.08);
-        }
-
-        // 窄屏：搜索保留；通知/私信走底栏「消息」+「更多」
-        &--secondary {
-          @media (max-width: 768px) {
-            display: none;
-          }
-        }
-
-        .nav-unread-badge {
-          position: absolute;
-          top: 2px;
-          right: 0;
-          min-width: 16px;
-          height: 16px;
-          padding: 0 4px;
-          border-radius: 999px;
-          background: $error-color;
-          color: #fff;
-          font-size: $font-size-xs;
-          font-weight: 600;
-          line-height: 16px;
-          text-align: center;
-          pointer-events: none;
-        }
       }
 
       .user-avatar-link {

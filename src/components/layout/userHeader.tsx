@@ -50,22 +50,11 @@ export function UserHeader() {
   const navClass = (path: string) =>
     `nav-item ${isActive(path) ? 'active' : ''}`;
 
-  const mobileMoreItems = [
-    ...USER_MOBILE_MORE_NAV.map((item) => ({ key: item.path, label: item.label })),
-    ...(isLoggedIn
-      ? [
-          {
-            key: '/notifications',
-            label:
-              notificationUnread > 0 ? `通知（${formatCount(notificationUnread)}）` : '通知',
-          },
-          {
-            key: '/messages',
-            label: messageUnread > 0 ? `私信（${formatCount(messageUnread)}）` : '私信',
-          },
-        ]
-      : []),
-  ];
+  // 「更多」仅补主导航外链；通知/私信已在顶栏图标入口（含移动端）
+  const mobileMoreItems = USER_MOBILE_MORE_NAV.map((item) => ({
+    key: item.path,
+    label: item.label,
+  }));
 
   return (
     <header className="user-header">
@@ -109,7 +98,7 @@ export function UserHeader() {
             aria-label="更多导航"
             className="mobile-nav-more"
             trigger={
-              <Button type="button" variant="ghost" className="action-link p-0" aria-label="更多导航">
+              <Button type="button" variant="ghost" className="p-0" aria-label="更多导航">
                 <Menu {...actionIconProps} />
               </Button>
             }
@@ -118,11 +107,10 @@ export function UserHeader() {
           />
           <Link to="/search" className="action-link" aria-label="搜索">
             <Search {...actionIconProps} />
-            <span className="action-link-text">搜索</span>
           </Link>
           <Link
             to="/notifications"
-            className="action-link action-link--secondary"
+            className="action-link"
             aria-label={
               isLoggedIn && notificationUnread > 0
                 ? `通知，${notificationUnread}条未读`
@@ -130,18 +118,16 @@ export function UserHeader() {
             }
           >
             <Bell {...actionIconProps} />
-            <span className="action-link-text">通知</span>
             {isLoggedIn && <UnreadBadge count={notificationUnread} label="未读通知" />}
           </Link>
           <Link
             to="/messages"
-            className="action-link action-link--secondary"
+            className="action-link"
             aria-label={
               isLoggedIn && messageUnread > 0 ? `私信，${messageUnread}条未读` : '私信'
             }
           >
             <MessageCircle {...actionIconProps} />
-            <span className="action-link-text">私信</span>
             {isLoggedIn && <UnreadBadge count={messageUnread} label="未读私信" />}
           </Link>
           {isLoggedIn ? (

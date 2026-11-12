@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { pointsApi } from '../api/social';
 import { useAsyncEffect } from './useAsync';
+import { useAdminTabQuery } from './useAdminTabQuery';
 import { showErrorToast } from '../utils/toastManager';
 import { reportError } from '../utils/errorReport';
 import {
@@ -37,15 +38,18 @@ export type { LevelBenefitView as LevelBenefit, UserLevelView as UserLevel };
 
 export type PointsTab = 'records' | 'rules' | 'benefits';
 
+const POINTS_TABS = ['records', 'rules', 'benefits'] as const;
+
 /**
  * 积分中心 hook
  *
  * 管理:
  * - 用户等级(getUserLevel) → PointsView 适配 BE JSON
  * - 按 tab 加载 records/rules/benefits
+ * - tab 与 URL ?tab= 同步
  */
 export function usePoints(pageSize = 50) {
-  const [activeTab, setActiveTab] = useState<PointsTab>('records');
+  const [activeTab, setActiveTab] = useAdminTabQuery<PointsTab>('records', POINTS_TABS);
   const [records, setRecords] = useState<PointsRecord[]>([]);
   const [rules, setRules] = useState<PointsRule[]>([]);
   const [benefits, setBenefits] = useState<LevelBenefitView[]>([]);

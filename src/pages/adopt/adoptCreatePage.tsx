@@ -33,7 +33,7 @@ export const AdoptCreatePage = () => {
         <div className="page-shell flex items-center justify-between px-4 py-3">
           <h1 className="page-bar-title">发布领养</h1>
           <Button size="sm" disabled={loading} loading={loading} onClick={handleSubmit}>
-            {loading ? '发布中' : '发布'}
+            {loading ? '发布中…' : '发布'}
           </Button>
         </div>
       </div>

@@ -106,7 +106,7 @@ export function BatchReview({ selectedItems, onSuccess, onCancel }: BatchReviewP
           <AdminTextarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="请输入拒绝原因，将统一通知所有用户"
+            placeholder="请输入拒绝原因，将统一通知所有用户…"
             rows={3}
           />
         </div>

@@ -98,7 +98,7 @@ export function AnnouncementForm({ announcement, onClose, onSuccess }: Announcem
             <AdminInput
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="请输入公告标题"
+              placeholder="请输入公告标题…"
               maxLength={200}
             />
           </div>
@@ -124,7 +124,7 @@ export function AnnouncementForm({ announcement, onClose, onSuccess }: Announcem
               type="number"
               value={sortOrder}
               onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
-              placeholder="数字越大越靠前"
+              placeholder="数字越大越靠前…"
               min={0}
             />
           </div>
@@ -146,7 +146,7 @@ export function AnnouncementForm({ announcement, onClose, onSuccess }: Announcem
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={8}
-              placeholder="请输入公告内容"
+              placeholder="请输入公告内容…"
               maxLength={5000}
             />
           </div>

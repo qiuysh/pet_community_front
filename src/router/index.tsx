@@ -253,6 +253,8 @@ const appRoutes: RouteObject[] = [
   { path: '/adopts/create', element: withUser(<AdoptCreatePage />, true) },
 
   { path: '/admin/login', element: bare(<AdminLoginPage />) },
+  // 已登录访问 /admin 落到驾驶舱，避免命中通配 404
+  { path: '/admin', element: <Navigate to="/admin/dashboard" replace /> },
   { path: '/admin/users', element: withAdmin(<AdminUserListPage />) },
   { path: '/admin/front-users', element: withAdmin(<AdminFrontUserPage />) },
   { path: '/admin/users/create', element: withAdmin(<AdminUserFormPage />) },

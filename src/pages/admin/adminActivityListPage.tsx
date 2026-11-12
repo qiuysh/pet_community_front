@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { PawPrint } from 'lucide-react';
 import {
   getAdminActivityList,
@@ -17,8 +17,10 @@ import {
 } from '../../types/activity';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { useAsyncEffect } from '../../hooks/useAsync';
+import { useConfirm } from '../../hooks/useConfirm';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { Pagination } from '../../components/admin/pagination';
-import { AdminButton } from '../../components/admin/adminButton';
+import { adminButtonClass } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
 import { AdminTable } from '../../components/admin/adminTable';
 import { AdminInput, AdminSelect } from '../../components/admin/adminField';
@@ -59,17 +61,34 @@ function typeLabel(type: string) {
   return ActivityTypeOptions.find((o) => o.value === type)?.label || type;
 }
 
+const ACTIVITY_TYPE_VALUES = ['', ...ActivityTypeCreateOptions.map((o) => o.value)] as const;
+const ACTIVITY_STATUS_VALUES = ['', 'draft', 'published', 'active', 'upcoming', 'ended'] as const;
+
+const ACTIVITY_LIST_QUERY = {
+  page: { kind: 'number', default: 1 },
+  keyword: { kind: 'string', default: '' },
+  type: { kind: 'string', default: '', values: ACTIVITY_TYPE_VALUES },
+  status: { kind: 'string', default: '', values: ACTIVITY_STATUS_VALUES },
+} as const;
+
+const PAGE_SIZE = 20;
+
 export function AdminActivityListPage() {
-  const navigate = useNavigate();
+  const { confirm, confirmDialog } = useConfirm();
   const [searchParams] = useSearchParams();
   const focusRegistrations = searchParams.get('focus') === 'registrations';
+  const [query, setQuery] = useSyncedSearchParams(ACTIVITY_LIST_QUERY, {
+    resetPageOn: ['keyword', 'type', 'status'],
+  });
+  const keyword = query.keyword;
+  const typeFilter = query.type;
+  const statusFilter = query.status as '' | ActivityListStatusFilter;
+  const currentPage = query.page;
+  const [keywordInput, setKeywordInput] = useState(keyword);
 
-  const [keywordInput, setKeywordInput] = useState('');
-  const [keyword, setKeyword] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<'' | ActivityListStatusFilter>('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(20);
+  useEffect(() => {
+    setKeywordInput(keyword);
+  }, [keyword]);
 
   const listHook = useAsyncEffect<ListResult>(
     async () => {
@@ -78,11 +97,11 @@ export function AdminActivityListPage() {
         type: (typeFilter as ActivityType) || undefined,
         status: statusFilter || undefined,
         page: currentPage,
-        pageSize,
+        pageSize: PAGE_SIZE,
       });
       return { list: res.list || [], total: res.total || 0 };
     },
-    [keyword, typeFilter, statusFilter, currentPage, pageSize],
+    [keyword, typeFilter, statusFilter, currentPage],
     {
       initialData: { list: [], total: 0 },
       onError: (err) => showErrorToast((err as Error).message || '获取活动列表失败'),
@@ -93,8 +112,7 @@ export function AdminActivityListPage() {
   const total = listHook.data?.total ?? 0;
 
   const handleSearch = () => {
-    setKeyword(keywordInput.trim());
-    setCurrentPage(1);
+    setQuery({ keyword: keywordInput.trim(), page: 1 });
   };
 
   const handlePublish = async (id: number) => {
@@ -108,7 +126,12 @@ export function AdminActivityListPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('确定删除该活动？此操作不可恢复。')) return;
+    const ok = await confirm({
+      title: '删除活动？',
+      description: '此操作不可恢复。',
+      confirmText: '删除',
+    });
+    if (!ok) return;
     try {
       await deleteActivity(id);
       showSuccessToast('已删除');
@@ -128,9 +151,9 @@ export function AdminActivityListPage() {
             : '创建、发布与管理线上及线下活动'
         }
         actions={
-          <AdminButton type="button" variant="secondary" onClick={() => navigate('/admin/activities/create')}>
+          <Link to="/admin/activities/create" className={adminButtonClass({ variant: 'secondary' })}>
             创建活动
-          </AdminButton>
+          </Link>
         }
       />
 
@@ -145,6 +168,8 @@ export function AdminActivityListPage() {
           <AdminFilterField label="关键词" htmlFor="activity-keyword">
             <AdminInput
               id="activity-keyword"
+              name="keyword"
+              autoComplete="off"
               value={keywordInput}
               onChange={(e) => setKeywordInput(e.target.value)}
               placeholder="搜索标题、描述…"
@@ -154,11 +179,9 @@ export function AdminActivityListPage() {
           <AdminFilterField label="类型" htmlFor="activity-type">
             <AdminSelect
               id="activity-type"
+              name="type"
               value={typeFilter}
-              onChange={(e) => {
-                setTypeFilter(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => setQuery({ type: e.target.value as typeof typeFilter, page: 1 })}
             >
               <option value="">全部类型</option>
               {ActivityTypeCreateOptions.map((o) => (
@@ -171,11 +194,14 @@ export function AdminActivityListPage() {
           <AdminFilterField label="状态" htmlFor="activity-status">
             <AdminSelect
               id="activity-status"
+              name="status"
               value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value as '' | ActivityListStatusFilter);
-                setCurrentPage(1);
-              }}
+              onChange={(e) =>
+                setQuery({
+                  status: e.target.value as typeof statusFilter,
+                  page: 1,
+                })
+              }
             >
               {STATUS_FILTERS.map((o) => (
                 <option key={o.value || 'all'} value={o.value}>
@@ -219,7 +245,10 @@ export function AdminActivityListPage() {
                       <AdminChip tone={st.tone}>{st.label}</AdminChip>
                     </AdminTable.Cell>
                     <AdminTable.Cell>
-                      {item.participantsCount}/{item.maxParticipants || '∞'} · {item.submissionsCount} 作品
+                      <span className="tabular-nums">
+                        {item.participantsCount}/{item.maxParticipants || '∞'} · {item.submissionsCount}{' '}
+                        作品
+                      </span>
                     </AdminTable.Cell>
                     <AdminTable.Cell>
                       <div className="text-xs text-brown-muted whitespace-nowrap">
@@ -230,27 +259,24 @@ export function AdminActivityListPage() {
                     </AdminTable.Cell>
                     <AdminTable.Cell>
                       <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
+                        <Link
+                          to={`/admin/activities/${item.id}/edit`}
                           className={adminActionClass()}
-                          onClick={() => navigate(`/admin/activities/${item.id}/edit`)}
                         >
                           编辑
-                        </button>
-                        <button
-                          type="button"
+                        </Link>
+                        <Link
+                          to={`/admin/activities/${item.id}/registrations`}
                           className={adminActionClass()}
-                          onClick={() => navigate(`/admin/activities/${item.id}/registrations`)}
                         >
                           报名
-                        </button>
-                        <button
-                          type="button"
+                        </Link>
+                        <Link
+                          to={`/admin/activities/${item.id}/vote`}
                           className={adminActionClass()}
-                          onClick={() => navigate(`/admin/activities/${item.id}/vote`)}
                         >
                           评选
-                        </button>
+                        </Link>
                         {item.status === ActivityStatus.DRAFT && (
                           <button
                             type="button"
@@ -276,17 +302,18 @@ export function AdminActivityListPage() {
           </AdminTable>
         )}
 
-        {total > pageSize && (
+        {total > PAGE_SIZE && (
           <div className="mt-4 flex justify-end px-2">
             <Pagination
               currentPage={currentPage}
               total={total}
-              pageSize={pageSize}
-              onPageChange={setCurrentPage}
+              pageSize={PAGE_SIZE}
+              onPageChange={(page) => setQuery({ page })}
             />
           </div>
         )}
       </div>
+      {confirmDialog}
     </div>
   );
 }

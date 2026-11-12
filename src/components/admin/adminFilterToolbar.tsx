@@ -51,7 +51,7 @@ export interface AdminFilterFieldProps {
   children: ReactNode;
 }
 
-/** 带关联标签的筛选项（必须 htmlFor ↔ 控件 id） */
+/** 带关联标签的筛选项（必须 htmlFor ↔ 控件 id；勿再塞 aria-label，避免读屏「全部 全部」） */
 export function AdminFilterField({
   label,
   htmlFor,
@@ -60,10 +60,9 @@ export function AdminFilterField({
 }: AdminFilterFieldProps) {
   const enhanced = Children.map(children, (child) => {
     if (!isValidElement(child)) return child;
-    const el = child as ReactElement<{ id?: string; 'aria-label'?: string }>;
+    const el = child as ReactElement<{ id?: string }>;
     return cloneElement(el, {
       id: el.props.id ?? htmlFor,
-      'aria-label': el.props['aria-label'] ?? label,
     });
   });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useBlockedList } from '../../hooks/useBlockedList';
 import { useConfirm } from '../../hooks/useConfirm';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
@@ -28,7 +28,6 @@ function UserListSkeleton() {
 }
 
 const BlockedListPage: React.FC = () => {
-  const navigate = useNavigate();
   const { users, loading, total, page, setPage, handleUnblock } = useBlockedList();
   const { confirm, confirmDialog } = useConfirm();
 
@@ -56,11 +55,7 @@ const BlockedListPage: React.FC = () => {
             const id = user.userId ?? user.id;
             return (
               <div key={id} className="user-item">
-                <button
-                  type="button"
-                  className="user-item-main"
-                  onClick={() => navigate(`/profile/${id}`)}
-                >
+                <Link to={`/profile/${id}`} className="user-item-main">
                   <Avatar
                     className="user-avatar"
                     src={user.avatar || getDefaultUserAvatar()}
@@ -71,7 +66,7 @@ const BlockedListPage: React.FC = () => {
                     <div className="page-section-title user-name">{user.nickname}</div>
                     <div className="user-signature">{user.signature || '暂无签名'}</div>
                   </div>
-                </button>
+                </Link>
                 <Button
                   type="button"
                   size="sm"

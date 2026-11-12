@@ -1,9 +1,10 @@
 /**
  * 后台按钮桥接：社区 Button（HeroUI）+ 青竹 / rounded-sm / 无品牌阴影。
  * 业务页勿直接写原生 <button>，统一走本组件。
+ * 导航型外观给 `<Link>` 用时走 `adminButtonClass`，避免 a 内嵌 button。
  */
 import type { ReactNode, MouseEvent } from 'react';
-import { Button } from '../ui';
+import { Button, buttonClass } from '../ui';
 
 export type AdminButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
 export type AdminButtonSize = 'sm' | 'md' | 'lg';
@@ -21,6 +22,13 @@ export interface AdminButtonProps {
   'aria-label'?: string;
   'aria-expanded'?: boolean | 'true' | 'false';
   form?: string;
+}
+
+export interface AdminButtonClassOptions {
+  variant?: AdminButtonVariant;
+  size?: AdminButtonSize;
+  block?: boolean;
+  className?: string;
 }
 
 /** 映射到社区 Button variant；主操作统一 secondary（青竹） */
@@ -81,5 +89,20 @@ export function AdminButton({
     >
       {children}
     </Button>
+  );
+}
+
+/** 导航型「按钮」样式：供 `<Link>` / `<a>` 复用 AdminButton 视觉 */
+export function adminButtonClass({
+  variant = 'secondary',
+  size = 'md',
+  block = false,
+  className = '',
+}: AdminButtonClassOptions = {}): string {
+  return joinClass(
+    buttonClass({ variant: toUiVariant[variant], size, block }),
+    variantClass[variant],
+    sizeClass[size],
+    className,
   );
 }

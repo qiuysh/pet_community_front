@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '../../components/toast';
 import { useAsyncEffect, useAsync } from '../../hooks/useAsync';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import {
   getActivityDetail,
   updateActivity,
@@ -18,10 +19,11 @@ import {
   AdminSelect,
   AdminTextarea,
 } from '../../components/admin/adminField';
-import { AdminButton } from '../../components/admin/adminButton';
+import { AdminButton, adminButtonClass } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { AdminChip } from '../../components/admin/adminChip';
 import { adminUi } from '../../styles/adminUi';
+import { useConfirm } from '../../hooks/useConfirm';
 import {
   ACTIVITY_DEFAULT_MAX_SUBMISSIONS,
   ACTIVITY_DEFAULT_VOTES_PER_DAY,
@@ -33,12 +35,13 @@ export const ActivityEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const toast = useToast();
+  const { confirm, confirmDialog } = useConfirm();
   const { data: activity } = useAsyncEffect(
     () => getActivityDetail(parseInt(id!, 10)),
     [id],
     {
       onSuccess: (data) => {
-        setFormData({
+        const next = {
           title: data.title,
           description: data.description,
           type: (data.type as ActivityType) || ActivityType.ONLINE_VOTE,
@@ -52,7 +55,9 @@ export const ActivityEditPage = () => {
           rules: data.rules || '',
           prizes: data.prizes || '',
           requireApproval: !!data.requireApproval,
-        });
+        };
+        baselineRef.current = JSON.stringify(next);
+        setFormData(next);
         setStatus(data.status);
       },
       onError: (err: unknown) => {
@@ -80,6 +85,10 @@ export const ActivityEditPage = () => {
     prizes: '',
     requireApproval: false,
   });
+  const baselineRef = useRef<string | null>(null);
+  const isDirty =
+    baselineRef.current !== null && JSON.stringify(formData) !== baselineRef.current;
+  const unsavedDialog = useUnsavedChanges(isDirty && !loading && !deleting && !publishing);
 
   const setField = <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -171,10 +180,13 @@ export const ActivityEditPage = () => {
     );
   };
 
-  const handleDelete = () => {
-    if (!window.confirm('确定要删除这个活动吗？此操作不可恢复。')) {
-      return;
-    }
+  const handleDelete = async () => {
+    const ok = await confirm({
+      title: '删除活动？',
+      description: '此操作不可恢复。',
+      confirmText: '删除',
+    });
+    if (!ok) return;
 
     runDelete(
       () => deleteActivity(parseInt(id!, 10)),
@@ -389,29 +401,29 @@ export const ActivityEditPage = () => {
           />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <AdminButton type="submit" variant="secondary" disabled={loading} loading={loading}>
             {loading ? '保存中…' : '保存修改'}
           </AdminButton>
-          <AdminButton type="button" variant="outline" onClick={() => navigate('/admin/activities')}>
+          <Link to="/admin/activities" className={adminButtonClass({ variant: 'outline' })}>
             返回列表
-          </AdminButton>
-          <AdminButton
-            type="button"
-            variant="outline"
-            onClick={() => navigate(`/admin/activities/${id}/registrations`)}
+          </Link>
+          <Link
+            to={`/admin/activities/${id}/registrations`}
+            className={adminButtonClass({ variant: 'outline' })}
           >
             报名审核
-          </AdminButton>
-          <AdminButton
-            type="button"
-            variant="outline"
-            onClick={() => navigate(`/admin/activities/${id}/vote`)}
+          </Link>
+          <Link
+            to={`/admin/activities/${id}/vote`}
+            className={adminButtonClass({ variant: 'outline' })}
           >
             评选管理
-          </AdminButton>
+          </Link>
         </div>
       </form>
+      {confirmDialog}
+      {unsavedDialog}
     </div>
   );
 };

@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getAdminReports, getAdminReportStats } from '../../api/admin';
 import type { AdminReportInfo, ReportStatsResponse } from '../../types/admin';
+import { formatAdminDateTime } from '../../utils/adminDateTime';
 import { showErrorToast } from '../../utils/toastManager';
 import { ReportHandleAction } from '../../components/admin/reportHandleAction';
 import { BatchReportHandle } from '../../components/admin/batchReportHandle';
 import { ReportStats } from '../../components/admin/reportStats';
 import { Pagination } from '../../components/admin/pagination';
 import { useAsyncEffect } from '../../hooks/useAsync';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { Flag, ClipboardList } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
 import { adminUi } from '../../styles/adminUi';
@@ -39,18 +41,28 @@ const REASON_LABELS: Record<string, string> = {
   other: '其他',
 };
 
+const REPORT_QUERY = {
+  page: { kind: 'number', default: 1 },
+  status: { kind: 'string', default: '0', values: ['all', '0', '1', '2'] as const },
+  reason: { kind: 'string', default: 'all', values: ['all', 'spam', 'adult', 'attack', 'other'] as const },
+  target: { kind: 'string', default: 'all', values: ['all', 'post', 'comment'] as const },
+} as const;
+
+const PAGE_SIZE = 20;
+
 export function AdminReportPage() {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('0');
-  const [reasonFilter, setReasonFilter] = useState<ReasonFilter>('all');
-  const [targetFilter, setTargetFilter] = useState<TargetFilter>('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [query, setQuery] = useSyncedSearchParams(REPORT_QUERY, {
+    resetPageOn: ['status', 'reason', 'target'],
+  });
+  const statusFilter = query.status as StatusFilter;
+  const reasonFilter = query.reason as ReasonFilter;
+  const targetFilter = query.target as TargetFilter;
+  const currentPage = query.page;
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [showBatchModal, setShowBatchModal] = useState(false);
   const [stats, setStats] = useState<ReportStatsResponse | null>(null);
 
   useEffect(() => {
-    setCurrentPage(1);
     setSelectedIds([]);
   }, [statusFilter, reasonFilter, targetFilter]);
 
@@ -61,11 +73,11 @@ export function AdminReportPage() {
         reasonType: reasonFilter === 'all' ? undefined : reasonFilter,
         targetType: targetFilter === 'all' ? undefined : targetFilter,
         page: currentPage,
-        pageSize,
+        pageSize: PAGE_SIZE,
       });
       return { list: res.list || [], total: res.total || 0 };
     },
-    [statusFilter, reasonFilter, targetFilter, currentPage, pageSize],
+    [statusFilter, reasonFilter, targetFilter, currentPage],
     {
       initialData: { list: [], total: 0 },
       onError: (err) => showErrorToast((err as Error).message || '获取举报列表失败'),
@@ -127,7 +139,7 @@ export function AdminReportPage() {
               id="report-status"
               name="status"
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+              onChange={(e) => setQuery({ status: e.target.value as StatusFilter })}
             >
               <option value="0">待处理</option>
               <option value="1">已处理</option>
@@ -140,7 +152,7 @@ export function AdminReportPage() {
               id="report-reason"
               name="reasonType"
               value={reasonFilter}
-              onChange={(e) => setReasonFilter(e.target.value as ReasonFilter)}
+              onChange={(e) => setQuery({ reason: e.target.value as ReasonFilter })}
             >
               <option value="all">全部</option>
               <option value="spam">垃圾信息</option>
@@ -154,7 +166,7 @@ export function AdminReportPage() {
               id="report-target"
               name="targetType"
               value={targetFilter}
-              onChange={(e) => setTargetFilter(e.target.value as TargetFilter)}
+              onChange={(e) => setQuery({ target: e.target.value as TargetFilter })}
             >
               <option value="all">全部</option>
               <option value="post">动态</option>
@@ -165,7 +177,9 @@ export function AdminReportPage() {
 
         {pendingOnly && selectedIds.length > 0 && (
           <div className="mt-3 flex items-center gap-3">
-            <span className="text-sm text-brown-secondary">已选择 {selectedIds.length} 条记录</span>
+            <span className="text-sm text-brown-secondary tabular-nums">
+              已选择 {selectedIds.length} 条记录
+            </span>
             <AdminButton type="button" variant="secondary" onClick={() => setShowBatchModal(true)}>
               批量处理
             </AdminButton>
@@ -242,7 +256,7 @@ export function AdminReportPage() {
                     </AdminChip>
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap text-brown-muted">
-                    {new Date(item.createdAt).toLocaleString()}
+                    {formatAdminDateTime(item.createdAt)}
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap">
                     {item.status === 0 ? (
@@ -263,8 +277,8 @@ export function AdminReportPage() {
       <Pagination
         currentPage={currentPage}
         total={total}
-        pageSize={pageSize}
-        onPageChange={setCurrentPage}
+        pageSize={PAGE_SIZE}
+        onPageChange={(page) => setQuery({ page })}
       />
 
       {showBatchModal && (

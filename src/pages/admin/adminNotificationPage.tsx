@@ -22,9 +22,19 @@ import { AdminTable } from '../../components/admin/adminTable';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
+import { useConfirm } from '../../hooks/useConfirm';
 
 type TabType = 'notification' | 'announcement';
 const NOTIFICATION_TABS = ['notification', 'announcement'] as const;
+
+const NOTIFY_ADMIN_QUERY = {
+  page: { kind: 'number', default: 1 },
+  type: { kind: 'string', default: '0' },
+  status: { kind: 'string', default: '-1' },
+} as const;
+
+const PAGE_SIZE = 20;
 
 const notificationTypes = [
   { value: 0, label: '全部类型' },
@@ -59,20 +69,21 @@ const targetTypes = [
 ];
 
 export function AdminNotificationPage() {
+  const { confirm, confirmDialog } = useConfirm();
   const [activeTab, setActiveTab] = useAdminTabQuery<TabType>('notification', NOTIFICATION_TABS);
-  
+  const [query, setQuery] = useSyncedSearchParams(NOTIFY_ADMIN_QUERY, {
+    resetPageOn: ['type', 'status'],
+  });
+  const currentPage = query.page;
+  const typeFilter = Number(query.type);
+  const statusFilter = Number(query.status);
+
   const [notifications, setNotifications] = useState<SystemNotification[]>([]);
   const [notificationTotal, setNotificationTotal] = useState(0);
-  const [notificationPage, setNotificationPage] = useState(1);
-  const [notificationTypeFilter, setNotificationTypeFilter] = useState(0);
-  const [notificationStatusFilter, setNotificationStatusFilter] = useState(-1);
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
 
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [announcementTotal, setAnnouncementTotal] = useState(0);
-  const [announcementPage, setAnnouncementPage] = useState(1);
-  const [announcementTypeFilter, setAnnouncementTypeFilter] = useState(0);
-  const [announcementStatusFilter, setAnnouncementStatusFilter] = useState(-1);
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
 
   const [showNotificationForm, setShowNotificationForm] = useState(false);
@@ -87,10 +98,10 @@ export function AdminNotificationPage() {
     setIsLoadingNotifications(true);
     try {
       const result = await getNotifications({
-        type: notificationTypeFilter || undefined,
-        status: notificationStatusFilter >= 0 ? notificationStatusFilter : undefined,
-        page: notificationPage,
-        limit: 20,
+        type: typeFilter || undefined,
+        status: statusFilter >= 0 ? statusFilter : undefined,
+        page: currentPage,
+        limit: PAGE_SIZE,
       });
       setNotifications(result.list);
       setNotificationTotal(result.total);
@@ -99,16 +110,16 @@ export function AdminNotificationPage() {
     } finally {
       setIsLoadingNotifications(false);
     }
-  }, [notificationTypeFilter, notificationStatusFilter, notificationPage]);
+  }, [typeFilter, statusFilter, currentPage]);
 
   const loadAnnouncements = useCallback(async () => {
     setIsLoadingAnnouncements(true);
     try {
       const result = await getAnnouncements({
-        type: announcementTypeFilter || undefined,
-        status: announcementStatusFilter >= 0 ? announcementStatusFilter : undefined,
-        page: announcementPage,
-        limit: 20,
+        type: typeFilter || undefined,
+        status: statusFilter >= 0 ? statusFilter : undefined,
+        page: currentPage,
+        limit: PAGE_SIZE,
       });
       setAnnouncements(result.list);
       setAnnouncementTotal(result.total);
@@ -117,7 +128,7 @@ export function AdminNotificationPage() {
     } finally {
       setIsLoadingAnnouncements(false);
     }
-  }, [announcementTypeFilter, announcementStatusFilter, announcementPage]);
+  }, [typeFilter, statusFilter, currentPage]);
 
   useEffect(() => {
     if (activeTab === 'notification') {
@@ -128,7 +139,12 @@ export function AdminNotificationPage() {
   }, [activeTab, loadNotifications, loadAnnouncements]);
 
   const handleDeleteNotification = async (id: number) => {
-    if (!window.confirm('确定要删除这条通知吗？')) return;
+    const ok = await confirm({
+      title: '删除通知？',
+      description: '删除后不可恢复。',
+      confirmText: '删除',
+    });
+    if (!ok) return;
     try {
       await deleteNotification(id);
       showSuccessToast('删除成功');
@@ -159,7 +175,12 @@ export function AdminNotificationPage() {
   };
 
   const handleDeleteAnnouncement = async (id: number) => {
-    if (!window.confirm('确定要删除这条公告吗？')) return;
+    const ok = await confirm({
+      title: '删除公告？',
+      description: '删除后不可恢复。',
+      confirmText: '删除',
+    });
+    if (!ok) return;
     try {
       await deleteAnnouncement(id);
       showSuccessToast('删除成功');
@@ -271,11 +292,8 @@ export function AdminNotificationPage() {
                 <AdminSelect
                   id="notification-type"
                   name="notificationType"
-                  value={notificationTypeFilter}
-                  onChange={(e) => {
-                    setNotificationTypeFilter(parseInt(e.target.value, 10));
-                    setNotificationPage(1);
-                  }}
+                  value={typeFilter}
+                  onChange={(e) => setQuery({ type: e.target.value })}
                 >
                   {notificationTypes.map((item) => (
                     <option key={item.value} value={item.value}>
@@ -288,11 +306,8 @@ export function AdminNotificationPage() {
                 <AdminSelect
                   id="notification-status"
                   name="notificationStatus"
-                  value={notificationStatusFilter}
-                  onChange={(e) => {
-                    setNotificationStatusFilter(parseInt(e.target.value, 10));
-                    setNotificationPage(1);
-                  }}
+                  value={statusFilter}
+                  onChange={(e) => setQuery({ status: e.target.value })}
                 >
                   {notificationStatus.map((item) => (
                     <option key={item.value} value={item.value}>
@@ -308,11 +323,8 @@ export function AdminNotificationPage() {
                 <AdminSelect
                   id="announcement-type"
                   name="announcementType"
-                  value={announcementTypeFilter}
-                  onChange={(e) => {
-                    setAnnouncementTypeFilter(parseInt(e.target.value, 10));
-                    setAnnouncementPage(1);
-                  }}
+                  value={typeFilter}
+                  onChange={(e) => setQuery({ type: e.target.value })}
                 >
                   {announcementTypes.map((item) => (
                     <option key={item.value} value={item.value}>
@@ -325,11 +337,8 @@ export function AdminNotificationPage() {
                 <AdminSelect
                   id="announcement-status"
                   name="announcementStatus"
-                  value={announcementStatusFilter}
-                  onChange={(e) => {
-                    setAnnouncementStatusFilter(parseInt(e.target.value, 10));
-                    setAnnouncementPage(1);
-                  }}
+                  value={statusFilter}
+                  onChange={(e) => setQuery({ status: e.target.value })}
                 >
                   {announcementStatus.map((item) => (
                     <option key={item.value} value={item.value}>
@@ -438,10 +447,10 @@ export function AdminNotificationPage() {
           </div>
 
           <Pagination
-            currentPage={notificationPage}
+            currentPage={currentPage}
             total={notificationTotal}
-            pageSize={20}
-            onPageChange={setNotificationPage}
+            pageSize={PAGE_SIZE}
+            onPageChange={(page) => setQuery({ page })}
           />
         </>
       )}
@@ -544,10 +553,10 @@ export function AdminNotificationPage() {
           </div>
 
           <Pagination
-            currentPage={announcementPage}
+            currentPage={currentPage}
             total={announcementTotal}
-            pageSize={20}
-            onPageChange={setAnnouncementPage}
+            pageSize={PAGE_SIZE}
+            onPageChange={(page) => setQuery({ page })}
           />
         </>
       )}
@@ -582,6 +591,7 @@ export function AdminNotificationPage() {
           onSuccess={loadAnnouncements}
         />
       )}
+      {confirmDialog}
     </div>
   );
 }

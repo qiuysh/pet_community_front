@@ -143,7 +143,7 @@ export function LocationPicker({ open, onClose, value, onChange }: LocationPicke
           <Input
             value={manual}
             onChange={(e) => setManual(e.target.value)}
-            placeholder="例如：滨江宠物公园"
+            placeholder="例如：滨江宠物公园…"
             maxLength={100}
             aria-label="手输地名"
           />
@@ -155,7 +155,7 @@ export function LocationPicker({ open, onClose, value, onChange }: LocationPicke
             <Input
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              placeholder="关键词"
+              placeholder="关键词…"
               aria-label="搜索地点关键词"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {

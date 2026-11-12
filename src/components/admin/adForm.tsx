@@ -117,7 +117,7 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={50}
-              placeholder="请输入广告标题"
+              placeholder="请输入广告标题…"
             />
           </div>
 
@@ -151,13 +151,15 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
             type="url"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="请输入广告图片URL"
+            placeholder="请输入广告图片URL…"
           />
           {imageUrl && (
             <div className="mt-3">
               <img
                 src={imageUrl}
                 alt="广告预览"
+                width={320}
+                height={128}
                 className="max-w-xs max-h-32 object-contain rounded-md border border-border"
               />
             </div>
@@ -170,7 +172,7 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
             type="url"
             value={linkUrl}
             onChange={(e) => setLinkUrl(e.target.value)}
-            placeholder="请输入跳转链接URL（可选）"
+            placeholder="请输入跳转链接URL（可选）…"
           />
         </div>
 

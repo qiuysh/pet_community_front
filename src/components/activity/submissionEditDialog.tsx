@@ -71,7 +71,7 @@ export const SubmissionEditDialog = ({
             value={title}
             maxLength={ACTIVITY_SUBMISSION_TITLE_MAX}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="给作品起个名字"
+            placeholder="给作品起个名字…"
           />
         </div>
         <div>
@@ -82,7 +82,7 @@ export const SubmissionEditDialog = ({
             rows={4}
             maxLength={ACTIVITY_SUBMISSION_DESCRIPTION_MAX}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="介绍一下你的作品"
+            placeholder="介绍一下你的作品…"
           />
         </div>
         <p className="text-xs text-brown-muted">图片与视频需撤回后重新投稿，不支持在此修改。</p>

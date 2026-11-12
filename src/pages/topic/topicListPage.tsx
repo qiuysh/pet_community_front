@@ -64,7 +64,7 @@ export const TopicListPage = () => {
           <Input
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="搜索话题"
+            placeholder="搜索话题…"
             aria-label="搜索话题"
             onKeyDown={(e) => e.key === 'Enter' && search()}
           />
@@ -112,7 +112,14 @@ export const TopicListPage = () => {
             <Card hoverable padding="none" className="topic-card">
               <div className="topic-cover">
                 {topic.cover ? (
-                  <img src={topic.cover} alt="" decoding="async" />
+                  <img
+                    src={topic.cover}
+                    alt=""
+                    width={400}
+                    height={200}
+                    loading="lazy"
+                    decoding="async"
+                  />
                 ) : (
                   <div className="cover-placeholder" aria-hidden="true">
                     <Hash size={ICON_SIZE.feature} strokeWidth={iconStroke(ICON_SIZE.feature)} />

@@ -8,11 +8,12 @@ import { Heart, MessageCircle, Share2, UserPlus, UserCheck } from 'lucide-react'
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { Avatar } from '../../components/ui/avatar';
 import { BackButton } from '../../components/ui/backButton';
-import { Button } from '../../components/ui/button';
+import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Pagination } from '../../components/ui/pagination';
 import { Skeleton } from '../../components/ui/skeleton';
+import { formatRelativeTime } from '../../utils/format';
 import './topicDetailPage.scss';
 
 export const TopicDetailPage = () => {
@@ -62,9 +63,9 @@ export const TopicDetailPage = () => {
         </div>
         <EmptyState title="话题不存在或已下架" description="回话题库看看其他话题吧" />
         <div className="mt-4 flex justify-center">
-          <Button type="button" variant="outline" onClick={() => navigate('/topics')}>
+          <Link to="/topics" className={buttonClass({ variant: 'outline' })}>
             去话题库
-          </Button>
+          </Link>
         </div>
       </div>
     );
@@ -80,7 +81,13 @@ export const TopicDetailPage = () => {
       <Card padding="none" className="topic-info-card">
         <div className="topic-cover">
           {topic.cover ? (
-            <img src={topic.cover} alt={topic.name} decoding="async" />
+            <img
+              src={topic.cover}
+              alt={topic.name}
+              width={800}
+              height={320}
+              decoding="async"
+            />
           ) : (
             <div className="cover-placeholder">#</div>
           )}
@@ -89,8 +96,8 @@ export const TopicDetailPage = () => {
           <h2 className="page-content-title topic-name">{topic.name}</h2>
           <p className="topic-desc">{topic.description || '暂无描述'}</p>
           <div className="topic-stats">
-            <span>{topic.postsCount} 条动态</span>
-            <span>{topic.participantsCount} 人参与</span>
+            <span className="tabular-nums">{topic.postsCount} 条动态</span>
+            <span className="tabular-nums">{topic.participantsCount} 人参与</span>
           </div>
           <div className="topic-actions flex flex-wrap gap-2 mt-3">
             <Button
@@ -166,7 +173,7 @@ export const TopicDetailPage = () => {
                 <Avatar src={post.userAvatar || getDefaultUserAvatar()} name={post.userNickname} className="avatar" />
                 <div className="user-info">
                   <div className="page-section-title nickname">{post.userNickname}</div>
-                  <div className="time">{post.createdAt}</div>
+                  <div className="time">{formatRelativeTime(post.createdAt)}</div>
                 </div>
               </div>
               {post.content && <div className="post-content">{post.content}</div>}
@@ -174,7 +181,14 @@ export const TopicDetailPage = () => {
                 <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                   {post.images.slice(0, 9).map((img, idx) => (
                     <div key={idx} className="post-image">
-                      <img src={img} alt="" decoding="async" />
+                      <img
+                        src={img}
+                        alt=""
+                        width={400}
+                        height={400}
+                        loading="lazy"
+                        decoding="async"
+                      />
                     </div>
                   ))}
                 </div>

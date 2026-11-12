@@ -111,7 +111,7 @@ export function NotificationForm({ notification, onClose, onSuccess }: Notificat
             <AdminInput
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="请输入通知标题"
+              placeholder="请输入通知标题…"
               maxLength={100}
             />
           </div>
@@ -147,7 +147,7 @@ export function NotificationForm({ notification, onClose, onSuccess }: Notificat
               <AdminInput
                 value={targetIds}
                 onChange={(e) => setTargetIds(e.target.value)}
-                placeholder="如: 1,2,3 或 1 2 3"
+                placeholder="如: 1,2,3 或 1 2 3…"
               />
             </div>
           )}
@@ -164,7 +164,7 @@ export function NotificationForm({ notification, onClose, onSuccess }: Notificat
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={6}
-              placeholder="请输入通知内容"
+              placeholder="请输入通知内容…"
               maxLength={5000}
             />
           </div>

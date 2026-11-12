@@ -11,6 +11,10 @@ export function dayOverDayChange(today: number, yesterday: number): {
     }
     return { change: '+100%', changeType: 'up' };
   }
+  // 今日为 0 时不展示刺眼的 -100%，避免零数据日噪声
+  if (today <= 0) {
+    return { change: '—', changeType: 'flat' };
+  }
   const rate = ((today - yesterday) / yesterday) * 100;
   const rounded = Math.round(rate * 10) / 10;
   if (rounded === 0) {

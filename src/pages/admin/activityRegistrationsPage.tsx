@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PawPrint } from 'lucide-react';
 import { getActivityDetail, getRegistrationList, reviewRegistration } from '../../api/activity';
 import {
@@ -9,8 +8,10 @@ import {
 } from '../../types/activity';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { useAsyncEffect } from '../../hooks/useAsync';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
+import { useConfirm } from '../../hooks/useConfirm';
 import { Pagination } from '../../components/admin/pagination';
-import { AdminButton } from '../../components/admin/adminButton';
+import { adminButtonClass } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
 import { AdminTable } from '../../components/admin/adminTable';
 import { AdminSelect } from '../../components/admin/adminField';
@@ -32,13 +33,32 @@ function statusLabel(status: number) {
   return RegistrationStatusOptions.find((o) => o.value === status)?.label || String(status);
 }
 
+const REG_STATUS_VALUES = [
+  '-1',
+  ...RegistrationStatusOptions.map((o) => String(o.value)),
+] as const;
+
+const REGISTRATION_QUERY = {
+  page: { kind: 'number', default: 1 },
+  status: {
+    kind: 'string',
+    default: String(RegistrationStatus.PENDING),
+    values: REG_STATUS_VALUES,
+  },
+} as const;
+
+const PAGE_SIZE = 20;
+
 export function ActivityRegistrationsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { confirm, confirmDialog } = useConfirm();
   const activityId = parseInt(id || '0', 10);
-  const [statusFilter, setStatusFilter] = useState<number>(RegistrationStatus.PENDING);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [query, setQuery] = useSyncedSearchParams(REGISTRATION_QUERY, {
+    resetPageOn: ['status'],
+  });
+  const statusFilter = Number(query.status);
+  const currentPage = query.page;
 
   const activityHook = useAsyncEffect(
     () => getActivityDetail(activityId),
@@ -56,13 +76,13 @@ export function ActivityRegistrationsPage() {
       if (!activityId) return { list: [], total: 0 };
       const res = await getRegistrationList({
         activityId,
-        status: statusFilter,
+        status: statusFilter < 0 ? undefined : statusFilter,
         page: currentPage,
-        pageSize,
+        pageSize: PAGE_SIZE,
       });
       return { list: res.list || [], total: res.total || 0 };
     },
-    [activityId, statusFilter, currentPage, pageSize],
+    [activityId, statusFilter, currentPage],
     {
       initialData: { list: [], total: 0 },
       onError: (err) => showErrorToast((err as Error).message || '获取报名列表失败'),
@@ -73,6 +93,14 @@ export function ActivityRegistrationsPage() {
   const total = listHook.data?.total ?? 0;
 
   const handleReview = async (registrationId: number, approve: boolean) => {
+    if (!approve) {
+      const ok = await confirm({
+        title: '拒绝报名？',
+        description: '拒绝后申请人将收到通知，可稍后重新提交。',
+        confirmText: '拒绝',
+      });
+      if (!ok) return;
+    }
     try {
       await reviewRegistration(registrationId, approve);
       showSuccessToast(approve ? '已通过' : '已拒绝');
@@ -88,9 +116,9 @@ export function ActivityRegistrationsPage() {
         title="报名审核"
         description={activityHook.data ? `活动：${activityHook.data.title}` : '加载中…'}
         actions={
-          <AdminButton type="button" variant="outline" onClick={() => navigate('/admin/activities')}>
+          <Link to="/admin/activities" className={adminButtonClass({ variant: 'outline' })}>
             返回列表
-          </AdminButton>
+          </Link>
         }
       />
 
@@ -99,11 +127,9 @@ export function ActivityRegistrationsPage() {
           <AdminFilterField label="状态" htmlFor="reg-status">
             <AdminSelect
               id="reg-status"
+              name="status"
               value={String(statusFilter)}
-              onChange={(e) => {
-                setStatusFilter(Number(e.target.value));
-                setCurrentPage(1);
-              }}
+              onChange={(e) => setQuery({ status: e.target.value, page: 1 })}
             >
               <option value={-1}>全部</option>
               {RegistrationStatusOptions.map((o) => (
@@ -141,7 +167,13 @@ export function ActivityRegistrationsPage() {
                   <AdminTable.Cell>
                     <div className="flex items-center gap-2">
                       {item.userAvatar ? (
-                        <img src={item.userAvatar} alt="" className="h-8 w-8 rounded-full object-cover" />
+                        <img
+                          src={item.userAvatar}
+                          alt=""
+                          width={32}
+                          height={32}
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
                       ) : null}
                       <span>{item.userNickname || `用户#${item.userId}`}</span>
                     </div>
@@ -189,17 +221,18 @@ export function ActivityRegistrationsPage() {
           </AdminTable>
         )}
 
-        {total > pageSize && (
+        {total > PAGE_SIZE && (
           <div className="mt-4 flex justify-end px-2">
             <Pagination
               currentPage={currentPage}
               total={total}
-              pageSize={pageSize}
-              onPageChange={setCurrentPage}
+              pageSize={PAGE_SIZE}
+              onPageChange={(page) => setQuery({ page })}
             />
           </div>
         )}
       </div>
+      {confirmDialog}
     </div>
   );
 }

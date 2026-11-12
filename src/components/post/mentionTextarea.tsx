@@ -190,7 +190,7 @@ export function MentionTextarea({
         className={[
           'w-full resize-none rounded-sm border border-border bg-white px-3 py-2 text-sm text-brown',
           'placeholder:text-brown-muted shadow-none',
-          'focus:border-primary-text focus:outline-none focus:ring-2 focus:ring-primary/20',
+          'focus-visible:border-primary-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20',
           className,
         ]
           .filter(Boolean)

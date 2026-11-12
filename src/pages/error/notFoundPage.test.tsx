@@ -1,21 +1,7 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { NotFoundPage } from './notFoundPage';
-
-vi.mock('../../components/ui/button', () => ({
-  Button: ({
-    children,
-    onClick,
-  }: {
-    children: React.ReactNode;
-    onClick?: () => void;
-  }) => (
-    <button type="button" onClick={onClick}>
-      {children}
-    </button>
-  ),
-}));
 
 describe('NotFoundPage', () => {
   beforeEach(() => {
@@ -31,8 +17,8 @@ describe('NotFoundPage', () => {
 
     expect(screen.getByRole('heading', { name: '页面走丢了' })).toBeInTheDocument();
     expect(screen.getByText('404')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '返回首页' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '去发现' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '返回首页' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: '去发现' })).toHaveAttribute('href', '/discover');
     expect(document.title).toContain('页面不存在');
   });
 });

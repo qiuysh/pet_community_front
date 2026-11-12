@@ -2,6 +2,7 @@ import React from 'react';
 import { Coins, Minus, Plus, Star } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { usePoints } from '../../hooks/usePoints';
+import { formatRelativeTime } from '../../utils/format';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { PageHeader } from '../../components/ui/pageHeader';
@@ -37,13 +38,13 @@ const PointsPage: React.FC = () => {
             </div>
           </div>
           <div className="points-info">
-            <div className="points-value">{userLevel.currentPoints}</div>
+            <div className="points-value tabular-nums">{userLevel.currentPoints}</div>
             <div className="points-label">积分</div>
           </div>
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${getProgress()}%` }} />
           </div>
-          <div className="progress-text">
+          <div className="progress-text tabular-nums">
             {userLevel.currentPoints} / {userLevel.maxPoints}
           </div>
         </Card>
@@ -103,7 +104,7 @@ const PointsPage: React.FC = () => {
                   </div>
                   <div className="record-info">
                     <div className="record-desc">{record.description}</div>
-                    <div className="record-time">{record.createdAt}</div>
+                    <div className="record-time">{formatRelativeTime(record.createdAt)}</div>
                   </div>
                   <div className={`record-points ${record.points > 0 ? 'gain' : 'lose'}`}>
                     {record.points > 0 ? '+' : ''}{record.points}

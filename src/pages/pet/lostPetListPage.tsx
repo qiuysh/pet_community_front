@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 import { Lock, MapPin } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { getLostPetList } from '../../api/pet';
 import { useAsyncEffect } from '../../hooks/useAsync';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { useUserStore } from '../../stores/userStore';
 import { LostPetInfo } from '../../types/pet';
 import { LOST_PET_STATUS, LOST_PET_STATUS_LABEL } from '../../utils/lostPetShare';
@@ -14,6 +14,12 @@ import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Spinner } from '../../components/ui/spinner';
+
+const LOST_PET_QUERY = {
+  page: { kind: 'number', default: 1 },
+} as const;
+
+const PAGE_SIZE = 10;
 
 function statusChipClass(status: number): string {
   switch (status) {
@@ -29,11 +35,12 @@ function statusChipClass(status: number): string {
 }
 
 export function LostPetListPage() {
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useSyncedSearchParams(LOST_PET_QUERY);
+  const page = query.page;
   const { isLoggedIn } = useUserStore();
 
   const { loading, data } = useAsyncEffect(
-    () => getLostPetList({ page, pageSize: 10 }),
+    () => getLostPetList({ page, pageSize: PAGE_SIZE }),
     [page],
     { onError: () => showErrorToast('获取寻宠列表失败') },
   );
@@ -121,14 +128,14 @@ export function LostPetListPage() {
           ))
         )}
 
-        {total > page * 10 && (
+        {total > page * PAGE_SIZE && (
           <div className="text-center">
             <Button
               type="button"
               variant="ghost"
               size="sm"
               className="text-primary-text"
-              onClick={() => setPage((p) => p + 1)}
+              onClick={() => setQuery({ page: page + 1 })}
             >
               加载更多
             </Button>

@@ -118,7 +118,7 @@ export function ReportHandleAction({ report, onSuccess }: ReportHandleActionProp
         <AdminTextarea
           value={result}
           onChange={(e) => setResult(e.target.value)}
-          placeholder="填写处理说明，将通知举报人"
+          placeholder="填写处理说明，将通知举报人…"
           rows={3}
           maxLength={200}
         />

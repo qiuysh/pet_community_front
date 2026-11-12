@@ -36,9 +36,13 @@ export function ChatSearchBar({
         onKeyDown={(event) => {
           if (event.key === 'Escape') onClose();
         }}
-        placeholder="搜索聊天记录"
+        placeholder="搜索聊天记录…"
         maxLength={50}
-        autoFocus
+        // 仅精细指针设备自动聚焦，避免移动端弹出键盘打断布局
+        autoFocus={
+          typeof window !== 'undefined' &&
+          window.matchMedia('(pointer: fine)').matches
+        }
         aria-label="搜索聊天记录"
       />
       <Button

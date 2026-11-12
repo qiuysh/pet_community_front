@@ -178,7 +178,7 @@ export function ActivityRatings({
             onChange={(e) => setComment(e.target.value)}
             maxLength={ACTIVITY_RATING_COMMENT_MAX}
             rows={2}
-            placeholder="一句话说说这次活动（选填）"
+            placeholder="一句话说说这次活动（选填）…"
             aria-label="评价内容"
           />
           <div className="flex gap-2">

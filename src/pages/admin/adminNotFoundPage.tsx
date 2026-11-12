@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FileQuestion } from 'lucide-react';
-import { AdminButton } from '../../components/admin/adminButton';
+import { AdminButton, adminButtonClass } from '../../components/admin/adminButton';
 import { adminUi } from '../../styles/adminUi';
 import { adminDocumentTitle } from '../../utils/documentTitle';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
@@ -28,16 +28,16 @@ export function AdminNotFoundPage() {
           <FileQuestion size={ICON_SIZE.empty} strokeWidth={iconStroke(ICON_SIZE.empty)} />
         </div>
         <p className="text-[length:var(--font-size-2xl)] font-semibold tabular-nums text-secondary">404</p>
-        <h1 id="admin-not-found-title" className={`${adminUi.pageTitle} mt-3`}>
+        <h1 id="admin-not-found-title" className={`${adminUi.pageTitle} mt-3 text-balance`}>
           页面不存在
         </h1>
         <p className="mt-2 max-w-md text-sm text-brown-muted">
           该管理页地址无效，或功能入口已调整。请从侧栏重新进入，或返回驾驶舱。
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <AdminButton type="button" variant="secondary" onClick={() => navigate('/admin/dashboard')}>
+          <Link to="/admin/dashboard" className={adminButtonClass({ variant: 'secondary' })}>
             返回驾驶舱
-          </AdminButton>
+          </Link>
           <AdminButton type="button" variant="outline" onClick={() => navigate(-1)}>
             返回上一页
           </AdminButton>

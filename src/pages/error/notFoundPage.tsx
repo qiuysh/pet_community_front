@@ -1,13 +1,11 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { PawPrint } from 'lucide-react';
-import { Button } from '../../components/ui/button';
+import { buttonClass } from '../../components/ui/button';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
 /** 前台 404：适配移动端（底栏安全区由 UserLayout 负责） */
 export function NotFoundPage() {
-  const navigate = useNavigate();
-
   useEffect(() => {
     document.title = '页面不存在 · 宠物社区';
   }, []);
@@ -30,7 +28,7 @@ export function NotFoundPage() {
       </div>
 
       <p className="text-[length:var(--font-size-2xl)] font-semibold leading-none tracking-tight text-primary-text sm:text-[2.5rem]">404</p>
-      <h1 id="not-found-title" className="page-content-title mt-3 sm:mt-4">
+      <h1 id="not-found-title" className="page-content-title mt-3 text-balance sm:mt-4">
         页面走丢了
       </h1>
       <p className="mt-2 max-w-[18rem] text-sm leading-relaxed text-brown-muted sm:max-w-sm sm:text-base">
@@ -38,23 +36,25 @@ export function NotFoundPage() {
       </p>
 
       <div className="mt-8 flex w-full max-w-xs flex-col gap-3 sm:mt-10 sm:max-w-md sm:flex-row sm:justify-center">
-        <Button
-          type="button"
-          block
-          className="min-h-11 rounded-xl sm:min-w-[9rem] sm:!w-auto"
-          onClick={() => navigate('/')}
+        <Link
+          to="/"
+          className={buttonClass({
+            block: true,
+            className: 'min-h-11 rounded-xl sm:min-w-[9rem] sm:!w-auto',
+          })}
         >
           返回首页
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          block
-          className="min-h-11 rounded-xl sm:min-w-[9rem] sm:!w-auto"
-          onClick={() => navigate('/discover')}
+        </Link>
+        <Link
+          to="/discover"
+          className={buttonClass({
+            variant: 'outline',
+            block: true,
+            className: 'min-h-11 rounded-xl sm:min-w-[9rem] sm:!w-auto',
+          })}
         >
           去发现
-        </Button>
+        </Link>
       </div>
     </div>
   );

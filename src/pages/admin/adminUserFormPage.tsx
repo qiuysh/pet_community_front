@@ -24,7 +24,7 @@ function normalizeAdminRole(role: string): AdminRole {
   return 'content_admin';
 }
 import { AdminHint, AdminInput, AdminLabel, AdminSelect } from '../../components/admin/adminField';
-import { AdminButton } from '../../components/admin/adminButton';
+import { AdminButton, adminButtonClass } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { adminUi } from '../../styles/adminUi';
 
@@ -382,13 +382,9 @@ export function AdminUserFormPage() {
             )}
 
             <div className="flex justify-end gap-3 pt-4">
-              <AdminButton
-                type="button"
-                variant="outline"
-                onClick={() => navigate('/admin/users')}
-              >
+              <Link to="/admin/users" className={adminButtonClass({ variant: 'outline' })}>
                 取消
-              </AdminButton>
+              </Link>
               <AdminButton
                 type="submit"
                 variant="secondary"

@@ -113,7 +113,7 @@ export function UserBanAction({ userId, userName, isBanned, onSuccess }: UserBan
                                     <AdminTextarea
                                         value={reason}
                                         onChange={(e) => setReason(e.target.value)}
-                                        placeholder="请输入封禁原因，该原因将记录到操作日志中"
+                                        placeholder="请输入封禁原因，该原因将记录到操作日志中…"
                                         rows={3}
                                         invalid={!!error && !reason.trim()}
                                     />

@@ -1,28 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAsyncEffect } from './useAsync';
+import { useSyncedSearchParams } from './useSyncedSearchParams';
 import { useToast } from '../components/toast';
 import { getTopicList } from '../api/post';
 import { TopicInfo } from '../types/post';
+
+const TOPIC_LIST_QUERY = {
+  page: { kind: 'number', default: 1 },
+  keyword: { kind: 'string', default: '' },
+} as const;
 
 /**
  * 话题列表 hook
  *
  * 封装话题列表的关键词搜索 + 分页加载。
- * 注意:keyword 改变不会自动触发请求(需手动 search),避免每次输入都打 API。
- *
- * 用法:
- *   const { topics, loading, total, totalPages, keyword, setKeyword, page, setPage, search } = useTopicList();
+ * keyword/page 与 URL 同步；输入框改动需点搜索才写入 URL 并请求。
  */
 export function useTopicList(defaultPageSize = 20) {
   const toast = useToast();
-  const [keyword, setKeyword] = useState('');
-  const [page, setPage] = useState(1);
-  // 用于在 search() 触发时强制更新依赖
+  const [query, setQuery] = useSyncedSearchParams(TOPIC_LIST_QUERY, {
+    resetPageOn: ['keyword'],
+  });
+  const keyword = query.keyword;
+  const page = query.page;
+  const [keywordInput, setKeywordInput] = useState(keyword);
   const [searchTick, setSearchTick] = useState(0);
+
+  useEffect(() => {
+    setKeywordInput(keyword);
+  }, [keyword]);
 
   const { loading, data } = useAsyncEffect(
     () => getTopicList(keyword, page, defaultPageSize),
-    [page, searchTick],
+    [page, keyword, searchTick, defaultPageSize],
     { onError: () => toast.error('加载话题失败') },
   );
 
@@ -30,8 +40,17 @@ export function useTopicList(defaultPageSize = 20) {
   const total: number = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / defaultPageSize));
 
+  const setKeyword = (value: string) => {
+    setKeywordInput(value);
+  };
+
+  const setPage = (next: number | ((prev: number) => number)) => {
+    const target = typeof next === 'function' ? next(page) : next;
+    setQuery({ page: Math.max(1, target) });
+  };
+
   const search = () => {
-    setPage(1);
+    setQuery({ keyword: keywordInput.trim(), page: 1 });
     setSearchTick((t) => t + 1);
   };
 
@@ -40,7 +59,7 @@ export function useTopicList(defaultPageSize = 20) {
     loading,
     total,
     totalPages,
-    keyword,
+    keyword: keywordInput,
     setKeyword,
     page,
     setPage,

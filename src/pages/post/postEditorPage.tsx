@@ -167,7 +167,7 @@ export const PostEditorPage = () => {
           className="content-input !border-0 !px-0 !shadow-none focus:!ring-0"
           value={state.content}
           onChange={setContent}
-          placeholder="分享你家萌宠的精彩瞬间吧～ 输入 @ 可提及用户"
+          placeholder="分享你家萌宠的精彩瞬间吧… 输入 @ 可提及用户"
           maxLength={500}
           rows={6}
           aria-label="动态正文"
@@ -304,7 +304,7 @@ export const PostEditorPage = () => {
             <div className="topic-picker">
               <Input
                 type="text"
-                placeholder="搜索话题"
+                placeholder="搜索话题…"
                 value={topicKeyword}
                 onChange={(e) => setTopicKeyword(e.target.value)}
                 aria-label="搜索话题"
@@ -425,15 +425,15 @@ export const PostEditorPage = () => {
         <Button type="button" variant="outline" className="draft-btn" onClick={handleSaveDraft} disabled={loading}>
           存草稿
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="draft-btn"
-          onClick={() => navigate('/posts/drafts')}
-          disabled={loading}
-        >
-          草稿箱
-        </Button>
+        {loading ? (
+          <Button type="button" variant="outline" className="draft-btn" disabled>
+            草稿箱
+          </Button>
+        ) : (
+          <Link to="/posts/drafts" className={buttonClass({ variant: 'outline', className: 'draft-btn' })}>
+            草稿箱
+          </Link>
+        )}
       </div>
 
       <LocationPicker

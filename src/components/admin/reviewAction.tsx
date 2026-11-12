@@ -91,7 +91,7 @@ export function ReviewAction({ content, onSuccess }: ReviewActionProps) {
         <AdminTextarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          placeholder="请输入拒绝原因，将通知用户"
+          placeholder="请输入拒绝原因，将通知用户…"
           rows={4}
         />
       </Modal>

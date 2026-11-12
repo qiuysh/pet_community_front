@@ -1,10 +1,10 @@
 import { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { usePetForm } from '../../hooks/usePetForm';
 import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { PetTypeOptions, GenderOptions, PetVisibilityOptions, getPetTypeIcon } from '../../types/pet';
-import { Button } from '../../components/ui/button';
+import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Checkbox } from '../../components/ui/checkbox';
 import { FieldError, FieldLabel, Input, Select, Textarea } from '../../components/ui/input';
@@ -13,7 +13,6 @@ import { Radio, RadioGroup } from '../../components/ui/radio';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 
 export function PetFormPage() {
-  const navigate = useNavigate();
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const {
     isEdit,
@@ -104,7 +103,7 @@ export function PetFormPage() {
                       className={[
                         'flex w-full aspect-square flex-col items-center justify-center gap-2',
                         'm-0 cursor-pointer appearance-none px-2 py-3 font-inherit',
-                        'rounded-lg border-2 transition-all',
+                        'rounded-lg border-2 transition-[border-color,background-color,box-shadow,color]',
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-text/40 focus-visible:ring-offset-2',
                         selected
                           ? 'border-primary-text bg-primary-soft text-primary-text shadow-card'
@@ -206,7 +205,7 @@ export function PetFormPage() {
                   max="200"
                   value={formData.weight || ''}
                   onChange={(e) => updateField('weight', parseFloat(e.target.value) || 0)}
-                  placeholder="0.0"
+                  placeholder="0.0…"
                   invalid={!!errors.weight}
                   aria-describedby={errors.weight ? 'pet-weight-error' : undefined}
                 />
@@ -278,14 +277,12 @@ export function PetFormPage() {
             </div>
 
             <div className="flex gap-4 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1"
-                onClick={() => navigate('/pets')}
+              <Link
+                to="/pets"
+                className={buttonClass({ variant: 'outline', className: 'flex-1 text-center' })}
               >
                 取消
-              </Button>
+              </Link>
               <Button type="submit" className="flex-1" disabled={loading} loading={loading}>
                 {loading ? '保存中' : isEdit ? '保存修改' : '创建档案'}
               </Button>

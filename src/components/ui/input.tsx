@@ -54,7 +54,7 @@ function parseSelectOptions(children: ReactNode): ParsedOption[] {
 const controlExtra =
   'h-10 min-h-10 rounded-sm border border-border bg-white text-sm text-brown ' +
   'placeholder:text-brown-muted shadow-none ' +
-  'focus:border-primary-text focus:ring-2 focus:ring-primary/20';
+  'focus-visible:border-primary-text focus-visible:ring-2 focus-visible:ring-primary/20';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   invalid?: boolean;
@@ -210,7 +210,7 @@ export function Select({
         <HeroSelect.Indicator className="shrink-0 text-brown-muted" />
       </HeroSelect.Trigger>
       <HeroSelect.Popover className="rounded-sm border border-border-light bg-white shadow-hover z-50">
-        <ListBox className="max-h-60 overflow-auto p-1 outline-none">
+        <ListBox className="max-h-60 overflow-auto p-1 outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
           {options.map((opt) => {
             const itemId = opt.value === '' ? EMPTY_OPTION_ID : opt.value;
             return (
@@ -220,7 +220,7 @@ export function Select({
                 textValue={opt.textValue || ' '}
                 isDisabled={opt.disabled}
                 className={joinClass(
-                  'cursor-pointer rounded-sm px-3 py-2 text-sm text-brown-secondary outline-none data-[focused=true]:bg-soft',
+                  'cursor-pointer rounded-sm px-3 py-2 text-sm text-brown-secondary outline-none data-[focused=true]:bg-soft data-[focused=true]:ring-2 data-[focused=true]:ring-primary/20',
                   selectItemSelected[tone],
                 )}
               >

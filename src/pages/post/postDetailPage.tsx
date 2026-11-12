@@ -236,7 +236,7 @@ export const PostDetailPage = () => {
           title: post.content,
           coverUrl: post.images?.[0],
           authorName: post.userNickname,
-          authorAvatar: post.userAvatar || getDefaultUserAvatar(post.userNickname),
+          authorAvatar: post.userAvatar || getDefaultUserAvatar(),
         }}
       />
 
@@ -434,7 +434,7 @@ export const PostDetailPage = () => {
         <Textarea
           value={reportReason}
           onChange={(e) => setReportReason(e.target.value)}
-          placeholder="请补充描述（选填）"
+          placeholder="请补充描述（选填）…"
           rows={3}
         />
       </Modal>

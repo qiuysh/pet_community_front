@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getPendingReviews, getReviewHistory } from '../../api/admin';
+import { formatAdminDateTime } from '../../utils/adminDateTime';
 import type { ReviewContent, ReviewHistory } from '../../types/admin';
 import { showErrorToast } from '../../utils/toastManager';
 import { ReviewPreview } from '../../components/admin/reviewPreview';
@@ -9,6 +10,7 @@ import { BatchReview } from '../../components/admin/batchReview';
 import { Pagination } from '../../components/admin/pagination';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { PawPrint, ClipboardList } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
 import { adminUi } from '../../styles/adminUi';
@@ -25,6 +27,17 @@ type FilterType = 'all' | 'post' | 'comment' | 'topic';
 
 const REVIEW_TABS = ['pending', 'history'] as const;
 
+const REVIEW_FILTER_QUERY = {
+  page: { kind: 'number', default: 1 },
+  type: {
+    kind: 'string',
+    default: 'all',
+    values: ['all', 'post', 'comment', 'topic'] as const,
+  },
+} as const;
+
+const PAGE_SIZE = 20;
+
 interface ListResult<T> {
   list: T[];
   total: number;
@@ -32,16 +45,17 @@ interface ListResult<T> {
 
 export function AdminReviewPage() {
   const [activeTab, setActiveTab] = useAdminTabQuery<TabType>('pending', REVIEW_TABS);
-  const [filterType, setFilterType] = useState<FilterType>('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [query, setQuery] = useSyncedSearchParams(REVIEW_FILTER_QUERY, {
+    resetPageOn: ['type'],
+  });
+  const filterType = query.type as FilterType;
+  const currentPage = query.page;
   const [selectedItems, setSelectedItems] = useState<ReviewContent[]>([]);
   const [previewContent, setPreviewContent] = useState<ReviewContent | null>(null);
   const [showBatchModal, setShowBatchModal] = useState(false);
 
-  // tab/filter 切换时重置分页与选中
+  // tab/filter 切换时清空选中
   useEffect(() => {
-    setCurrentPage(1);
     setSelectedItems([]);
   }, [activeTab, filterType]);
 
@@ -52,11 +66,11 @@ export function AdminReviewPage() {
       const res = await getPendingReviews({
         type: filterType === 'all' ? undefined : filterType,
         page: currentPage,
-        pageSize,
+        pageSize: PAGE_SIZE,
       });
       return { list: res.list || [], total: res.total || 0 };
     },
-    [activeTab, currentPage, filterType, pageSize],
+    [activeTab, currentPage, filterType],
     {
       initialData: { list: [], total: 0 },
       onError: (err) => showErrorToast((err as Error).message || '获取待审核列表失败'),
@@ -70,11 +84,11 @@ export function AdminReviewPage() {
       const res = await getReviewHistory({
         type: filterType === 'all' ? undefined : filterType,
         page: currentPage,
-        pageSize,
+        pageSize: PAGE_SIZE,
       });
       return { list: res.list || [], total: res.total || 0 };
     },
-    [activeTab, currentPage, filterType, pageSize],
+    [activeTab, currentPage, filterType],
     {
       initialData: { list: [], total: 0 },
       onError: (err) => showErrorToast((err as Error).message || '获取审核历史失败'),
@@ -87,11 +101,11 @@ export function AdminReviewPage() {
   const loading = activeTab === 'pending' ? pendingHook.loading : historyHook.loading;
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setQuery({ page });
   };
 
   const handleFilterChange = (type: FilterType) => {
-    setFilterType(type);
+    setQuery({ type, page: 1 });
   };
 
   const handleSelectAll = () => {
@@ -234,7 +248,7 @@ export function AdminReviewPage() {
                 <AdminTable.Row key={`${item.type}-${item.id}`} id={`${item.type}-${item.id}`}>
                   <AdminTable.Cell>
                     <AdminCheckbox
-                      aria-label={`选择${item.type === 'post' ? '帖子' : '评论'} #${item.id}`}
+                      aria-label={`选择${item.type === 'post' ? '帖子' : item.type === 'topic' ? '话题' : '评论'} #${item.id}`}
                       checked={selectedItems.some((i) => i.id === item.id && i.type === item.type)}
                       onChange={() => handleSelectItem(item)}
                     />
@@ -265,7 +279,7 @@ export function AdminReviewPage() {
                     {item.username}
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap text-brown-muted">
-                    {new Date(item.createdAt).toLocaleString()}
+                    {formatAdminDateTime(item.createdAt)}
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap">
                     <div className="flex items-center gap-2">
@@ -324,7 +338,7 @@ export function AdminReviewPage() {
                     <AdminChip tone={getActionTone(item.action)}>{getActionLabel(item.action)}</AdminChip>
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap text-brown-muted">
-                    {new Date(item.createdAt).toLocaleString()}
+                    {formatAdminDateTime(item.createdAt)}
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap">
                     <div className="max-w-xs truncate text-brown-muted" title={item.reason}>
@@ -341,7 +355,7 @@ export function AdminReviewPage() {
       <Pagination
         currentPage={currentPage}
         total={total}
-        pageSize={pageSize}
+        pageSize={PAGE_SIZE}
         onPageChange={handlePageChange}
       />
 

@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useProfileSettings } from '../../hooks/useProfileSettings';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
+import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
 import { SettingsIcon } from '../../components/settings/settingsIcons';
 import { BrandSocialIcon, type BrandSocialPlatform } from '../../components/icons/brandSocialIcons';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
@@ -14,9 +15,10 @@ import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import './profileSettingsPage.scss';
 
 type TabType = 'profile' | 'password' | 'privacy' | 'devices' | 'bindings';
+const SETTINGS_TABS = ['profile', 'password', 'privacy', 'devices', 'bindings'] as const;
 
 export function ProfileSettingsPage() {
-  const [activeTab, setActiveTab] = useState<TabType>('profile');
+  const [activeTab, setActiveTab] = useAdminTabQuery<TabType>('profile', SETTINGS_TABS);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const {
     loading,
@@ -262,7 +264,7 @@ export function ProfileSettingsPage() {
                   </div>
 
                   <Button block className="mt-4" disabled={loading} loading={loading} onClick={handleUpdateProfile}>
-                    {loading ? '保存中' : '保存修改'}
+                    {loading ? '保存中…' : '保存修改'}
                   </Button>
                 </div>
               )}
@@ -324,7 +326,7 @@ export function ProfileSettingsPage() {
                     <FieldError id="ps-confirm-password-error">{fieldErrors.confirmPassword}</FieldError>
                   </div>
                   <Button block className="mt-4" disabled={loading} loading={loading} onClick={handleChangePassword}>
-                    {loading ? '修改中' : '确认修改'}
+                    {loading ? '修改中…' : '确认修改'}
                   </Button>
                 </div>
               )}
@@ -394,7 +396,7 @@ export function ProfileSettingsPage() {
                     </RadioGroup>
                   </div>
                   <Button block className="mt-4" disabled={loading} loading={loading} onClick={handleSavePrivacy}>
-                    {loading ? '保存中' : '保存隐私设置'}
+                    {loading ? '保存中…' : '保存隐私设置'}
                   </Button>
                 </div>
               )}

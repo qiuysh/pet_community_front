@@ -10,6 +10,22 @@ export function normalizeAdminRole(role: string | undefined | null): AdminRoleKe
   return 'service';
 }
 
+/** 后台角色中文名（顶栏 / 账号列表共用） */
+export function adminRoleLabel(role: string | undefined | null): string {
+  switch (normalizeAdminRole(role)) {
+    case 'super_admin':
+      return '超级管理员';
+    case 'content_admin':
+      return '内容管理员';
+    case 'data_admin':
+      return '数据管理员';
+    case 'service':
+      return '客服';
+    default:
+      return '管理员';
+  }
+}
+
 /** 从 JWT payload 读取 role（仅用于菜单展示，鉴权仍以后端为准） */
 export function readRoleFromAdminToken(token: string | null | undefined): string | null {
   if (!token) return null;

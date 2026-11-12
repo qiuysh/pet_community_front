@@ -17,6 +17,14 @@ describe('dayOverDayChange', () => {
   it('持平', () => {
     expect(dayOverDayChange(10, 10)).toEqual({ change: '0%', changeType: 'flat' });
   });
+
+  it('今日为 0 且昨日有值 → 显示 —', () => {
+    expect(dayOverDayChange(0, 5)).toEqual({ change: '—', changeType: 'flat' });
+  });
+
+  it('今日昨日均为 0 → 0%', () => {
+    expect(dayOverDayChange(0, 0)).toEqual({ change: '0%', changeType: 'flat' });
+  });
 });
 
 describe('formatCount', () => {

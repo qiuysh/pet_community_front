@@ -16,6 +16,12 @@ const sizeClass = {
   lg: 'size-14',
 } as const;
 
+const sizePx = {
+  sm: 32,
+  md: 40,
+  lg: 56,
+} as const;
+
 function initials(name?: string) {
   if (!name) return '?';
   return name.trim().slice(0, 1).toUpperCase();
@@ -31,7 +37,14 @@ export function Avatar({
 }: AvatarProps) {
   return (
     <HeroAvatar className={[sizeClass[size], 'rounded-full shrink-0', className].join(' ')}>
-      {src ? <HeroAvatar.Image src={src} alt={alt || name || ''} /> : null}
+      {src ? (
+        <HeroAvatar.Image
+          src={src}
+          alt={alt || name || ''}
+          // 传给底层 <img>，减少头像 CLS
+          {...({ width: sizePx[size], height: sizePx[size] } as Record<string, number>)}
+        />
+      ) : null}
       <HeroAvatar.Fallback className="bg-primary-soft text-primary-text text-sm font-medium">
         {fallback ?? initials(name || alt)}
       </HeroAvatar.Fallback>

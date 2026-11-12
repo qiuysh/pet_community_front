@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ImagePlus } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useToast } from '../../components/toast';
 import { useAsync } from '../../hooks/useAsync';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { createActivity, publishActivity } from '../../api/activity';
 import { ActivityType, ActivityTypeCreateOptions } from '../../types/activity';
 import { toRFC3339 } from '../../utils/activityDateTime';
@@ -15,7 +16,7 @@ import {
   AdminSelect,
   AdminTextarea,
 } from '../../components/admin/adminField';
-import { AdminButton } from '../../components/admin/adminButton';
+import { AdminButton, adminButtonClass } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { adminUi } from '../../styles/adminUi';
 import {
@@ -25,26 +26,33 @@ import {
   ACTIVITY_TITLE_MAX,
 } from '../../constants/activity';
 
+const INITIAL_FORM = {
+  title: '',
+  description: '',
+  type: ActivityType.ONLINE_VOTE,
+  cover: '',
+  banner: '',
+  startTime: '',
+  endTime: '',
+  maxParticipants: '',
+  maxSubmissions: String(ACTIVITY_DEFAULT_MAX_SUBMISSIONS),
+  votesPerDay: String(ACTIVITY_DEFAULT_VOTES_PER_DAY),
+  rules: '',
+  prizes: '',
+  requireApproval: false,
+  publishNow: false,
+};
+
 export const ActivityCreatePage = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { loading, run } = useAsync();
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    type: ActivityType.ONLINE_VOTE,
-    cover: '',
-    banner: '',
-    startTime: '',
-    endTime: '',
-    maxParticipants: '',
-    maxSubmissions: String(ACTIVITY_DEFAULT_MAX_SUBMISSIONS),
-    votesPerDay: String(ACTIVITY_DEFAULT_VOTES_PER_DAY),
-    rules: '',
-    prizes: '',
-    requireApproval: false,
-    publishNow: false,
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM);
+  const isDirty = useMemo(
+    () => JSON.stringify(formData) !== JSON.stringify(INITIAL_FORM),
+    [formData],
+  );
+  const unsavedDialog = useUnsavedChanges(isDirty && !loading);
 
   const setField = <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -342,11 +350,12 @@ export const ActivityCreatePage = () => {
           <AdminButton type="submit" variant="secondary" disabled={loading} loading={loading}>
             {loading ? '提交中…' : '创建活动'}
           </AdminButton>
-          <AdminButton type="button" variant="outline" onClick={() => navigate('/admin/activities')}>
+          <Link to="/admin/activities" className={adminButtonClass({ variant: 'outline' })}>
             取消
-          </AdminButton>
+          </Link>
         </div>
       </form>
+      {unsavedDialog}
     </div>
   );
 };

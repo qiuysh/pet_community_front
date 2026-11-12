@@ -61,6 +61,17 @@ describe('UserHeader 导航覆盖', () => {
     ]);
   });
 
+  it('顶栏始终提供搜索、通知、私信入口（含移动端）', () => {
+    render(
+      <MemoryRouter>
+        <UserHeader />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('link', { name: '搜索' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '通知' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '私信' })).toBeInTheDocument();
+  });
+
   it('PC 主导航含寻宠', () => {
     expect(USER_HEADER_NAV.some((i) => i.path === '/lost-pets' && i.label === '寻宠')).toBe(true);
   });

@@ -68,7 +68,7 @@ export function BatchReportHandle({ selectedIds, onSuccess, onCancel }: BatchRep
             <AdminTextarea
               value={result}
               onChange={(e) => setResult(e.target.value)}
-              placeholder="统一处理说明"
+              placeholder="统一处理说明…"
               rows={3}
               maxLength={200}
             />

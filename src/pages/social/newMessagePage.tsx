@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Send, MessageCircle, UserCircle } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useFollows } from '../../hooks/useFollows';
 import { useStartConversation } from '../../hooks/useStartConversation';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { Avatar } from '../../components/ui/avatar';
-import { Button } from '../../components/ui/button';
+import { Button, buttonClass } from '../../components/ui/button';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Textarea } from '../../components/ui/input';
@@ -26,7 +26,6 @@ import './newMessagePage.scss';
  *   2. 无 userId 进入: 拉取关注列表,让用户选择目标后再输入消息
  */
 const NewMessagePage: React.FC = () => {
-  const navigate = useNavigate();
   const [params] = useSearchParams();
   const initialUserId = params.get('userId');
   const initialNickname = params.get('nickname') ?? '对方';
@@ -70,9 +69,9 @@ const NewMessagePage: React.FC = () => {
               icon={<UserCircle size={ICON_SIZE.empty} strokeWidth={1.5} />}
               title="暂未关注任何用户"
               action={
-                <Button type="button" onClick={() => navigate('/search')}>
+                <Link to="/search" className={buttonClass()}>
                   去发现宠友
-                </Button>
+                </Link>
               }
             />
           ) : (

@@ -9,6 +9,7 @@ import { LogExport } from '../../components/admin/logExport';
 import { Pagination } from '../../components/admin/pagination';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
 import { AdminTable } from '../../components/admin/adminTable';
 import { AdminTabs } from '../../components/admin/adminTabs';
@@ -17,6 +18,17 @@ import { adminUi } from '../../styles/adminUi';
 
 type LogType = 'behavior' | 'security' | 'operation';
 const LOG_TABS = ['behavior', 'security', 'operation'] as const;
+
+const LOG_QUERY = {
+    page: { kind: 'number', default: 1 },
+    userId: { kind: 'string', default: '' },
+    action: { kind: 'string', default: '' },
+    target: { kind: 'string', default: '' },
+    start: { kind: 'string', default: '' },
+    end: { kind: 'string', default: '' },
+} as const;
+
+const PAGE_SIZE = 20;
 
 const ACTION_TYPE_LABELS: Record<string, string> = {
     login: '登录',
@@ -52,13 +64,15 @@ const TARGET_TYPE_LABELS: Record<string, string> = {
 
 export function AdminLogsPage() {
     const [logType, setLogType] = useAdminTabQuery<LogType>('behavior', LOG_TABS);
-    const [userId, setUserId] = useState('');
-    const [actionType, setActionType] = useState('');
-    const [targetType, setTargetType] = useState('');
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize] = useState(20);
+    const [query, setQuery] = useSyncedSearchParams(LOG_QUERY, {
+        resetPageOn: ['userId', 'action', 'target', 'start', 'end'],
+    });
+    const userId = query.userId;
+    const actionType = query.action;
+    const targetType = query.target;
+    const startTime = query.start;
+    const endTime = query.end;
+    const currentPage = query.page;
     const [behaviorLogs, setBehaviorLogs] = useState<UserBehaviorLog[]>([]);
     const [operationLogs, setOperationLogs] = useState<AdminOperationLog[]>([]);
     const [total, setTotal] = useState(0);
@@ -73,7 +87,7 @@ export function AdminLogsPage() {
                     startTime: startTime || undefined,
                     endTime: endTime || undefined,
                     page: currentPage,
-                    limit: pageSize,
+                    limit: PAGE_SIZE,
                 });
                 setBehaviorLogs(res.list || []);
                 setTotal(res.total || 0);
@@ -83,7 +97,7 @@ export function AdminLogsPage() {
                     startTime: startTime || undefined,
                     endTime: endTime || undefined,
                     page: currentPage,
-                    limit: pageSize,
+                    limit: PAGE_SIZE,
                 });
                 setBehaviorLogs(res.list || []);
                 setTotal(res.total || 0);
@@ -93,46 +107,37 @@ export function AdminLogsPage() {
                     startTime: startTime || undefined,
                     endTime: endTime || undefined,
                     page: currentPage,
-                    limit: pageSize,
+                    limit: PAGE_SIZE,
                 });
                 setOperationLogs(res.list || []);
                 setTotal(res.total || 0);
             }
         },
-        [logType, currentPage, userId, actionType, targetType, startTime, endTime, pageSize],
+        [logType, currentPage, userId, actionType, targetType, startTime, endTime],
         { onError: (err) => showErrorToast((err as Error).message || '获取日志失败') },
     );
 
-    const resetToFirstPage = () => {
-        setCurrentPage(1);
-    };
-
     const handleUserIdChange = (value: string) => {
-        setUserId(value);
-        resetToFirstPage();
+        setQuery({ userId: value });
     };
 
     const handleActionTypeChange = (value: string) => {
-        setActionType(value);
-        resetToFirstPage();
+        setQuery({ action: value });
     };
 
     const handleTargetTypeChange = (value: string) => {
-        setTargetType(value);
-        resetToFirstPage();
+        setQuery({ target: value });
     };
 
     const handleStartTimeChange = (value: string) => {
-        setStartTime(value);
-        resetToFirstPage();
+        setQuery({ start: value });
     };
 
     const handleEndTimeChange = (value: string) => {
-        setEndTime(value);
-        resetToFirstPage();
+        setQuery({ end: value });
     };
 
-    const totalPages = Math.ceil(total / pageSize);
+    const totalPages = Math.ceil(total / PAGE_SIZE);
 
     const getActionTone = (action: string): AdminChipTone => {
         if (action.includes('create') || action.includes('add')) return 'success';
@@ -145,7 +150,7 @@ export function AdminLogsPage() {
     };
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+        setQuery({ page });
     };
 
     const getCurrentLogs = () => {
@@ -195,10 +200,7 @@ export function AdminLogsPage() {
                             { key: 'operation', label: '操作日志' },
                         ]}
                         selectedKey={logType}
-                        onSelectionChange={(key) => {
-                            setLogType(key as LogType);
-                            setCurrentPage(1);
-                        }}
+                        onSelectionChange={(key) => setLogType(key as LogType)}
                     />
                 }
                 actions={
@@ -297,7 +299,7 @@ export function AdminLogsPage() {
                 <Pagination
                     currentPage={currentPage}
                     total={total}
-                    pageSize={pageSize}
+                    pageSize={PAGE_SIZE}
                     onPageChange={handlePageChange}
                 />
             )}

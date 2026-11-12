@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { AdPosition, Advertisement } from '../../types/advertisement';
 import { AdLocationMap, AdStatusMap, AdStatusColorMap } from '../../types/advertisement';
+import { formatAdminDateTime } from '../../utils/adminDateTime';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { AdForm } from '../../components/admin/adForm';
 import { AdStats } from '../../components/admin/adStats';
@@ -15,6 +16,9 @@ import {
     reviewAd,
 } from '../../api/admin';
 import { useAsyncEffect } from '../../hooks/useAsync';
+import { useConfirm } from '../../hooks/useConfirm';
+import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { PawPrint, ClipboardList, Eye, Pointer } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
 import { AdminButton } from '../../components/admin/adminButton';
@@ -23,10 +27,17 @@ import { AdminInput, AdminLabel, AdminSelect } from '../../components/admin/admi
 import { AdminTabs } from '../../components/admin/adminTabs';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
-import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
 
 type TabType = 'positions' | 'ads' | 'stats';
 const AD_TABS = ['positions', 'ads', 'stats'] as const;
+
+const AD_QUERY = {
+    page: { kind: 'number', default: 1 },
+    status: { kind: 'string', default: '-1' },
+    position: { kind: 'number', default: 0 },
+} as const;
+
+const PAGE_SIZE = 20;
 
 interface PositionsResult {
     list: AdPosition[];
@@ -38,11 +49,14 @@ interface AdsResult {
 }
 
 export function AdminAdPage() {
+    const { confirm, confirmDialog } = useConfirm();
     const [activeTab, setActiveTab] = useAdminTabQuery<TabType>('ads', AD_TABS);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize] = useState(20);
-    const [adStatusFilter, setAdStatusFilter] = useState(-1);
-    const [positionFilter, setPositionFilter] = useState<number>(0);
+    const [query, setQuery] = useSyncedSearchParams(AD_QUERY, {
+        resetPageOn: ['status', 'position'],
+    });
+    const currentPage = query.page;
+    const adStatusFilter = Number(query.status);
+    const positionFilter = query.position;
     const [showAdForm, setShowAdForm] = useState(false);
     const [editingAd, setEditingAd] = useState<Advertisement | null>(null);
     const [showPositionModal, setShowPositionModal] = useState(false);
@@ -72,7 +86,7 @@ export function AdminAdPage() {
             if (activeTab !== 'ads') return { list: [], total: 0 };
             const params: { positionId?: number; status?: number; page?: number; page_size?: number } = {
                 page: currentPage,
-                page_size: pageSize,
+                page_size: PAGE_SIZE,
             };
             if (positionFilter > 0) params.positionId = positionFilter;
             if (adStatusFilter >= 0) params.status = adStatusFilter;
@@ -80,7 +94,7 @@ export function AdminAdPage() {
             const res = await getAdList(params);
             return { list: res.list, total: res.total };
         },
-        [activeTab, currentPage, pageSize, positionFilter, adStatusFilter],
+        [activeTab, currentPage, positionFilter, adStatusFilter],
         {
             initialData: { list: [], total: 0 },
             onError: (err) => showErrorToast((err as Error).message || '获取广告列表失败'),
@@ -93,7 +107,7 @@ export function AdminAdPage() {
     const loading = activeTab === 'positions' ? positionsHook.loading : (activeTab === 'ads' ? adsHook.loading : false);
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+        setQuery({ page });
     };
 
     const handleCreateAd = () => {
@@ -107,7 +121,12 @@ export function AdminAdPage() {
     };
 
     const handleDeleteAd = async (id: number) => {
-        if (!confirm('确定要删除这条广告吗？')) return;
+        const ok = await confirm({
+            title: '删除广告？',
+            description: '删除后不可恢复。',
+            confirmText: '删除',
+        });
+        if (!ok) return;
         try {
             await deleteAd(id);
             showSuccessToast('删除成功');
@@ -191,7 +210,12 @@ export function AdminAdPage() {
     };
 
     const handleDeletePosition = async (id: number) => {
-        if (!confirm('确定要删除这个广告位吗？')) return;
+        const ok = await confirm({
+            title: '删除广告位？',
+            description: '删除后不可恢复。',
+            confirmText: '删除',
+        });
+        if (!ok) return;
         try {
             await deleteAdPosition(id);
             showSuccessToast('删除成功');
@@ -244,10 +268,7 @@ export function AdminAdPage() {
                             { key: 'stats', label: '统计' },
                         ]}
                         selectedKey={activeTab}
-                        onSelectionChange={(key) => {
-                            setActiveTab(key as TabType);
-                            if (key !== 'stats') setCurrentPage(1);
-                        }}
+                        onSelectionChange={(key) => setActiveTab(key as TabType)}
                     />
                 }
                 actions={
@@ -272,8 +293,7 @@ export function AdminAdPage() {
                                 name="positionId"
                                 value={positionFilter ? String(positionFilter) : ''}
                                 onChange={(e) => {
-                                    setPositionFilter(Number(e.target.value) || 0);
-                                    setCurrentPage(1);
+                                    setQuery({ position: Number(e.target.value) || 0 });
                                 }}
                             >
                                 <option value="">全部广告位</option>
@@ -288,8 +308,7 @@ export function AdminAdPage() {
                                 name="adStatus"
                                 value={String(adStatusFilter)}
                                 onChange={(e) => {
-                                    setAdStatusFilter(Number(e.target.value));
-                                    setCurrentPage(1);
+                                    setQuery({ status: e.target.value });
                                 }}
                             >
                                 <option value={-1}>全部状态</option>
@@ -317,7 +336,7 @@ export function AdminAdPage() {
                                         value={positionName}
                                         onChange={(e) => setPositionName(e.target.value)}
                                         maxLength={50}
-                                        placeholder="请输入广告位名称"
+                                        placeholder="请输入广告位名称…"
                                     />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -339,7 +358,7 @@ export function AdminAdPage() {
                                             value={positionSize}
                                             onChange={(e) => setPositionSize(e.target.value)}
                                             maxLength={20}
-                                            placeholder="如: 750x300"
+                                            placeholder="如: 750x300…"
                                         />
                                     </div>
                                 </div>
@@ -417,7 +436,7 @@ export function AdminAdPage() {
                                                         </span>
                                                     </AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap text-brown-muted">
-                                                        {new Date(position.createdAt).toLocaleString()}
+                                                        {formatAdminDateTime(position.createdAt)}
                                                     </AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">
                                                         <div className={adminUi.actions}>
@@ -575,7 +594,7 @@ export function AdminAdPage() {
                             <Pagination
                                 currentPage={currentPage}
                                 total={total}
-                                pageSize={pageSize}
+                                pageSize={PAGE_SIZE}
                                 onPageChange={handlePageChange}
                             />
                         </>
@@ -588,6 +607,7 @@ export function AdminAdPage() {
                     <AdStats />
                 </div>
             )}
+            {confirmDialog}
         </div>
     );
 }

@@ -17,6 +17,7 @@ import {
 import { getPostList } from '../api/post';
 import { useUserStore } from '../stores/userStore';
 import { useAsync, useAsyncEffect } from './useAsync';
+import { useAdminTabQuery } from './useAdminTabQuery';
 import { showErrorToast, showSuccessToast } from '../utils/toastManager';
 import {
   PetInfo,
@@ -28,6 +29,8 @@ import type { PostInfo } from '../types/post';
 import { reportError } from '../utils/errorReport';
 
 export type PetDetailTab = 'album' | 'growth' | 'posts';
+
+const PET_DETAIL_TABS = ['album', 'growth', 'posts'] as const;
 
 const MAX_ALBUM_BATCH = 9;
 const MAX_ALBUM_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -57,7 +60,7 @@ function readVideoDuration(file: File): Promise<number> {
  */
 export function usePetDetail() {
   const { id } = useParams<{ id: string }>();
-  const [activeTab, setActiveTab] = useState<PetDetailTab>('album');
+  const [activeTab, setActiveTab] = useAdminTabQuery<PetDetailTab>('album', PET_DETAIL_TABS);
   const { user } = useUserStore();
   const { loading: mutating, run } = useAsync();
   const [uploading, setUploading] = useState(false);

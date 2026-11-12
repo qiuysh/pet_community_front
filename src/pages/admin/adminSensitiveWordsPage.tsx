@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Pagination } from '../../components/admin/pagination';
 import { AdminInput, AdminLabel } from '../../components/admin/adminField';
 import { useAdminSettings } from '../../hooks/useAdminSettings';
+import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { AddSensitiveWordRequest, UpdateSensitiveWordRequest } from '../../types/admin';
 import { AlertTriangle, Pencil, Plus, PawPrint, Search } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
@@ -11,11 +12,18 @@ import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip'
 import { AdminTable } from '../../components/admin/adminTable';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 
+const SENSITIVE_QUERY = {
+  page: { kind: 'number', default: 1 },
+  keyword: { kind: 'string', default: '' },
+} as const;
+
+const PAGE_SIZE = 20;
+
 export function AdminSensitiveWordsPage() {
-  const [keywordInput, setKeywordInput] = useState('');
-  const [keyword, setKeyword] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(20);
+  const [query, setQuery] = useSyncedSearchParams(SENSITIVE_QUERY, { resetPageOn: ['keyword'] });
+  const keyword = query.keyword;
+  const currentPage = query.page;
+  const [keywordInput, setKeywordInput] = useState(keyword);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingWord, setEditingWord] = useState<{ id: number; word: string; replaceWith: string; category: string } | null>(null);
@@ -45,13 +53,16 @@ export function AdminSensitiveWordsPage() {
   } = useAdminSettings();
 
   useEffect(() => {
-    fetchSensitiveWords(keyword, currentPage, pageSize);
+    setKeywordInput(keyword);
+  }, [keyword]);
+
+  useEffect(() => {
+    fetchSensitiveWords(keyword, currentPage, PAGE_SIZE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword, currentPage]);
 
   const handleKeywordSearch = () => {
-    setKeyword(keywordInput);
-    setCurrentPage(1);
+    setQuery({ keyword: keywordInput.trim(), page: 1 });
   };
 
   const handleAdd = async () => {
@@ -105,7 +116,7 @@ export function AdminSensitiveWordsPage() {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setQuery({ page });
   };
 
   const getCategoryTone = (category: string): AdminChipTone => {
@@ -242,7 +253,7 @@ export function AdminSensitiveWordsPage() {
       <Pagination
         currentPage={currentPage}
         total={totalWords}
-        pageSize={pageSize}
+        pageSize={PAGE_SIZE}
         onPageChange={handlePageChange}
       />
 

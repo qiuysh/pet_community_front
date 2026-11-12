@@ -14,6 +14,7 @@ import {
   ApplicationStatus,
 } from '../../types/adopt';
 import { useConfirm } from '../../hooks/useConfirm';
+import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
 import { useToast } from '../../components/toast';
 import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -23,6 +24,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { Tabs } from '../../components/ui/tabs';
 
 type TabKey = 'adopts' | 'applications';
+const MY_ADOPT_TABS = ['adopts', 'applications'] as const;
 
 const adoptStatusText: Record<number, string> = {
   [AdoptionStatus.PENDING]: '待领养',
@@ -45,7 +47,7 @@ const applicationStatusText: Record<number, string> = {
 export const MyAdoptPage = () => {
   const toast = useToast();
   const { confirm, confirmDialog } = useConfirm();
-  const [tab, setTab] = useState<TabKey>('adopts');
+  const [tab, setTab] = useAdminTabQuery<TabKey>('adopts', MY_ADOPT_TABS);
   const [adopts, setAdopts] = useState<AdoptInfo[]>([]);
   const [applications, setApplications] = useState<AdoptionApplicationInfo[]>([]);
   const [loading, setLoading] = useState(true);

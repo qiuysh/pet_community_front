@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Pagination } from '../../components/admin/pagination';
 import { useAdminUsers } from '../../hooks/useAdminUsers';
 import { AlertTriangle, CheckCircle2, PawPrint } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
-import { AdminButton } from '../../components/admin/adminButton';
+import { adminRoleLabel } from '../../utils/adminRole';
+import { AdminButton, adminButtonClass } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
 import { AdminTable } from '../../components/admin/adminTable';
 import { AdminInput } from '../../components/admin/adminField';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 
 export function AdminUserListPage() {
-  const navigate = useNavigate();
   const { users, total, currentPage, pageSize, isLoading, error, fetchUserList, deleteUser, updateUserStatus } = useAdminUsers();
   const [keywordInput, setKeywordInput] = useState('');
   const [keyword, setKeyword] = useState('');
@@ -79,9 +79,9 @@ export function AdminUserListPage() {
         title="后台账号"
         description="管理运营后台登录账号与角色权限"
         actions={
-          <AdminButton type="button" variant="secondary" onClick={() => navigate('/admin/users/create')}>
+          <Link to="/admin/users/create" className={adminButtonClass({ variant: 'secondary' })}>
             新建账号
-          </AdminButton>
+          </Link>
         }
       />
 
@@ -148,7 +148,7 @@ export function AdminUserListPage() {
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap">
                     <AdminChip tone={getRoleTone(user.role)}>
-                      {user.role === 'super_admin' ? '超级管理员' : '管理员'}
+                      {adminRoleLabel(user.role)}
                     </AdminChip>
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap">
@@ -195,8 +195,13 @@ export function AdminUserListPage() {
 
       {/* 删除确认对话框 */}
       {confirmDelete !== null && (
-        <div className="fixed inset-0 bg-brown/50 flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-white rounded-md p-6 max-w-md w-full mx-4 shadow-card">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-brown/50 animate-fadeIn overscroll-contain">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="admin-user-delete-title"
+            className="bg-white rounded-md p-6 max-w-md w-full mx-4 shadow-card overscroll-contain"
+          >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
                 <AlertTriangle
@@ -207,7 +212,7 @@ export function AdminUserListPage() {
                 />
               </div>
               <div>
-                <h3 className="page-bar-title">确认删除</h3>
+                <h3 id="admin-user-delete-title" className="page-bar-title">确认删除</h3>
                 <p className="text-sm text-brown-muted">此操作无法撤销</p>
               </div>
             </div>
@@ -226,8 +231,13 @@ export function AdminUserListPage() {
 
       {/* 状态变更确认对话框 */}
       {confirmStatusChange !== null && (
-        <div className="fixed inset-0 bg-brown/50 flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-white rounded-md p-6 max-w-md w-full mx-4 shadow-card">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-brown/50 animate-fadeIn overscroll-contain">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="admin-user-status-title"
+            className="bg-white rounded-md p-6 max-w-md w-full mx-4 shadow-card overscroll-contain"
+          >
             <div className="flex items-center gap-3 mb-4">
               <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                 confirmStatusChange.status === 1 ? 'bg-success/10' : 'bg-warning/10'
@@ -240,7 +250,7 @@ export function AdminUserListPage() {
                 />
               </div>
               <div>
-                <h3 className="page-bar-title">
+                <h3 id="admin-user-status-title" className="page-bar-title">
                   {confirmStatusChange.status === 1 ? '确认启用' : '确认禁用'}
                 </h3>
                 <p className="text-sm text-brown-muted">

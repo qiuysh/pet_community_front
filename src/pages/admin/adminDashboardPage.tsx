@@ -117,6 +117,18 @@ export function AdminDashboardPage() {
         </AdminButton>
       </div>
 
+      <section
+        aria-label="今日必做"
+        className={
+          (todoData?.total ?? 0) > 0
+            ? 'rounded-md border border-warning/30 bg-warning/5 p-3 sm:p-4'
+            : undefined
+        }
+      >
+        <h2 className={`${adminUi.sectionTitle} mb-3`}>今日必做</h2>
+        <TodoAggregate data={todoData ?? null} loading={refreshing} />
+      </section>
+
       <section aria-label="今日用户与内容">
         <h2 className={`${adminUi.sectionTitle} mb-3`}>今日概况</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
@@ -158,10 +170,7 @@ export function AdminDashboardPage() {
         </div>
       </section>
 
-      <section
-        aria-label="互动与存量"
-        className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6"
-      >
+      <section aria-label="互动与趋势" className="space-y-5">
         <div className="flex min-w-0 flex-col">
           <h2 className={`${adminUi.sectionTitle} mb-3`}>今日互动与活动</h2>
           <DashboardInteractionPanel
@@ -204,63 +213,61 @@ export function AdminDashboardPage() {
             ]}
           />
         </div>
-        <div className="flex min-w-0 flex-col">
-          <h2 className={`${adminUi.sectionTitle} mb-3`}>业务存量</h2>
-          <DashboardStockPanel
-            groups={[
-              {
-                title: '内容与社区',
-                items: [
-                  { key: 'pets', label: '宠物档案', value: formatCount(summary?.totalPets) },
-                  { key: 'activities', label: '进行中活动', value: formatCount(summary?.ongoingActivities) },
-                  { key: 'lost', label: '寻宠进行中', value: formatCount(summary?.ongoingLostPets) },
-                ],
-              },
-              {
-                title: '广告投放',
-                items: [
-                  { key: 'views', label: '累计曝光', value: formatCount(summary?.adTotalViews) },
-                  { key: 'clicks', label: '累计点击', value: formatCount(summary?.adTotalClicks) },
-                  { key: 'ctr', label: '点击率', value: adCtr },
-                ],
-              },
-              {
-                title: '治理效率',
-                items: [
-                  {
-                    key: 'reportRate',
-                    label: '举报处理率',
-                    value: `${summary?.reportHandleRate ?? 0}%`,
-                  },
-                  {
-                    key: 'todos',
-                    label: '待处理事项',
-                    value: formatCount(todoData?.total),
-                    hint: `待审帖子 ${formatCount(summary?.pendingReviews)}`,
-                  },
-                ],
-              },
-            ]}
-          />
-        </div>
-      </section>
 
-      <section
-        aria-label="趋势与待办"
-        className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-3 lg:gap-6"
-      >
-        <div className="min-w-0 lg:col-span-2">
-          {overview?.todayTrend && (
+        {overview?.todayTrend && (
+          <div className="min-w-0">
             <TodayTrendChart
               userTrend={overview.todayTrend}
               postTrend={overview.postTrend}
               height={280}
             />
-          )}
-        </div>
-        <div className="min-w-0">
-          <TodoAggregate data={todoData ?? null} loading={refreshing} />
-        </div>
+          </div>
+        )}
+
+        <details className="rounded-md border border-border-light bg-white open:shadow-card">
+          <summary className={`${adminUi.sectionTitle} cursor-pointer list-none px-4 py-3 marker:content-none [&::-webkit-details-marker]:hidden`}>
+            业务存量与治理
+            <span className="ml-2 text-xs font-normal text-brown-muted">点击展开</span>
+          </summary>
+          <div className="border-t border-border-light px-4 py-3">
+            <DashboardStockPanel
+              groups={[
+                {
+                  title: '内容与社区',
+                  items: [
+                    { key: 'pets', label: '宠物档案', value: formatCount(summary?.totalPets) },
+                    { key: 'activities', label: '进行中活动', value: formatCount(summary?.ongoingActivities) },
+                    { key: 'lost', label: '寻宠进行中', value: formatCount(summary?.ongoingLostPets) },
+                  ],
+                },
+                {
+                  title: '广告投放',
+                  items: [
+                    { key: 'views', label: '累计曝光', value: formatCount(summary?.adTotalViews) },
+                    { key: 'clicks', label: '累计点击', value: formatCount(summary?.adTotalClicks) },
+                    { key: 'ctr', label: '点击率', value: adCtr },
+                  ],
+                },
+                {
+                  title: '治理效率',
+                  items: [
+                    {
+                      key: 'reportRate',
+                      label: '举报处理率',
+                      value: `${summary?.reportHandleRate ?? 0}%`,
+                    },
+                    {
+                      key: 'todos',
+                      label: '待处理事项',
+                      value: formatCount(todoData?.total),
+                      hint: `待审内容 ${formatCount(summary?.pendingReviews)}`,
+                    },
+                  ],
+                },
+              ]}
+            />
+          </div>
+        </details>
       </section>
     </div>
   );

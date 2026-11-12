@@ -229,11 +229,16 @@
           padding: 2px 4px;
           border-radius: 4px;
 
-          &:hover,
+          &:hover {
+            color: $primary-text;
+            background: rgba($primary-color, 0.06);
+          }
+
           &:focus-visible {
             color: $primary-text;
             background: rgba($primary-color, 0.06);
-            outline: none;
+            outline: 2px solid $primary-text;
+            outline-offset: 2px;
           }
         }
       }

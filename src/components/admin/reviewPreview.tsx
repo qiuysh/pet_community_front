@@ -1,5 +1,6 @@
 import { CirclePlay, X } from 'lucide-react';
 import type { ReviewContent } from '../../types/admin';
+import { formatAdminDateTime } from '../../utils/adminDateTime';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { AdminButton } from './adminButton';
 import { AdminChip } from './adminChip';
@@ -43,7 +44,7 @@ export function ReviewPreview({ content, onClose }: ReviewPreviewProps) {
             />
             <div>
               <div className="font-medium text-brown">{content.username}</div>
-              <div className="text-sm text-brown-muted">{new Date(content.createdAt).toLocaleString()}</div>
+              <div className="text-sm text-brown-muted">{formatAdminDateTime(content.createdAt)}</div>
             </div>
             <AdminChip
               tone={content.type === 'post' ? 'secondary' : 'neutral'}

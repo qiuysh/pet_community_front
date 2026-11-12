@@ -8,6 +8,9 @@ interface PostImageProps {
   className?: string;
   imgClassName?: string;
   loading?: 'lazy' | 'eager';
+  /** 固有尺寸，用于减少 CLS；CSS 仍可覆盖显示大小 */
+  width?: number;
+  height?: number;
 }
 
 /**
@@ -19,6 +22,8 @@ export function PostImage({
   className = '',
   imgClassName = '',
   loading = 'lazy',
+  width = 800,
+  height = 800,
 }: PostImageProps) {
   const [broken, setBroken] = useState(false);
 
@@ -51,6 +56,8 @@ export function PostImage({
     <img
       src={src}
       alt={alt}
+      width={width}
+      height={height}
       className={imgClassName}
       loading={loading}
       decoding="async"
