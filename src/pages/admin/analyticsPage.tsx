@@ -235,19 +235,22 @@ export default function AdminAnalyticsPage() {
         </div>
       </section>
 
-      {exportLoading && (
+      {exportLoading ? (
         <div
           className={`${adminUi.overlay} overscroll-contain`}
-          role="status"
-          aria-live="polite"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="analytics-export-title"
           aria-busy="true"
         >
           <div className="flex items-center gap-3 rounded-md bg-white p-6 shadow-hover">
             <div className="h-6 w-6 animate-spin rounded-full border-4 border-secondary border-t-transparent motion-reduce:animate-none" />
-            <span className="text-brown">正在导出数据…</span>
+            <span id="analytics-export-title" className="text-brown">
+              正在导出数据…
+            </span>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

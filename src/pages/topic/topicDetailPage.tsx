@@ -123,21 +123,23 @@ export const TopicDetailPage = () => {
               <Share2 size={ICON_SIZE.inline} aria-hidden="true" />
               分享{topic.sharesCount > 0 ? ` ${topic.sharesCount}` : ''}
             </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                const path = `/posts/create?topicId=${topic.id}`;
-                if (!isLoggedIn) {
-                  requireLogin(path);
-                  return;
-                }
-                navigate(path);
-              }}
-            >
-              {isLoggedIn ? '发动态' : '登录后发动态'}
-            </Button>
+            {isLoggedIn ? (
+              <Link
+                to={`/posts/create?topicId=${topic.id}`}
+                className={buttonClass({ size: 'sm', variant: 'ghost' })}
+              >
+                发动态
+              </Link>
+            ) : (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => requireLogin(`/posts/create?topicId=${topic.id}`)}
+              >
+                登录后发动态
+              </Button>
+            )}
           </div>
         </div>
       </Card>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate, Link } from 'react-router-dom';
 import { EyeOff, MoreVertical } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useFollowList } from '../../hooks/useFollowList';
@@ -81,10 +81,6 @@ const FollowListPage: React.FC = () => {
     isOwnList,
   } = useFollowList(parseInt(userId || '0', 10), type);
 
-  const handleUserClick = (id: number) => {
-    navigate(`/profile/${id}`);
-  };
-
   const handleTabChangeWithUrl = (tab: FollowTab) => {
     handleTabChange(tab);
     if (userId) {
@@ -137,11 +133,7 @@ const FollowListPage: React.FC = () => {
         ) : (
           users.map(user => (
             <div key={user.id} className="user-item">
-              <button
-                type="button"
-                className="user-item-main"
-                onClick={() => handleUserClick(user.id)}
-              >
+              <Link to={`/profile/${user.id}`} className="user-item-main">
                 <Avatar
                   className="user-avatar"
                   src={user.avatar || getDefaultUserAvatar()}
@@ -165,7 +157,7 @@ const FollowListPage: React.FC = () => {
                   </div>
                   <div className="user-signature">{user.signature || '暂无签名'}</div>
                 </div>
-              </button>
+              </Link>
 
               {activeTab === 'secret-following' ? (
                 // 悄悄关注列表：仅可取消关注

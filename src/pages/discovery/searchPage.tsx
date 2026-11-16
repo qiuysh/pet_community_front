@@ -81,18 +81,22 @@ export const SearchPage = () => {
               <h2 className="page-section-title">热门搜索</h2>
             </div>
             <div className="hot-keywords">
-              {hotKeywords.map((kw, index) => (
-                <button
-                  type="button"
-                  key={kw.id}
-                  className="hot-keyword-item"
-                  onClick={() => handleHotKeywordClick(kw.keyword)}
-                >
-                  <span className={`rank ${index < 3 ? 'top' : ''}`}>{kw.rank}</span>
-                  <span className="keyword">{kw.keyword}</span>
-                  <span className="count tabular-nums">{formatCount(kw.searchCount)}次</span>
-                </button>
-              ))}
+              {hotKeywords.map((kw, index) => {
+                // 后端偶发 rank=0；展示用列表序兜底，避免热搜徽标全是 0
+                const rank = kw.rank > 0 ? kw.rank : index + 1;
+                return (
+                  <button
+                    type="button"
+                    key={kw.id}
+                    className="hot-keyword-item"
+                    onClick={() => handleHotKeywordClick(kw.keyword)}
+                  >
+                    <span className={`rank ${rank <= 3 ? 'top' : ''}`}>{rank}</span>
+                    <span className="keyword">{kw.keyword}</span>
+                    <span className="count tabular-nums">{formatCount(kw.searchCount)}次</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
