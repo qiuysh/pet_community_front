@@ -98,15 +98,17 @@ export const AdoptDetailPage = () => {
     return (
       <div className="bg-cream min-h-screen">
         <PageHeader title="领养详情" fallbackTo="/adopts" />
-        <EmptyState
-          title="领养信息不存在"
-          description="可能已下架或链接失效"
-          action={
-            <Link to="/adopts" className="font-medium text-primary-text">
-              返回领养中心
-            </Link>
-          }
-        />
+        <div className="page-shell">
+          <EmptyState
+            title="领养信息不存在"
+            description="可能已下架或链接失效"
+            action={
+              <Link to="/adopts" className="font-medium text-primary-text">
+                返回领养中心
+              </Link>
+            }
+          />
+        </div>
       </div>
     );
   }
@@ -114,20 +116,23 @@ export const AdoptDetailPage = () => {
   return (
     <div className="bg-cream min-h-screen pb-6">
       <PageHeader title="领养详情" fallbackTo="/adopts" />
-      {/* 照片展示 */}
+      {/* 白底通栏；照片与正文同列 page-shell，与 PageHeader 同宽（§5.5） */}
       {adopt.photos && adopt.photos.length > 0 && (
         <div className="bg-white">
-          <PostImage
-            src={adopt.photos[0]}
-            alt={adopt.petName}
-            className="w-full h-64"
-            imgClassName="w-full h-64 object-cover"
-            loading="eager"
-          />
+          <div className="page-shell">
+            <PostImage
+              src={adopt.photos[0]}
+              alt={adopt.petName}
+              className="w-full h-64"
+              imgClassName="w-full h-64 object-cover"
+              loading="eager"
+            />
+          </div>
         </div>
       )}
 
-      <div className="page-shell space-y-4 px-4 py-4">
+      {/* 列宽与 PageHeader 内层 page-shell 同宽；水平边距由卡片内 padding 承担（§5.5） */}
+      <div className="page-shell space-y-4 py-4">
         <Card>
           <div className="flex items-center justify-between mb-3">
             <h1 className="page-content-title">{adopt.petName}</h1>

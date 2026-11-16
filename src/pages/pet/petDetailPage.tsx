@@ -74,16 +74,18 @@ export function PetDetailPage() {
     return (
       <div className="bg-cream min-h-screen">
         <PageHeader title="宠物详情" fallbackTo="/pets" />
-        <EmptyState
-          title="宠物不存在或已被删除"
-          description="可能已下架或链接失效"
-          icon={<PetTypeFallbackIcon size={64} aria-hidden="true" />}
-          action={
-            <Link to="/pets" className="font-medium text-primary-text">
-              返回宠物广场
-            </Link>
-          }
-        />
+        <div className="page-shell">
+          <EmptyState
+            title="宠物不存在或已被删除"
+            description="可能已下架或链接失效"
+            icon={<PetTypeFallbackIcon size={64} aria-hidden="true" />}
+            action={
+              <Link to="/pets" className="font-medium text-primary-text">
+                返回宠物广场
+              </Link>
+            }
+          />
+        </div>
       </div>
     );
   }
@@ -125,7 +127,8 @@ export function PetDetailPage() {
     <div className="bg-cream min-h-screen pb-6">
       <PageHeader title={pet.name || '宠物详情'} fallbackTo="/pets" />
 
-      <div className="page-shell space-y-4 px-4 py-4">
+      {/* 列宽与 PageHeader 内层 page-shell 同宽；水平边距由卡片内 padding 承担（§5.5） */}
+      <div className="page-shell space-y-4 py-4">
         <div>
           <div className="page-hero-surface relative h-40 overflow-hidden rounded-md sm:h-48">
             <div

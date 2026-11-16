@@ -109,15 +109,17 @@ export function LostPetDetailPage() {
     return (
       <div className="bg-cream min-h-screen">
         <PageHeader title="寻宠详情" fallbackTo="/lost-pets" />
-        <EmptyState
-          title="未找到该启事"
-          description="可能已下架或链接失效"
-          action={
-            <Link to="/lost-pets" className="font-medium text-primary-text">
-              返回寻宠列表
-            </Link>
-          }
-        />
+        <div className="page-shell">
+          <EmptyState
+            title="未找到该启事"
+            description="可能已下架或链接失效"
+            action={
+              <Link to="/lost-pets" className="font-medium text-primary-text">
+                返回寻宠列表
+              </Link>
+            }
+          />
+        </div>
       </div>
     );
   }
@@ -129,7 +131,8 @@ export function LostPetDetailPage() {
     <div className="bg-cream min-h-screen pb-6">
       <PageHeader title="寻宠详情" fallbackTo="/lost-pets" />
 
-      <div className="page-shell space-y-4 px-4 py-4">
+      {/* 列宽与 PageHeader 内层 page-shell 同宽；水平边距由卡片内 padding 承担（§5.5） */}
+      <div className="page-shell space-y-4 py-4">
         <Card>
           <div className="flex justify-between items-start gap-3">
             <h2 className="page-content-title">{item.petName}</h2>

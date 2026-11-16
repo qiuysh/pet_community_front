@@ -54,15 +54,17 @@ export const TopicDetailPage = () => {
     return (
       <div className="bg-cream min-h-screen">
         <PageHeader title="话题详情" fallbackTo="/topics" />
-        <EmptyState
-          title="话题不存在或已下架"
-          description="回话题库看看其他话题吧"
-          action={
-            <Link to="/topics" className={buttonClass({ variant: 'outline' })}>
-              去话题库
-            </Link>
-          }
-        />
+        <div className="page-shell">
+          <EmptyState
+            title="话题不存在或已下架"
+            description="回话题库看看其他话题吧"
+            action={
+              <Link to="/topics" className={buttonClass({ variant: 'outline' })}>
+                去话题库
+              </Link>
+            }
+          />
+        </div>
       </div>
     );
   }

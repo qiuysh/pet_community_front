@@ -83,7 +83,8 @@
   }
 
   .search-content {
-    padding: $spacing-md 0;
+    // 与 .search-header 水平 $spacing-md 同列（§5.5）
+    padding: $spacing-md;
 
     .section {
       margin-bottom: 24px;
@@ -225,7 +226,8 @@
   }
 
   .search-result {
-    padding: $spacing-md 0;
+    // 与 .search-header 水平 $spacing-md 同列（§5.5）
+    padding: $spacing-md;
 
     .loading {
       text-align: center;

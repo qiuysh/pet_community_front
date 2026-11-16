@@ -7,8 +7,9 @@
   padding-bottom: $spacing-lg;
 
   .topic-detail-body {
+    // 列宽与 PageHeader 内层 page-shell 同宽；水平阅读边距由卡片内 padding 承担（§5.5）
     @extend %page-shell;
-    padding: $spacing-md;
+    padding: $spacing-md 0;
     display: flex;
     flex-direction: column;
     gap: $spacing-md;
@@ -181,7 +182,8 @@
 @media (min-width: 768px) {
   .topic-detail-page {
     .topic-detail-body {
-      padding: $spacing-md $spacing-md $spacing-lg;
+      // 仅加高纵向间距；水平仍为 0，与 PageHeader 内层 page-shell 同宽（§5.5）
+      padding: $spacing-md 0 $spacing-lg;
     }
 
     .topic-info-card .topic-meta {

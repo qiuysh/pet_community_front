@@ -8,7 +8,9 @@
   .tab-bar {
     display: flex;
     background-color: $background-white;
-    margin-top: 10px;
+    // 与 PageHeader 内层 px-4 / 列表 $spacing-md 同列 inset（§5.5）
+    padding: 0 $spacing-md;
+    margin-top: $spacing-sm;
 
     .tab-item {
       flex: 1;

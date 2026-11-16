@@ -77,15 +77,17 @@ export const ActivityDetailPage = () => {
     return (
       <div className="bg-cream min-h-screen">
         <PageHeader title="活动详情" fallbackTo="/activities" />
-        <EmptyState
-          title="活动不存在"
-          description="可能已下架或链接失效"
-          action={
-            <Link to="/activities" className="font-medium text-primary-text">
-              返回活动中心
-            </Link>
-          }
-        />
+        <div className="page-shell">
+          <EmptyState
+            title="活动不存在"
+            description="可能已下架或链接失效"
+            action={
+              <Link to="/activities" className="font-medium text-primary-text">
+                返回活动中心
+              </Link>
+            }
+          />
+        </div>
       </div>
     );
   }
@@ -99,104 +101,107 @@ export const ActivityDetailPage = () => {
   return (
     <div className="bg-cream min-h-screen pb-6">
       <PageHeader title="活动详情" fallbackTo="/activities" />
+      {/* 白底通栏；媒体与标题同列 page-shell，与 PageHeader / 正文同宽（§5.5） */}
       <div className="bg-white">
-        <PostImage
-          src={bannerSrc}
-          alt={activity.title}
-          className="w-full h-48"
-          imgClassName="w-full h-48 object-cover"
-          loading="eager"
-        />
-        <div className="page-shell px-4 py-4">
-          <h1 className="page-content-title mb-2">{activity.title}</h1>
-          <p className="text-brown-muted mb-3">{activity.description}</p>
+        <div className="page-shell">
+          <PostImage
+            src={bannerSrc}
+            alt={activity.title}
+            className="w-full h-48"
+            imgClassName="w-full h-48 object-cover"
+            loading="eager"
+          />
+          <div className="px-4 py-4">
+            <h1 className="page-content-title mb-2">{activity.title}</h1>
+            <p className="text-brown-muted mb-3">{activity.description}</p>
 
-          <div className="space-y-2 text-sm text-brown-muted">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" aria-hidden="true" />
-              <span>{formatTime(activity.startTime)} - {formatTime(activity.endTime)}</span>
+            <div className="space-y-2 text-sm text-brown-muted">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" aria-hidden="true" />
+                <span>{formatTime(activity.startTime)} - {formatTime(activity.endTime)}</span>
+              </div>
+              {(activity.maxParticipants ?? 0) > 0 && (
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4" aria-hidden="true" />
+                  <span>
+                    {activity.participantsCount}/{activity.maxParticipants} 人参与
+                  </span>
+                </div>
+              )}
+              {(activity.ratingCount ?? 0) > 0 && (
+                <div className="flex items-center gap-2">
+                  <Star
+                    size={ICON_SIZE.inline}
+                    strokeWidth={iconStroke(ICON_SIZE.inline)}
+                    className="fill-warning text-warning"
+                    aria-hidden="true"
+                  />
+                  <span>
+                    {(activity.ratingAvg ?? 0).toFixed(1)} · {activity.ratingCount} 条评价
+                  </span>
+                </div>
+              )}
             </div>
-            {(activity.maxParticipants ?? 0) > 0 && (
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4" aria-hidden="true" />
-                <span>
-                  {activity.participantsCount}/{activity.maxParticipants} 人参与
-                </span>
-              </div>
-            )}
-            {(activity.ratingCount ?? 0) > 0 && (
-              <div className="flex items-center gap-2">
-                <Star
-                  size={ICON_SIZE.inline}
-                  strokeWidth={iconStroke(ICON_SIZE.inline)}
-                  className="fill-warning text-warning"
-                  aria-hidden="true"
-                />
-                <span>
-                  {(activity.ratingAvg ?? 0).toFixed(1)} · {activity.ratingCount} 条评价
-                </span>
-              </div>
-            )}
-          </div>
 
-          <div className="mt-4 flex gap-2">
-            {isRegistrationOpen() && !activity.isRegistered && (
-              <Button
-                className="flex-1"
-                onClick={() => {
-                  if (!isLoggedIn) {
-                    navigate('/login', { state: { from: loginFrom } });
-                    return;
-                  }
-                  setShowRegistrationForm(true);
-                }}
-              >
-                立即报名
-              </Button>
-            )}
-            {isSubmissionOpen() && !activity.hasSubmitted && (
-              <Button
-                variant="secondary"
-                className="flex-1"
-                onClick={() => {
-                  if (!isLoggedIn) {
-                    navigate('/login', { state: { from: loginFrom } });
-                    return;
-                  }
-                  setShowSubmissionForm(true);
-                }}
-              >
-                提交作品
-              </Button>
-            )}
-            {activity.isRegistered && (
-              <div className="flex flex-1 flex-col gap-1">
-                <span className="text-sm text-secondary-dark flex items-center gap-1">
-                  <Check size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
-                  <span>已报名</span>
-                </span>
-                {canCancelRegistration() && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="self-start px-0 text-brown-muted"
-                    loading={canceling}
-                    disabled={canceling}
-                    onClick={async () => {
-                      const ok = await confirm({
-                        title: '取消报名',
-                        description: '取消后需要重新报名才能参与该活动，确定取消吗？',
-                        confirmText: '取消报名',
-                        tone: 'danger',
-                      });
-                      if (ok) handleCancelRegistration();
-                    }}
-                  >
-                    取消报名
-                  </Button>
-                )}
-              </div>
-            )}
+            <div className="mt-4 flex gap-2">
+              {isRegistrationOpen() && !activity.isRegistered && (
+                <Button
+                  className="flex-1"
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      navigate('/login', { state: { from: loginFrom } });
+                      return;
+                    }
+                    setShowRegistrationForm(true);
+                  }}
+                >
+                  立即报名
+                </Button>
+              )}
+              {isSubmissionOpen() && !activity.hasSubmitted && (
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      navigate('/login', { state: { from: loginFrom } });
+                      return;
+                    }
+                    setShowSubmissionForm(true);
+                  }}
+                >
+                  提交作品
+                </Button>
+              )}
+              {activity.isRegistered && (
+                <div className="flex flex-1 flex-col gap-1">
+                  <span className="text-sm text-secondary-dark flex items-center gap-1">
+                    <Check size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} aria-hidden="true" />
+                    <span>已报名</span>
+                  </span>
+                  {canCancelRegistration() && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="self-start px-0 text-brown-muted"
+                      loading={canceling}
+                      disabled={canceling}
+                      onClick={async () => {
+                        const ok = await confirm({
+                          title: '取消报名',
+                          description: '取消后需要重新报名才能参与该活动，确定取消吗？',
+                          confirmText: '取消报名',
+                          tone: 'danger',
+                        });
+                        if (ok) handleCancelRegistration();
+                      }}
+                    >
+                      取消报名
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -223,7 +228,8 @@ export const ActivityDetailPage = () => {
         </div>
       </div>
 
-      <div className="page-shell px-4 py-4">
+      {/* 列宽与 PageHeader / Banner 的 page-shell 同宽；水平边距由卡片内 padding 承担（§5.5） */}
+      <div className="page-shell py-4">
         {activeTab === 'detail' && (
           <div className="space-y-4">
             <Card>
