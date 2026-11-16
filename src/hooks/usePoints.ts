@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { pointsApi } from '../api/social';
 import { useAsyncEffect } from './useAsync';
 import { useAdminTabQuery } from './useAdminTabQuery';
-import { showErrorToast } from '../utils/toastManager';
 import { reportError } from '../utils/errorReport';
 import {
   levelProgressPercent,
@@ -88,10 +87,7 @@ export function usePoints(pageSize = 50) {
     },
     [activeTab],
     {
-      onError: (error) => {
-        reportError('获取数据失败', error);
-        showErrorToast('获取数据失败');
-      },
+      onError: (error) => reportError('获取数据失败', error, '获取数据失败'),
     },
   );
 

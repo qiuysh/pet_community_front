@@ -1,5 +1,6 @@
-import { getErrorMessage } from './error';
-import { showErrorToast } from './toastManager';
+import { getErrorMessage, isPresentedError } from './error';
+import { showErrorToast, showWarningToast } from './toastManager';
+import { ApiError } from './error';
 
 /**
  * 用户可见的错误文案：优先用服务端/异常自带消息，兜底给中文提示。
@@ -17,9 +18,8 @@ export const getUserFacingErrorMessage = (
 };
 
 /**
- * 失败上报：控制台留痕 + 用户可见提示。
- * 用于替代「catch 里只 console.error」的静默失败——否则用户看到的是空态，
- * 分不清「没有数据」还是「接口挂了」。
+ * 错误展示 module：控制台留痕 + 至多一次 toast。
+ * 若 HTTP adapter 已 markPresented，只留痕不再弹窗（避免双 toast）。
  */
 export const reportError = (
   context: string,
@@ -27,5 +27,28 @@ export const reportError = (
   fallback?: string,
 ): void => {
   console.error(`[${context}]`, error);
+  if (isPresentedError(error)) {
+    return;
+  }
   showErrorToast(getUserFacingErrorMessage(error, fallback));
+  if (error instanceof ApiError) {
+    error.markPresented();
+  }
 };
+
+/** adapter / session 路径：toast 一次并标记已展示 */
+export function presentError(
+  error: ApiError,
+  options?: { kind?: 'error' | 'warning'; message?: string },
+): ApiError {
+  if (error.presented) {
+    return error;
+  }
+  const message = options?.message || error.message;
+  if (options?.kind === 'warning') {
+    showWarningToast(message);
+  } else {
+    showErrorToast(message);
+  }
+  return error.markPresented();
+}

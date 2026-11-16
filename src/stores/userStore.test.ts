@@ -24,15 +24,17 @@ describe('useUserStore', () => {
     expect(result.current.token).toBeNull();
     expect(result.current.isLoggedIn).toBe(false);
     expect(result.current.user).toBeNull();
+    expect(result.current.authStatus).toBe('anonymous');
   });
 
-  it('localStorage 存在 token 时初始应为登录状态', async () => {
+  it('localStorage 存在 token 时初始应为登录状态且 bootstrapping', async () => {
     localStorage.setItem('user_token', 'test-token');
     const { useUserStore } = await import('./userStore');
     const { result } = renderHook(() => useUserStore());
 
     expect(result.current.token).toBe('test-token');
     expect(result.current.isLoggedIn).toBe(true);
+    expect(result.current.authStatus).toBe('bootstrapping');
   });
 
   it('记住我时应持久化到 localStorage，并保存 refreshToken', async () => {

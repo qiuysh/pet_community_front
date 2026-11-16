@@ -34,6 +34,8 @@ describe('error', () => {
     it('网络错误消息应返回 true', () => {
       expect(isNetworkError(new Error('Network error'))).toBe(true);
       expect(isNetworkError(new Error('Request timeout'))).toBe(true);
+      expect(isNetworkError(new Error('网络错误'))).toBe(true);
+      expect(isNetworkError(new Error('请求超时'))).toBe(true);
     });
 
     it('其他错误应返回 false', () => {

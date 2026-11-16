@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { notificationApi } from '../api/social';
 import { useAsyncEffect } from './useAsync';
 import { useSyncedSearchParams } from './useSyncedSearchParams';
-import { showErrorToast } from '../utils/toastManager';
 import { reportError } from '../utils/errorReport';
-
 export interface NotificationItem {
   id: number;
   type: string;
@@ -45,10 +43,7 @@ export function useNotificationList(pageSize = 20) {
     () => notificationApi.getNotifications({ page, pageSize }) as Promise<{ list: NotificationItem[]; total: number }>,
     [page, pageSize],
     {
-      onError: (error) => {
-        reportError('获取通知列表失败', error);
-        showErrorToast('获取通知列表失败');
-      },
+      onError: (error) => reportError('获取通知列表失败', error, '获取通知列表失败'),
       onSuccess: (res) => {
         if (page === 1) {
           setNotifications(res.list || []);
@@ -74,8 +69,7 @@ export function useNotificationList(pageSize = 20) {
       await notificationApi.markAllAsRead();
       setNotifications(prev => prev.map(n => ({ ...n, isRead: 1 })));
     } catch (error) {
-      reportError('全部已读失败', error);
-      showErrorToast('全部已读失败');
+      reportError('全部已读失败', error, '全部已读失败');
     }
   };
 

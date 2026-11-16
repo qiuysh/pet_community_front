@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { getUserFacingErrorMessage, reportError } from './errorReport';
 import { registerToastCallback, unregisterToastCallback } from './toastManager';
-import { AppError } from './error';
+import { ApiError, AppError } from './error';
 
 describe('getUserFacingErrorMessage', () => {
   it('优先返回异常自带消息', () => {
@@ -43,5 +43,13 @@ describe('reportError', () => {
     reportError('获取列表失败', {});
 
     expect(toast).toHaveBeenCalledWith('error', '操作失败，请稍后重试', undefined);
+  });
+
+  it('已 presented 的 ApiError 不再二次 toast', () => {
+    const err = new ApiError(400, '参数错误').markPresented();
+    reportError('创建失败', err);
+
+    expect(console.error).toHaveBeenCalled();
+    expect(toast).not.toHaveBeenCalled();
   });
 });

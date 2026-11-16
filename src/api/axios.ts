@@ -1,8 +1,8 @@
 // front/src/api/axios.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import {
-  showErrorToast,
   showSuccessToast,
+  showErrorToast,
   showWarningToast,
   showInfoToast,
 } from '../utils/toastManager';
@@ -19,6 +19,10 @@ import {
   clearUserSession,
   isSessionExpiredCode,
 } from '../utils/session';
+import { ApiError } from '../utils/error';
+import { presentError } from '../utils/errorReport';
+
+export { ApiError };
 
 // API 基础配置
 const BASE_URL = '/';
@@ -97,6 +101,20 @@ const expireAuth = (isAdmin: boolean) => {
   }
 };
 
+function rejectApiError(
+  code: number,
+  message: string,
+  data: unknown,
+  httpStatus?: number,
+  options?: { present?: boolean; kind?: 'error' | 'warning' },
+): Promise<never> {
+  const err = new ApiError(code, message, data, httpStatus);
+  if (options?.present !== false) {
+    presentError(err, { kind: options?.kind, message });
+  }
+  return Promise.reject(err);
+}
+
 // 创建 axios 实例
 const createApiInstance = (): AxiosInstance => {
   const instance = axios.create({
@@ -138,15 +156,15 @@ const createApiInstance = (): AxiosInstance => {
   instance.interceptors.response.use(
     (response: AxiosResponse) => {
       const { code, message, data } = response.data;
+      const httpStatus = response.status;
 
       // 成功响应
       if (code === 0 || code === undefined) {
         return data;
       }
 
-      // 业务错误处理 - 使用Toast显示
-      handleBusinessError(code, message, response.config?.url);
-      return Promise.reject(new ApiError(code, message, data));
+      // 业务错误：映射 body.code，经错误展示 module toast 一次
+      return rejectMappedBusinessError(code, message, data, httpStatus, response.config?.url);
     },
     async (error) => {
       const originalRequest = error.config;
@@ -156,18 +174,23 @@ const createApiInstance = (): AxiosInstance => {
 
       if (error.response) {
         const { status, data } = error.response;
+        const bodyCode = typeof data?.code === 'number' ? data.code : status;
+        const message = data?.message || '请求失败';
+        const payload = data?.data ?? null;
 
         // 登录/验证码/刷新本身的 401：只提示，绝不清会话、不递归 refresh
         if (status === 401 && isAuthEndpoint) {
-          handleHttpError(status, data?.message || '认证失败', requestUrl);
-          return Promise.reject(new ApiError(status, data?.message || '认证失败', data?.data ?? null));
+          return rejectApiError(bodyCode, message || '认证失败', payload, status);
         }
 
         // 管理端 401：只清管理端，绝不走用户 refresh
         if (status === 401 && isAdminApi) {
-          showWarningToast('登录已过期，请重新登录');
+          presentError(new ApiError(bodyCode, '登录已过期，请重新登录', null, status), {
+            kind: 'warning',
+            message: '登录已过期，请重新登录',
+          });
           expireAuth(true);
-          return Promise.reject(new ApiError(status, data?.message || '登录已过期', null));
+          return Promise.reject(new ApiError(bodyCode, message || '登录已过期', null, status).markPresented());
         }
 
         // 用户端 401：尝试 refreshToken，失败只清用户端
@@ -190,10 +213,15 @@ const createApiInstance = (): AxiosInstance => {
 
           const refreshToken = getRefreshToken();
           if (!refreshToken) {
-            showWarningToast('登录已过期，请重新登录');
+            presentError(new ApiError(bodyCode, '登录已过期，请重新登录', null, status), {
+              kind: 'warning',
+              message: '登录已过期，请重新登录',
+            });
             expireAuth(false);
             isRefreshing = false;
-            return Promise.reject(new ApiError(status, data?.message || '登录已过期', null));
+            return Promise.reject(
+              new ApiError(bodyCode, message || '登录已过期', null, status).markPresented(),
+            );
           }
 
           try {
@@ -217,108 +245,109 @@ const createApiInstance = (): AxiosInstance => {
             return instance(originalRequest);
           } catch (refreshError) {
             processQueue('', refreshError);
-            showWarningToast('登录已过期，请重新登录');
+            presentError(new ApiError(401, '登录已过期，请重新登录', null, 401), {
+              kind: 'warning',
+              message: '登录已过期，请重新登录',
+            });
             expireAuth(false);
-            return Promise.reject(new ApiError(401, '登录已过期', null));
+            return Promise.reject(new ApiError(401, '登录已过期', null, 401).markPresented());
           } finally {
             isRefreshing = false;
           }
         }
 
-        const bodyCode = typeof data?.code === 'number' ? data.code : status;
-        handleHttpError(status, data?.message || 'Network error', requestUrl, bodyCode);
-        return Promise.reject(
-          new ApiError(bodyCode, data?.message || 'Network error', data?.data ?? null),
-        );
+        return rejectMappedHttpError(status, bodyCode, message, payload, requestUrl);
       }
 
       if (error.code === 'ECONNABORTED') {
-        showErrorToast('请求超时，请稍后重试');
-        return Promise.reject(new ApiError(408, '请求超时', null));
+        return rejectApiError(408, '请求超时，请稍后重试', null, 408);
       }
 
-      showErrorToast('网络错误，请检查网络连接');
-      return Promise.reject(new ApiError(500, '网络错误', null));
+      return rejectApiError(500, '网络错误，请检查网络连接', null, 0);
     },
   );
 
   return instance;
 };
 
-// 业务错误处理 - 使用Toast显示
-const handleBusinessError = (code: number, message: string, url?: string): void => {
+function rejectMappedBusinessError(
+  code: number,
+  message: string,
+  data: unknown,
+  httpStatus: number,
+  url?: string,
+): Promise<never> {
   if (isSessionExpiredCode(code)) {
-    // 登录入口的业务 401/1004/1005 不得清会话
     if (isAuthEndpointUrl(url)) {
-      showErrorToast(message || '认证失败');
-      return;
+      return rejectApiError(code, message || '认证失败', data, httpStatus);
     }
-    showWarningToast('登录已过期，请重新登录');
+    presentError(new ApiError(code, '登录已过期，请重新登录', data, httpStatus), {
+      kind: 'warning',
+      message: '登录已过期，请重新登录',
+    });
     expireAuth(isAdminApiUrl(url));
-    return;
+    return Promise.reject(new ApiError(code, message || '认证失败', data, httpStatus).markPresented());
   }
 
+  let userMessage = message || `操作失败 (错误码: ${code})`;
+  let kind: 'error' | 'warning' = 'error';
   switch (code) {
     case 403:
-      showErrorToast('没有权限执行此操作');
+      userMessage = '没有权限执行此操作';
       break;
     case 404:
-      showWarningToast('请求的资源不存在');
+      userMessage = '请求的资源不存在';
+      kind = 'warning';
       break;
     case 400:
-      showErrorToast(message || '请求参数错误');
+      userMessage = message || '请求参数错误';
       break;
     default:
-      showErrorToast(message || `操作失败 (错误码: ${code})`);
+      break;
   }
-};
+  return rejectApiError(code, userMessage, data, httpStatus, { kind });
+}
 
-// HTTP 错误处理 - 使用Toast显示（优先用 body.code 判断会话失效）
-const handleHttpError = (
+function rejectMappedHttpError(
   status: number,
+  bodyCode: number,
   message: string,
+  data: unknown,
   url?: string,
-  bodyCode?: number,
-): void => {
-  const sessionCode = bodyCode ?? status;
-  if (isSessionExpiredCode(sessionCode) || isSessionExpiredCode(status)) {
+): Promise<never> {
+  if (isSessionExpiredCode(bodyCode) || isSessionExpiredCode(status)) {
     if (isAuthEndpointUrl(url)) {
-      showErrorToast(message || '认证失败');
-      return;
+      return rejectApiError(bodyCode, message || '认证失败', data, status);
     }
-    showWarningToast('登录已过期，请重新登录');
+    presentError(new ApiError(bodyCode, '登录已过期，请重新登录', data, status), {
+      kind: 'warning',
+      message: '登录已过期，请重新登录',
+    });
     expireAuth(isAdminApiUrl(url));
-    return;
+    return Promise.reject(new ApiError(bodyCode, message || '认证失败', data, status).markPresented());
   }
 
+  let userMessage = message || `请求失败 (HTTP ${status})`;
+  let kind: 'error' | 'warning' = 'error';
   switch (status) {
     case 403:
-      showErrorToast('没有权限访问此资源');
+      userMessage = '没有权限访问此资源';
       break;
     case 404:
-      showWarningToast('请求的资源不存在');
+      userMessage = '请求的资源不存在';
+      kind = 'warning';
       break;
     case 429:
-      showWarningToast('请求过于频繁，请稍后再试');
+      userMessage = '请求过于频繁，请稍后再试';
+      kind = 'warning';
       break;
     case 500:
-      showErrorToast('服务器错误，请稍后重试');
+      userMessage = '服务器错误，请稍后重试';
       break;
     default:
-      showErrorToast(message || `请求失败 (HTTP ${status})`);
+      break;
   }
-};
-
-// API 错误类
-export class ApiError extends Error {
-  constructor(
-    public code: number,
-    public message: string,
-    public data: any,
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
+  return rejectApiError(bodyCode, userMessage, data, status, { kind });
 }
 
 // 导出 API 实例

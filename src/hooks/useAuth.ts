@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { login as loginApi, register, resetPassword, thirdPartyLogin } from '../api/user';
 import { useUserStore } from '../stores/userStore';
 import { showSuccessToast, showErrorToast, showInfoToast } from '../utils/toastManager';
+import { reportError } from '../utils/errorReport';
 import { setRememberedUserAccount } from '../utils/authStorage';
 import { useAsync } from './useAsync';
 import { UserLoginRequest, UserRegisterRequest, PasswordResetRequest } from '../types/user';
@@ -59,7 +60,7 @@ export function useAuth() {
           showSuccessToast('登录成功');
           navigate(from, { replace: true });
         },
-        (err: unknown) => showErrorToast((err as Error).message || '登录失败'),
+        (err: unknown) => reportError('登录失败', err, '登录失败'),
       ).then((res) => res !== undefined);
     },
     [run, setToken, setUser, navigate, from],
@@ -73,7 +74,7 @@ export function useAuth() {
           showSuccessToast('注册成功，请登录');
           navigate('/login');
         },
-        (err: unknown) => showErrorToast((err as Error).message || '注册失败'),
+        (err: unknown) => reportError('注册失败', err, '注册失败'),
       ).then((res) => res !== undefined);
     },
     [run, navigate],
@@ -87,7 +88,7 @@ export function useAuth() {
           showSuccessToast('密码重置成功，请登录');
           navigate('/login');
         },
-        (err: unknown) => showErrorToast((err as Error).message || '重置失败'),
+        (err: unknown) => reportError('重置密码失败', err, '重置失败'),
       ).then((res) => res !== undefined);
     },
     [run, navigate],
@@ -118,7 +119,7 @@ export function useAuth() {
           showSuccessToast(res.isNewUser ? '账号已创建并登录' : '登录成功');
           navigate(from, { replace: true });
         },
-        (err: unknown) => showErrorToast((err as Error).message || '第三方登录失败'),
+        (err: unknown) => reportError('第三方登录失败', err, '第三方登录失败'),
       ).then((res) => res !== undefined);
     },
     [run, setToken, setUser, navigate, from],

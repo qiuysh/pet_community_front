@@ -5,6 +5,7 @@ import { useToast } from '../components/toast';
 import { FavoriteResult, LikeResult, PostInfo } from '../types/post';
 import { useUserStore } from '../stores/userStore';
 import { showInfoToast } from '../utils/toastManager';
+import { reportError } from '../utils/errorReport';
 import { useShare } from './useShare';
 
 /**
@@ -69,7 +70,7 @@ export function usePostActions(post: PostInfo) {
         isLiked: prev,
         likesCount: prev ? s.likesCount + 1 : s.likesCount - 1,
       }));
-      toast.error((e as Error).message || '点赞失败');
+      reportError('点赞失败', e, '点赞失败');
     }
   }, [state.isLiked, post.id, requireLogin]);
 
@@ -95,7 +96,7 @@ export function usePostActions(post: PostInfo) {
         isFavorited: prev,
         favoritesCount: prev ? s.favoritesCount + 1 : s.favoritesCount - 1,
       }));
-      toast.error((e as Error).message || '收藏失败');
+      reportError('收藏失败', e, '收藏失败');
     }
   }, [state.isFavorited, post.id, requireLogin]);
 
