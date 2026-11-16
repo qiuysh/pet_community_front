@@ -1,13 +1,16 @@
 import { create } from 'zustand';
 import { UserInfo } from '../types/user';
-import { getProfile, refreshTokenApi, logout as logoutApi } from '../api/user';
+import { getProfile, logout as logoutApi } from '../api/user';
 import {
-  clearUserAuth,
   getRefreshToken,
   getUserDeviceId,
   getUserToken,
-  setUserAuth,
 } from '../utils/authStorage';
+import {
+  applyUserAuth,
+  clearUserSession,
+  subscribeSession,
+} from '../utils/session';
 import { reportError } from '../utils/errorReport';
 
 // 并发去重：应用启动时的全局恢复与页面内的局部调用会同时触发，只发一次请求
@@ -30,10 +33,9 @@ interface UserState {
   setLoading: (loading: boolean) => void;
   fetchProfile: () => Promise<void>;
   logout: () => Promise<void>;
-  doRefreshToken: () => Promise<string | null>;
 }
 
-export const useUserStore = create<UserState>((set, get) => ({
+export const useUserStore = create<UserState>((set) => ({
   user: null,
   token: getUserToken(),
   refreshToken: getRefreshToken(),
@@ -43,17 +45,10 @@ export const useUserStore = create<UserState>((set, get) => ({
   setUser: (user) => set({ user }),
   setToken: (token, refreshToken, remember, deviceId) => {
     if (!token) {
-      clearUserAuth();
-      set({ token: null, refreshToken: null, isLoggedIn: false });
+      clearUserSession();
       return;
     }
-
-    setUserAuth(token, refreshToken, remember, deviceId);
-    set({
-      token,
-      refreshToken: refreshToken ?? get().refreshToken,
-      isLoggedIn: true,
-    });
+    applyUserAuth(token, refreshToken, remember, deviceId);
   },
   setLoggedIn: (isLoggedIn) => set({ isLoggedIn }),
   setLoading: (loading) => set({ loading }),
@@ -85,25 +80,25 @@ export const useUserStore = create<UserState>((set, get) => ({
       // 本地登录态已清理，服务端会话清理失败只留痕，不打扰用户
       console.error('登出接口调用失败', err);
     } finally {
-      clearUserAuth();
-      set({ user: null, token: null, refreshToken: null, isLoggedIn: false });
-    }
-  },
-
-  doRefreshToken: async () => {
-    const { refreshToken: currentRefreshToken, setToken } = get();
-    if (!currentRefreshToken) {
-      return null;
-    }
-    try {
-      const response = await refreshTokenApi(currentRefreshToken);
-      setToken(response.token, response.refreshToken);
-      return response.token;
-    } catch (err) {
-      // 刷新失败意味着登录态已失效，需要让用户知道「被登出」的原因，而不是静默跳回游客态
-      reportError('登录状态刷新失败，请重新登录', err, '登录状态已过期，请重新登录');
-      get().logout();
-      return null;
+      clearUserSession();
     }
   },
 }));
+
+// 拦截器静默 refresh / 其它模块写入 session 时，同步 Zustand
+subscribeSession((event) => {
+  if (event.type === 'user-updated') {
+    useUserStore.setState({
+      token: event.token,
+      refreshToken: event.refreshToken,
+      isLoggedIn: true,
+    });
+    return;
+  }
+  useUserStore.setState({
+    user: null,
+    token: null,
+    refreshToken: null,
+    isLoggedIn: false,
+  });
+});

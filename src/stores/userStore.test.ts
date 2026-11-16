@@ -7,7 +7,6 @@ const logoutMock = vi.fn().mockResolvedValue(undefined);
 vi.mock('../api/user', () => ({
   getProfile: (...args: unknown[]) => getProfileMock(...args),
   logout: (...args: unknown[]) => logoutMock(...args),
-  refreshTokenApi: vi.fn(),
 }));
 
 describe('useUserStore', () => {
@@ -80,6 +79,20 @@ describe('useUserStore', () => {
     expect(result.current.isLoggedIn).toBe(false);
     expect(localStorage.getItem('user_token')).toBeNull();
     expect(sessionStorage.getItem('user_token')).toBeNull();
+  });
+
+  it('外部 applyUserAuth 应同步 store（拦截器 refresh 路径）', async () => {
+    const { useUserStore } = await import('./userStore');
+    const { applyUserAuth } = await import('../utils/session');
+    const { result } = renderHook(() => useUserStore());
+
+    act(() => {
+      applyUserAuth('from-interceptor', 'refresh-x', true);
+    });
+
+    expect(result.current.token).toBe('from-interceptor');
+    expect(result.current.refreshToken).toBe('refresh-x');
+    expect(result.current.isLoggedIn).toBe(true);
   });
 
   it('logout 应清除用户状态', async () => {

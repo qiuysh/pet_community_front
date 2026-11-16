@@ -1,5 +1,8 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { useUserStore } from '../stores/userStore';
+import { useEffect, useRef, useCallback, useState } from 'react';
+import {
+  getSessionAccessToken,
+  subscribeSession,
+} from '../utils/session';
 import type { IncomingChatMessage } from '../types/social';
 
 type MessageCallback = (message: IncomingChatMessage) => void;
@@ -8,13 +11,14 @@ type MessageCallback = (message: IncomingChatMessage) => void;
  * 私信实时推送。
  *
  * 约定：
+ * - token 与 REST 同源（session / authStorage），静默 refresh 后会重连；
  * - 回调放在 ref 里，调用方传内联函数也不会触发重连；
  * - 卸载时关闭 socket 且不再重连（避免组件已卸载仍反复建连）；
  * - 断线按指数退避重连（上限 30s），重连成功后退避归零。
  */
 export function useWebSocket(onMessage?: MessageCallback) {
   const socketRef = useRef<WebSocket | null>(null);
-  const { token } = useUserStore();
+  const [token, setToken] = useState<string | null>(() => getSessionAccessToken());
   const onMessageRef = useRef(onMessage);
   onMessageRef.current = onMessage;
 
@@ -22,11 +26,22 @@ export function useWebSocket(onMessage?: MessageCallback) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closedRef = useRef(false);
 
+  useEffect(() => {
+    return subscribeSession((event) => {
+      if (event.type === 'user-updated') {
+        setToken(event.token);
+        return;
+      }
+      setToken(null);
+    });
+  }, []);
+
   const connect = useCallback(() => {
-    if (!token || closedRef.current) return;
+    const accessToken = token ?? getSessionAccessToken();
+    if (!accessToken || closedRef.current) return;
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws?token=${encodeURIComponent(token)}`;
+    const wsUrl = `${protocol}//${window.location.host}/ws?token=${encodeURIComponent(accessToken)}`;
 
     const socket = new WebSocket(wsUrl);
 

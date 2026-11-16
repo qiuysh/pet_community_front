@@ -8,14 +8,17 @@ import {
 } from '../utils/toastManager';
 import {
   clearAdminAuth,
-  clearUserAuth,
   getAdminToken,
   getRefreshToken,
   getUserToken,
   isAdminApiUrl,
   isAuthEndpointUrl,
-  setUserAuth,
 } from '../utils/authStorage';
+import {
+  applyUserAuth,
+  clearUserSession,
+  isSessionExpiredCode,
+} from '../utils/session';
 
 // API 基础配置
 const BASE_URL = '/';
@@ -88,7 +91,7 @@ const expireAuth = (isAdmin: boolean) => {
     }
     return;
   }
-  clearUserAuth();
+  clearUserSession();
   if (!window.location.pathname.startsWith('/login')) {
     window.location.href = '/login';
   }
@@ -205,8 +208,8 @@ const createApiInstance = (): AxiosInstance => {
               throw new Error('refresh token response missing access token');
             }
 
-            // 沿用用户端登录时的「记住我」存储偏好
-            setUserAuth(token, newRefreshToken ?? refreshToken);
+            // 沿用用户端登录时的「记住我」存储偏好；经 session 广播以同步 store / WS
+            applyUserAuth(token, newRefreshToken ?? refreshToken);
 
             originalRequest.headers.Authorization = `Bearer ${token}`;
             processQueue(token);
@@ -222,8 +225,11 @@ const createApiInstance = (): AxiosInstance => {
           }
         }
 
-        handleHttpError(status, data?.message || 'Network error', requestUrl);
-        return Promise.reject(new ApiError(status, data?.message || 'Network error', null));
+        const bodyCode = typeof data?.code === 'number' ? data.code : status;
+        handleHttpError(status, data?.message || 'Network error', requestUrl, bodyCode);
+        return Promise.reject(
+          new ApiError(bodyCode, data?.message || 'Network error', data?.data ?? null),
+        );
       }
 
       if (error.code === 'ECONNABORTED') {
@@ -241,20 +247,18 @@ const createApiInstance = (): AxiosInstance => {
 
 // 业务错误处理 - 使用Toast显示
 const handleBusinessError = (code: number, message: string, url?: string): void => {
+  if (isSessionExpiredCode(code)) {
+    // 登录入口的业务 401/1004/1005 不得清会话
+    if (isAuthEndpointUrl(url)) {
+      showErrorToast(message || '认证失败');
+      return;
+    }
+    showWarningToast('登录已过期，请重新登录');
+    expireAuth(isAdminApiUrl(url));
+    return;
+  }
+
   switch (code) {
-    case 401:
-      // 登录入口的业务 401 不得清会话
-      if (isAuthEndpointUrl(url)) {
-        showErrorToast(message || '认证失败');
-        break;
-      }
-      if (message.toLowerCase().includes('token')) {
-        showWarningToast('登录已过期，请重新登录');
-        expireAuth(isAdminApiUrl(url));
-      } else {
-        showErrorToast(message || '认证失败');
-      }
-      break;
     case 403:
       showErrorToast('没有权限执行此操作');
       break;
@@ -269,21 +273,25 @@ const handleBusinessError = (code: number, message: string, url?: string): void 
   }
 };
 
-// HTTP 错误处理 - 使用Toast显示
-const handleHttpError = (status: number, message: string, url?: string): void => {
+// HTTP 错误处理 - 使用Toast显示（优先用 body.code 判断会话失效）
+const handleHttpError = (
+  status: number,
+  message: string,
+  url?: string,
+  bodyCode?: number,
+): void => {
+  const sessionCode = bodyCode ?? status;
+  if (isSessionExpiredCode(sessionCode) || isSessionExpiredCode(status)) {
+    if (isAuthEndpointUrl(url)) {
+      showErrorToast(message || '认证失败');
+      return;
+    }
+    showWarningToast('登录已过期，请重新登录');
+    expireAuth(isAdminApiUrl(url));
+    return;
+  }
+
   switch (status) {
-    case 401:
-      if (isAuthEndpointUrl(url)) {
-        showErrorToast(message || '认证失败');
-        break;
-      }
-      if (message.toLowerCase().includes('token')) {
-        showWarningToast('登录已过期，请重新登录');
-        expireAuth(isAdminApiUrl(url));
-      } else {
-        showErrorToast(message || '认证失败');
-      }
-      break;
     case 403:
       showErrorToast('没有权限访问此资源');
       break;

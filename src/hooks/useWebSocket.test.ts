@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useWebSocket } from './useWebSocket';
-import { useUserStore } from '../stores/userStore';
+import { applyUserAuth, clearUserSession } from '../utils/session';
 
 /** 最小 WebSocket 替身：只记录实例与回调，便于断言连接/重连行为 */
 class FakeSocket {
@@ -25,14 +25,20 @@ class FakeSocket {
 describe('useWebSocket', () => {
   beforeEach(() => {
     FakeSocket.instances = [];
+    localStorage.clear();
+    sessionStorage.clear();
     vi.stubGlobal('WebSocket', FakeSocket as unknown as typeof WebSocket);
-    useUserStore.setState({ token: 'token-abc' });
+    act(() => {
+      applyUserAuth('token-abc', 'refresh-abc', true);
+    });
   });
 
   afterEach(() => {
     vi.useRealTimers();
     vi.unstubAllGlobals();
-    useUserStore.setState({ token: null });
+    act(() => {
+      clearUserSession();
+    });
   });
 
   it('登录后建立连接并转发收到的消息', () => {
@@ -43,16 +49,34 @@ describe('useWebSocket', () => {
     expect(FakeSocket.instances[0].url).toContain('/ws?token=token-abc');
 
     act(() => {
-      FakeSocket.instances[0].onmessage?.({ data: JSON.stringify({ id: 1, fromId: 8, toId: 7, content: 'hi', type: 'text' }) });
+      FakeSocket.instances[0].onmessage?.({
+        data: JSON.stringify({ id: 1, fromId: 8, toId: 7, content: 'hi', type: 'text' }),
+      });
     });
 
     expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ id: 1, content: 'hi' }));
   });
 
   it('未登录不建立连接', () => {
-    useUserStore.setState({ token: null });
+    act(() => {
+      clearUserSession();
+    });
     renderHook(() => useWebSocket(vi.fn()));
     expect(FakeSocket.instances).toHaveLength(0);
+  });
+
+  it('session 静默换票后应带着新 token 重连', () => {
+    renderHook(() => useWebSocket(vi.fn()));
+    expect(FakeSocket.instances).toHaveLength(1);
+    expect(FakeSocket.instances[0].url).toContain('token-abc');
+
+    act(() => {
+      applyUserAuth('token-refreshed', 'refresh-new');
+    });
+
+    expect(FakeSocket.instances.length).toBeGreaterThan(1);
+    const latest = FakeSocket.instances[FakeSocket.instances.length - 1];
+    expect(latest.url).toContain('/ws?token=token-refreshed');
   });
 
   it('卸载后关闭连接且不再重连', () => {

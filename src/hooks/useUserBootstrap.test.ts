@@ -6,7 +6,6 @@ const getProfileMock = vi.fn();
 vi.mock('../api/user', () => ({
   getProfile: (...args: unknown[]) => getProfileMock(...args),
   logout: vi.fn(),
-  refreshTokenApi: vi.fn(),
 }));
 
 import { useUserBootstrap } from './useUserBootstrap';
