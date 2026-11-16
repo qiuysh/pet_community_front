@@ -12,10 +12,14 @@ import {
   isAdminRemembered,
   setRememberedAdminUsername,
 } from '../../utils/authStorage';
+import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
+import { FieldError } from '../../components/ui';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { AdminHint, AdminInput, AdminLabel } from '../../components/admin/adminField';
 import { adminUi } from '../../styles/adminUi';
+
+const LOGIN_FIELDS = ['username', 'password', 'captchaCode'] as const;
 
 export function AdminLoginPage() {
   const navigate = useNavigate();
@@ -25,7 +29,7 @@ export function AdminLoginPage() {
   const [remember, setRemember] = useState(
     () => isAdminRemembered() || !!getRememberedAdminUsername(),
   );
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { errors, showErrors, clearError, formRef } = useFormErrors(LOGIN_FIELDS);
   const [requireCaptcha, setRequireCaptcha] = useState(false);
   const [captchaId, setCaptchaId] = useState('');
   const [captchaImage, setCaptchaImage] = useState('');
@@ -79,10 +83,9 @@ export function AdminLoginPage() {
       validationRules.captchaCode = [validators.required('请输入验证码')];
     }
 
-    const formErrors = validateForm(formData, validationRules);
-    setErrors(formErrors);
-
+    const formErrors = validateForm(formData, validationRules) as FormErrors<(typeof LOGIN_FIELDS)[number]>;
     if (Object.keys(formErrors).length > 0) {
+      showErrors(formErrors);
       return;
     }
 
@@ -111,11 +114,14 @@ export function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-cream flex items-center justify-center p-4 relative overflow-hidden pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
+      <a href="#admin-auth-main" className="skip-link">
+        跳到主要内容
+      </a>
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary-light/25 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
-      <div className="bg-white rounded-md shadow-card w-full max-w-md p-8 relative animate-fadeIn">
+      <main id="admin-auth-main" className="bg-white rounded-md shadow-card w-full max-w-md p-8 relative animate-fadeIn">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-secondary-soft rounded-sm flex items-center justify-center mx-auto mb-4">
             <ShieldCheck
@@ -125,11 +131,11 @@ export function AdminLoginPage() {
               aria-hidden="true"
             />
           </div>
-          <h1 className={adminUi.pageTitle}>{siteName}管理后台</h1>
+          <h1 className={`${adminUi.pageTitle} text-balance`}>{siteName}管理后台</h1>
           <p className="text-brown-secondary mt-2">请登录您的管理员账号</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} ref={formRef} noValidate>
           <div className="mb-4">
             <AdminLabel htmlFor="admin-username">用户名</AdminLabel>
             <AdminInput
@@ -139,17 +145,16 @@ export function AdminLoginPage() {
               invalid={!!errors.username}
               onChange={(e) => {
                 setUsername(e.target.value);
-                if (errors.username) {
-                  setErrors((prev) => ({ ...prev, username: '' }));
-                }
+                clearError('username');
               }}
               placeholder="请输入用户名…"
               autoComplete="username"
               name="username"
               spellCheck={false}
               className="h-11 px-4"
+              aria-describedby={errors.username ? 'admin-username-error' : undefined}
             />
-            {errors.username ? <AdminHint className="text-error-text">{errors.username}</AdminHint> : null}
+            <FieldError id="admin-username-error">{errors.username}</FieldError>
           </div>
 
           <div className="mb-4">
@@ -161,16 +166,15 @@ export function AdminLoginPage() {
               invalid={!!errors.password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                if (errors.password) {
-                  setErrors((prev) => ({ ...prev, password: '' }));
-                }
+                clearError('password');
               }}
               placeholder="请输入密码…"
               autoComplete="current-password"
               name="password"
               className="h-11 px-4"
+              aria-describedby={errors.password ? 'admin-password-error' : undefined}
             />
-            {errors.password ? <AdminHint className="text-error-text">{errors.password}</AdminHint> : null}
+            <FieldError id="admin-password-error">{errors.password}</FieldError>
           </div>
 
           {requireCaptcha && (
@@ -184,9 +188,7 @@ export function AdminLoginPage() {
                   invalid={!!errors.captchaCode}
                   onChange={(e) => {
                     setCaptchaCode(e.target.value.toUpperCase());
-                    if (errors.captchaCode) {
-                      setErrors((prev) => ({ ...prev, captchaCode: '' }));
-                    }
+                    clearError('captchaCode');
                   }}
                   placeholder="输入图中字符…"
                   autoComplete="off"
@@ -195,6 +197,7 @@ export function AdminLoginPage() {
                   className="h-11 px-4 flex-1"
                   maxLength={4}
                   aria-label="图形验证码"
+                  aria-describedby={errors.captchaCode ? 'admin-captcha-error' : 'admin-captcha-hint'}
                 />
                 <button
                   type="button"
@@ -215,16 +218,20 @@ export function AdminLoginPage() {
                   ) : (
                     <RefreshCw
                       size={ICON_SIZE.inline}
-                      className={captchaLoading ? 'animate-spin text-brown-muted' : 'text-brown-muted'}
+                      className={
+                        captchaLoading
+                          ? 'animate-spin motion-reduce:animate-none text-brown-muted'
+                          : 'text-brown-muted'
+                      }
                       aria-hidden="true"
                     />
                   )}
                 </button>
               </div>
               {errors.captchaCode ? (
-                <AdminHint className="text-error-text">{errors.captchaCode}</AdminHint>
+                <FieldError id="admin-captcha-error">{errors.captchaCode}</FieldError>
               ) : (
-                <AdminHint>连续失败后需填写验证码，点击图片可刷新</AdminHint>
+                <AdminHint id="admin-captcha-hint">连续失败后需填写验证码，点击图片可刷新</AdminHint>
               )}
             </div>
           )}
@@ -262,7 +269,7 @@ export function AdminLoginPage() {
             <span className="text-secondary">后台账号由超级管理员创建</span>
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

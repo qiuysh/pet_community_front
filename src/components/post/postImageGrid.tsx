@@ -66,7 +66,15 @@ export function PostImageGrid({
               setOverIndex(null);
             }}
           >
-            <img src={img} alt="" decoding="async" draggable={false} />
+            <img
+              src={img}
+              alt=""
+              width={160}
+              height={160}
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+            />
             {idx === 0 && <span className="cover-badge">封面</span>}
             <span className="drag-handle" aria-hidden="true">
               <GripVertical size={ICON_SIZE.inline} strokeWidth={iconStroke(ICON_SIZE.inline)} />

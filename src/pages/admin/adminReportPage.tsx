@@ -234,7 +234,7 @@ export function AdminReportPage() {
                       />
                     </AdminTable.Cell>
                   ) : null}
-                  <AdminTable.Cell className="whitespace-nowrap font-mono">#{item.id}</AdminTable.Cell>
+                  <AdminTable.Cell className="whitespace-nowrap font-mono tabular-nums">#{item.id}</AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap text-brown-secondary">
                     {item.targetType === 'post' ? '动态' : item.targetType === 'comment' ? '评论' : item.targetType}
                     <span className="ml-1 text-brown-muted">#{item.targetId}</span>

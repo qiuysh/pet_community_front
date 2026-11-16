@@ -62,12 +62,10 @@ describe('AnnouncementForm', () => {
 
   it('关闭按钮触发 onClose', () => {
     const onClose = vi.fn();
-    const { container } = renderWithToast(
+    renderWithToast(
       <AnnouncementForm onClose={onClose} onSuccess={() => {}} />
     );
-    const closeButtons = container.querySelectorAll('button');
-    const closeBtn = Array.from(closeButtons).find(btn => btn.querySelector('svg'));
-    if (closeBtn) fireEvent.click(closeBtn);
+    fireEvent.click(screen.getByRole('button', { name: '关闭' }));
     expect(onClose).toHaveBeenCalled();
   });
 
@@ -81,30 +79,27 @@ describe('AnnouncementForm', () => {
   });
 
   it('空标题时显示错误', async () => {
-    const errorSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     renderWithToast(
       <AnnouncementForm onClose={() => {}} onSuccess={() => {}} />
     );
     fireEvent.click(screen.getByRole('button', { name: '发布公告' }));
     await waitFor(() => {
-      expect(errorSpy).toHaveBeenCalled();
+      expect(screen.getByText('请填写公告标题')).toBeInTheDocument();
     });
     expect(createAnnouncement).not.toHaveBeenCalled();
-    errorSpy.mockRestore();
   });
 
   it('空内容时显示错误', async () => {
-    const errorSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     renderWithToast(
       <AnnouncementForm onClose={() => {}} onSuccess={() => {}} />
     );
-    const titleInput = screen.getByPlaceholderText('请输入公告标题');
+    const titleInput = screen.getByPlaceholderText(/请输入公告标题/);
     fireEvent.change(titleInput, { target: { value: '标题' } });
     fireEvent.click(screen.getByRole('button', { name: '发布公告' }));
     await waitFor(() => {
-      expect(errorSpy).toHaveBeenCalled();
+      expect(screen.getByText('请填写公告内容')).toBeInTheDocument();
     });
-    errorSpy.mockRestore();
+    expect(createAnnouncement).not.toHaveBeenCalled();
   });
 
   it('创建公告成功', async () => {
@@ -114,8 +109,8 @@ describe('AnnouncementForm', () => {
     renderWithToast(
       <AnnouncementForm onClose={onClose} onSuccess={onSuccess} />
     );
-    fireEvent.change(screen.getByPlaceholderText('请输入公告标题'), { target: { value: '测试公告' } });
-    fireEvent.change(screen.getByPlaceholderText('请输入公告内容'), { target: { value: '内容' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入公告标题/), { target: { value: '测试公告' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入公告内容/), { target: { value: '内容' } });
     fireEvent.click(screen.getByRole('button', { name: '发布公告' }));
     await waitFor(() => {
       expect(createAnnouncement).toHaveBeenCalled();
@@ -146,8 +141,8 @@ describe('AnnouncementForm', () => {
     renderWithToast(
       <AnnouncementForm onClose={() => {}} onSuccess={() => {}} />
     );
-    fireEvent.change(screen.getByPlaceholderText('请输入公告标题'), { target: { value: '标题' } });
-    fireEvent.change(screen.getByPlaceholderText('请输入公告内容'), { target: { value: '内容' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入公告标题/), { target: { value: '标题' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入公告内容/), { target: { value: '内容' } });
     fireEvent.click(screen.getByRole('button', { name: '发布公告' }));
     await waitFor(() => {
       expect(errorSpy).toHaveBeenCalled();

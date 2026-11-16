@@ -1,13 +1,12 @@
-import { X } from 'lucide-react';
-import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useState, useEffect } from 'react';
 import type { SystemNotification, CreateNotificationRequest, UpdateNotificationRequest } from '../../types/admin';
 import { createNotification, updateNotification } from '../../api/admin';
 import { useToast } from '../toast';
+import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
+import { FieldError, Modal } from '../ui';
 import { AdminButton } from './adminButton';
 import { AdminChip } from './adminChip';
 import { AdminDateTime, AdminHint, AdminInput, AdminLabel, AdminSelect, AdminTextarea } from './adminField';
-import { adminUi } from '../../styles/adminUi';
 
 interface NotificationFormProps {
   notification?: SystemNotification | null;
@@ -27,6 +26,8 @@ const targetTypes = [
   { value: 2, label: '特定用户' },
 ];
 
+const FORM_ID = 'notification-form';
+
 export function NotificationForm({ notification, onClose, onSuccess }: NotificationFormProps) {
   const { success, error } = useToast();
   const [title, setTitle] = useState('');
@@ -36,6 +37,7 @@ export function NotificationForm({ notification, onClose, onSuccess }: Notificat
   const [targetIds, setTargetIds] = useState('');
   const [publishAt, setPublishAt] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { errors, showErrors, clearError, formRef } = useFormErrors(['title', 'content'] as const);
 
   useEffect(() => {
     if (notification) {
@@ -55,8 +57,11 @@ export function NotificationForm({ notification, onClose, onSuccess }: Notificat
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) {
-      error('请填写完整信息');
+    const next: FormErrors<'title' | 'content'> = {};
+    if (!title.trim()) next.title = '请填写通知标题';
+    if (!content.trim()) next.content = '请填写通知内容';
+    if (Object.keys(next).length > 0) {
+      showErrors(next);
       return;
     }
 
@@ -94,92 +99,137 @@ export function NotificationForm({ notification, onClose, onSuccess }: Notificat
   };
 
   return (
-    <div className={adminUi.overlay}>
-      <div className="bg-white rounded-md shadow-hover w-full max-w-lg mx-4 animate-scaleIn max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border-light bg-white shrink-0">
-          <h2 className="page-section-title">
-            {notification ? '编辑通知' : '发布通知'}
-          </h2>
-          <AdminButton variant="ghost" type="button" onClick={onClose} aria-label="关闭" className="text-brown-muted hover:text-brown transition-colors">
-            <X size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
+    <Modal
+      open
+      onClose={onClose}
+      title={notification ? '编辑通知' : '发布通知'}
+      tone="secondary"
+      size="lg"
+      footer={
+        <div className="flex w-full justify-end gap-3">
+          <AdminButton type="button" variant="outline" onClick={onClose}>
+            取消
+          </AdminButton>
+          <AdminButton
+            type="submit"
+            form={FORM_ID}
+            variant="secondary"
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          >
+            {isSubmitting ? '提交中…' : notification ? '保存修改' : '保存通知'}
           </AdminButton>
         </div>
+      }
+    >
+      <form id={FORM_ID} ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <AdminLabel htmlFor="notification-title" required>
+            通知标题
+          </AdminLabel>
+          <AdminInput
+            id="notification-title"
+            name="title"
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              clearError('title');
+            }}
+            placeholder="请输入通知标题…"
+            maxLength={100}
+            autoComplete="off"
+            invalid={!!errors.title}
+            aria-invalid={!!errors.title}
+            aria-describedby={errors.title ? 'notification-title-error' : undefined}
+          />
+          <FieldError id="notification-title-error">{errors.title}</FieldError>
+        </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto min-h-0 bg-white">
+        <div>
+          <AdminLabel htmlFor="notification-type" required>
+            通知类型
+          </AdminLabel>
+          <AdminSelect
+            id="notification-type"
+            name="type"
+            value={type}
+            onChange={(e) => setType(parseInt(e.target.value) as 1 | 2 | 3)}
+          >
+            {notificationTypes.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </AdminSelect>
+        </div>
+
+        <div>
+          <AdminLabel htmlFor="notification-target-type" required>
+            发送对象
+          </AdminLabel>
+          <AdminSelect
+            id="notification-target-type"
+            name="targetType"
+            value={targetType}
+            onChange={(e) => setTargetType(parseInt(e.target.value) as 0 | 1 | 2)}
+          >
+            {targetTypes.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </AdminSelect>
+        </div>
+
+        {(targetType === 1 || targetType === 2) && (
           <div>
-            <AdminLabel required>通知标题</AdminLabel>
+            <AdminLabel htmlFor="notification-target-ids">目标用户ID（逗号分隔）</AdminLabel>
             <AdminInput
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="请输入通知标题…"
-              maxLength={100}
+              id="notification-target-ids"
+              name="targetIds"
+              value={targetIds}
+              onChange={(e) => setTargetIds(e.target.value)}
+              placeholder="如: 1,2,3 或 1 2 3…"
+              autoComplete="off"
+              spellCheck={false}
             />
           </div>
+        )}
 
-          <div>
-            <AdminLabel required>通知类型</AdminLabel>
-            <AdminSelect value={type} onChange={(e) => setType(parseInt(e.target.value) as 1 | 2 | 3)}>
-              {notificationTypes.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </AdminSelect>
-          </div>
+        <div>
+          <AdminLabel htmlFor="notification-publish-at">定时推送时间</AdminLabel>
+          <AdminDateTime
+            id="notification-publish-at"
+            aria-label="定时推送时间"
+            value={publishAt}
+            onChange={setPublishAt}
+          />
+          <AdminHint>留空则立即发送（保存为草稿）</AdminHint>
+        </div>
 
-          <div>
-            <AdminLabel required>发送对象</AdminLabel>
-            <AdminSelect
-              value={targetType}
-              onChange={(e) => setTargetType(parseInt(e.target.value) as 0 | 1 | 2)}
-            >
-              {targetTypes.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </AdminSelect>
-          </div>
-
-          {(targetType === 1 || targetType === 2) && (
-            <div>
-              <AdminLabel>目标用户ID（逗号分隔）</AdminLabel>
-              <AdminInput
-                value={targetIds}
-                onChange={(e) => setTargetIds(e.target.value)}
-                placeholder="如: 1,2,3 或 1 2 3…"
-              />
-            </div>
-          )}
-
-          <div>
-            <AdminLabel>定时推送时间</AdminLabel>
-            <AdminDateTime aria-label="定时推送时间" value={publishAt} onChange={setPublishAt} />
-            <AdminHint>留空则立即发送（保存为草稿）</AdminHint>
-          </div>
-
-          <div>
-            <AdminLabel required>通知内容</AdminLabel>
-            <AdminTextarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={6}
-              placeholder="请输入通知内容…"
-              maxLength={5000}
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4">
-            <AdminButton type="button" variant="outline" onClick={onClose}>
-              取消
-            </AdminButton>
-            <AdminButton type="submit" variant="secondary" disabled={isSubmitting} loading={isSubmitting}>
-              {isSubmitting ? '提交中…' : notification ? '保存修改' : '保存通知'}
-            </AdminButton>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div>
+          <AdminLabel htmlFor="notification-content" required>
+            通知内容
+          </AdminLabel>
+          <AdminTextarea
+            id="notification-content"
+            name="content"
+            value={content}
+            onChange={(e) => {
+              setContent(e.target.value);
+              clearError('content');
+            }}
+            rows={6}
+            placeholder="请输入通知内容…"
+            maxLength={5000}
+            invalid={!!errors.content}
+            aria-invalid={!!errors.content}
+            aria-describedby={errors.content ? 'notification-content-error' : undefined}
+          />
+          <FieldError id="notification-content-error">{errors.content}</FieldError>
+        </div>
+      </form>
+    </Modal>
   );
 }
 
@@ -194,33 +244,26 @@ export function NotificationPreview({ title, content, type, onClose }: Notificat
   const typeLabel = notificationTypes.find((t) => t.value === type)?.label || '系统通知';
 
   return (
-    <div className={adminUi.overlay}>
-      <div className={adminUi.modalDialog}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border-light">
-          <h2 className="page-section-title">通知预览</h2>
-          <AdminButton variant="ghost" type="button" onClick={onClose} aria-label="关闭" className="text-brown-muted hover:text-brown transition-colors">
-            <X size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
-          </AdminButton>
-        </div>
-
-        <div className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <AdminChip tone={type === 3 ? 'warning' : 'secondary'}>{typeLabel}</AdminChip>
-          </div>
-
-          <h3 className="page-content-title mb-4">{title}</h3>
-
-          <div className="bg-soft rounded-md p-4">
-            <p className="text-brown-secondary whitespace-pre-wrap break-all">{content}</p>
-          </div>
-        </div>
-
-        <div className="px-6 py-4 border-t border-border-light flex justify-end">
-          <AdminButton type="button" variant="outline" onClick={onClose}>
-            关闭
-          </AdminButton>
-        </div>
+    <Modal
+      open
+      onClose={onClose}
+      title="通知预览"
+      tone="secondary"
+      footer={
+        <AdminButton type="button" variant="outline" onClick={onClose}>
+          关闭
+        </AdminButton>
+      }
+    >
+      <div className="flex items-center gap-2 mb-4">
+        <AdminChip tone={type === 3 ? 'warning' : 'secondary'}>{typeLabel}</AdminChip>
       </div>
-    </div>
+
+      <h3 className="page-content-title mb-4">{title}</h3>
+
+      <div className="bg-soft rounded-md p-4">
+        <p className="text-brown-secondary whitespace-pre-wrap break-all">{content}</p>
+      </div>
+    </Modal>
   );
 }

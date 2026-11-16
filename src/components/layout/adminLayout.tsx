@@ -20,7 +20,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, [location.pathname, setSidebarCollapsed]);
 
   return (
-    <div className="flex h-dvh max-h-dvh overflow-hidden bg-cream">
+    <div
+      className="flex h-dvh max-h-dvh overflow-hidden bg-cream pt-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)]"
+    >
       <a
         href="#admin-main"
         className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2 focus-visible:left-2 focus-visible:z-50 focus-visible:px-4 focus-visible:py-2 focus-visible:bg-secondary focus-visible:text-white focus-visible:rounded-sm"

@@ -52,7 +52,7 @@ export function Pagination({ currentPage, total, pageSize, onPageChange }: Pagin
   return (
     <div className="px-6 py-4 border-t border-border-light">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="text-sm text-brown-secondary">
+        <div className="text-sm text-brown-secondary tabular-nums">
           显示第 <span className="font-medium text-brown">{start}</span> 到{' '}
           <span className="font-medium text-brown">{end}</span> 条，共{' '}
           <span className="font-medium text-brown">{total.toLocaleString()}</span> 条
@@ -69,19 +69,35 @@ export function Pagination({ currentPage, total, pageSize, onPageChange }: Pagin
           >
             <ChevronLeft {...chevronProps} />
           </AdminButton>
-          {pageNumbers.map((pageNum) => (
-            <AdminButton
-              key={pageNum}
-              type="button"
-              variant={pageNum === currentPage ? 'secondary' : 'outline'}
-              size="sm"
-              aria-current={pageNum === currentPage ? 'page' : undefined}
-              onClick={() => onPageChange(pageNum)}
-              className="min-w-9 px-3"
-            >
-              {pageNum}
-            </AdminButton>
-          ))}
+
+          {/* 移动端：紧凑「当前 / 总页」 */}
+          <p
+            className="min-w-[4.5rem] rounded-sm bg-soft px-3 py-1.5 text-center text-sm tabular-nums text-brown-secondary sm:hidden"
+            aria-live="polite"
+          >
+            <span className="font-semibold text-secondary-dark">{currentPage}</span>
+            <span className="mx-1 text-brown-light">/</span>
+            <span>{totalPages}</span>
+          </p>
+
+          {/* 桌面端：页码按钮 */}
+          <div className="hidden items-center gap-1 sm:inline-flex" role="list">
+            {pageNumbers.map((pageNum) => (
+              <AdminButton
+                key={pageNum}
+                type="button"
+                variant={pageNum === currentPage ? 'secondary' : 'outline'}
+                size="sm"
+                aria-label={`第 ${pageNum} 页`}
+                aria-current={pageNum === currentPage ? 'page' : undefined}
+                onClick={() => onPageChange(pageNum)}
+                className="min-w-9 px-3 tabular-nums"
+              >
+                {pageNum}
+              </AdminButton>
+            ))}
+          </div>
+
           <AdminButton
             type="button"
             variant="outline"

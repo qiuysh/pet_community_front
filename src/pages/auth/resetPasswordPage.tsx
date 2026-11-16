@@ -59,7 +59,11 @@ export function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center p-4">
-      <Card className="w-full max-w-md" padding="lg">
+      <a href="#auth-main" className="skip-link">
+        跳到主要内容
+      </a>
+      <main id="auth-main" className="w-full max-w-md">
+      <Card className="w-full" padding="lg">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-4 shadow-brand">
             <Key className="w-8 h-8 text-white" />
@@ -173,6 +177,7 @@ export function ResetPasswordPage() {
           </Link>
         </div>
       </Card>
+      </main>
     </div>
   );
 }

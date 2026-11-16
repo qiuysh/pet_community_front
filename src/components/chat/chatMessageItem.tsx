@@ -49,7 +49,14 @@ export function ChatMessageItem({
               onClick={() => onPreviewImage(mediaSrc, '图片消息')}
               aria-label="查看大图"
             >
-              <img src={mediaSrc} alt="图片消息" loading="lazy" decoding="async" />
+              <img
+                src={mediaSrc}
+                alt="图片消息"
+                width={240}
+                height={240}
+                loading="lazy"
+                decoding="async"
+              />
               {message.pending ? (
                 <span className="bubble-pending" aria-hidden="true">
                   <Spinner size="sm" />

@@ -8,7 +8,7 @@ import { PostActions } from '../../components/post/postActions';
 import { AdBanner } from '../../components/ad/AdBanner';
 import { Play } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
-import { Button } from '../../components/ui/button';
+import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Avatar } from '../../components/ui/avatar';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -36,14 +36,6 @@ export const PostListPage = () => {
   const { isLoggedIn } = useUserStore();
   const { posts, loading, totalPages, tab, page, updateQuery } = usePostList();
 
-  const handlePublish = () => {
-    if (!isLoggedIn) {
-      navigate('/login', { state: { from: '/posts/create' } });
-      return;
-    }
-    navigate('/posts/create');
-  };
-
   return (
     <div className="post-list-page">
       <div className="post-list-header">
@@ -54,9 +46,20 @@ export const PostListPage = () => {
           onSelectionChange={(key) => updateQuery({ tab: key as PostTab, page: 1 })}
           items={TABS.map((t) => ({ key: t.key, title: t.label }))}
         />
-        <Button type="button" size="sm" className="publish-btn" onClick={handlePublish}>
-          发布
-        </Button>
+        {isLoggedIn ? (
+          <Link to="/posts/create" className={buttonClass({ size: 'sm', className: 'publish-btn' })}>
+            发布
+          </Link>
+        ) : (
+          <Button
+            type="button"
+            size="sm"
+            className="publish-btn"
+            onClick={() => navigate('/login', { state: { from: '/posts/create' } })}
+          >
+            发布
+          </Button>
+        )}
       </div>
 
       <AdBanner location="home_banner" className="home-banner-slot" />

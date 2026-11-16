@@ -188,6 +188,7 @@ export function ProfileSettingsPage() {
                       id="ps-nickname"
                       name="nickname"
                       autoComplete="nickname"
+                      spellCheck={false}
                       value={nickname}
                       onChange={(e) => {
                         setNickname(e.target.value);

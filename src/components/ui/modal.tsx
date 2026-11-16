@@ -15,6 +15,10 @@ export interface ModalProps {
   /** 点击遮罩是否关闭，默认 true */
   dismissable?: boolean;
   /**
+   * 关闭按钮 focus ring 色调。默认 primary（蜜桃）；后台弹层用 secondary（青竹）。
+   */
+  tone?: 'primary' | 'secondary';
+  /**
    * 弹出位置。默认按设备自适应：移动端贴底（Sheet 手感），桌面端居中。
    * 显式传入时以传入值为准。
    */
@@ -36,6 +40,7 @@ export function Modal({
   size = 'md',
   className = '',
   dismissable = true,
+  tone = 'primary',
   placement,
 }: ModalProps) {
   const state = useOverlayState({
@@ -74,7 +79,10 @@ export function Modal({
                 '!bg-transparent !text-brown-secondary',
                 'hover:!bg-soft hover:!text-brown',
                 'data-[hovered=true]:!bg-soft data-[hovered=true]:!text-brown',
-                'focus-visible:!ring-2 focus-visible:!ring-primary/30',
+                'focus-visible:!ring-2',
+                tone === 'secondary'
+                  ? 'focus-visible:!ring-secondary/30'
+                  : 'focus-visible:!ring-primary/30',
               ].join(' ')}
             />
             {title ? (

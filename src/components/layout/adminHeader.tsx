@@ -4,7 +4,7 @@ import { useAdminStore } from '../../stores/adminStore';
 import { useLayoutStore } from '../../stores/layoutStore';
 import { adminRoleLabel, readRoleFromAdminToken } from '../../utils/adminRole';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
-import { Button } from '../ui';
+import { AdminButton } from '../admin/adminButton';
 
 const headerIconProps = {
   size: ICON_SIZE.nav,
@@ -31,7 +31,7 @@ export function AdminHeader() {
 
   return (
     <header className="z-30 flex h-16 shrink-0 items-center justify-between border-b border-border-light bg-white px-4 shadow-card sm:px-6">
-      <Button
+      <AdminButton
         type="button"
         variant="ghost"
         size="sm"
@@ -45,7 +45,7 @@ export function AdminHeader() {
         ) : (
           <X {...headerIconProps} className="text-brown-secondary" />
         )}
-      </Button>
+      </AdminButton>
 
       <div className="ml-auto flex items-center space-x-4">
         <div
@@ -64,7 +64,7 @@ export function AdminHeader() {
           </div>
         </div>
 
-        <Button
+        <AdminButton
           type="button"
           variant="ghost"
           size="sm"
@@ -73,7 +73,7 @@ export function AdminHeader() {
           aria-label="退出登录"
         >
           <LogOut {...metaIconProps} />
-        </Button>
+        </AdminButton>
       </div>
     </header>
   );

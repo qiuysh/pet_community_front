@@ -1,12 +1,11 @@
-import { X } from 'lucide-react';
-import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useState, useEffect } from 'react';
 import type { Announcement, CreateAnnouncementRequest, UpdateAnnouncementRequest } from '../../types/admin';
 import { createAnnouncement, updateAnnouncement } from '../../api/admin';
 import { showSuccessToast, showErrorToast } from '../../utils/toastManager';
+import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
+import { FieldError, Modal } from '../ui';
 import { AdminButton } from './adminButton';
 import { AdminDateTime, AdminInput, AdminLabel, AdminSelect, AdminTextarea } from './adminField';
-import { adminUi } from '../../styles/adminUi';
 
 interface AnnouncementFormProps {
   announcement?: Announcement | null;
@@ -20,6 +19,8 @@ const announcementTypes = [
   { value: 3, label: '维护公告' },
 ];
 
+const FORM_ID = 'announcement-form';
+
 export function AnnouncementForm({ announcement, onClose, onSuccess }: AnnouncementFormProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -28,6 +29,7 @@ export function AnnouncementForm({ announcement, onClose, onSuccess }: Announcem
   const [startAt, setStartAt] = useState('');
   const [endAt, setEndAt] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { errors, showErrors, clearError, formRef } = useFormErrors(['title', 'content'] as const);
 
   useEffect(() => {
     if (announcement) {
@@ -48,8 +50,11 @@ export function AnnouncementForm({ announcement, onClose, onSuccess }: Announcem
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) {
-      showErrorToast('请填写完整信息');
+    const next: FormErrors<'title' | 'content'> = {};
+    if (!title.trim()) next.title = '请填写公告标题';
+    if (!content.trim()) next.content = '请填写公告内容';
+    if (Object.keys(next).length > 0) {
+      showErrors(next);
       return;
     }
 
@@ -81,86 +86,116 @@ export function AnnouncementForm({ announcement, onClose, onSuccess }: Announcem
   };
 
   return (
-    <div className={adminUi.overlay}>
-      <div className="bg-white rounded-md shadow-hover w-full max-w-lg mx-4 animate-scaleIn max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border-light bg-white shrink-0">
-          <h2 className="page-section-title">
-            {announcement ? '编辑公告' : '发布公告'}
-          </h2>
-          <AdminButton variant="ghost" type="button" onClick={onClose} aria-label="关闭" className="text-brown-muted hover:text-brown transition-colors">
-            <X size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
+    <Modal
+      open
+      onClose={onClose}
+      title={announcement ? '编辑公告' : '发布公告'}
+      tone="secondary"
+      size="lg"
+      footer={
+        <div className="flex w-full justify-end gap-3">
+          <AdminButton type="button" variant="outline" onClick={onClose}>
+            取消
+          </AdminButton>
+          <AdminButton
+            type="submit"
+            form={FORM_ID}
+            variant="secondary"
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          >
+            {isSubmitting ? '提交中…' : announcement ? '保存修改' : '发布公告'}
           </AdminButton>
         </div>
+      }
+    >
+      <form id={FORM_ID} ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <AdminLabel htmlFor="announcement-title" required>
+            公告标题
+          </AdminLabel>
+          <AdminInput
+            id="announcement-title"
+            name="title"
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              clearError('title');
+            }}
+            placeholder="请输入公告标题…"
+            maxLength={200}
+            autoComplete="off"
+            invalid={!!errors.title}
+            aria-invalid={!!errors.title}
+            aria-describedby={errors.title ? 'announcement-title-error' : undefined}
+          />
+          <FieldError id="announcement-title-error">{errors.title}</FieldError>
+        </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto min-h-0 bg-white">
+        <div>
+          <AdminLabel htmlFor="announcement-type">公告类型</AdminLabel>
+          <AdminSelect
+            id="announcement-type"
+            name="type"
+            aria-label="公告类型"
+            value={type}
+            onChange={(e) => setType(parseInt(e.target.value))}
+          >
+            {announcementTypes.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </AdminSelect>
+        </div>
+
+        <div>
+          <AdminLabel htmlFor="announcement-sort">排序权重</AdminLabel>
+          <AdminInput
+            id="announcement-sort"
+            name="sortOrder"
+            type="number"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
+            placeholder="数字越大越靠前…"
+            min={0}
+            autoComplete="off"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <AdminLabel required>公告标题</AdminLabel>
-            <AdminInput
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="请输入公告标题…"
-              maxLength={200}
-            />
+            <AdminLabel htmlFor="announcement-start">开始时间</AdminLabel>
+            <AdminDateTime id="announcement-start" aria-label="开始时间" value={startAt} onChange={setStartAt} />
           </div>
-
           <div>
-            <AdminLabel>公告类型</AdminLabel>
-            <AdminSelect
-              aria-label="公告类型"
-              value={type}
-              onChange={(e) => setType(parseInt(e.target.value))}
-            >
-              {announcementTypes.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </AdminSelect>
+            <AdminLabel htmlFor="announcement-end">结束时间</AdminLabel>
+            <AdminDateTime id="announcement-end" aria-label="结束时间" value={endAt} onChange={setEndAt} />
           </div>
+        </div>
 
-          <div>
-            <AdminLabel>排序权重</AdminLabel>
-            <AdminInput
-              type="number"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
-              placeholder="数字越大越靠前…"
-              min={0}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <AdminLabel>开始时间</AdminLabel>
-              <AdminDateTime aria-label="开始时间" value={startAt} onChange={setStartAt} />
-            </div>
-            <div>
-              <AdminLabel>结束时间</AdminLabel>
-              <AdminDateTime aria-label="结束时间" value={endAt} onChange={setEndAt} />
-            </div>
-          </div>
-
-          <div>
-            <AdminLabel required>公告内容</AdminLabel>
-            <AdminTextarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={8}
-              placeholder="请输入公告内容…"
-              maxLength={5000}
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4">
-            <AdminButton type="button" variant="outline" onClick={onClose}>
-              取消
-            </AdminButton>
-            <AdminButton type="submit" variant="secondary" disabled={isSubmitting} loading={isSubmitting}>
-              {isSubmitting ? '提交中…' : announcement ? '保存修改' : '发布公告'}
-            </AdminButton>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div>
+          <AdminLabel htmlFor="announcement-content" required>
+            公告内容
+          </AdminLabel>
+          <AdminTextarea
+            id="announcement-content"
+            name="content"
+            value={content}
+            onChange={(e) => {
+              setContent(e.target.value);
+              clearError('content');
+            }}
+            rows={8}
+            placeholder="请输入公告内容…"
+            maxLength={5000}
+            invalid={!!errors.content}
+            aria-invalid={!!errors.content}
+            aria-describedby={errors.content ? 'announcement-content-error' : undefined}
+          />
+          <FieldError id="announcement-content-error">{errors.content}</FieldError>
+        </div>
+      </form>
+    </Modal>
   );
 }

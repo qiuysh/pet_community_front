@@ -52,7 +52,11 @@ export function ImageLightbox({ open, src, alt = '图片消息', onClose }: Imag
           aria-label={zoomed ? '缩小图片' : '放大图片'}
           onClick={() => setZoomed((prev) => !prev)}
         >
-          {zoomed ? <ZoomOut size={20} /> : <ZoomIn size={20} />}
+          {zoomed ? (
+            <ZoomOut size={20} aria-hidden="true" />
+          ) : (
+            <ZoomIn size={20} aria-hidden="true" />
+          )}
         </button>
         <button
           type="button"
@@ -60,7 +64,7 @@ export function ImageLightbox({ open, src, alt = '图片消息', onClose }: Imag
           aria-label="关闭大图"
           onClick={onClose}
         >
-          <X size={20} />
+          <X size={20} aria-hidden="true" />
         </button>
       </div>
       <img
@@ -68,10 +72,7 @@ export function ImageLightbox({ open, src, alt = '图片消息', onClose }: Imag
         className={`image-lightbox__image${zoomed ? ' zoomed' : ''}`}
         src={src}
         alt={alt}
-        onClick={(event) => {
-          event.stopPropagation();
-          setZoomed((prev) => !prev);
-        }}
+        onClick={(event) => event.stopPropagation()}
       />
     </div>,
     document.body,

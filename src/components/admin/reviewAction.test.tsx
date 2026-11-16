@@ -45,6 +45,8 @@ describe('ReviewAction', () => {
       <ReviewAction content={baseContent} onSuccess={onSuccess} />
     );
     fireEvent.click(screen.getByRole('button', { name: '通过' }));
+    expect(await screen.findByText('确认通过？')).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole('button', { name: '通过' }).at(-1)!);
     await waitFor(() => {
       expect(approveReview).toHaveBeenCalledWith({
         targetType: 'post',
@@ -61,7 +63,23 @@ describe('ReviewAction', () => {
       <ReviewAction content={baseContent} onSuccess={onSuccess} />
     );
     fireEvent.click(screen.getByRole('button', { name: '通过' }));
+    expect(await screen.findByText('确认通过？')).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole('button', { name: '通过' }).at(-1)!);
     await waitFor(() => {
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+  });
+
+  it('取消通过确认时不调用 approveReview', async () => {
+    const onSuccess = vi.fn();
+    renderWithToast(
+      <ReviewAction content={baseContent} onSuccess={onSuccess} />
+    );
+    fireEvent.click(screen.getByRole('button', { name: '通过' }));
+    expect(await screen.findByText('确认通过？')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '取消' }));
+    await waitFor(() => {
+      expect(approveReview).not.toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
     });
   });
@@ -72,7 +90,7 @@ describe('ReviewAction', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: '拒绝' }));
     expect(screen.getByText('拒绝审核')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('请输入拒绝原因，将通知用户')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/请输入拒绝原因，将通知用户/)).toBeInTheDocument();
   });
 
   it('取消按钮关闭拒绝弹窗', () => {
@@ -105,7 +123,7 @@ describe('ReviewAction', () => {
       <ReviewAction content={baseContent} onSuccess={onSuccess} />
     );
     fireEvent.click(screen.getByRole('button', { name: '拒绝' }));
-    fireEvent.change(screen.getByPlaceholderText('请输入拒绝原因，将通知用户'), { target: { value: '内容违规' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入拒绝原因，将通知用户/), { target: { value: '内容违规' } });
     fireEvent.click(screen.getByRole('button', { name: '确认拒绝' }));
     await waitFor(() => {
       expect(rejectReview).toHaveBeenCalledWith({

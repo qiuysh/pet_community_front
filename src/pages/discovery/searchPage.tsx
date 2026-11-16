@@ -55,6 +55,7 @@ export const SearchPage = () => {
           <span className="search-icon" aria-hidden="true"><Search {...actionIconProps} /></span>
           <Input
             type="text"
+            name="keyword"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="搜索用户、帖子、话题…"

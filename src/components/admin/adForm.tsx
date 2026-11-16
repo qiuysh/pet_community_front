@@ -4,6 +4,8 @@ import { AdLocationMap } from '../../types/advertisement';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { createAd, updateAd, getAdPositionList } from '../../api/admin';
 import { useAsync, useAsyncEffect } from '../../hooks/useAsync';
+import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
+import { FieldError } from '../ui';
 import { AdminButton } from './adminButton';
 import { AdminDateTime, AdminHint, AdminInput, AdminLabel, AdminSelect } from './adminField';
 import { adminUi } from '../../styles/adminUi';
@@ -14,6 +16,8 @@ interface AdFormProps {
   onCancel?: () => void;
 }
 
+type AdFormField = 'title' | 'imageUrl' | 'positionId' | 'startTime' | 'endTime';
+
 export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
   const [title, setTitle] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -23,6 +27,13 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
   const [endTime, setEndTime] = useState('');
   const { loading, run } = useAsync();
   const [positions, setPositions] = useState<AdPosition[]>([]);
+  const { errors, showErrors, clearError, formRef } = useFormErrors([
+    'title',
+    'imageUrl',
+    'positionId',
+    'startTime',
+    'endTime',
+  ] as const);
 
   useAsyncEffect(() => getAdPositionList({ page: 1, page_size: 100 }), [], {
     onSuccess: (res) => {
@@ -48,28 +59,16 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim()) {
-      showErrorToast('请输入广告标题');
-      return;
-    }
-    if (!imageUrl.trim()) {
-      showErrorToast('请输入广告图片URL');
-      return;
-    }
-    if (!positionId) {
-      showErrorToast('请选择广告位');
-      return;
-    }
-    if (!startTime) {
-      showErrorToast('请选择开始时间');
-      return;
-    }
-    if (!endTime) {
-      showErrorToast('请选择结束时间');
-      return;
-    }
-    if (endTime <= startTime) {
-      showErrorToast('结束时间不能早于开始时间');
+    const next: FormErrors<AdFormField> = {};
+    if (!title.trim()) next.title = '请输入广告标题';
+    if (!imageUrl.trim()) next.imageUrl = '请输入广告图片URL';
+    if (!positionId) next.positionId = '请选择广告位';
+    if (!startTime) next.startTime = '请选择开始时间';
+    if (!endTime) next.endTime = '请选择结束时间';
+    else if (startTime && endTime <= startTime) next.endTime = '结束时间不能早于开始时间';
+
+    if (Object.keys(next).length > 0) {
+      showErrors(next);
       return;
     }
 
@@ -109,24 +108,45 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
     <div className={`${adminUi.panel} p-6`}>
       <h2 className="page-content-title mb-6">{ad ? '编辑广告' : '创建广告'}</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <AdminLabel required>广告标题</AdminLabel>
+            <AdminLabel htmlFor="ad-title" required>
+              广告标题
+            </AdminLabel>
             <AdminInput
+              id="ad-title"
+              name="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                clearError('title');
+              }}
               maxLength={50}
               placeholder="请输入广告标题…"
+              autoComplete="off"
+              invalid={!!errors.title}
+              aria-invalid={!!errors.title}
+              aria-describedby={errors.title ? 'ad-title-error' : undefined}
             />
+            <FieldError id="ad-title-error">{errors.title}</FieldError>
           </div>
 
           <div>
-            <AdminLabel required>广告位</AdminLabel>
+            <AdminLabel htmlFor="ad-position" required>
+              广告位
+            </AdminLabel>
             <AdminSelect
+              id="ad-position"
+              name="positionId"
               aria-label="广告位"
               value={positionId ? String(positionId) : ''}
-              onChange={(e) => setPositionId(Number(e.target.value) || 0)}
+              onChange={(e) => {
+                setPositionId(Number(e.target.value) || 0);
+                clearError('positionId');
+              }}
+              invalid={!!errors.positionId}
+              aria-describedby={errors.positionId ? 'ad-position-error' : undefined}
             >
               <option value="">请选择广告位</option>
               {positions.map((p) => (
@@ -136,6 +156,7 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
                 </option>
               ))}
             </AdminSelect>
+            <FieldError id="ad-position-error">{errors.positionId}</FieldError>
             {positions.length === 0 && (
               <AdminHint>暂无广告位，请先在「广告位」中创建并启用</AdminHint>
             )}
@@ -146,13 +167,26 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
         </div>
 
         <div>
-          <AdminLabel required>广告图片URL</AdminLabel>
+          <AdminLabel htmlFor="ad-image-url" required>
+            广告图片URL
+          </AdminLabel>
           <AdminInput
+            id="ad-image-url"
+            name="imageUrl"
             type="url"
             value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
+            onChange={(e) => {
+              setImageUrl(e.target.value);
+              clearError('imageUrl');
+            }}
             placeholder="请输入广告图片URL…"
+            autoComplete="off"
+            spellCheck={false}
+            invalid={!!errors.imageUrl}
+            aria-invalid={!!errors.imageUrl}
+            aria-describedby={errors.imageUrl ? 'ad-image-url-error' : undefined}
           />
+          <FieldError id="ad-image-url-error">{errors.imageUrl}</FieldError>
           {imageUrl && (
             <div className="mt-3">
               <img
@@ -167,23 +201,51 @@ export function AdForm({ ad, onSubmit, onCancel }: AdFormProps) {
         </div>
 
         <div>
-          <AdminLabel>跳转链接URL</AdminLabel>
+          <AdminLabel htmlFor="ad-link-url">跳转链接URL</AdminLabel>
           <AdminInput
+            id="ad-link-url"
+            name="linkUrl"
             type="url"
             value={linkUrl}
             onChange={(e) => setLinkUrl(e.target.value)}
             placeholder="请输入跳转链接URL（可选）…"
+            autoComplete="off"
+            spellCheck={false}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <AdminLabel required>开始时间</AdminLabel>
-            <AdminDateTime aria-label="开始时间" value={startTime} onChange={setStartTime} />
+            <AdminLabel htmlFor="ad-start-time" required>
+              开始时间
+            </AdminLabel>
+            <AdminDateTime
+              id="ad-start-time"
+              aria-label="开始时间"
+              value={startTime}
+              onChange={(v) => {
+                setStartTime(v);
+                clearError('startTime');
+              }}
+              invalid={!!errors.startTime}
+            />
+            <FieldError id="ad-start-time-error">{errors.startTime}</FieldError>
           </div>
           <div>
-            <AdminLabel required>结束时间</AdminLabel>
-            <AdminDateTime aria-label="结束时间" value={endTime} onChange={setEndTime} />
+            <AdminLabel htmlFor="ad-end-time" required>
+              结束时间
+            </AdminLabel>
+            <AdminDateTime
+              id="ad-end-time"
+              aria-label="结束时间"
+              value={endTime}
+              onChange={(v) => {
+                setEndTime(v);
+                clearError('endTime');
+              }}
+              invalid={!!errors.endTime}
+            />
+            <FieldError id="ad-end-time-error">{errors.endTime}</FieldError>
             <AdminHint>结束时间需晚于开始时间</AdminHint>
           </div>
         </div>

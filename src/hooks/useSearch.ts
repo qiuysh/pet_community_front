@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import {
   search,
   getSearchHistory,
@@ -9,13 +8,18 @@ import {
 } from '../api/discovery';
 import { useToast } from '../components/toast';
 import { useAsyncEffect } from './useAsync';
+import { useSyncedSearchParams } from './useSyncedSearchParams';
 import { SearchResult, SearchHistoryInfo, HotKeywordInfo } from '../types/discovery';
+
+const SEARCH_QUERY = {
+  keyword: { kind: 'string', default: '' },
+} as const;
 
 /**
  * 搜索 hook
  *
  * 管理:
- * - 搜索关键词(从 URL query 初始化)
+ * - 搜索关键词(与 URL `?keyword=` 同步)
  * - 搜索结果(search)
  * - 搜索历史(getSearchHistory/deleteSearchHistory/clearSearchHistory)
  * - 热门关键词(getHotKeywords)
@@ -24,9 +28,10 @@ import { SearchResult, SearchHistoryInfo, HotKeywordInfo } from '../types/discov
  *   const { keyword, setKeyword, loading, result, history, hotKeywords, handleSearch, handleDeleteHistory, handleClearHistory, handleHotKeywordClick } = useSearch();
  */
 export function useSearch() {
-  const [searchParams] = useSearchParams();
+  const [q, setQ] = useSyncedSearchParams(SEARCH_QUERY);
+  const keyword = q.keyword;
+  const setKeyword = useCallback((value: string) => setQ({ keyword: value }), [setQ]);
   const toast = useToast();
-  const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
   const [history, setHistory] = useState<SearchHistoryInfo[]>([]);
   const [hotKeywords, setHotKeywords] = useState<HotKeywordInfo[]>([]);
 

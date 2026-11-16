@@ -1,9 +1,13 @@
 import { isValidElement, type ReactElement, type ReactNode } from 'react';
+import { useHref, useNavigate } from 'react-router-dom';
 import { Dropdown as HeroDropdown } from '@heroui/react/dropdown';
+import { RouterProvider as AriaRouterProvider } from '@heroui/react';
 
 export interface DropdownItem {
   key: string;
   label: ReactNode;
+  /** 有值时菜单项渲染为链接（配合 Aria RouterProvider 走 SPA 导航） */
+  href?: string;
   danger?: boolean;
   disabled?: boolean;
 }
@@ -70,43 +74,47 @@ export function Dropdown({
   className = '',
   'aria-label': ariaLabel = '更多操作',
 }: DropdownProps) {
+  const navigate = useNavigate();
   const resolved = resolveTrigger(trigger, ariaLabel);
 
   return (
-    <HeroDropdown>
-      <HeroDropdown.Trigger
-        aria-label={resolved.ariaLabel}
-        isDisabled={resolved.isDisabled}
-        className={[
-          'inline-flex items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
-          resolved.className,
-          className,
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        {resolved.content}
-      </HeroDropdown.Trigger>
-      <HeroDropdown.Popover>
-        <HeroDropdown.Menu
-          onAction={(key) => onAction?.(String(key))}
-          className="min-w-[10rem] rounded-md shadow-medium bg-white border border-border p-1"
+    <AriaRouterProvider navigate={navigate} useHref={useHref}>
+      <HeroDropdown>
+        <HeroDropdown.Trigger
+          aria-label={resolved.ariaLabel}
+          isDisabled={resolved.isDisabled}
+          className={[
+            'inline-flex items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
+            resolved.className,
+            className,
+          ]
+            .filter(Boolean)
+            .join(' ')}
         >
-          {items.map((item) => (
-            <HeroDropdown.Item
-              key={item.key}
-              id={item.key}
-              isDisabled={item.disabled}
-              className={[
-                'rounded-sm px-3 py-2 text-sm cursor-pointer',
-                item.danger ? 'text-error-text' : 'text-brown',
-              ].join(' ')}
-            >
-              {item.label}
-            </HeroDropdown.Item>
-          ))}
-        </HeroDropdown.Menu>
-      </HeroDropdown.Popover>
-    </HeroDropdown>
+          {resolved.content}
+        </HeroDropdown.Trigger>
+        <HeroDropdown.Popover>
+          <HeroDropdown.Menu
+            onAction={(key) => onAction?.(String(key))}
+            className="min-w-[10rem] rounded-md shadow-medium bg-white border border-border p-1"
+          >
+            {items.map((item) => (
+              <HeroDropdown.Item
+                key={item.key}
+                id={item.key}
+                href={item.href}
+                isDisabled={item.disabled}
+                className={[
+                  'rounded-sm px-3 py-2 text-sm cursor-pointer',
+                  item.danger ? 'text-error-text' : 'text-brown',
+                ].join(' ')}
+              >
+                {item.label}
+              </HeroDropdown.Item>
+            ))}
+          </HeroDropdown.Menu>
+        </HeroDropdown.Popover>
+      </HeroDropdown>
+    </AriaRouterProvider>
   );
 }

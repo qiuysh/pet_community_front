@@ -51,11 +51,10 @@ describe('NotificationForm', () => {
 
   it('关闭按钮触发 onClose', () => {
     const onClose = vi.fn();
-    const { container } = renderWithToast(
+    renderWithToast(
       <NotificationForm onClose={onClose} onSuccess={() => {}} />
     );
-    const closeBtn = container.querySelector('button svg')?.parentElement;
-    if (closeBtn) fireEvent.click(closeBtn);
+    fireEvent.click(screen.getByRole('button', { name: '关闭' }));
     expect(onClose).toHaveBeenCalled();
   });
 
@@ -74,7 +73,7 @@ describe('NotificationForm', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: '保存通知' }));
     await waitFor(() => {
-      expect(screen.getByText('请填写完整信息')).toBeInTheDocument();
+      expect(screen.getByText('请填写通知标题')).toBeInTheDocument();
     });
     expect(createNotification).not.toHaveBeenCalled();
   });
@@ -85,8 +84,8 @@ describe('NotificationForm', () => {
     renderWithToast(
       <NotificationForm onClose={() => {}} onSuccess={onSuccess} />
     );
-    fireEvent.change(screen.getByPlaceholderText('请输入通知标题'), { target: { value: '新通知' } });
-    fireEvent.change(screen.getByPlaceholderText('请输入通知内容'), { target: { value: '新内容' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入通知标题/), { target: { value: '新通知' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入通知内容/), { target: { value: '新内容' } });
     fireEvent.click(screen.getByRole('button', { name: '保存通知' }));
     await waitFor(() => {
       expect(createNotification).toHaveBeenCalled();

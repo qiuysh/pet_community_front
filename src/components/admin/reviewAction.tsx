@@ -3,6 +3,7 @@ import type { ReviewContent } from '../../types/admin';
 import { approveReview, rejectReview } from '../../api/admin';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { useAsync } from '../../hooks/useAsync';
+import { useConfirm } from '../../hooks/useConfirm';
 import { adminUi } from '../../styles/adminUi';
 import { Modal } from '../ui';
 import { AdminButton } from './adminButton';
@@ -17,8 +18,16 @@ export function ReviewAction({ content, onSuccess }: ReviewActionProps) {
   const [reason, setReason] = useState('');
   const [showRejectModal, setShowRejectModal] = useState(false);
   const { loading, run } = useAsync();
+  const { confirm, confirmDialog } = useConfirm();
 
-  const handleApprove = () =>
+  const handleApprove = async () => {
+    const ok = await confirm({
+      title: '确认通过？',
+      description: '通过后内容将对用户可见。',
+      confirmText: '通过',
+      tone: 'primary',
+    });
+    if (!ok) return;
     run(
       () =>
         approveReview({
@@ -31,6 +40,7 @@ export function ReviewAction({ content, onSuccess }: ReviewActionProps) {
       },
       (err) => showErrorToast((err as Error).message || '审核失败'),
     );
+  };
 
   const handleReject = () => {
     if (!reason.trim()) {
@@ -75,6 +85,7 @@ export function ReviewAction({ content, onSuccess }: ReviewActionProps) {
         open={showRejectModal}
         onClose={() => setShowRejectModal(false)}
         title="拒绝审核"
+        tone="secondary"
         footer={
           <div className="flex w-full items-center gap-3">
             <AdminButton type="button" variant="outline" className="flex-1" onClick={() => setShowRejectModal(false)}>
@@ -87,14 +98,18 @@ export function ReviewAction({ content, onSuccess }: ReviewActionProps) {
         }
       >
         <p className="text-sm text-brown-muted mb-4">请填写拒绝原因</p>
-        <AdminLabel>拒绝原因</AdminLabel>
+        <AdminLabel htmlFor="review-reject-reason">拒绝原因</AdminLabel>
         <AdminTextarea
+          id="review-reject-reason"
+          name="reason"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="请输入拒绝原因，将通知用户…"
           rows={4}
         />
       </Modal>
+
+      {confirmDialog}
     </>
   );
 }

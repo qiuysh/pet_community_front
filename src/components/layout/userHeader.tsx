@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Bell, Menu, MessageCircle, PawPrint, Search } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { useSiteConfigStore } from '../../stores/siteConfigStore';
@@ -33,7 +33,6 @@ function UnreadBadge({ count, label }: { count: number; label: string }) {
 
 export function UserHeader() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { isLoggedIn, user, logout } = useUserStore();
   const { messageUnread, notificationUnread } = useNavUnreadCounts();
   // 站点名称 / Logo 由后台「站点配置」维护，未配置时用默认站点名 + 内置图标
@@ -54,6 +53,7 @@ export function UserHeader() {
   const mobileMoreItems = USER_MOBILE_MORE_NAV.map((item) => ({
     key: item.path,
     label: item.label,
+    href: item.path,
   }));
 
   return (
@@ -103,7 +103,6 @@ export function UserHeader() {
               </Button>
             }
             items={mobileMoreItems}
-            onAction={(key) => navigate(key)}
           />
           <Link to="/search" className="action-link" aria-label="搜索">
             <Search {...actionIconProps} />
@@ -146,18 +145,14 @@ export function UserHeader() {
                   </Button>
                 }
                 items={[
-                  { key: 'settings', label: '个人设置' },
-                  { key: 'points', label: '我的积分' },
-                  { key: 'notification-settings', label: '通知设置' },
-                  { key: 'my-reports', label: '我的举报' },
+                  { key: 'settings', label: '个人设置', href: '/settings' },
+                  { key: 'points', label: '我的积分', href: '/points' },
+                  { key: 'notification-settings', label: '通知设置', href: '/notification-settings' },
+                  { key: 'my-reports', label: '我的举报', href: '/my-reports' },
                   { key: 'logout', label: '退出登录', danger: true },
                 ]}
                 onAction={(key) => {
-                  if (key === 'logout') {
-                    logout();
-                    return;
-                  }
-                  navigate(`/${key}`);
+                  if (key === 'logout') logout();
                 }}
               />
             </div>

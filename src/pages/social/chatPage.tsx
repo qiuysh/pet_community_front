@@ -252,7 +252,14 @@ const ChatPage: React.FC = () => {
                   highlighted={chat.highlightedMessageId === msg.id}
                   onPreviewImage={(src, alt) => setLightbox({ src, alt })}
                   canRecall={msg.fromId === currentUserId && canRecallMessage(msg)}
-                  onRecall={chat.recallMessage}
+                  onRecall={async (messageId) => {
+                    const ok = await confirm({
+                      title: '撤回消息？',
+                      description: '撤回后对方将无法查看这条消息。',
+                      confirmText: '撤回',
+                    });
+                    if (ok) await chat.recallMessage(messageId);
+                  }}
                   isNew={newMessageIds.has(msg.id)}
                 />
               ))}

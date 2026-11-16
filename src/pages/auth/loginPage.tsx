@@ -79,10 +79,14 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center p-4 relative overflow-hidden">
+      <a href="#auth-main" className="skip-link">
+        跳到主要内容
+      </a>
       <div className="absolute top-0 right-0 h-72 w-72 -translate-y-1/3 translate-x-1/3 rounded-full bg-secondary-soft/90 blur-3xl" />
       <div className="absolute bottom-0 left-0 h-56 w-56 translate-y-1/3 -translate-x-1/4 rounded-full bg-primary/15 blur-2xl" />
 
-      <Card className="w-full max-w-md relative animate-fadeIn" padding="md">
+      <main id="auth-main" className="relative w-full max-w-md">
+      <Card className="w-full relative animate-fadeIn" padding="md">
         <div className="text-center mb-5">
           <div className="w-12 h-12 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
             <PawPrint
@@ -264,6 +268,7 @@ export function LoginPage() {
           </div>
         </div>
       </Card>
+      </main>
     </div>
   );
 }

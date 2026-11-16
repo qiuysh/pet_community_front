@@ -432,6 +432,9 @@ export const PostDetailPage = () => {
           ))}
         </div>
         <Textarea
+          id="post-report-reason"
+          name="reportReason"
+          aria-label="举报补充描述"
           value={reportReason}
           onChange={(e) => setReportReason(e.target.value)}
           placeholder="请补充描述（选填）…"

@@ -85,7 +85,7 @@ describe('AdForm', () => {
     await waitFor(() => {
       expect(getAdPositionList).toHaveBeenCalled();
     });
-    const titleInput = screen.getByPlaceholderText('请输入广告标题');
+    const titleInput = screen.getByPlaceholderText(/请输入广告标题/);
     fireEvent.change(titleInput, { target: { value: '新广告' } });
     expect(titleInput).toHaveValue('新广告');
   });
@@ -95,13 +95,12 @@ describe('AdForm', () => {
     await waitFor(() => {
       expect(getAdPositionList).toHaveBeenCalled();
     });
-    const urlInput = screen.getByPlaceholderText('请输入广告图片URL');
+    const urlInput = screen.getByPlaceholderText(/请输入广告图片URL/);
     fireEvent.change(urlInput, { target: { value: 'https://example.com/img.jpg' } });
     expect(screen.getByAltText('广告预览')).toHaveAttribute('src', 'https://example.com/img.jpg');
   });
 
   it('空标题提交提示错误', async () => {
-    const errorSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     renderWithToast(<AdForm onCancel={() => {}} onSubmit={() => {}} />);
     await waitFor(() => {
       expect(getAdPositionList).toHaveBeenCalled();
@@ -109,10 +108,9 @@ describe('AdForm', () => {
     const submitBtn = screen.getAllByRole('button').find(b => b.textContent === '创建广告');
     if (submitBtn) fireEvent.click(submitBtn);
     await waitFor(() => {
-      expect(errorSpy).toHaveBeenCalled();
+      expect(screen.getByText('请输入广告标题')).toBeInTheDocument();
     });
     expect(createAd).not.toHaveBeenCalled();
-    errorSpy.mockRestore();
   });
 
   it('创建广告成功', async () => {
@@ -131,8 +129,8 @@ describe('AdForm', () => {
     await waitFor(() => {
       expect(getAdPositionList).toHaveBeenCalled();
     });
-    fireEvent.change(screen.getByPlaceholderText('请输入广告标题'), { target: { value: '新广告' } });
-    fireEvent.change(screen.getByPlaceholderText('请输入广告图片URL'), { target: { value: 'https://example.com/img.jpg' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入广告标题/), { target: { value: '新广告' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入广告图片URL/), { target: { value: 'https://example.com/img.jpg' } });
     const submitBtn = screen.getAllByRole('button').find(b => b.textContent?.includes('创建广告'));
     if (submitBtn) fireEvent.click(submitBtn);
   });

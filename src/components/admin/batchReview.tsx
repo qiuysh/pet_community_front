@@ -67,6 +67,7 @@ export function BatchReview({ selectedItems, onSuccess, onCancel }: BatchReviewP
       open
       onClose={onCancel}
       title="批量审核"
+      tone="secondary"
       footer={
         <div className="flex w-full items-center gap-3">
           <AdminButton type="button" variant="outline" className="flex-1" onClick={onCancel}>
@@ -102,8 +103,10 @@ export function BatchReview({ selectedItems, onSuccess, onCancel }: BatchReviewP
 
       {action === 'reject' && (
         <div className="mb-2">
-          <AdminLabel>拒绝原因</AdminLabel>
+          <AdminLabel htmlFor="batch-review-reason">拒绝原因</AdminLabel>
           <AdminTextarea
+            id="batch-review-reason"
+            name="reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="请输入拒绝原因，将统一通知所有用户…"

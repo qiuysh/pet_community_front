@@ -3,10 +3,10 @@ import type { ReportHandleAction } from '../../types/admin';
 import { batchHandleAdminReports } from '../../api/admin';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { useAsync } from '../../hooks/useAsync';
+import { Modal } from '../ui';
 import { AdminButton } from './adminButton';
 import { AdminFilterRadio } from './adminFilterRadio';
 import { AdminLabel, AdminTextarea } from './adminField';
-import { adminUi } from '../../styles/adminUi';
 
 interface BatchReportHandleProps {
   selectedIds: number[];
@@ -27,11 +27,12 @@ export function BatchReportHandle({ selectedIds, onSuccess, onCancel }: BatchRep
 
   const handleSubmit = () => {
     run(
-      () => batchHandleAdminReports({
-        ids: selectedIds,
-        action,
-        result: result.trim() || undefined,
-      }),
+      () =>
+        batchHandleAdminReports({
+          ids: selectedIds,
+          action,
+          result: result.trim() || undefined,
+        }),
       () => {
         const label = ACTIONS.find((a) => a.value === action)?.label ?? '处理';
         showSuccessToast(`已${label.replace('全部', '')} ${selectedIds.length} 条举报`);
@@ -42,55 +43,56 @@ export function BatchReportHandle({ selectedIds, onSuccess, onCancel }: BatchRep
   };
 
   return (
-    <div className={adminUi.overlay}>
-      <div className={adminUi.modalDialog}>
-        <div className="px-6 py-4 border-b border-border-light">
-          <h3 className="page-section-title">批量处理举报</h3>
-          <p className="text-sm text-brown-muted mt-1">已选择 {selectedIds.length} 条记录</p>
+    <Modal
+      open
+      onClose={onCancel}
+      title="批量处理举报"
+      tone="secondary"
+      footer={
+        <div className="flex w-full items-center gap-3">
+          <AdminButton type="button" variant="outline" className="flex-1" onClick={onCancel}>
+            取消
+          </AdminButton>
+          <AdminButton
+            type="button"
+            variant="secondary"
+            className="flex-1"
+            disabled={loading}
+            loading={loading}
+            onClick={handleSubmit}
+          >
+            {loading ? '处理中…' : '确认批量处理'}
+          </AdminButton>
         </div>
+      }
+    >
+      <p className="text-sm text-brown-muted mb-4">已选择 {selectedIds.length} 条记录</p>
 
-        <div className="p-6">
-          <div className="mb-4">
-            <AdminLabel className="mb-2">处理操作</AdminLabel>
-            <AdminFilterRadio
-              aria-label="批量处理操作"
-              items={ACTIONS.map((item) => ({ key: item.value, label: item.label }))}
-              value={action}
-              onChange={(key) => setAction(key as ReportHandleAction)}
-            />
-            <p className="text-xs text-brown-muted mt-2">
-              {ACTIONS.find((a) => a.value === action)?.desc}
-            </p>
-          </div>
-
-          <div className="mb-4">
-            <AdminLabel>处理说明（可选）</AdminLabel>
-            <AdminTextarea
-              value={result}
-              onChange={(e) => setResult(e.target.value)}
-              placeholder="统一处理说明…"
-              rows={3}
-              maxLength={200}
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <AdminButton type="button" variant="outline" className="flex-1" onClick={onCancel}>
-              取消
-            </AdminButton>
-            <AdminButton
-              type="button"
-              variant="secondary"
-              className="flex-1"
-              disabled={loading}
-              loading={loading}
-              onClick={handleSubmit}
-            >
-              {loading ? '处理中…' : '确认批量处理'}
-            </AdminButton>
-          </div>
-        </div>
+      <div className="mb-4">
+        <AdminLabel className="mb-2">处理操作</AdminLabel>
+        <AdminFilterRadio
+          aria-label="批量处理操作"
+          items={ACTIONS.map((item) => ({ key: item.value, label: item.label }))}
+          value={action}
+          onChange={(key) => setAction(key as ReportHandleAction)}
+        />
+        <p className="text-xs text-brown-muted mt-2">
+          {ACTIONS.find((a) => a.value === action)?.desc}
+        </p>
       </div>
-    </div>
+
+      <div className="mb-2">
+        <AdminLabel htmlFor="batch-report-result">处理说明（可选）</AdminLabel>
+        <AdminTextarea
+          id="batch-report-result"
+          name="result"
+          value={result}
+          onChange={(e) => setResult(e.target.value)}
+          placeholder="统一处理说明…"
+          rows={3}
+          maxLength={200}
+        />
+      </div>
+    </Modal>
   );
 }

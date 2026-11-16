@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AlertTriangle, ShieldCheck } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useAdminSettings } from '../../hooks/useAdminSettings';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { UpdateSiteConfigRequest, UpdateAuditConfigRequest } from '../../types/admin';
 import { AdminInput, AdminLabel, AdminTextarea } from '../../components/admin/adminField';
 import { AdminButton } from '../../components/admin/adminButton';
@@ -71,6 +72,28 @@ export function AdminSettingsPage() {
     }
   }, [auditConfig]);
 
+  const siteDirty = useMemo(() => {
+    if (!siteConfig) return false;
+    return (
+      siteForm.siteName !== (siteConfig.siteName || '') ||
+      siteForm.siteLogo !== (siteConfig.siteLogo || '') ||
+      siteForm.siteDescription !== (siteConfig.siteDescription || '') ||
+      siteForm.siteICP !== (siteConfig.siteICP || '')
+    );
+  }, [siteConfig, siteForm]);
+
+  const auditDirty = useMemo(() => {
+    if (!auditConfig) return false;
+    return (
+      auditForm.autoAuditEnabled !== auditConfig.autoAuditEnabled ||
+      auditForm.sensitiveFilterEnabled !== auditConfig.sensitiveFilterEnabled
+    );
+  }, [auditConfig, auditForm]);
+
+  const unsavedDialog = useUnsavedChanges(
+    ((activeTab === 'site' && siteDirty) || (activeTab === 'audit' && auditDirty)) && !isSaving && !loading,
+  );
+
   const handleSiteSubmit = async () => {
     setIsSaving(true);
     const success = await handleUpdateSiteConfig(siteForm);
@@ -95,6 +118,7 @@ export function AdminSettingsPage() {
 
   return (
     <div className={adminUi.page}>
+      {unsavedDialog}
       <AdminPageHeader
         title="站点配置"
         description="配置站点信息与内容审核规则"
@@ -207,7 +231,7 @@ export function AdminSettingsPage() {
                     />
                   </div>
                   <div>
-                    <h3 className="text-base font-medium text-brown">自动审核</h3>
+                    <h2 className={adminUi.sectionTitle}>自动审核</h2>
                     <p className="text-sm text-brown-muted mt-1">开启后，用户发布的内容将自动通过审核</p>
                   </div>
                 </div>
@@ -231,7 +255,7 @@ export function AdminSettingsPage() {
                     />
                   </div>
                   <div>
-                    <h3 className="text-base font-medium text-brown">敏感词过滤</h3>
+                    <h2 className={adminUi.sectionTitle}>敏感词过滤</h2>
                     <p className="text-sm text-brown-muted mt-1">开启后，用户发布的内容将进行敏感词过滤</p>
                   </div>
                 </div>

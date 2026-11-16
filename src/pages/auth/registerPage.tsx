@@ -87,7 +87,11 @@ export function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center p-4 py-6">
-      <Card className="w-full max-w-md" padding="md">
+      <a href="#auth-main" className="skip-link">
+        跳到主要内容
+      </a>
+      <main id="auth-main" className="w-full max-w-md">
+      <Card className="w-full" padding="md">
         <div className="text-center mb-5">
           <div className="w-12 h-12 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">
             <UserPlus
@@ -199,6 +203,7 @@ export function RegisterPage() {
               id="register-nickname"
               name="nickname"
               autoComplete="nickname"
+              spellCheck={false}
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder="给自己起个昵称吧…"
@@ -281,6 +286,7 @@ export function RegisterPage() {
           </p>
         </div>
       </Card>
+      </main>
     </div>
   );
 }

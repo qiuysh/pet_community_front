@@ -7,6 +7,7 @@ import { AddSensitiveWordRequest, UpdateSensitiveWordRequest } from '../../types
 import { AlertTriangle, Pencil, Plus, PawPrint, Search } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
+import { Modal } from '../../components/ui';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
 import { AdminTable } from '../../components/admin/adminTable';
@@ -257,179 +258,204 @@ export function AdminSensitiveWordsPage() {
         onPageChange={handlePageChange}
       />
 
-      {/* 添加敏感词对话框 */}
-      {showAddModal && (
-        <div className={adminUi.overlay}>
-          <div className={adminUi.modalDialog}>
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-sm bg-secondary-soft flex items-center justify-center">
-                  <Plus
-                    size={ICON_SIZE.nav}
-                    strokeWidth={iconStroke(ICON_SIZE.nav)}
-                    className="text-secondary"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div>
-                  <h3 className="page-bar-title">添加敏感词</h3>
-                  <p className="text-sm text-brown-muted">新增一条敏感词过滤规则</p>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <AdminLabel required>敏感词</AdminLabel>
-                  <AdminInput
-                    value={addForm.word}
-                    onChange={(e) => setAddForm({ ...addForm, word: e.target.value })}
-                    placeholder="请输入敏感词…"
-                  />
-                </div>
-                <div>
-                  <AdminLabel>替换为</AdminLabel>
-                  <AdminInput
-                    value={addForm.replaceWith}
-                    onChange={(e) => setAddForm({ ...addForm, replaceWith: e.target.value })}
-                    placeholder="替换后的内容（默认*）…"
-                  />
-                </div>
-                <div>
-                  <AdminLabel>分类</AdminLabel>
-                  <AdminInput
-                    value={addForm.category}
-                    onChange={(e) => setAddForm({ ...addForm, category: e.target.value })}
-                    placeholder="敏感词分类…"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <AdminButton
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setAddForm({ word: '', replaceWith: '', category: '' });
-                  }}
-                >
-                  取消
-                </AdminButton>
-                <AdminButton type="button" variant="secondary" onClick={handleAdd} disabled={loading}>
-                  添加
-                </AdminButton>
-              </div>
-            </div>
+      <Modal
+        open={showAddModal}
+        onClose={() => {
+          setShowAddModal(false);
+          setAddForm({ word: '', replaceWith: '', category: '' });
+        }}
+        title="添加敏感词"
+        tone="secondary"
+        footer={
+          <div className="flex w-full justify-end gap-3">
+            <AdminButton
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowAddModal(false);
+                setAddForm({ word: '', replaceWith: '', category: '' });
+              }}
+            >
+              取消
+            </AdminButton>
+            <AdminButton type="button" variant="secondary" onClick={handleAdd} disabled={loading}>
+              添加
+            </AdminButton>
+          </div>
+        }
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-sm bg-secondary-soft flex items-center justify-center">
+            <Plus
+              size={ICON_SIZE.nav}
+              strokeWidth={iconStroke(ICON_SIZE.nav)}
+              className="text-secondary"
+              aria-hidden="true"
+            />
+          </div>
+          <p className="text-sm text-brown-muted">新增一条敏感词过滤规则</p>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <AdminLabel htmlFor="add-sensitive-word" required>
+              敏感词
+            </AdminLabel>
+            <AdminInput
+              id="add-sensitive-word"
+              name="word"
+              value={addForm.word}
+              onChange={(e) => setAddForm({ ...addForm, word: e.target.value })}
+              placeholder="请输入敏感词…"
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+          <div>
+            <AdminLabel htmlFor="add-sensitive-replace">替换为</AdminLabel>
+            <AdminInput
+              id="add-sensitive-replace"
+              name="replaceWith"
+              value={addForm.replaceWith}
+              onChange={(e) => setAddForm({ ...addForm, replaceWith: e.target.value })}
+              placeholder="替换后的内容（默认*）…"
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+          <div>
+            <AdminLabel htmlFor="add-sensitive-category">分类</AdminLabel>
+            <AdminInput
+              id="add-sensitive-category"
+              name="category"
+              value={addForm.category}
+              onChange={(e) => setAddForm({ ...addForm, category: e.target.value })}
+              placeholder="敏感词分类…"
+              autoComplete="off"
+            />
           </div>
         </div>
-      )}
+      </Modal>
 
-      {/* 编辑敏感词对话框 */}
-      {showEditModal && editingWord && (
-        <div className={adminUi.overlay}>
-          <div className={adminUi.modalDialog}>
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-sm bg-secondary-soft flex items-center justify-center">
-                  <Pencil
-                    size={ICON_SIZE.nav}
-                    strokeWidth={iconStroke(ICON_SIZE.nav)}
-                    className="text-secondary"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div>
-                  <h3 className="page-bar-title">编辑敏感词</h3>
-                  <p className="text-sm text-brown-muted">修改敏感词过滤规则</p>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <AdminLabel required>敏感词</AdminLabel>
-                  <AdminInput
-                    value={editForm.word}
-                    onChange={(e) => setEditForm({ ...editForm, word: e.target.value })}
-                    placeholder="请输入敏感词…"
-                  />
-                </div>
-                <div>
-                  <AdminLabel>替换为</AdminLabel>
-                  <AdminInput
-                    value={editForm.replaceWith}
-                    onChange={(e) => setEditForm({ ...editForm, replaceWith: e.target.value })}
-                    placeholder="替换后的内容（默认*）…"
-                  />
-                </div>
-                <div>
-                  <AdminLabel>分类</AdminLabel>
-                  <AdminInput
-                    value={editForm.category}
-                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                    placeholder="敏感词分类…"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <AdminButton
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowEditModal(false);
-                    setEditingWord(null);
-                    setEditForm({ word: '', replaceWith: '', category: '' });
-                  }}
-                >
-                  取消
-                </AdminButton>
-                <AdminButton type="button" variant="secondary" onClick={handleEdit} disabled={loading}>
-                  保存
-                </AdminButton>
-              </div>
-            </div>
+      <Modal
+        open={showEditModal && Boolean(editingWord)}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingWord(null);
+          setEditForm({ word: '', replaceWith: '', category: '' });
+        }}
+        title="编辑敏感词"
+        tone="secondary"
+        footer={
+          <div className="flex w-full justify-end gap-3">
+            <AdminButton
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowEditModal(false);
+                setEditingWord(null);
+                setEditForm({ word: '', replaceWith: '', category: '' });
+              }}
+            >
+              取消
+            </AdminButton>
+            <AdminButton type="button" variant="secondary" onClick={handleEdit} disabled={loading}>
+              保存
+            </AdminButton>
+          </div>
+        }
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-sm bg-secondary-soft flex items-center justify-center">
+            <Pencil
+              size={ICON_SIZE.nav}
+              strokeWidth={iconStroke(ICON_SIZE.nav)}
+              className="text-secondary"
+              aria-hidden="true"
+            />
+          </div>
+          <p className="text-sm text-brown-muted">修改敏感词过滤规则</p>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <AdminLabel htmlFor="edit-sensitive-word" required>
+              敏感词
+            </AdminLabel>
+            <AdminInput
+              id="edit-sensitive-word"
+              name="word"
+              value={editForm.word}
+              onChange={(e) => setEditForm({ ...editForm, word: e.target.value })}
+              placeholder="请输入敏感词…"
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+          <div>
+            <AdminLabel htmlFor="edit-sensitive-replace">替换为</AdminLabel>
+            <AdminInput
+              id="edit-sensitive-replace"
+              name="replaceWith"
+              value={editForm.replaceWith}
+              onChange={(e) => setEditForm({ ...editForm, replaceWith: e.target.value })}
+              placeholder="替换后的内容（默认*）…"
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+          <div>
+            <AdminLabel htmlFor="edit-sensitive-category">分类</AdminLabel>
+            <AdminInput
+              id="edit-sensitive-category"
+              name="category"
+              value={editForm.category}
+              onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+              placeholder="敏感词分类…"
+              autoComplete="off"
+            />
           </div>
         </div>
-      )}
+      </Modal>
 
-      {/* 删除确认对话框 */}
-      {confirmDelete !== null && (
-        <div className={adminUi.overlay}>
-          <div className={adminUi.modalDialog}>
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
-                  <AlertTriangle
-                    size={ICON_SIZE.nav}
-                    strokeWidth={iconStroke(ICON_SIZE.nav)}
-                    className="text-error-text"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div>
-                  <h3 className="page-bar-title">确认删除</h3>
-                  <p className="text-sm text-brown-muted">此操作无法撤销</p>
-                </div>
-              </div>
-              <p className="text-sm text-brown-secondary mb-6">确定要删除这个敏感词吗？删除后该词将不再被过滤。</p>
-              <div className="flex justify-end gap-3">
-                <AdminButton
-                  type="button"
-                  variant="outline"
-                  onClick={() => setConfirmDelete(null)}
-                  disabled={isDeleting}
-                >
-                  取消
-                </AdminButton>
-                <AdminButton
-                  type="button"
-                  variant="danger"
-                  onClick={() => handleDelete(confirmDelete)}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? '删除中…' : '确认删除'}
-                </AdminButton>
-              </div>
-            </div>
+      <Modal
+        open={confirmDelete !== null}
+        onClose={() => setConfirmDelete(null)}
+        title="确认删除"
+        tone="secondary"
+        footer={
+          <div className="flex w-full justify-end gap-3">
+            <AdminButton
+              type="button"
+              variant="outline"
+              onClick={() => setConfirmDelete(null)}
+              disabled={isDeleting}
+            >
+              取消
+            </AdminButton>
+            <AdminButton
+              type="button"
+              variant="danger"
+              onClick={() => confirmDelete !== null && handleDelete(confirmDelete)}
+              disabled={isDeleting}
+              loading={isDeleting}
+            >
+              {isDeleting ? '删除中…' : '确认删除'}
+            </AdminButton>
           </div>
+        }
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
+            <AlertTriangle
+              size={ICON_SIZE.nav}
+              strokeWidth={iconStroke(ICON_SIZE.nav)}
+              className="text-error-text"
+              aria-hidden="true"
+            />
+          </div>
+          <p className="text-sm text-brown-muted">此操作无法撤销</p>
         </div>
-      )}
+        <p className="text-sm text-brown-secondary">确定要删除这个敏感词吗？删除后该词将不再被过滤。</p>
+      </Modal>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useTopicSquare } from '../../hooks/useTopicSquare';
 import { useUserStore } from '../../stores/userStore';
 import { CalendarDays, ChevronRight, Hash, MapPin, PawPrint } from 'lucide-react';
 import { CategoryIcon } from '../../components/discovery/categoryIcon';
-import { Button } from '../../components/ui/button';
+import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -52,27 +52,31 @@ export const TopicSquarePage = () => {
           <p>逛分类、追热帖，和宠友一起晒日常、聊养宠趣事</p>
         </div>
         {/* 创建话题入口（T5：须 Lv5+，未登录跳登录） */}
-        <Button
-          type="button"
-          size="sm"
-          className="create-topic-btn"
-          aria-label={
-            canCreateTopic ? '创建话题' : `创建话题（需 Lv${TOPIC_CREATE_MIN_LEVEL} 及以上）`
-          }
-          onClick={() => {
-            if (!isLoggedIn) {
-              navigate('/login', { state: { from: '/topics/create' } });
-              return;
-            }
-            if (!canCreateTopic) {
+        {canCreateTopic ? (
+          <Link
+            to="/topics/create"
+            className={buttonClass({ size: 'sm', className: 'create-topic-btn' })}
+            aria-label="创建话题"
+          >
+            创建话题
+          </Link>
+        ) : (
+          <Button
+            type="button"
+            size="sm"
+            className="create-topic-btn"
+            aria-label={`创建话题（需 Lv${TOPIC_CREATE_MIN_LEVEL} 及以上）`}
+            onClick={() => {
+              if (!isLoggedIn) {
+                navigate('/login', { state: { from: '/topics/create' } });
+                return;
+              }
               showInfoToast(`创建话题需达到 Lv${TOPIC_CREATE_MIN_LEVEL}`);
-              return;
-            }
-            navigate('/topics/create');
-          }}
-        >
-          {canCreateTopic ? '创建话题' : '创建话题 (Lv5+)'}
-        </Button>
+            }}
+          >
+            创建话题 (Lv5+)
+          </Button>
+        )}
       </div>
 
       <div className="section pt-4">

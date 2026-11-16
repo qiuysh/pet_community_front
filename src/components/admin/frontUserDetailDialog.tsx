@@ -69,13 +69,16 @@ export const FrontUserDetailDialog = ({ userId, onClose }: FrontUserDetailDialog
     : [];
 
   return (
-    <Modal open={Boolean(userId)} onClose={onClose} title="用户详情" size="md">
+    <Modal open={Boolean(userId)} onClose={onClose} title="用户详情" size="md" tone="secondary">
       {loading ? (
-        <div className="flex justify-center py-8">
+        <div className="flex justify-center py-8" role="status" aria-live="polite" aria-busy="true">
           <Spinner />
+          <span className="sr-only">加载中</span>
         </div>
       ) : error ? (
-        <p className="text-sm text-error-text">{error}</p>
+        <p className="text-sm text-error-text" role="alert">
+          {error}
+        </p>
       ) : user ? (
         <div className="space-y-5">
           <div className="flex items-center gap-3">

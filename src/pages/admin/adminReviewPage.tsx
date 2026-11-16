@@ -253,7 +253,7 @@ export function AdminReviewPage() {
                       onChange={() => handleSelectItem(item)}
                     />
                   </AdminTable.Cell>
-                  <AdminTable.Cell className="whitespace-nowrap font-mono">#{item.id}</AdminTable.Cell>
+                  <AdminTable.Cell className="whitespace-nowrap font-mono tabular-nums">#{item.id}</AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap">
                     <AdminChip tone={getTypeTone(item.type)} className={getTypeChipClass(item.type)}>
                       {getTypeLabel(item.type)}
@@ -321,7 +321,7 @@ export function AdminReviewPage() {
             <AdminTable.Body>
               {historyList.map((item) => (
                 <AdminTable.Row key={`history-${item.id}`} id={`history-${item.id}`}>
-                  <AdminTable.Cell className="whitespace-nowrap font-mono">#{item.id}</AdminTable.Cell>
+                  <AdminTable.Cell className="whitespace-nowrap font-mono tabular-nums">#{item.id}</AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap">
                     <AdminChip tone={getTypeTone(item.targetType)} className={getTypeChipClass(item.targetType)}>
                       {getTypeLabel(item.targetType)}

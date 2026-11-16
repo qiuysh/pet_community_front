@@ -7,6 +7,7 @@ import { AdminInput, AdminLabel, AdminSelect, AdminTextarea } from '../../compon
 import { AlertTriangle, PawPrint } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { adminUi } from '../../styles/adminUi';
+import { Modal } from '../../components/ui';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
@@ -18,7 +19,7 @@ import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 const FRONT_USER_QUERY = {
   page: { kind: 'number', default: 1 },
   keyword: { kind: 'string', default: '' },
-  status: { kind: 'string', default: 'all', values: ['all', '0', '1'] as const },
+  status: { kind: 'string', default: 'all', values: ['all', '1', '2'] as const },
 } as const;
 
 const PAGE_SIZE = 20;
@@ -84,7 +85,7 @@ export function AdminFrontUserPage() {
 
   const handleStatusFilterChange = (status: number) => {
     setQuery({
-      status: status < 0 ? 'all' : (String(status) as '0' | '1'),
+      status: status < 0 ? 'all' : (String(status) as '1' | '2'),
       page: 1,
     });
   };
@@ -180,7 +181,7 @@ export function AdminFrontUserPage() {
               className="border-error text-error-text hover:bg-error/5"
               onClick={() => setShowBatchBanModal(true)}
             >
-              批量封禁 ({selectedUsers.length})
+              批量封禁 (<span className="tabular-nums">{selectedUsers.length}</span>)
             </AdminButton>
           ) : undefined
         }
@@ -264,12 +265,12 @@ export function AdminFrontUserPage() {
                       onChange={() => toggleSelectUser(user.id)}
                     />
                   </AdminTable.Cell>
-                  <AdminTable.Cell className="whitespace-nowrap">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-secondary-soft font-semibold text-secondary">
+                  <AdminTable.Cell className="min-w-0">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-secondary-soft font-semibold text-secondary">
                         {user.nickname.charAt(0).toUpperCase()}
                       </div>
-                      <div className="font-medium text-brown">{user.nickname}</div>
+                      <div className="min-w-0 truncate font-medium text-brown">{user.nickname}</div>
                     </div>
                   </AdminTable.Cell>
                   <AdminTable.Cell className="whitespace-nowrap text-brown-secondary">{user.phone || '-'}</AdminTable.Cell>
@@ -310,67 +311,74 @@ export function AdminFrontUserPage() {
         onPageChange={handlePageChange}
       />
 
-      {showBatchBanModal && (
-        <div className={adminUi.overlay}>
-          <div className={adminUi.modalDialog}>
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
-                  <AlertTriangle
-                    size={ICON_SIZE.nav}
-                    strokeWidth={iconStroke(ICON_SIZE.nav)}
-                    className="text-error-text"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div>
-                  <h3 className="page-bar-title">批量封禁用户</h3>
-                  <p className="text-sm text-brown-muted">共选择 {selectedUsers.length} 个用户</p>
-                </div>
-              </div>
-
-              <p className="text-sm text-brown-secondary mb-4">
-                确定要批量封禁选中的用户吗？封禁后这些账号将无法登录系统。
-              </p>
-
-              <div className="mb-4">
-                <AdminLabel required>封禁原因</AdminLabel>
-                <AdminTextarea
-                  value={batchBanReason}
-                  onChange={(e) => setBatchBanReason(e.target.value)}
-                  placeholder="请输入封禁原因，该原因将记录到操作日志中…"
-                  rows={3}
-                />
-              </div>
-
-              {batchError && (
-                <div className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
-                  {batchError}
-                </div>
-              )}
-
-              <div className="flex justify-end gap-3">
-                <AdminButton
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowBatchBanModal(false)}
-                  disabled={isBatchBanning}
-                >
-                  取消
-                </AdminButton>
-                <AdminButton
-                  type="button"
-                  variant="danger"
-                  onClick={handleBatchBan}
-                  disabled={isBatchBanning}
-                >
-                  {isBatchBanning ? '封禁中…' : '确认封禁'}
-                </AdminButton>
-              </div>
-            </div>
+      <Modal
+        open={showBatchBanModal}
+        onClose={() => setShowBatchBanModal(false)}
+        title="批量封禁用户"
+        tone="secondary"
+        footer={
+          <div className="flex w-full justify-end gap-3">
+            <AdminButton
+              type="button"
+              variant="outline"
+              onClick={() => setShowBatchBanModal(false)}
+              disabled={isBatchBanning}
+            >
+              取消
+            </AdminButton>
+            <AdminButton
+              type="button"
+              variant="danger"
+              onClick={handleBatchBan}
+              disabled={isBatchBanning}
+              loading={isBatchBanning}
+            >
+              {isBatchBanning ? '封禁中…' : '确认封禁'}
+            </AdminButton>
           </div>
+        }
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
+            <AlertTriangle
+              size={ICON_SIZE.nav}
+              strokeWidth={iconStroke(ICON_SIZE.nav)}
+              className="text-error-text"
+              aria-hidden="true"
+            />
+          </div>
+          <p className="text-sm text-brown-muted">
+            共选择 <span className="tabular-nums">{selectedUsers.length}</span> 个用户
+          </p>
         </div>
-      )}
+
+        <p className="text-sm text-brown-secondary mb-4">
+          确定要批量封禁选中的用户吗？封禁后这些账号将无法登录系统。
+        </p>
+
+        <div className="mb-4">
+          <AdminLabel htmlFor="batch-ban-reason" required>
+            封禁原因
+          </AdminLabel>
+          <AdminTextarea
+            id="batch-ban-reason"
+            name="reason"
+            value={batchBanReason}
+            onChange={(e) => setBatchBanReason(e.target.value)}
+            placeholder="请输入封禁原因，该原因将记录到操作日志中…"
+            rows={3}
+          />
+        </div>
+
+        {batchError && (
+          <div
+            className="mb-4 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm"
+            role="alert"
+          >
+            {batchError}
+          </div>
+        )}
+      </Modal>
 
       <FrontUserDetailDialog userId={detailUserId} onClose={() => setDetailUserId(null)} />
     </div>

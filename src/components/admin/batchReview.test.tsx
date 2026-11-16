@@ -63,7 +63,7 @@ describe('BatchReview', () => {
     );
     fireEvent.click(screen.getByRole('radio', { name: '全部拒绝' }));
     expect(screen.getByText('拒绝原因')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('请输入拒绝原因，将统一通知所有用户')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/请输入拒绝原因，将统一通知所有用户/)).toBeInTheDocument();
   });
 
   it('拒绝时空原因提示错误', async () => {
@@ -86,7 +86,7 @@ describe('BatchReview', () => {
       <BatchReview selectedItems={baseItems} onSuccess={onSuccess} onCancel={() => {}} />
     );
     fireEvent.click(screen.getByRole('radio', { name: '全部拒绝' }));
-    fireEvent.change(screen.getByPlaceholderText('请输入拒绝原因，将统一通知所有用户'), { target: { value: '违规' } });
+    fireEvent.change(screen.getByPlaceholderText(/请输入拒绝原因，将统一通知所有用户/), { target: { value: '违规' } });
     fireEvent.click(screen.getByRole('button', { name: '确认拒绝' }));
     await waitFor(() => {
       expect(batchReview).toHaveBeenCalledWith({

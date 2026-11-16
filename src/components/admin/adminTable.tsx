@@ -11,6 +11,7 @@ import {
   type TableHeaderProps,
   type TableRowProps,
 } from '../ui';
+import { EmptyState } from '../ui/emptyState';
 import { adminUi } from '../../styles/adminUi';
 
 function joinClass(...parts: Array<string | false | undefined>) {
@@ -76,9 +77,24 @@ function AdminTableCell({ className, ...rest }: TableCellProps) {
   );
 }
 
+function isEmptyishMessage(node: ReactNode): node is string {
+  return typeof node === 'string' && /暂无|没有|无数据|为空/.test(node);
+}
+
 /** 加载中 / 空数据：放在表格外，避免 HeroUI 行列数约束 */
 export function AdminTableStatus({ children }: { children: ReactNode }) {
-  return <div className="px-6 py-12 text-center text-brown-muted">{children}</div>;
+  if (isEmptyishMessage(children)) {
+    return (
+      <div className="px-6 py-12" role="status" aria-live="polite">
+        <EmptyState compact title={children} />
+      </div>
+    );
+  }
+  return (
+    <div className="px-6 py-12 text-center text-brown-muted" role="status" aria-live="polite">
+      {children}
+    </div>
+  );
 }
 
 export const AdminTable = Object.assign(AdminTableRoot, {

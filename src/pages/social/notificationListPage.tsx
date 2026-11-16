@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AtSign, Bell, Heart, MessageCircle, ShieldAlert, UserPlus } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
-import { useNotificationList } from '../../hooks/useNotificationList';
+import { useNotificationList, type NotificationItem } from '../../hooks/useNotificationList';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { formatRelativeTime } from '../../utils/format';
@@ -24,8 +24,18 @@ const NOTIFY_FILTER_QUERY = {
   },
 } as const;
 
+function getNotificationHref(notification: NotificationItem): string | null {
+  if (notification.type === 'security') return null;
+  if (notification.triggerType === 'post' || notification.triggerType === 'comment') {
+    return `/posts/${notification.triggerID}`;
+  }
+  if (notification.triggerType === 'user') {
+    return `/profile/${notification.triggerUserID}`;
+  }
+  return null;
+}
+
 const NotificationListPage: React.FC = () => {
-  const navigate = useNavigate();
   const [filterQuery, setFilterQuery] = useSyncedSearchParams(NOTIFY_FILTER_QUERY);
   const filter = filterQuery.filter as NotifyFilter;
   const {
@@ -57,24 +67,16 @@ const NotificationListPage: React.FC = () => {
     markAllAsRead();
   };
 
-  const handleNotificationClick = (notification: (typeof notifications)[0]) => {
-    if (!notification.isRead) {
-      markAsRead(notification.id);
-    }
+  const markReadIfNeeded = (notification: NotificationItem) => {
+    if (!notification.isRead) markAsRead(notification.id);
+  };
 
-    if (notification.type === 'security') {
-      setExpandedSecurityIds((prev) => ({
-        ...prev,
-        [notification.id]: !prev[notification.id],
-      }));
-      return;
-    }
-
-    if (notification.triggerType === 'post' || notification.triggerType === 'comment') {
-      navigate(`/posts/${notification.triggerID}`);
-    } else if (notification.triggerType === 'user') {
-      navigate(`/profile/${notification.triggerUserID}`);
-    }
+  const handleSecurityClick = (notification: NotificationItem) => {
+    markReadIfNeeded(notification);
+    setExpandedSecurityIds((prev) => ({
+      ...prev,
+      [notification.id]: !prev[notification.id],
+    }));
   };
 
   const getIcon = (type: string) => {
@@ -169,15 +171,10 @@ const NotificationListPage: React.FC = () => {
                 ? security.detail || security.summary
                 : security.summary
               : notification.content;
-
-            return (
-              <button
-                type="button"
-                key={notification.id}
-                className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
-                onClick={() => handleNotificationClick(notification)}
-                aria-expanded={security ? expanded : undefined}
-              >
+            const href = getNotificationHref(notification);
+            const unreadSuffix = notification.isRead ? '' : '，未读';
+            const body = (
+              <>
                 <span className="notification-icon">{getIcon(notification.type)}</span>
                 <span className="notification-content">
                   <span className="page-section-title notification-title">
@@ -193,7 +190,36 @@ const NotificationListPage: React.FC = () => {
                     {formatRelativeTime(notification.createdAt)}
                   </span>
                 </span>
-                {!notification.isRead && <span className="unread-dot" />}
+                {!notification.isRead && (
+                  <span className="unread-dot" aria-hidden="true" />
+                )}
+              </>
+            );
+
+            if (href) {
+              return (
+                <Link
+                  key={notification.id}
+                  to={href}
+                  className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
+                  onClick={() => markReadIfNeeded(notification)}
+                  aria-label={`${notification.title}${unreadSuffix}`}
+                >
+                  {body}
+                </Link>
+              );
+            }
+
+            return (
+              <button
+                type="button"
+                key={notification.id}
+                className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
+                onClick={() => handleSecurityClick(notification)}
+                aria-expanded={security ? expanded : undefined}
+                aria-label={`${notification.title}${unreadSuffix}`}
+              >
+                {body}
               </button>
             );
           })}

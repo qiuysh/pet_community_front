@@ -80,6 +80,7 @@ export function ReportHandleAction({ report, onSuccess }: ReportHandleActionProp
         open={showModal}
         onClose={() => setShowModal(false)}
         title={`处理举报 #${report.id}`}
+        tone="secondary"
         footer={
           <div className="flex w-full items-center gap-3">
             <AdminButton type="button" variant="outline" className="flex-1" onClick={() => setShowModal(false)}>
@@ -114,8 +115,10 @@ export function ReportHandleAction({ report, onSuccess }: ReportHandleActionProp
           </div>
           <div className="mt-1">原因：{report.reason}</div>
         </div>
-        <AdminLabel>处理说明（可选）</AdminLabel>
+        <AdminLabel htmlFor="report-handle-result">处理说明（可选）</AdminLabel>
         <AdminTextarea
+          id="report-handle-result"
+          name="result"
           value={result}
           onChange={(e) => setResult(e.target.value)}
           placeholder="填写处理说明，将通知举报人…"

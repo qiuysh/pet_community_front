@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { useAdminUsers } from '../../hooks/useAdminUsers';
+import { useFormErrors, type FormErrors } from '../../hooks/useFormErrors';
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges';
 import { validators, validateForm } from '../../utils/validators';
 import {
   AdminRole,
@@ -10,6 +12,11 @@ import {
   UpdateAdminRequest,
   UpdateAdminPasswordRequest,
 } from '../../types/admin';
+import { FieldError } from '../../components/ui';
+import { AdminHint, AdminInput, AdminLabel, AdminSelect } from '../../components/admin/adminField';
+import { AdminButton, adminButtonClass } from '../../components/admin/adminButton';
+import { AdminCheckbox } from '../../components/admin/adminCheckbox';
+import { adminUi } from '../../styles/adminUi';
 
 const ADMIN_ROLES: { value: AdminRole; label: string }[] = [
   { value: 'super_admin', label: '超级管理员' },
@@ -18,15 +25,13 @@ const ADMIN_ROLES: { value: AdminRole; label: string }[] = [
   { value: 'service', label: '客服管理员' },
 ];
 
+const FORM_FIELDS = ['username', 'email', 'role', 'password', 'confirmPassword'] as const;
+
 function normalizeAdminRole(role: string): AdminRole {
   if (role === 'admin') return 'super_admin';
   if (ADMIN_ROLES.some((r) => r.value === role)) return role as AdminRole;
   return 'content_admin';
 }
-import { AdminHint, AdminInput, AdminLabel, AdminSelect } from '../../components/admin/adminField';
-import { AdminButton, adminButtonClass } from '../../components/admin/adminButton';
-import { AdminCheckbox } from '../../components/admin/adminCheckbox';
-import { adminUi } from '../../styles/adminUi';
 
 export function AdminUserFormPage() {
   const { id } = useParams<{ id?: string }>();
@@ -34,7 +39,16 @@ export function AdminUserFormPage() {
   const isEdit = !!id;
   const userId = id ? parseInt(id, 10) : 0;
 
-  const { currentUser, isLoading, error, fetchUserById, createUser, updateUser, updateUserPassword, clearCurrentUser } = useAdminUsers();
+  const {
+    currentUser,
+    isLoading,
+    error,
+    fetchUserById,
+    createUser,
+    updateUser,
+    updateUserPassword,
+    clearCurrentUser,
+  } = useAdminUsers();
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -43,13 +57,15 @@ export function AdminUserFormPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [changePassword, setChangePassword] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [baselineReady, setBaselineReady] = useState(!isEdit);
+  const { errors, showErrors, clearError, formRef } = useFormErrors(FORM_FIELDS);
 
   useEffect(() => {
     if (isEdit && userId) {
       fetchUserById(userId);
     } else {
       clearCurrentUser();
+      setBaselineReady(true);
     }
   }, [isEdit, userId]);
 
@@ -59,12 +75,49 @@ export function AdminUserFormPage() {
       setEmail(currentUser.email || '');
       setRole(normalizeAdminRole(currentUser.role));
       setStatus(currentUser.status === 1 ? 1 : 0);
+      setBaselineReady(true);
     }
   }, [currentUser, isEdit]);
 
+  const isDirty = useMemo(() => {
+    if (!baselineReady) return false;
+    if (!isEdit) {
+      return Boolean(
+        username ||
+          email ||
+          password ||
+          confirmPassword ||
+          role !== 'content_admin' ||
+          status !== 1,
+      );
+    }
+    if (!currentUser) return false;
+    const baseRole = normalizeAdminRole(currentUser.role);
+    const baseStatus = currentUser.status === 1 ? 1 : 0;
+    return (
+      username !== currentUser.username ||
+      email !== (currentUser.email || '') ||
+      role !== baseRole ||
+      status !== baseStatus ||
+      (changePassword && (password.length > 0 || confirmPassword.length > 0))
+    );
+  }, [
+    baselineReady,
+    isEdit,
+    currentUser,
+    username,
+    email,
+    role,
+    status,
+    changePassword,
+    password,
+    confirmPassword,
+  ]);
+
+  const unsavedDialog = useUnsavedChanges(isDirty && !isLoading);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({});
 
     const formData: Record<string, string> = {
       username,
@@ -72,18 +125,14 @@ export function AdminUserFormPage() {
       role,
     };
 
-    const validationRules: any = {
+    const validationRules: Record<string, ReturnType<typeof validators.required>[]> = {
       username: [
         validators.required('请输入用户名'),
         validators.minLength(3, '用户名至少3个字符'),
         validators.maxLength(50, '用户名最多50个字符'),
       ],
-      email: [
-        validators.maxLength(100, '邮箱最多100个字符'),
-      ],
-      role: [
-        validators.required('请选择角色'),
-      ],
+      email: [validators.maxLength(100, '邮箱最多100个字符')],
+      role: [validators.required('请选择角色')],
     };
 
     if (!isEdit) {
@@ -96,7 +145,10 @@ export function AdminUserFormPage() {
       ];
       validationRules.confirmPassword = [
         validators.required('请确认密码'),
-        (value: string) => value !== password ? '两次密码输入不一致' : null,
+        {
+          validator: (value: string) => value === password,
+          message: '两次密码输入不一致',
+        },
       ];
     }
 
@@ -110,14 +162,18 @@ export function AdminUserFormPage() {
       ];
       validationRules.confirmPassword = [
         validators.required('请确认密码'),
-        (value: string) => value !== password ? '两次密码输入不一致' : null,
+        {
+          validator: (value: string) => value === password,
+          message: '两次密码输入不一致',
+        },
       ];
     }
 
-    const formErrors = validateForm(formData, validationRules);
-    setErrors(formErrors);
-
+    const formErrors = validateForm(formData, validationRules) as FormErrors<
+      (typeof FORM_FIELDS)[number]
+    >;
     if (Object.keys(formErrors).length > 0) {
+      showErrors(formErrors);
       return;
     }
 
@@ -160,6 +216,7 @@ export function AdminUserFormPage() {
 
   return (
     <div className="w-full">
+      {unsavedDialog}
       <div className="mb-6">
         <Link
           to="/admin/users"
@@ -177,17 +234,21 @@ export function AdminUserFormPage() {
 
       <div className="bg-white rounded-md shadow-card animate-fadeIn">
         <div className="px-6 py-6">
-          <h1 className={`${adminUi.pageTitle} mb-6`}>
+          <h1 className={`${adminUi.pageTitle} mb-6 text-balance`}>
             {isEdit ? '编辑后台账号' : '新建后台账号'}
           </h1>
 
           {error && (
-            <div className="mb-6 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm">
+            <div
+              className="mb-6 px-4 py-3 bg-error/5 border border-error/20 rounded-md text-error-text text-sm"
+              role="alert"
+              aria-live="assertive"
+            >
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} ref={formRef} className="space-y-6" noValidate>
             <div>
               <AdminLabel htmlFor="admin-form-username">用户名</AdminLabel>
               <AdminInput
@@ -197,18 +258,15 @@ export function AdminUserFormPage() {
                 value={username}
                 onChange={(e) => {
                   setUsername(e.target.value);
-                  if (errors.username) {
-                    setErrors(prev => ({ ...prev, username: '' }));
-                  }
+                  clearError('username');
                 }}
                 invalid={!!errors.username}
                 placeholder="请输入用户名…"
                 autoComplete="username"
                 spellCheck={false}
+                aria-describedby={errors.username ? 'admin-form-username-error' : undefined}
               />
-              {errors.username && (
-                <p className="mt-1 text-sm text-error-text">{errors.username}</p>
-              )}
+              <FieldError id="admin-form-username-error">{errors.username}</FieldError>
             </div>
 
             <div>
@@ -220,17 +278,15 @@ export function AdminUserFormPage() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  if (errors.email) {
-                    setErrors(prev => ({ ...prev, email: '' }));
-                  }
+                  clearError('email');
                 }}
                 invalid={!!errors.email}
                 placeholder="请输入邮箱…"
                 autoComplete="email"
+                spellCheck={false}
+                aria-describedby={errors.email ? 'admin-form-email-error' : undefined}
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-error-text">{errors.email}</p>
-              )}
+              <FieldError id="admin-form-email-error">{errors.email}</FieldError>
             </div>
 
             <div>
@@ -241,11 +297,10 @@ export function AdminUserFormPage() {
                 value={role}
                 onChange={(e) => {
                   setRole(e.target.value as AdminRole);
-                  if (errors.role) {
-                    setErrors(prev => ({ ...prev, role: '' }));
-                  }
+                  clearError('role');
                 }}
                 invalid={!!errors.role}
+                aria-describedby={errors.role ? 'admin-form-role-error' : undefined}
               >
                 {ADMIN_ROLES.map((r) => (
                   <option key={r.value} value={r.value}>
@@ -253,9 +308,7 @@ export function AdminUserFormPage() {
                   </option>
                 ))}
               </AdminSelect>
-              {errors.role && (
-                <p className="mt-1 text-sm text-error-text">{errors.role}</p>
-              )}
+              <FieldError id="admin-form-role-error">{errors.role}</FieldError>
             </div>
 
             <div>
@@ -286,6 +339,8 @@ export function AdminUserFormPage() {
                       if (!checked) {
                         setPassword('');
                         setConfirmPassword('');
+                        clearError('password');
+                        clearError('confirmPassword');
                       }
                     }}
                   >
@@ -296,43 +351,49 @@ export function AdminUserFormPage() {
                 {changePassword && (
                   <div className="space-y-6 border-t border-border-light pt-6">
                     <div>
-                      <AdminLabel>新密码</AdminLabel>
+                      <AdminLabel htmlFor="admin-form-password" required>
+                        新密码
+                      </AdminLabel>
                       <AdminInput
+                        id="admin-form-password"
+                        name="password"
                         type="password"
                         value={password}
                         onChange={(e) => {
                           setPassword(e.target.value);
-                          if (errors.password) {
-                            setErrors(prev => ({ ...prev, password: '' }));
-                          }
+                          clearError('password');
                         }}
                         invalid={!!errors.password}
                         placeholder="请输入新密码…"
                         autoComplete="new-password"
+                        aria-describedby={errors.password ? 'admin-form-password-error' : undefined}
                       />
-                      {errors.password && (
-                        <p className="mt-1 text-sm text-error-text">{errors.password}</p>
-                      )}
+                      <FieldError id="admin-form-password-error">{errors.password}</FieldError>
                     </div>
 
                     <div>
-                      <AdminLabel>确认新密码</AdminLabel>
+                      <AdminLabel htmlFor="admin-form-confirm-password" required>
+                        确认新密码
+                      </AdminLabel>
                       <AdminInput
+                        id="admin-form-confirm-password"
+                        name="confirmPassword"
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => {
                           setConfirmPassword(e.target.value);
-                          if (errors.confirmPassword) {
-                            setErrors(prev => ({ ...prev, confirmPassword: '' }));
-                          }
+                          clearError('confirmPassword');
                         }}
                         invalid={!!errors.confirmPassword}
                         placeholder="请确认新密码…"
                         autoComplete="new-password"
+                        aria-describedby={
+                          errors.confirmPassword ? 'admin-form-confirm-password-error' : undefined
+                        }
                       />
-                      {errors.confirmPassword && (
-                        <p className="mt-1 text-sm text-error-text">{errors.confirmPassword}</p>
-                      )}
+                      <FieldError id="admin-form-confirm-password-error">
+                        {errors.confirmPassword}
+                      </FieldError>
                     </div>
                   </div>
                 )}
@@ -340,43 +401,49 @@ export function AdminUserFormPage() {
             ) : (
               <>
                 <div>
-                  <AdminLabel>密码</AdminLabel>
+                  <AdminLabel htmlFor="admin-form-password" required>
+                    密码
+                  </AdminLabel>
                   <AdminInput
+                    id="admin-form-password"
+                    name="password"
                     type="password"
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
-                      if (errors.password) {
-                        setErrors(prev => ({ ...prev, password: '' }));
-                      }
+                      clearError('password');
                     }}
                     invalid={!!errors.password}
                     placeholder="请输入密码…"
                     autoComplete="new-password"
+                    aria-describedby={errors.password ? 'admin-form-password-error' : undefined}
                   />
-                  {errors.password && (
-                    <p className="mt-1 text-sm text-error-text">{errors.password}</p>
-                  )}
+                  <FieldError id="admin-form-password-error">{errors.password}</FieldError>
                 </div>
 
                 <div>
-                  <AdminLabel>确认密码</AdminLabel>
+                  <AdminLabel htmlFor="admin-form-confirm-password" required>
+                    确认密码
+                  </AdminLabel>
                   <AdminInput
+                    id="admin-form-confirm-password"
+                    name="confirmPassword"
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => {
                       setConfirmPassword(e.target.value);
-                      if (errors.confirmPassword) {
-                        setErrors(prev => ({ ...prev, confirmPassword: '' }));
-                      }
+                      clearError('confirmPassword');
                     }}
                     invalid={!!errors.confirmPassword}
                     placeholder="请确认密码…"
                     autoComplete="new-password"
+                    aria-describedby={
+                      errors.confirmPassword ? 'admin-form-confirm-password-error' : undefined
+                    }
                   />
-                  {errors.confirmPassword && (
-                    <p className="mt-1 text-sm text-error-text">{errors.confirmPassword}</p>
-                  )}
+                  <FieldError id="admin-form-confirm-password-error">
+                    {errors.confirmPassword}
+                  </FieldError>
                 </div>
               </>
             )}

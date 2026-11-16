@@ -15,10 +15,10 @@ function joinClass(...parts: Array<string | false | undefined>) {
   return parts.filter(Boolean).join(' ');
 }
 
-/** 后台：青竹 focus，覆盖社区默认蜜桃 focus */
+/** 后台：青竹 focus-visible，覆盖社区默认蜜桃 focus */
 const adminFocus =
-  'h-10 text-sm hover:border-secondary/40 focus:border-secondary focus:ring-secondary/20 ' +
-  '[&:focus]:border-secondary [&:focus]:ring-secondary/20';
+  'h-10 text-sm hover:border-secondary/40 focus-visible:border-secondary focus-visible:ring-secondary/20 ' +
+  '[&:focus-visible]:border-secondary [&:focus-visible]:ring-secondary/20';
 
 export interface AdminLabelProps {
   htmlFor?: string;
@@ -124,7 +124,7 @@ export function AdminTextarea({ invalid = false, className = '', ...rest }: Admi
     <Textarea
       invalid={invalid}
       className={joinClass(
-        'min-h-[6rem] text-sm hover:border-secondary/40 focus:border-secondary focus:ring-secondary/20',
+        'min-h-[6rem] text-sm hover:border-secondary/40 focus-visible:border-secondary focus-visible:ring-secondary/20',
         invalid && adminUi.controlInvalid,
         className,
       )}
@@ -134,10 +134,15 @@ export function AdminTextarea({ invalid = false, className = '', ...rest }: Admi
 }
 
 export interface AdminHintProps {
+  id?: string;
   children: ReactNode;
   className?: string;
 }
 
-export function AdminHint({ children, className = '' }: AdminHintProps) {
-  return <p className={joinClass(adminUi.hint, className)}>{children}</p>;
+export function AdminHint({ id, children, className = '' }: AdminHintProps) {
+  return (
+    <p id={id} className={joinClass(adminUi.hint, className)}>
+      {children}
+    </p>
+  );
 }
