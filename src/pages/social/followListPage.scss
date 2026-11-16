@@ -14,7 +14,7 @@
       flex: 1;
       padding: 14px 0;
       text-align: center;
-      font-size: $font-size-large;
+      font-size: $font-size-base;
       color: $text-secondary;
       background: none;
       border: none;
@@ -40,7 +40,7 @@
   }
 
   .user-list {
-    padding: $spacing-md 0;
+    padding: $spacing-md;
 
     .loading,
 

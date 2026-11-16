@@ -50,7 +50,7 @@ export const RankingPage = () => {
 
       <div className="ranking-main">
         {loading ? (
-          <div className="ranking-section space-y-3 p-4">
+          <div className="ranking-section space-y-4 p-4">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="ranking-item flex gap-3 items-center">
                 <Skeleton className="h-6 w-6 shrink-0" />

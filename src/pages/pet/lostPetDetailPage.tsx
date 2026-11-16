@@ -1,5 +1,5 @@
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, Lock, Send, Share2 } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
 import { getLostPetDetail, recordLostPetShare, updateLostPetStatus } from '../../api/pet';
@@ -15,9 +15,10 @@ import {
 } from '../../utils/lostPetShare';
 import { showErrorToast, showSuccessToast } from '../../utils/toastManager';
 import { ShareSheet } from '../../components/post/shareSheet';
-import { BackButton } from '../../components/ui/backButton';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { EmptyState } from '../../components/ui/emptyState';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Spinner } from '../../components/ui/spinner';
 
 export function LostPetDetailPage() {
@@ -96,17 +97,27 @@ export function LostPetDetailPage() {
     );
   };
 
-  if (loading || !item) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex flex-col items-center justify-center gap-3 text-brown-muted">
-        {loading ? (
-          <>
-            <Spinner />
-            <span>加载中…</span>
-          </>
-        ) : (
-          '未找到该启事'
-        )}
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <Spinner label="加载中…" />
+      </div>
+    );
+  }
+
+  if (!item) {
+    return (
+      <div className="bg-cream min-h-screen">
+        <PageHeader title="寻宠详情" fallbackTo="/lost-pets" />
+        <EmptyState
+          title="未找到该启事"
+          description="可能已下架或链接失效"
+          action={
+            <Link to="/lost-pets" className="font-medium text-primary-text">
+              返回寻宠列表
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -115,16 +126,11 @@ export function LostPetDetailPage() {
   const sharesCount = item.sharesCount ?? 0;
 
   return (
-    <div className="min-h-screen bg-cream pb-10">
-      <div className="sticky top-[var(--user-header-offset,56px)] z-10 bg-white border-b border-border-light">
-        <div className="page-shell flex items-center gap-2 px-4 py-3">
-          <BackButton className="-ml-2" />
-          <h1 className="page-bar-title">寻宠详情</h1>
-        </div>
-      </div>
+    <div className="bg-cream min-h-screen pb-6">
+      <PageHeader title="寻宠详情" fallbackTo="/lost-pets" />
 
-      <div className="page-shell space-y-4 py-4">
-        <Card className="rounded-xl shadow-card p-5">
+      <div className="page-shell space-y-4 px-4 py-4">
+        <Card>
           <div className="flex justify-between items-start gap-3">
             <h2 className="page-content-title">{item.petName}</h2>
             <span
@@ -141,12 +147,12 @@ export function LostPetDetailPage() {
           <p className="mt-3 text-brown whitespace-pre-wrap">{item.description}</p>
           <div className="mt-4 space-y-2 text-sm text-brown-secondary">
             <p className="flex items-center gap-2">
-              <MapPin size={ICON_SIZE.inline} /> {item.lostLocation} · {item.lostTime}
+              <MapPin size={ICON_SIZE.inline} aria-hidden="true" /> {item.lostLocation} · {item.lostTime}
             </p>
             {/* 联系方式（§4.11）：游客脱敏 + 登录/私信引导 */}
             <div className="flex flex-wrap items-center gap-2">
               <p className="flex items-center gap-2" data-testid="lost-pet-contact">
-                <Phone size={ICON_SIZE.inline} />
+                <Phone size={ICON_SIZE.inline} aria-hidden="true" />
                 <span>{displayContact || '未提供'}</span>
                 {!contactVisible && (
                   <span className="inline-flex items-center gap-1 text-xs text-brown-muted">
@@ -174,7 +180,16 @@ export function LostPetDetailPage() {
           {item.images?.length > 0 && (
             <div className="mt-4 grid grid-cols-3 gap-2">
               {item.images.map((src, i) => (
-                <img key={i} src={src} alt="" className="rounded-lg aspect-square object-cover w-full" decoding="async" />
+                <img
+                  key={i}
+                  src={src}
+                  alt=""
+                  width={200}
+                  height={200}
+                  loading="lazy"
+                  className="rounded-md aspect-square object-cover w-full"
+                  decoding="async"
+                />
               ))}
             </div>
           )}
@@ -185,7 +200,6 @@ export function LostPetDetailPage() {
             type="button"
             variant="outline"
             block
-            className="rounded-xl"
             onClick={openShare}
             aria-label="分享寻宠启事"
           >
@@ -194,7 +208,7 @@ export function LostPetDetailPage() {
           </Button>
 
           {isOwner && item.status === LOST_PET_STATUS.searching && (
-            <Button type="button" block className="rounded-xl" onClick={handleMarkFound}>
+            <Button type="button" block onClick={handleMarkFound}>
               标记为已找回
             </Button>
           )}

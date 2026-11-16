@@ -27,7 +27,7 @@ export function NotFoundPage() {
         />
       </div>
 
-      <p className="text-[length:var(--font-size-2xl)] font-semibold leading-none tracking-tight text-primary-text sm:text-[2.5rem]">404</p>
+      <p className="text-[length:var(--font-size-2xl)] font-semibold leading-none tracking-tight text-primary-text">404</p>
       <h1 id="not-found-title" className="page-content-title mt-3 text-balance sm:mt-4">
         页面走丢了
       </h1>

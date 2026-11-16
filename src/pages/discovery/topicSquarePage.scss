@@ -8,7 +8,7 @@
 
   .page-header {
     @extend %page-hero-surface;
-    padding: $spacing-2xl $spacing-md $spacing-xl;
+    padding: $spacing-2xl $spacing-md $spacing-lg;
 
     .header-decor {
       position: absolute;
@@ -91,7 +91,7 @@
   }
 
   .section {
-    padding: $spacing-md 0;
+    padding: $spacing-md;
 
     .section-header {
       display: flex;
@@ -162,7 +162,7 @@
 
         &:hover .category-icon-wrap {
           background: $primary-strong;
-          color: white;
+          color: $background-white;
           transform: scale(1.05);
         }
 
@@ -318,19 +318,19 @@
 
           &.rank-1 {
             background: linear-gradient(135deg, $primary-strong, $primary-text);
-            color: white;
+            color: $background-white;
             box-shadow: 0 2px 8px rgba($primary-color, 0.3);
           }
 
           &.rank-2 {
             background: linear-gradient(135deg, $warning-color, darken($warning-color, 10%));
-            color: white;
+            color: $background-white;
             box-shadow: 0 2px 8px rgba($warning-color, 0.3);
           }
 
           &.rank-3 {
             background: linear-gradient(135deg, $secondary-color, $secondary-dark);
-            color: white;
+            color: $background-white;
             box-shadow: 0 2px 8px rgba($secondary-color, 0.3);
           }
         }

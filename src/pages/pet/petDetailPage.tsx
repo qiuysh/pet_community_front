@@ -10,6 +10,7 @@ import { ShareSheet } from '../../components/post/shareSheet';
 import { Button, buttonClass } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
+import { PageHeader } from '../../components/ui/pageHeader';
 import { Tabs } from '../../components/ui/tabs';
 import { Spinner } from '../../components/ui/spinner';
 import { formatCount } from '../../utils/format';
@@ -63,27 +64,26 @@ export function PetDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-soft flex items-center justify-center">
-        <div className="text-center">
-          <Spinner className="mx-auto" label="加载中…" />
-          <p className="mt-4 text-brown-muted">加载中…</p>
-        </div>
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <Spinner label="加载中…" />
       </div>
     );
   }
 
   if (!pet) {
     return (
-      <div className="min-h-screen bg-soft flex items-center justify-center">
-        <div className="text-center">
-          <div className="mb-4 flex justify-center text-brown-light">
-            <PetTypeFallbackIcon size={64} aria-hidden="true" />
-          </div>
-          <p className="text-brown-muted mb-4">宠物不存在或已被删除</p>
-          <Link to="/pets" className="text-primary-text hover:text-primary-text font-medium">
-            返回宠物广场
-          </Link>
-        </div>
+      <div className="bg-cream min-h-screen">
+        <PageHeader title="宠物详情" fallbackTo="/pets" />
+        <EmptyState
+          title="宠物不存在或已被删除"
+          description="可能已下架或链接失效"
+          icon={<PetTypeFallbackIcon size={64} aria-hidden="true" />}
+          action={
+            <Link to="/pets" className="font-medium text-primary-text">
+              返回宠物广场
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -122,108 +122,115 @@ export function PetDetailPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-soft">
-      <div className="page-hero-surface h-64">
-        <div
-          className="pointer-events-none absolute -bottom-10 right-[14%] h-36 w-36 rounded-full bg-secondary-soft blur-xl"
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute bottom-8 left-[12%] h-20 w-20 rounded-full bg-primary/20 blur-md"
-          aria-hidden="true"
-        />
-      </div>
+    <div className="bg-cream min-h-screen pb-6">
+      <PageHeader title={pet.name || '宠物详情'} fallbackTo="/pets" />
 
-      <div className="page-shell -mt-24">
-        <Card className="rounded-xl shadow-sm" padding="none">
-          <div className="p-6 flex items-end gap-6">
-            <div className="w-32 h-32 rounded-full bg-white p-1 shadow-lg overflow-hidden">
-              {pet.avatar ? (
-                <img
-                  src={pet.avatar}
-                  alt={pet.name}
-                  width={96}
-                  height={96}
-                  className="w-full h-full rounded-full object-cover"
-                  decoding="async"
-                />
-              ) : (
-                <div className="w-full h-full rounded-full bg-linear-to-br from-cream to-secondary-soft flex items-center justify-center text-brown">
-                  {(() => {
-                    const PetIcon = getPetTypeIcon(pet.petType);
-                    return <PetIcon size={48} aria-hidden="true" />;
-                  })()}
-                </div>
-              )}
-            </div>
-            <div className="flex-1 pb-2">
-              <div className="flex items-center gap-3">
-                <h1 className="page-content-title">{pet.name}</h1>
-                {pet.gender === 1 && <span className="text-[length:var(--font-size-title)] text-primary-text">♂</span>}
-                {pet.gender === 2 && <span className="text-[length:var(--font-size-title)] text-error-text">♀</span>}
-              </div>
-              <div className="flex items-center gap-4 mt-2 text-brown-muted">
-                <span>{petTypeInfo?.label || '未知'}</span>
-                <span>·</span>
-                <span>{pet.breedName || '未知品种'}</span>
-                {pet.weight > 0 && (
-                  <>
-                    <span>·</span>
-                    <span>{pet.weight} kg</span>
-                  </>
-                )}
-              </div>
-              {pet.personality && (
-                <p className="text-sm text-brown-secondary mt-2">{pet.personality}</p>
-              )}
-            </div>
-            <div className="pb-2 flex gap-3">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="rounded-lg"
-                onClick={handleOpenShare}
-              >
-                <Share2 size={ICON_SIZE.inline} aria-hidden="true" />
-                分享
-              </Button>
-              {isOwner && (
-                <Link
-                  to={`/pets/${pet.id}/edit`}
-                  className={buttonClass({ variant: 'outline', size: 'sm', className: 'rounded-lg' })}
-                >
-                  编辑
-                </Link>
-              )}
-            </div>
-          </div>
-
-          {isOwner && visibilityLabel && (
-            <div className="px-6 pb-2">
-              <span className="inline-flex text-xs text-brown-muted bg-bg-secondary px-2 py-1 rounded-md">
-                {visibilityLabel}
-              </span>
-            </div>
-          )}
-
-          {pet.bio && (
-            <div className="px-6 pb-4">
-              <p className="text-brown-secondary text-sm">{pet.bio}</p>
-            </div>
-          )}
-
-          <div className="border-t border-border-light px-4 pb-2">
-            <Tabs
-              listOnly
-              items={tabItems}
-              selectedKey={activeTab}
-              onSelectionChange={(key) => setActiveTab(key as 'album' | 'growth' | 'posts')}
+      <div className="page-shell space-y-4 px-4 py-4">
+        <div>
+          <div className="page-hero-surface relative h-40 overflow-hidden rounded-md sm:h-48">
+            <div
+              className="pointer-events-none absolute -bottom-10 right-[14%] h-36 w-36 rounded-full bg-secondary-soft blur-xl"
+              aria-hidden="true"
+            />
+            <div
+              className="pointer-events-none absolute bottom-6 left-[10%] h-28 w-28 rounded-full bg-secondary-soft/80 blur-xl"
+              aria-hidden="true"
+            />
+            <div
+              className="pointer-events-none absolute bottom-10 left-[18%] h-8 w-8 rounded-full bg-primary/25 blur-sm"
+              aria-hidden="true"
             />
           </div>
-        </Card>
 
-        <div className="mt-6">
+          <Card className="relative -mt-16" padding="none">
+            <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-end sm:gap-6 sm:p-6">
+              <div className="h-28 w-28 shrink-0 overflow-hidden rounded-full bg-white p-1 shadow-card sm:h-32 sm:w-32">
+                {pet.avatar ? (
+                  <img
+                    src={pet.avatar}
+                    alt={pet.name}
+                    width={128}
+                    height={128}
+                    className="h-full w-full rounded-full object-cover"
+                    decoding="async"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-linear-to-br from-cream to-secondary-soft text-brown">
+                    {(() => {
+                      const PetIcon = getPetTypeIcon(pet.petType);
+                      return <PetIcon size={48} aria-hidden="true" />;
+                    })()}
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0 flex-1 pb-1">
+                <div className="flex items-center gap-3">
+                  <h1 className="page-content-title">{pet.name}</h1>
+                  {pet.gender === 1 && <span className="text-[length:var(--font-size-title)] text-primary-text">♂</span>}
+                  {pet.gender === 2 && <span className="text-[length:var(--font-size-title)] text-error-text">♀</span>}
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-brown-muted">
+                  <span>{petTypeInfo?.label || '未知'}</span>
+                  <span>·</span>
+                  <span>{pet.breedName || '未知品种'}</span>
+                  {pet.weight > 0 && (
+                    <>
+                      <span>·</span>
+                      <span>{pet.weight} kg</span>
+                    </>
+                  )}
+                </div>
+                {pet.personality && (
+                  <p className="mt-2 text-sm text-brown-secondary">{pet.personality}</p>
+                )}
+              </div>
+              <div className="flex shrink-0 gap-3 pb-1">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={handleOpenShare}
+                >
+                  <Share2 size={ICON_SIZE.inline} aria-hidden="true" />
+                  分享
+                </Button>
+                {isOwner && (
+                  <Link
+                    to={`/pets/${pet.id}/edit`}
+                    className={buttonClass({ variant: 'outline', size: 'sm' })}
+                  >
+                    编辑
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {isOwner && visibilityLabel && (
+              <div className="px-4 pb-2 sm:px-6">
+                <span className="inline-flex rounded-md bg-soft px-2 py-1 text-xs text-brown-muted">
+                  {visibilityLabel}
+                </span>
+              </div>
+            )}
+
+            {pet.bio && (
+              <div className="px-4 pb-4 sm:px-6">
+                <p className="text-sm text-brown-secondary">{pet.bio}</p>
+              </div>
+            )}
+
+            <div className="border-t border-border-light px-4 pb-2">
+              <Tabs
+                listOnly
+                items={tabItems}
+                selectedKey={activeTab}
+                onSelectionChange={(key) => setActiveTab(key as 'album' | 'growth' | 'posts')}
+              />
+            </div>
+          </Card>
+        </div>
+
+        <div>
           {activeTab === 'album' && (
             <PetAlbumSection
               album={album}
@@ -250,22 +257,22 @@ export function PetDetailPage() {
           )}
 
           {activeTab === 'posts' && (
-            <Card className="rounded-xl shadow-sm">
+            <Card padding="none">
               {relatedPostsLoading ? (
-                <div className="py-12 flex justify-center">
+                <div className="flex justify-center py-12">
                   <Spinner />
                 </div>
               ) : relatedPosts.length === 0 ? (
-                <EmptyState compact icon={<FileText size={32} />} title="暂无相关帖子" />
+                <EmptyState compact icon={<FileText size={32} aria-hidden="true" />} title="暂无相关帖子" />
               ) : (
                 <ul className="divide-y divide-border-light">
                   {relatedPosts.map((post) => (
                     <li key={post.id}>
                       <Link
                         to={`/posts/${post.id}`}
-                        className="block px-4 py-3 hover:bg-cream transition-colors"
+                        className="block px-4 py-3 transition-colors hover:bg-cream"
                       >
-                        <p className="text-sm text-brown line-clamp-2">
+                        <p className="line-clamp-2 text-sm text-brown">
                           {post.content || '分享了一条动态'}
                         </p>
                         <div className="mt-2 flex gap-3 text-xs text-brown-muted tabular-nums">
@@ -281,45 +288,43 @@ export function PetDetailPage() {
           )}
         </div>
 
-        <div className="mt-6 pb-12">
-          <Card className="rounded-xl shadow-sm">
-            <h3 className="page-section-title mb-4">基本信息</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex justify-between py-2 border-b border-border-light">
-                <span className="text-brown-muted">类型</span>
-                <span className="text-brown">{petTypeInfo?.label || '未知'}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border-light">
-                <span className="text-brown-muted">品种</span>
-                <span className="text-brown">{pet.breedName || '未知'}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border-light">
-                <span className="text-brown-muted">性别</span>
-                <span className="text-brown">
-                  {pet.gender === 1 ? '公' : pet.gender === 2 ? '母' : '保密'}
-                </span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border-light">
-                <span className="text-brown-muted">体重</span>
-                <span className="text-brown tabular-nums">
-                  {pet.weight > 0 ? `${pet.weight} kg` : '未知'}
-                </span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border-light">
-                <span className="text-brown-muted">是否绝育</span>
-                <span className="text-brown">{pet.isSterilized === 1 ? '是' : '否'}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border-light">
-                <span className="text-brown-muted">疫苗接种</span>
-                <span className="text-brown">{pet.isVaccinated === 1 ? '已接种' : '未接种'}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-border-light">
-                <span className="text-brown-muted">浏览量</span>
-                <span className="text-brown tabular-nums">{formatCount(pet.viewCount)}</span>
-              </div>
+        <Card>
+          <h3 className="page-section-title mb-4">基本信息</h3>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="flex justify-between border-b border-border-light py-2">
+              <span className="text-brown-muted">类型</span>
+              <span className="text-brown">{petTypeInfo?.label || '未知'}</span>
             </div>
-          </Card>
-        </div>
+            <div className="flex justify-between border-b border-border-light py-2">
+              <span className="text-brown-muted">品种</span>
+              <span className="text-brown">{pet.breedName || '未知'}</span>
+            </div>
+            <div className="flex justify-between border-b border-border-light py-2">
+              <span className="text-brown-muted">性别</span>
+              <span className="text-brown">
+                {pet.gender === 1 ? '公' : pet.gender === 2 ? '母' : '保密'}
+              </span>
+            </div>
+            <div className="flex justify-between border-b border-border-light py-2">
+              <span className="text-brown-muted">体重</span>
+              <span className="text-brown tabular-nums">
+                {pet.weight > 0 ? `${pet.weight} kg` : '未知'}
+              </span>
+            </div>
+            <div className="flex justify-between border-b border-border-light py-2">
+              <span className="text-brown-muted">是否绝育</span>
+              <span className="text-brown">{pet.isSterilized === 1 ? '是' : '否'}</span>
+            </div>
+            <div className="flex justify-between border-b border-border-light py-2">
+              <span className="text-brown-muted">疫苗接种</span>
+              <span className="text-brown">{pet.isVaccinated === 1 ? '已接种' : '未接种'}</span>
+            </div>
+            <div className="flex justify-between border-b border-border-light py-2">
+              <span className="text-brown-muted">浏览量</span>
+              <span className="text-brown tabular-nums">{formatCount(pet.viewCount)}</span>
+            </div>
+          </div>
+        </Card>
       </div>
 
       <ShareSheet

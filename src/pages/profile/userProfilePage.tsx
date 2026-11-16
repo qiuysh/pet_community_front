@@ -156,7 +156,11 @@ export function UserProfilePage() {
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute bottom-6 left-[12%] h-16 w-16 rounded-full bg-primary/20 blur-md"
+          className="pointer-events-none absolute bottom-4 left-[10%] h-24 w-24 rounded-full bg-secondary-soft/80 blur-xl"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute bottom-8 left-[18%] h-8 w-8 rounded-full bg-primary/25 blur-sm"
           aria-hidden="true"
         />
       </div>

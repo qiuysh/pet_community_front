@@ -270,7 +270,7 @@
   // 帖子列表
   // ============================================
   .posts-list {
-    padding: 0;
+    padding: 0 $spacing-md;
 
     .post-card {
       position: relative;
@@ -409,7 +409,7 @@
             position: absolute;
             inset: 0;
             background: rgba($text-primary, 0.6);
-            color: white;
+            color: $background-white;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -505,7 +505,7 @@
 @media (max-width: 768px) {
   .category-page {
     .category-hero {
-      padding: $spacing-lg $spacing-sm $spacing-md;
+      padding: $spacing-xl $spacing-md $spacing-lg;
 
       .hero-back {
         top: $spacing-sm;
@@ -530,7 +530,7 @@
     }
 
     .filter-bar {
-      padding: $spacing-sm;
+      padding: $spacing-md;
 
       .filter-row {
         .filter-label {
@@ -561,7 +561,7 @@
     }
 
     .posts-list {
-      padding: 0;
+      padding: 0 $spacing-md;
 
       .post-card {
         padding: $spacing-sm;

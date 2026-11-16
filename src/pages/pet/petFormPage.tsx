@@ -42,7 +42,7 @@ export function PetFormPage() {
         fallbackTo="/pets"
       />
 
-      <div className="page-shell py-4">
+      <div className="page-shell px-4 py-4">
         <Card className="space-y-6" padding="lg">
           <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             <div className="flex items-center gap-6">

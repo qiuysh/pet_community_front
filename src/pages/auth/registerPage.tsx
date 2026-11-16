@@ -86,11 +86,14 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center p-4 py-6">
+    <div className="min-h-screen bg-cream flex items-center justify-center p-4 py-6 relative overflow-hidden">
       <a href="#auth-main" className="skip-link">
         跳到主要内容
       </a>
-      <main id="auth-main" className="w-full max-w-md">
+      <div className="absolute top-0 right-0 h-72 w-72 -translate-y-1/3 translate-x-1/3 rounded-full bg-secondary-soft/90 blur-3xl" aria-hidden="true" />
+      <div className="absolute bottom-0 left-0 h-64 w-64 translate-y-1/3 -translate-x-1/4 rounded-full bg-secondary-soft/70 blur-3xl" aria-hidden="true" />
+      <div className="absolute bottom-24 left-8 h-10 w-10 rounded-full bg-primary/25 blur-md" aria-hidden="true" />
+      <main id="auth-main" className="relative w-full max-w-md">
       <Card className="w-full" padding="md">
         <div className="text-center mb-5">
           <div className="w-12 h-12 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-3 shadow-brand">

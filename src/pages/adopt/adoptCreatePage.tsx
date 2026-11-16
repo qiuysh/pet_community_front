@@ -38,7 +38,7 @@ export const AdoptCreatePage = () => {
         </div>
       </div>
 
-      <div className="page-shell space-y-4 py-4">
+      <div className="page-shell space-y-4 px-4 py-4">
         <Card>
           <h2 className="page-section-title mb-4">基本信息</h2>
           <div className="space-y-3">

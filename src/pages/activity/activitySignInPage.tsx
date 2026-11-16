@@ -60,7 +60,7 @@ export const ActivitySignInPage = () => {
 
   return (
     <div className="bg-cream min-h-dvh pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
-      <div className="page-shell bg-white py-4 shadow-card">
+      <div className="page-shell bg-white px-4 py-4 shadow-card">
         <h1 className="page-content-title mb-2">{activity.title}</h1>
         <p className="text-sm text-brown-muted mb-4">{activity.description}</p>
 
@@ -80,7 +80,7 @@ export const ActivitySignInPage = () => {
 
       <div className="sticky top-0 z-10 border-b bg-white py-2 shadow-card">
         {/* 白底通栏；水平内边距放在 page-shell，与下方正文同列 */}
-        <div className="page-shell">
+        <div className="page-shell px-4">
           <Tabs
             listOnly
             className="w-full"
@@ -94,7 +94,7 @@ export const ActivitySignInPage = () => {
         </div>
       </div>
 
-      <div className="page-shell py-4">
+      <div className="page-shell px-4 py-4">
         {activeTab === 'qrcode' && (
           <div className="space-y-6">
             <Card>

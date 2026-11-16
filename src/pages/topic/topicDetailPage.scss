@@ -1,44 +1,30 @@
 @import '../../styles/variables.scss';
 
 .topic-detail-page {
-  @extend %page-shell;
+  @extend %page-bleed;
+  --page-bg: #{$background-color};
   min-height: 100vh;
-  background: $background-color;
+  padding-bottom: $spacing-lg;
 
-  .loading {
-    text-align: center;
-    padding: 40px;
-    color: $text-muted;
-  }
-
-  .detail-header {
-    position: sticky;
-    top: var(--user-header-offset, 56px);
-    background: $background-white;
+  .topic-detail-body {
+    @extend %page-shell;
+    padding: $spacing-md;
     display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid $divider-color;
-    z-index: $z-index-sticky;
-
-    .title {
-      margin-left: 16px;
-    }
+    flex-direction: column;
+    gap: $spacing-md;
   }
 
   .topic-info-card {
     background: $background-white;
-    padding: 20px 16px;
     display: flex;
-    gap: 16px;
-    margin-bottom: 12px;
+    flex-direction: column;
+    margin: 0;
 
     .topic-cover {
-      width: 100px;
-      height: 100px;
-      border-radius: $border-radius-sm;
+      width: 100%;
+      aspect-ratio: 16 / 9;
       overflow: hidden;
-      flex-shrink: 0;
+      border-radius: 0;
 
       img {
         width: 100%;
@@ -60,48 +46,50 @@
     }
 
     .topic-meta {
-      flex: 1;
+      padding: $spacing-md;
       min-width: 0;
 
       .topic-name {
-          margin: 0 0 8px 0;
-        }
+        margin: 0 0 $spacing-xs 0;
+      }
 
       .topic-desc {
         font-size: $font-size-sm;
         color: $text-secondary;
-        margin: 0 0 12px 0;
+        margin: 0 0 $spacing-sm 0;
         line-height: 1.5;
       }
 
       .topic-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-md;
         font-size: $font-size-sm;
         color: $text-muted;
       }
     }
   }
 
+  .topic-banner-slot {
+    margin: 0;
+  }
+
   .posts-section {
     background: $background-white;
-    padding: 16px;
+    padding: $spacing-md;
+    border-radius: $border-radius-sm;
 
     .section-title {
-      margin: 0 0 16px 0;
+      margin: 0 0 $spacing-md 0;
     }
 
     .posts-list {
-      .loading {
-        text-align: center;
-        padding: 40px;
-        color: $text-muted;
-      }
-
       .post-card {
         display: block;
-        padding: 16px;
+        padding: $spacing-md;
         border-radius: $border-radius-sm;
         background: $background-soft;
-        margin-bottom: 12px;
+        margin-bottom: $spacing-sm;
         text-decoration: none;
         color: inherit;
 
@@ -112,8 +100,8 @@
         .post-header {
           display: flex;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 12px;
+          gap: $spacing-sm;
+          margin-bottom: $spacing-sm;
 
           .avatar {
             width: 40px;
@@ -135,7 +123,7 @@
           font-size: $font-size-base;
           line-height: 1.6;
           color: $text-primary;
-          margin-bottom: 12px;
+          margin-bottom: $spacing-sm;
           word-break: break-word;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -147,7 +135,7 @@
         .post-images {
           display: grid;
           gap: 4px;
-          margin-bottom: 12px;
+          margin-bottom: $spacing-sm;
           border-radius: $border-radius-xs;
           overflow: hidden;
 
@@ -171,7 +159,7 @@
 
         .post-actions {
           display: flex;
-          gap: 16px;
+          gap: $spacing-md;
 
           .action-item {
             display: flex;
@@ -188,131 +176,81 @@
       }
     }
   }
-
 }
 
 @media (min-width: 768px) {
   .topic-detail-page {
-    padding-bottom: 20px;
-  }
+    .topic-detail-body {
+      padding: $spacing-md $spacing-md $spacing-lg;
+    }
 
-  .topic-detail-page .detail-header {
-    padding: 16px $spacing-md;
-  }
+    .topic-info-card .topic-meta {
+      padding: $spacing-lg;
 
-  .topic-detail-page .topic-info-card {
-    padding: 24px;
-    margin: 0 0 12px;
-    gap: 20px;
-  }
+      .topic-desc {
+        font-size: $font-size-base;
+        line-height: 1.6;
+      }
+    }
 
-  .topic-detail-page .topic-info-card .topic-cover {
-    width: 120px;
-    height: 120px;
-  }
+    .posts-section {
+      padding: $spacing-lg;
 
-  .topic-detail-page .topic-info-card .topic-meta .topic-desc {
-    font-size: $font-size-base;
-    line-height: 1.6;
-  }
+      .posts-list .post-card {
+        padding: $spacing-lg;
 
-  .topic-detail-page .posts-section {
-    padding: 20px;
-  }
+        .post-header .avatar {
+          width: 48px;
+          height: 48px;
+        }
 
-  // 广告位在话题卡与动态列表之间，与根列同宽
-  .topic-detail-page .topic-banner-slot {
-    margin: 0 0 12px;
-  }
+        .post-content {
+          font-size: $font-size-large;
+        }
 
-  .topic-detail-page .posts-section .posts-list .post-card {
-    padding: 20px;
+        .post-images.grid-1 .post-image {
+          max-height: 250px;
+        }
+      }
+    }
   }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-header .avatar {
-    width: 48px;
-    height: 48px;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-content {
-    font-size: $font-size-large;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-images &.grid-1 .post-image {
-    max-height: 250px;
-  }
-
 }
 
 @media (min-width: 1024px) {
-  .topic-detail-page .detail-header {
-    padding: 16px 24px;
-  }
+  .topic-detail-page {
+    .topic-info-card .topic-meta {
+      padding: $spacing-lg;
 
-  .topic-detail-page .topic-info-card {
-    padding: 28px;
-    gap: 24px;
-  }
+      .topic-desc {
+        line-height: 1.7;
+      }
+    }
 
-  .topic-detail-page .topic-info-card .topic-cover {
-    width: 140px;
-    height: 140px;
-  }
+    .posts-section {
+      padding: $spacing-lg;
 
-  .topic-detail-page .topic-info-card .topic-meta .topic-desc {
-    font-size: $font-size-base;
-    line-height: 1.7;
-  }
+      .posts-list .post-card {
+        padding: $spacing-lg;
+        margin-bottom: $spacing-md;
 
-  .topic-detail-page .posts-section {
-    padding: 24px;
-  }
+        .post-header {
+          gap: $spacing-md;
 
-  .topic-detail-page .posts-section .posts-list {
-    gap: 16px;
-  }
+          .avatar {
+            width: 56px;
+            height: 56px;
+          }
+        }
 
-  .topic-detail-page .posts-section .posts-list .post-card {
-    padding: 24px;
-    margin-bottom: 16px;
-  }
+        .post-content {
+          font-size: $font-size-large;
+          line-height: 1.7;
+        }
 
-  .topic-detail-page .posts-section .posts-list .post-card .post-header {
-    gap: 16px;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-header .avatar {
-    width: 56px;
-    height: 56px;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-content {
-    font-size: $font-size-large;
-    line-height: 1.7;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-images &.grid-1 .post-image {
-    max-height: 300px;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-actions .action-item {
-    font-size: $font-size-sm;
-  }
-
-}
-
-@media (min-width: 1280px) {
-  .topic-detail-page .topic-info-card {
-    gap: 28px;
-  }
-
-  .topic-detail-page .topic-info-card .topic-cover {
-    width: 160px;
-    height: 160px;
-  }
-
-  .topic-detail-page .posts-section .posts-list .post-card .post-header .avatar {
-    width: 64px;
-    height: 64px;
+        .post-images.grid-1 .post-image {
+          max-height: 300px;
+        }
+      }
+    }
   }
 }

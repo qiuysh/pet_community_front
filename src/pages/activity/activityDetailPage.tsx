@@ -56,21 +56,19 @@ export const ActivityDetailPage = () => {
   } = useActivityDetail();
 
   const formatTime = (timeStr: string) => {
-    const date = new Date(timeStr);
-    return date.toLocaleDateString('zh-CN', {
+    return new Intl.DateTimeFormat('zh-CN', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-    });
+    }).format(new Date(timeStr));
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-cream">
-        <Spinner />
-        <p className="text-brown-muted">加载中…</p>
+      <div className="min-h-screen flex items-center justify-center bg-cream">
+        <Spinner label="加载中…" />
       </div>
     );
   }
@@ -109,7 +107,7 @@ export const ActivityDetailPage = () => {
           imgClassName="w-full h-48 object-cover"
           loading="eager"
         />
-        <div className="page-shell py-4">
+        <div className="page-shell px-4 py-4">
           <h1 className="page-content-title mb-2">{activity.title}</h1>
           <p className="text-brown-muted mb-3">{activity.description}</p>
 
@@ -205,7 +203,7 @@ export const ActivityDetailPage = () => {
 
       <div className="sticky top-[var(--user-header-offset,56px)] z-10 border-b bg-white py-2 shadow-card">
         {/* 白底通栏；水平内边距放在 page-shell，与下方正文同列 */}
-        <div className="page-shell">
+        <div className="page-shell px-4">
           <Tabs
             listOnly
             className="w-full"
@@ -225,7 +223,7 @@ export const ActivityDetailPage = () => {
         </div>
       </div>
 
-      <div className="page-shell py-4">
+      <div className="page-shell px-4 py-4">
         {activeTab === 'detail' && (
           <div className="space-y-4">
             <Card>
@@ -276,6 +274,8 @@ export const ActivityDetailPage = () => {
                       decoding="async"
                       src={submission.images?.[0] || DEFAULT_SUBMISSION_IMAGE}
                       alt={submission.title}
+                      width={400}
+                      height={128}
                       className="w-full h-32 object-cover"
                     />
                     <div className="p-3">
@@ -287,6 +287,8 @@ export const ActivityDetailPage = () => {
                             decoding="async"
                             src={submission.userAvatar || getDefaultUserAvatar()}
                             alt=""
+                            width={20}
+                            height={20}
                             className="w-5 h-5 rounded-full"
                           />
                           <span className="text-xs text-brown-secondary">{submission.userNickname}</span>
@@ -366,8 +368,11 @@ export const ActivityDetailPage = () => {
                       <img
                         key={`${photo}-${index}`}
                         decoding="async"
+                        loading="lazy"
                         src={photo}
                         alt={`回顾照片 ${index + 1}`}
+                        width={200}
+                        height={96}
                         className="w-full h-24 object-cover rounded"
                       />
                     ))}

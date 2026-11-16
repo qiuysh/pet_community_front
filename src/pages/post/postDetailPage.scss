@@ -7,11 +7,11 @@
   --page-bg: #{$background-muted};
   min-height: 100vh;
   // 移动端仅预留底部 Tab，操作栏已改为正文内联
-  padding-bottom: 16px;
+  padding-bottom: $spacing-md;
 
   .loading {
     text-align: center;
-    padding: 40px;
+    padding: $spacing-2xl;
     color: $text-muted;
   }
 
@@ -22,7 +22,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
+    // 与 PageHeader 内层阅读边距一致（§5.5）
+    padding: $spacing-sm $spacing-md;
     border-bottom: 1px solid $divider-color;
     z-index: $z-index-sticky;
 
@@ -48,12 +49,12 @@
         top: 100%;
         background: $background-white;
         border-radius: $border-radius-xs;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: $shadow-hover;
         min-width: 120px;
         z-index: $z-index-dropdown;
 
         .menu-item {
-          padding: 12px 16px;
+          padding: $spacing-sm $spacing-md;
           font-size: $font-size-sm;
           cursor: pointer;
 
@@ -71,14 +72,14 @@
 
   .post-content-wrapper {
     background: $background-white;
-    padding: 16px;
-    margin-bottom: 10px;
+    padding: $spacing-md;
+    margin-bottom: $spacing-sm;
 
     .post-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-md;
       position: relative;
 
       .avatar {
@@ -453,31 +454,29 @@
 
 @media (min-width: 768px) {
   .post-detail-page {
-    padding-bottom: 24px;
+    padding-bottom: $spacing-lg;
   }
 
-  // 列宽只由根容器的 .page-shell（$page-max = 1120）约束，
-  // 内部块只负责内边距。不要再给单个块写 max-width —— 漏一个就是页头铺满的错位。
+  // 列宽只由根容器 .page-shell 约束；内边距用间距 Token，不再随断点层层加宽。
   .post-detail-page .detail-header {
-    padding: 16px 32px;
+    padding: $spacing-md;
   }
 
   .post-detail-page .post-content-wrapper {
-    padding: 32px;
-    margin-bottom: 12px;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-sm;
   }
 
   .post-detail-page .comments-section {
-    padding: 32px;
+    padding: $spacing-lg;
   }
 
-  // 广告位夹在正文卡与评论区之间，跟随列宽即可
   .post-detail-page .detail-sidebar-ad {
-    margin-bottom: 12px;
+    margin-bottom: $spacing-sm;
   }
 
   .post-detail-page .post-content-wrapper .post-header {
-    gap: 16px;
+    gap: $spacing-md;
   }
 
   .post-detail-page .post-content-wrapper .post-header .avatar {
@@ -496,7 +495,7 @@
 
   .post-detail-page .post-content-wrapper .post-detail-actions {
     justify-content: flex-start;
-    gap: 28px;
+    gap: $spacing-xl;
 
     .action-item {
       flex: 0 0 auto;
@@ -507,33 +506,7 @@
 
 @media (min-width: 1024px) {
   .post-detail-page {
-    padding-bottom: 48px;
-  }
-
-  // 列宽固定 1120，正文嫌宽就靠内边距收（移动 16 → 768:32 → 1024:40 → 1280:48）
-  .post-detail-page .detail-header {
-    padding: 16px 40px;
-  }
-
-  .post-detail-page .post-content-wrapper {
-    padding: 40px;
-  }
-
-  .post-detail-page .comments-section {
-    padding: 40px;
-  }
-
-  .post-detail-page .post-content-wrapper .post-header {
-    gap: 20px;
-  }
-
-  .post-detail-page .post-content-wrapper .post-header .avatar {
-    width: 64px;
-    height: 64px;
-  }
-
-  .post-detail-page .post-content-wrapper .post-text {
-    font-size: $font-size-large;
+    padding-bottom: $spacing-2xl;
   }
 
   .post-detail-page .post-content-wrapper .post-images &.grid-1 .image-item {
@@ -551,30 +524,13 @@
   }
 
   .post-detail-page .report-modal .modal-content {
-    max-width: 480px;
+    max-width: 30rem;
   }
 }
 
 @media (min-width: 1280px) {
-  .post-detail-page .detail-header {
-    padding: 16px 48px;
-  }
-
-  .post-detail-page .post-content-wrapper {
-    padding: 48px;
-  }
-
-  .post-detail-page .comments-section {
-    padding: 48px;
-  }
-
   .post-detail-page .post-content-wrapper .post-header {
-    gap: 24px;
-  }
-
-  .post-detail-page .post-content-wrapper .post-header .avatar {
-    width: 72px;
-    height: 72px;
+    gap: $spacing-lg;
   }
 
   .post-detail-page .post-content-wrapper .post-text {

@@ -77,7 +77,7 @@ export function MyReportListPage() {
     <div className="page-shell min-h-screen py-4">
       <PageHeader title="我的举报" fallbackTo="/profile" />
 
-      <div className="mt-4 space-y-3 motion-list">
+      <div className="mt-4 space-y-3 px-4 motion-list">
         {loading ? (
           [1, 2, 3].map((i) => (
             <Card key={i} className="space-y-2">

@@ -83,7 +83,8 @@ export function LoginPage() {
         跳到主要内容
       </a>
       <div className="absolute top-0 right-0 h-72 w-72 -translate-y-1/3 translate-x-1/3 rounded-full bg-secondary-soft/90 blur-3xl" />
-      <div className="absolute bottom-0 left-0 h-56 w-56 translate-y-1/3 -translate-x-1/4 rounded-full bg-primary/15 blur-2xl" />
+      <div className="absolute bottom-0 left-0 h-64 w-64 translate-y-1/3 -translate-x-1/4 rounded-full bg-secondary-soft/70 blur-3xl" />
+      <div className="absolute bottom-20 left-10 h-10 w-10 rounded-full bg-primary/25 blur-md" aria-hidden="true" />
 
       <main id="auth-main" className="relative w-full max-w-md">
       <Card className="w-full relative animate-fadeIn" padding="md">

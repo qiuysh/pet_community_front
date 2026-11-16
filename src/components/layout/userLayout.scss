@@ -34,12 +34,16 @@
     max-width: $content-max;
     margin: 0 auto;
     height: var(--user-header-height);
-    padding: 0 $spacing-md;
+    padding: 0 $spacing-lg;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: $spacing-sm;
     min-width: 0;
+
+    @media (max-width: 768px) {
+      padding: 0 $spacing-sm;
+    }
   }
 
   .logo {
@@ -207,7 +211,7 @@
         padding: 0 4px;
         border-radius: 999px;
         background: $error-color;
-        color: #fff;
+        color: $background-white;
         font-size: $font-size-xs;
         font-weight: 600;
         line-height: 16px;

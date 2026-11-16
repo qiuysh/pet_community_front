@@ -11,7 +11,7 @@
     align-items: center;
     margin-bottom: $spacing-md;
     background: $background-white;
-    padding: 12px $spacing-md;
+    padding: $spacing-sm $spacing-md;
     border-radius: $border-radius-sm;
 
     .tabs-ui {
@@ -21,7 +21,7 @@
 
     .tabs {
       display: flex;
-      gap: 24px;
+      gap: $spacing-lg;
 
       .tab {
         font-size: $font-size-base;
@@ -70,7 +70,7 @@
   .post-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: $spacing-md;
 
     .loading {
       text-align: center;
@@ -86,7 +86,7 @@
 
       .post-card-inner {
         position: relative;
-        padding: 16px;
+        padding: $spacing-md;
       }
 
       &:hover {
@@ -123,7 +123,7 @@
       .post-header {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: $spacing-sm;
         margin-bottom: 12px;
 
         .avatar {
@@ -223,7 +223,7 @@
 
         .topic-tag {
           color: $primary-text;
-          font-size: $font-size-xs + 1;
+          font-size: $font-size-xs;
           text-decoration: none;
           cursor: pointer;
           padding: 2px 4px;
@@ -247,7 +247,7 @@
         display: flex;
         align-items: center;
         gap: 4px;
-        font-size: $font-size-xs + 1;
+        font-size: $font-size-xs;
         color: $text-secondary;
         margin-bottom: 12px;
 
@@ -315,15 +315,15 @@
 
 @media (min-width: 1024px) {
   .post-list-page .post-list {
-    gap: 16px;
+    gap: $spacing-md;
   }
 
   .post-list-page .post-card {
-    padding: 20px;
+    padding: $spacing-lg;
   }
 
   .post-list-page .post-list-header {
-    padding: 16px 20px;
+    padding: $spacing-md $spacing-lg;
   }
 
   .post-list-page .post-card .post-content {
@@ -338,11 +338,11 @@
 
 @media (min-width: 1280px) {
   .post-list-page .post-card {
-    padding: 24px;
+    padding: $spacing-lg;
   }
 
   .post-list-page .post-card .post-header {
-    gap: 16px;
+    gap: $spacing-md;
   }
 
   .post-list-page .post-card .post-header .avatar {
@@ -351,6 +351,6 @@
   }
 
   .post-list-page .post-card .post-content {
-    font-size: $font-size-title - 4;
+    font-size: $font-size-large;
   }
 }

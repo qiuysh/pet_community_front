@@ -90,7 +90,7 @@ export function TopicCreatePage() {
         </div>
       </div>
 
-      <div className="page-shell py-4">
+      <div className="page-shell px-4 py-4">
         {/* 等级门禁提示（T5-01：须 Lv5+） */}
         {levelBlocked && (
           <Card className="mb-4 rounded-xl border border-secondary/30 bg-secondary-soft/40 p-4">
@@ -102,7 +102,7 @@ export function TopicCreatePage() {
                 aria-hidden="true"
               />
               <div className="text-sm text-brown-secondary">
-                <p className="font-semibold text-brown">等级不足，暂无法创建话题</p>
+                <p className="page-section-title text-brown">等级不足，暂无法创建话题</p>
                 <p className="mt-1">
                   创建话题需达到 <span className="font-semibold text-secondary">Lv{TOPIC_CREATE_MIN_LEVEL}+</span>，
                   当前等级 <span className="font-semibold">Lv{currentLevel}</span>。

@@ -13,13 +13,13 @@
   }
 
   .notification-list {
-    padding: $spacing-md 0;
+    padding: $spacing-md;
 
     .notification-item {
       display: flex;
       align-items: flex-start;
-      padding: 16px;
-      margin-bottom: 8px;
+      padding: $spacing-md;
+      margin-bottom: $spacing-sm;
       background: $background-white;
       border-radius: 12px;
       border: none;

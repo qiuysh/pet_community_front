@@ -8,7 +8,7 @@
   flex-direction: column;
 
   .follow-list-section {
-    padding: $spacing-md 0;
+    padding: $spacing-md;
 
     .section-tip {
       font-size: $font-size-sm;
@@ -91,7 +91,7 @@
   }
 
   .compose-section {
-    padding: $spacing-md 0;
+    padding: $spacing-md;
     display: flex;
     flex-direction: column;
     gap: 12px;

@@ -5,9 +5,9 @@
   min-height: 100vh;
   background-color: $background-color;
 
-  // PageHeader 通栏；正文块与根列等宽
+  // PageHeader 通栏；正文与页头内层 px-4 对齐
   .points-main {
-    padding: $spacing-md 0;
+    padding: $spacing-md;
     display: flex;
     flex-direction: column;
     gap: $spacing-md;

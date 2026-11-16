@@ -133,14 +133,14 @@ export const AdoptListPage = () => {
         </div>
       </div>
 
-      <div className="page-shell">
+      <div className="page-shell px-4">
         {loading ? (
-          <div className="space-y-3 mt-4">
+          <div className="space-y-4 mt-4">
             {[1, 2, 3, 4].map((i) => (
               <Card key={i} padding="none" className="overflow-hidden">
                 <div className="flex">
                   <Skeleton className="w-24 h-24 shrink-0" />
-                  <div className="flex-1 p-3 space-y-2">
+                  <div className="flex-1 p-4 space-y-2">
                     <Skeleton className="h-5 w-32" />
                     <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-3 w-2/3" />
@@ -152,7 +152,7 @@ export const AdoptListPage = () => {
         ) : adopts.length === 0 ? (
           <EmptyState compact title="暂无领养信息" />
         ) : (
-          <div className="space-y-3 mt-4 motion-list">
+          <div className="space-y-4 mt-4 motion-list">
             {adopts.map((adopt) => (
               <Link key={adopt.id} to={`/adopts/${adopt.id}`} className="block">
                 <Card hoverable padding="none" className="overflow-hidden">
@@ -165,7 +165,7 @@ export const AdoptListPage = () => {
                       imgClassName="w-24 h-24 object-cover"
                     />
                   )}
-                  <div className="flex-1 p-3">
+                  <div className="flex-1 p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <h3 className="page-section-title">{adopt.petName}</h3>

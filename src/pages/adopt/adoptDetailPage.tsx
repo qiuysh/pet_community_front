@@ -11,6 +11,7 @@ import { AdoptionFollowUpPanel } from '../../components/adopt/adoptionFollowUpPa
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
 import { PostImage } from '../../components/post/postImage';
 import '../../components/post/postImage.scss';
+import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
@@ -87,9 +88,8 @@ export const AdoptDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col justify-center items-center min-h-[40vh] gap-3 bg-cream">
-        <Spinner />
-        <p className="text-brown-muted">加载中…</p>
+      <div className="flex min-h-screen items-center justify-center bg-cream">
+        <Spinner label="加载中…" />
       </div>
     );
   }
@@ -127,7 +127,7 @@ export const AdoptDetailPage = () => {
         </div>
       )}
 
-      <div className="page-shell space-y-4 py-4">
+      <div className="page-shell space-y-4 px-4 py-4">
         <Card>
           <div className="flex items-center justify-between mb-3">
             <h1 className="page-content-title">{adopt.petName}</h1>
@@ -175,11 +175,11 @@ export const AdoptDetailPage = () => {
 
         <Card>
           <div className="flex items-center gap-3">
-            <img
-              decoding="async"
+            <Avatar
               src={adopt.userAvatar || getDefaultUserAvatar()}
+              name={adopt.userNickname}
               alt={adopt.userNickname}
-              className="w-10 h-10 rounded-full"
+              size="md"
             />
             <div>
               <div className="page-section-title">{adopt.userNickname}</div>
@@ -232,11 +232,10 @@ export const AdoptDetailPage = () => {
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <img
-                          decoding="async"
+                        <Avatar
                           src={app.userAvatar || getDefaultUserAvatar()}
-                          alt=""
-                          className="h-8 w-8 rounded-full object-cover"
+                          name={app.userNickname}
+                          size="sm"
                         />
                         <span className="page-section-title truncate">
                           {app.userNickname}
@@ -291,11 +290,10 @@ export const AdoptDetailPage = () => {
                 followUps.map((item) => (
                   <div key={item.id} className="rounded-lg bg-cream p-3">
                     <div className="flex items-center gap-2">
-                      <img
-                        decoding="async"
+                      <Avatar
                         src={item.userAvatar || getDefaultUserAvatar()}
-                        alt=""
-                        className="h-8 w-8 rounded-full object-cover"
+                        name={item.userNickname}
+                        size="sm"
                       />
                       <span className="page-section-title">{item.userNickname}</span>
                       <span className="ml-auto text-xs text-brown-muted">{item.createdAt}</span>
@@ -309,8 +307,11 @@ export const AdoptDetailPage = () => {
                           <img
                             key={`${url}-${index}`}
                             loading="lazy"
+                            decoding="async"
                             src={url}
                             alt={`回访照片 ${index + 1}`}
+                            width={80}
+                            height={80}
                             className="h-20 w-20 rounded-md object-cover"
                           />
                         ))}

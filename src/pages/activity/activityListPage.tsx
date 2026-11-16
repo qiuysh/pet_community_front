@@ -80,9 +80,9 @@ export const ActivityListPage = () => {
         </div>
       </div>
 
-      <div className="page-shell py-4">
+      <div className="page-shell px-4 py-4">
         {loading ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <Card key={i} padding="none">
                 <Skeleton className="h-40 w-full rounded-t-md" />
@@ -110,7 +110,7 @@ export const ActivityListPage = () => {
             }
           />
         ) : (
-          <div className="space-y-3 motion-list">
+          <div className="space-y-4 motion-list">
             {activities.map((activity) => (
               <ActivityCard key={activity.id} activity={activity} />
             ))}
