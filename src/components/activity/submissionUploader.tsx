@@ -188,7 +188,14 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
         <div className="flex gap-2 mb-2 flex-wrap">
           {images.map((img, index) => (
             <div key={index} className="relative w-16 h-16">
-              <img src={img} alt="" className="w-full h-full object-cover rounded-sm" decoding="async" />
+              <img
+                src={img}
+                alt=""
+                width={64}
+                height={64}
+                decoding="async"
+                className="w-full h-full object-cover rounded-sm"
+              />
               <Button
                 type="button"
                 variant="danger"

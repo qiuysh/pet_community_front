@@ -125,6 +125,7 @@ const NewMessagePage: React.FC = () => {
 
           <Textarea
             className="message-input"
+            name="content"
             placeholder={`给 ${targetUser.nickname} 发条消息吧…`}
             value={content}
             onChange={(e) => setContent(e.target.value)}

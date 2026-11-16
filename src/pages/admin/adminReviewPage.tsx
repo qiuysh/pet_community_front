@@ -203,7 +203,7 @@ export function AdminReviewPage() {
 
         {activeTab === 'pending' && selectedItems.length > 0 && (
           <div className="mt-3 flex items-center gap-3">
-            <span className="text-sm text-brown-secondary">已选择 {selectedItems.length} 条记录</span>
+            <span className="text-sm text-brown-secondary tabular-nums">已选择 {selectedItems.length} 条记录</span>
             <AdminButton type="button" variant="secondary" onClick={handleBatchReview}>
               批量审核
             </AdminButton>

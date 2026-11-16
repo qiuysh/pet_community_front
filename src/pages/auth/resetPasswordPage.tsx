@@ -66,7 +66,7 @@ export function ResetPasswordPage() {
       <Card className="w-full" padding="lg">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary-strong rounded-full flex items-center justify-center mx-auto mb-4 shadow-brand">
-            <Key className="w-8 h-8 text-white" />
+            <Key className="w-8 h-8 text-white" aria-hidden="true" />
           </div>
           <h1 className="page-content-title">重置密码</h1>
           <p className="text-brown-muted mt-2">输入您的账号信息以重置密码</p>

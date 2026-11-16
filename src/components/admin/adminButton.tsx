@@ -21,7 +21,10 @@ export interface AdminButtonProps {
   onClick?: (e: MouseEvent<HTMLButtonElement> | unknown) => void;
   'aria-label'?: string;
   'aria-expanded'?: boolean | 'true' | 'false';
+  'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+  'aria-controls'?: string;
   'aria-current'?: boolean | 'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false';
+  role?: string;
   form?: string;
 }
 

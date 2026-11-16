@@ -116,8 +116,11 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
             <div key={photo.id} className="relative">
               <img
                 decoding="async"
+                loading="lazy"
                 src={photo.photoUrl}
                 alt={photo.description || '活动照片'}
+                width={200}
+                height={128}
                 className="w-full h-32 object-cover rounded-lg"
               />
               {photo.description && (
@@ -128,6 +131,8 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
                   decoding="async"
                   src={photo.userAvatar || getDefaultUserAvatar()}
                   alt=""
+                  width={16}
+                  height={16}
                   className="w-4 h-4 rounded-full"
                 />
                 <span className="text-xs text-brown-muted">{photo.userNickname}</span>

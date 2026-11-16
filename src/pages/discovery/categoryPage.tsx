@@ -100,7 +100,7 @@ export const CategoryPage = () => {
               <div className="hero-icon-wrap">
                 <CategoryIcon categoryName={categoryInfo.name} size={ICON_SIZE.feature} color="currentColor" />
               </div>
-              <h1 className="page-content-title hero-title">{categoryInfo.name}</h1>
+              <h1 className="page-content-title hero-title text-balance">{categoryInfo.name}</h1>
               <p className="hero-desc">{categoryInfo.description}</p>
             </>
           ) : (
@@ -108,7 +108,7 @@ export const CategoryPage = () => {
               <div className="hero-icon-wrap hero-icon-default">
                 <FallbackHeroIcon />
               </div>
-              <h1 className="page-content-title hero-title">分类浏览</h1>
+              <h1 className="page-content-title hero-title text-balance">分类浏览</h1>
               <p className="hero-desc">按兴趣逛逛猫狗与更多宠友内容</p>
             </>
           )}

@@ -175,7 +175,7 @@ export function VerificationCodeModal({
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
               disabled={submitting}
-              placeholder="6 位数字"
+              placeholder="6 位数字…"
               className="flex-1"
               invalid={code.length > 0 && !isCodeValid}
               aria-describedby={code.length > 0 && !isCodeValid ? 'vc-code-error' : undefined}

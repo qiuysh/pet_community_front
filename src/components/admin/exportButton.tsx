@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Download } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
-import { AdminButton } from './adminButton';
+import { AdminButton, adminButtonClass } from './adminButton';
 
 interface ExportButtonProps {
   onExport: (type: 'overview' | 'user_growth' | 'content' | 'interaction') => void;
@@ -17,6 +17,31 @@ const exportTypes = [
 /** 导出菜单：触发器与菜单项均走 AdminButton（HeroUI 桥接） */
 export function ExportButton({ onExport }: ExportButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const menuId = useId();
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDown = (event: MouseEvent | PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   const handleExport = (type: 'overview' | 'user_growth' | 'content' | 'interaction') => {
     onExport(type);
@@ -24,14 +49,16 @@ export function ExportButton({ onExport }: ExportButtonProps) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={rootRef}>
       <AdminButton
         type="button"
         variant="secondary"
         onClick={() => setIsOpen(!isOpen)}
         className="gap-2"
         aria-label="导出数据"
+        aria-haspopup="menu"
         aria-expanded={isOpen}
+        aria-controls={isOpen ? menuId : undefined}
       >
         <Download
           size={ICON_SIZE.inline}
@@ -41,18 +68,27 @@ export function ExportButton({ onExport }: ExportButtonProps) {
         <span>导出数据</span>
       </AdminButton>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-hover border border-border-light py-2 z-50 overscroll-contain">
+        <div
+          id={menuId}
+          role="menu"
+          aria-label="导出类型"
+          className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-hover border border-border-light py-2 z-50 overscroll-contain"
+        >
           {exportTypes.map((type) => (
-            <AdminButton
+            <button
               key={type.value}
               type="button"
-              variant="ghost"
-              block
+              role="menuitem"
               onClick={() => handleExport(type.value)}
-              className="!justify-start !rounded-none !px-4 !py-2 !h-auto !min-h-0 text-sm text-brown-secondary hover:!bg-secondary-soft hover:!text-secondary-dark"
+              className={adminButtonClass({
+                variant: 'ghost',
+                block: true,
+                className:
+                  '!justify-start !rounded-none !px-4 !py-2 !h-auto !min-h-0 text-sm text-brown-secondary hover:!bg-secondary-soft hover:!text-secondary-dark',
+              })}
             >
               {type.label}
-            </AdminButton>
+            </button>
           ))}
         </div>
       )}

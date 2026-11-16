@@ -78,7 +78,7 @@ export const SearchPage = () => {
         <div className="search-content">
           <div className="section">
             <div className="section-header">
-              <span className="page-section-title">热门搜索</span>
+              <h2 className="page-section-title">热门搜索</h2>
             </div>
             <div className="hot-keywords">
               {hotKeywords.map((kw, index) => (
@@ -98,7 +98,7 @@ export const SearchPage = () => {
 
           <div className="section">
             <div className="section-header">
-              <span className="page-section-title">搜索历史</span>
+              <h2 className="page-section-title">搜索历史</h2>
               {history.length > 0 && (
                 <Button type="button" variant="ghost" size="sm" className="clear-btn" onClick={handleClearHistoryWithConfirm}>
                   清空
@@ -149,7 +149,7 @@ export const SearchPage = () => {
             <>
               {result.users.length > 0 && (
                 <div className="result-section">
-                  <div className="page-section-title section-title">用户</div>
+                  <h2 className="page-section-title section-title">用户</h2>
                   {result.users.map((user) => (
                     <Link key={user.id} to={`/profile/${user.id}`} className="user-item">
                       <Avatar src={user.avatar || getDefaultUserAvatar()} name={user.nickname} className="avatar" />
@@ -164,7 +164,7 @@ export const SearchPage = () => {
 
               {result.posts.length > 0 && (
                 <div className="result-section">
-                  <div className="page-section-title section-title">帖子</div>
+                  <h2 className="page-section-title section-title">帖子</h2>
                   {result.posts.map((post) => (
                     <Link key={post.id} to={`/posts/${post.id}`} className="post-item">
                       <div className="post-header">
@@ -179,7 +179,14 @@ export const SearchPage = () => {
                         <div className={`post-images grid-${Math.min(post.images.length, 3)}`}>
                           {post.images.slice(0, 9).map((img, idx) => (
                             <div key={idx} className="post-image">
-                              <img src={img} alt="" loading="lazy" decoding="async" />
+                              <img
+                                src={img}
+                                alt=""
+                                width={120}
+                                height={120}
+                                loading="lazy"
+                                decoding="async"
+                              />
                             </div>
                           ))}
                         </div>
@@ -201,7 +208,7 @@ export const SearchPage = () => {
 
               {result.topics.length > 0 && (
                 <div className="result-section">
-                  <div className="page-section-title section-title">话题</div>
+                  <h2 className="page-section-title section-title">话题</h2>
                   {result.topics.map((topic) => (
                     <Link key={topic.id} to={`/topics/${topic.id}`} className="topic-item">
                       <div className="topic-info">

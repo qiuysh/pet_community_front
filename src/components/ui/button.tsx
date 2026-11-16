@@ -16,6 +16,10 @@ export interface ButtonProps {
   onClick?: (e: MouseEvent<HTMLButtonElement> | unknown) => void;
   'aria-label'?: string;
   'aria-pressed'?: boolean | 'true' | 'false' | 'mixed';
+  'aria-expanded'?: boolean | 'true' | 'false';
+  'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+  'aria-controls'?: string;
+  role?: string;
   form?: string;
 }
 

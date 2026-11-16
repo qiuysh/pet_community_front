@@ -330,19 +330,25 @@ export function AdminAdPage() {
                             </h2>
                             <div className="space-y-5">
                                 <div>
-                                    <AdminLabel required>广告位名称</AdminLabel>
+                                    <AdminLabel htmlFor="ad-position-name" required>广告位名称</AdminLabel>
                                     <AdminInput
+                                        id="ad-position-name"
+                                        name="name"
                                         type="text"
                                         value={positionName}
                                         onChange={(e) => setPositionName(e.target.value)}
                                         maxLength={50}
                                         placeholder="请输入广告位名称…"
+                                        autoComplete="off"
+                                        spellCheck={false}
                                     />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
-                                        <AdminLabel required>位置</AdminLabel>
+                                        <AdminLabel htmlFor="ad-position-location" required>位置</AdminLabel>
                                         <AdminSelect
+                                            id="ad-position-location"
+                                            name="location"
                                             value={positionLocation}
                                             onChange={(e) => setPositionLocation(e.target.value)}
                                         >
@@ -352,20 +358,25 @@ export function AdminAdPage() {
                                         </AdminSelect>
                                     </div>
                                     <div>
-                                        <AdminLabel required>尺寸</AdminLabel>
+                                        <AdminLabel htmlFor="ad-position-size" required>尺寸</AdminLabel>
                                         <AdminInput
+                                            id="ad-position-size"
+                                            name="size"
                                             type="text"
                                             value={positionSize}
                                             onChange={(e) => setPositionSize(e.target.value)}
                                             maxLength={20}
                                             placeholder="如: 750x300…"
+                                            autoComplete="off"
+                                            spellCheck={false}
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <AdminLabel required>状态</AdminLabel>
+                                    <AdminLabel htmlFor="ad-position-status" required>状态</AdminLabel>
                                     <AdminSelect
-                                        aria-label="广告位状态"
+                                        id="ad-position-status"
+                                        name="status"
                                         value={String(positionStatus)}
                                         onChange={(e) => setPositionStatus(Number(e.target.value))}
                                     >
@@ -422,7 +433,7 @@ export function AdminAdPage() {
                                         <AdminTable.Body>
                                             {positions.map((position) => (
                                                 <AdminTable.Row key={position.id} id={String(position.id)}>
-                                                    <AdminTable.Cell className="whitespace-nowrap font-mono">#{position.id}</AdminTable.Cell>
+                                                    <AdminTable.Cell className="whitespace-nowrap font-mono tabular-nums">#{position.id}</AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap font-medium">{position.name}</AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">
                                                         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-secondary-soft text-secondary">
@@ -509,7 +520,7 @@ export function AdminAdPage() {
                                         <AdminTable.Body>
                                             {ads.map((ad) => (
                                                 <AdminTable.Row key={ad.id} id={String(ad.id)}>
-                                                    <AdminTable.Cell className="whitespace-nowrap font-mono">#{ad.id}</AdminTable.Cell>
+                                                    <AdminTable.Cell className="whitespace-nowrap font-mono tabular-nums">#{ad.id}</AdminTable.Cell>
                                                     <AdminTable.Cell>
                                                         <div className="max-w-xs truncate" title={ad.title}>
                                                             {ad.title}
@@ -529,9 +540,9 @@ export function AdminAdPage() {
                                                     </AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-brown-muted inline-flex items-center gap-1"><Eye size={ICON_SIZE.inline} aria-hidden="true" /><span>{ad.viewCount}</span></span>
+                                                            <span className="text-brown-muted inline-flex items-center gap-1"><Eye size={ICON_SIZE.inline} aria-hidden="true" /><span className="tabular-nums">{ad.viewCount}</span></span>
                                                             <span>/</span>
-                                                            <span className="text-secondary inline-flex items-center gap-1"><Pointer size={ICON_SIZE.inline} aria-hidden="true" /><span>{ad.clickCount}</span></span>
+                                                            <span className="text-secondary inline-flex items-center gap-1"><Pointer size={ICON_SIZE.inline} aria-hidden="true" /><span className="tabular-nums">{ad.clickCount}</span></span>
                                                         </div>
                                                     </AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">

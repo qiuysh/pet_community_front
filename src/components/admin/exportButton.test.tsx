@@ -43,4 +43,15 @@ describe('ExportButton', () => {
     fireEvent.click(screen.getByText('用户增长'));
     expect(onExport).toHaveBeenCalledWith('user_growth');
   });
+
+  it('展开后具备 menu 语义，Escape 可关闭', () => {
+    render(<ExportButton onExport={() => {}} />);
+    const trigger = screen.getByRole('button', { name: '导出数据' });
+    expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+    fireEvent.click(trigger);
+    expect(screen.getByRole('menu', { name: '导出类型' })).toBeInTheDocument();
+    expect(screen.getAllByRole('menuitem')).toHaveLength(4);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
 });

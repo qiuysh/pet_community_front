@@ -10,6 +10,8 @@ import {
   drawSharePoster,
   downloadCanvasPng,
   posterCopyText,
+  POSTER_HEIGHT,
+  POSTER_WIDTH,
   type SharePosterInput,
 } from '../../utils/sharePoster';
 
@@ -120,6 +122,9 @@ export function SharePosterModal({ open, onClose, input, onGenerated }: SharePos
             <img
               src={previewUrl}
               alt="分享海报预览"
+              width={POSTER_WIDTH}
+              height={POSTER_HEIGHT}
+              decoding="async"
               className="w-full max-w-[280px] rounded-md shadow-card border border-border-light"
             />
             <div className="flex w-full gap-2">

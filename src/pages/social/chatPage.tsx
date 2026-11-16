@@ -185,7 +185,14 @@ const ChatPage: React.FC = () => {
         <div className="chat-header">
           <BackButton />
           <Link to={`/profile/${peerUserId}`} className="user-info">
-            <img className="user-avatar" src={getUserAvatar(peer?.avatar)} alt="" decoding="async" />
+            <img
+              className="user-avatar"
+              src={getUserAvatar(peer?.avatar)}
+              alt=""
+              width={40}
+              height={40}
+              decoding="async"
+            />
             <span className="user-meta">
               <span className="page-bar-title user-name">{peer?.nickname || '宠友'}</span>
               {peerPresenceLabel && (

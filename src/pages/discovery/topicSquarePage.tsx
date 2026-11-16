@@ -184,8 +184,11 @@ export const TopicSquarePage = () => {
                       <img
                         src={topic.cover}
                         alt=""
-                        className="topic-cover-thumb"
+                        width={36}
+                        height={36}
+                        loading="lazy"
                         decoding="async"
+                        className="topic-cover-thumb"
                         onError={() => setBrokenCovers((prev) => ({ ...prev, [topic.id]: true }))}
                       />
                     ) : (

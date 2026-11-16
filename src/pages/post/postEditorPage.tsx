@@ -165,6 +165,7 @@ export const PostEditorPage = () => {
       <div className="editor-body">
         <MentionTextarea
           className="content-input !border-0 !px-0 !shadow-none focus:!ring-0"
+          name="content"
           value={state.content}
           onChange={setContent}
           placeholder="分享你家萌宠的精彩瞬间吧… 输入 @ 可提及用户"

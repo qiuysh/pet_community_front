@@ -248,7 +248,7 @@ export const PostDetailPage = () => {
       />
 
       <div id="post-detail-comments" className="comments-section">
-        <div className="page-section-title comments-header">评论 ({commentsTotal})</div>
+        <h2 className="page-section-title comments-header">评论 ({commentsTotal})</h2>
 
         <div className="comment-input-wrapper">
           {replyTarget && (
@@ -259,6 +259,7 @@ export const PostDetailPage = () => {
           )}
           <MentionTextarea
             id={COMMENT_INPUT_ID}
+            name="comment"
             aria-label={replyTarget ? `回复 @${replyTarget.name}` : '发表评论'}
             value={commentText}
             onChange={setCommentText}

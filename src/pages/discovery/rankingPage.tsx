@@ -29,7 +29,7 @@ export const RankingPage = () => {
   return (
     <div className="ranking-page">
       <div className="page-header">
-        <h1 className="page-content-title flex items-center justify-center gap-2">
+        <h1 className="page-content-title flex items-center justify-center gap-2 text-balance">
           <Flame size={ICON_SIZE.action} strokeWidth={iconStroke(ICON_SIZE.action)} aria-hidden="true" />
           <span>热门排行</span>
         </h1>
@@ -68,7 +68,7 @@ export const RankingPage = () => {
           <>
             <div className="ranking-section">
               <div className="section-header">
-                <span className="page-section-title section-title">热门动态</span>
+                <h2 className="page-section-title section-title">热门动态</h2>
               </div>
               <div className="ranking-list motion-list">
                 {(data.posts || []).slice(0, 10).map((post, index) => (
@@ -98,7 +98,7 @@ export const RankingPage = () => {
 
             <div className="ranking-section">
               <div className="section-header">
-                <span className="page-section-title section-title">人气用户</span>
+                <h2 className="page-section-title section-title">人气用户</h2>
               </div>
               <div className="ranking-list motion-list">
                 {(data.users || []).slice(0, 10).map((user, index) => (
@@ -122,7 +122,7 @@ export const RankingPage = () => {
 
             <div className="ranking-section">
               <div className="section-header">
-                <span className="page-section-title section-title">话题热度</span>
+                <h2 className="page-section-title section-title">话题热度</h2>
               </div>
               <div className="ranking-list motion-list">
                 {(data.topics || []).slice(0, 10).map((topic, index) => (

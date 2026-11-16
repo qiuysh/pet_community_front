@@ -130,6 +130,8 @@ export function ProfileSettingsPage() {
                 decoding="async"
                 src={user?.avatar || getDefaultUserAvatar()}
                 alt=""
+                width={52}
+                height={52}
                 className="sidebar-avatar"
               />
               <div className="sidebar-user-info">
@@ -154,6 +156,8 @@ export function ProfileSettingsPage() {
                       decoding="async"
                       src={user?.avatar || getDefaultUserAvatar()}
                       alt=""
+                      width={72}
+                      height={72}
                       className="form-avatar"
                     />
                     <div className="avatar-actions">

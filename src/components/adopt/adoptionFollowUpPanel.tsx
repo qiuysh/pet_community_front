@@ -95,6 +95,7 @@ export function AdoptionFollowUpPanel({
       </div>
 
       <textarea
+        name="content"
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="记录一下宠物近况、饮食与适应情况…"
@@ -107,7 +108,13 @@ export function AdoptionFollowUpPanel({
       <div className="flex flex-wrap items-center gap-2">
         {photos.map((url, index) => (
           <div key={`${url}-${index}`} className="relative h-16 w-16">
-            <img src={url} alt={`回访照片 ${index + 1}`} className="h-full w-full rounded-md object-cover" />
+            <img
+              src={url}
+              alt={`回访照片 ${index + 1}`}
+              width={64}
+              height={64}
+              className="h-full w-full rounded-md object-cover"
+            />
             <button
               type="button"
               onClick={() => setPhotos((prev) => prev.filter((_, i) => i !== index))}

@@ -26,10 +26,17 @@ const NOTIFY_FILTER_QUERY = {
 
 function getNotificationHref(notification: NotificationItem): string | null {
   if (notification.type === 'security') return null;
-  if (notification.triggerType === 'post' || notification.triggerType === 'comment') {
+  // post：TriggerID 为动态 ID；comment：后端存的是评论 ID，无法直达帖子，改跳触发用户主页
+  if (notification.triggerType === 'post' && notification.triggerID > 0) {
     return `/posts/${notification.triggerID}`;
   }
-  if (notification.triggerType === 'user') {
+  if (
+    (notification.triggerType === 'user' || notification.triggerType === 'comment') &&
+    notification.triggerUserID > 0
+  ) {
+    return `/profile/${notification.triggerUserID}`;
+  }
+  if (notification.type === 'follow' && notification.triggerUserID > 0) {
     return `/profile/${notification.triggerUserID}`;
   }
   return null;
@@ -191,7 +198,10 @@ const NotificationListPage: React.FC = () => {
                   </span>
                 </span>
                 {!notification.isRead && (
-                  <span className="unread-dot" aria-hidden="true" />
+                  <>
+                    <span className="sr-only">未读</span>
+                    <span className="unread-dot" aria-hidden="true" />
+                  </>
                 )}
               </>
             );
