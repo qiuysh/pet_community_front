@@ -139,7 +139,7 @@ export const AdoptListPage = () => {
             {[1, 2, 3, 4].map((i) => (
               <Card key={i} padding="none" className="overflow-hidden">
                 <div className="flex">
-                  <Skeleton className="w-24 h-24 shrink-0" />
+                  <Skeleton className="w-28 h-28 shrink-0" />
                   <div className="flex-1 p-4 space-y-2">
                     <Skeleton className="h-5 w-32" />
                     <Skeleton className="h-4 w-full" />
@@ -161,8 +161,8 @@ export const AdoptListPage = () => {
                     <PostImage
                       src={adopt.photos[0]}
                       alt={adopt.petName}
-                      className="w-24 h-24 shrink-0"
-                      imgClassName="w-24 h-24 object-cover"
+                      className="w-28 h-28 shrink-0"
+                      imgClassName="w-28 h-28 object-cover"
                     />
                   )}
                   <div className="flex-1 p-4">

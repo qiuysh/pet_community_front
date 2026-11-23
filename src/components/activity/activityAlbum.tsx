@@ -5,6 +5,7 @@ import { useUserStore } from '../../stores/userStore';
 import { useToast } from '../../components/toast';
 import { ACTIVITY_ALBUM_PHOTO_DESCRIPTION_MAX, ACTIVITY_DEFAULT_PAGE_SIZE } from '../../constants/activity';
 import { getDefaultUserAvatar } from '../../utils/avatarUtils';
+import { formatCompactDateTime } from '../../utils/format';
 import { useAsync, useAsyncEffect } from '../../hooks/useAsync';
 import { useConfirm } from '../../hooks/useConfirm';
 import { Button } from '../ui/button';
@@ -80,15 +81,6 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
     );
   };
 
-  const formatTime = (timeStr: string) => {
-    return new Date(timeStr).toLocaleDateString('zh-CN', {
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   if (loading) {
     return (
       <div className="py-8 flex justify-center">
@@ -129,6 +121,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
               <div className="mt-1 flex items-center gap-1">
                 <img
                   decoding="async"
+                  loading="lazy"
                   src={photo.userAvatar || getDefaultUserAvatar()}
                   alt=""
                   width={16}
@@ -136,7 +129,7 @@ export const ActivityAlbum = ({ activityId, canUpload = false }: ActivityAlbumPr
                   className="w-4 h-4 rounded-full"
                 />
                 <span className="text-xs text-brown-muted">{photo.userNickname}</span>
-                <span className="text-xs text-brown-light ml-1">{formatTime(photo.createdAt)}</span>
+                <span className="text-xs text-brown-light ml-1">{formatCompactDateTime(photo.createdAt)}</span>
               </div>
               {canUpload && user?.id === photo.userId && (
                 <Button

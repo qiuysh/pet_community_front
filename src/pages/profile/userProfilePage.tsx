@@ -429,7 +429,7 @@ export function UserProfilePage() {
                       <Card hoverable className="rounded-xl shadow-card h-full" padding="none">
                         <div className="aspect-square bg-linear-to-br from-cream to-secondary-soft flex items-center justify-center overflow-hidden">
                           {pet.avatar ? (
-                            <img src={pet.avatar} alt={pet.name} className="w-full h-full object-cover" decoding="async" />
+                            <img src={pet.avatar} alt={pet.name} width={200} height={200} loading="lazy" className="w-full h-full object-cover" decoding="async" />
                           ) : (
                             <PetIcon className="text-brown-light" size={48} aria-hidden="true" />
                           )}
@@ -457,7 +457,7 @@ export function UserProfilePage() {
                     <Card hoverable className="rounded-xl shadow-card h-full" padding="none">
                       <div className="aspect-square bg-linear-to-br from-muted to-soft flex items-center justify-center overflow-hidden">
                         {cover ? (
-                          <img src={cover} alt="" className="w-full h-full object-cover" decoding="async" />
+                          <img src={cover} alt="" width={200} height={200} loading="lazy" className="w-full h-full object-cover" decoding="async" />
                         ) : post.video ? (
                           <video src={post.video} className="w-full h-full object-cover" muted />
                         ) : (

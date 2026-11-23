@@ -48,7 +48,7 @@ export function PetFormPage() {
             <div className="flex items-center gap-6">
               <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/10 to-primary-dark/10 flex items-center justify-center text-brown overflow-hidden">
                 {formData.avatar ? (
-                  <img src={formData.avatar} alt="" className="w-full h-full object-cover" decoding="async" />
+                  <img src={formData.avatar} alt="" width={96} height={96} className="w-full h-full object-cover" decoding="async" />
                 ) : (
                   (() => {
                     const PetIcon = getPetTypeIcon(formData.petType);

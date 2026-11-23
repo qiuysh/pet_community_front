@@ -194,6 +194,7 @@ export const SubmissionUploader = ({ activity, onSuccess }: SubmissionUploaderPr
                 width={64}
                 height={64}
                 decoding="async"
+                loading="lazy"
                 className="w-full h-full object-cover rounded-sm"
               />
               <Button

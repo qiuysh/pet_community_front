@@ -173,6 +173,8 @@ export const AdoptCreatePage = () => {
                         decoding="async"
                         src={photo}
                         alt={`宠物照片 ${idx + 1}`}
+                        width={200}
+                        height={200}
                         className="w-full h-full object-cover"
                         loading="lazy"
                       />

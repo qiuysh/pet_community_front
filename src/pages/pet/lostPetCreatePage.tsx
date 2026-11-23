@@ -218,7 +218,7 @@ export function LostPetCreatePage() {
                           上传中
                         </div>
                       ) : (
-                        <img src={photo} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                        <img src={photo} alt="" width={200} height={200} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                       )}
                       <Button
                         type="button"

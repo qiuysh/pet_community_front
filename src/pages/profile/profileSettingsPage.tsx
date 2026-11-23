@@ -154,6 +154,7 @@ export function ProfileSettingsPage() {
                   <div className="avatar-section">
                     <img
                       decoding="async"
+                      loading="lazy"
                       src={user?.avatar || getDefaultUserAvatar()}
                       alt=""
                       width={72}

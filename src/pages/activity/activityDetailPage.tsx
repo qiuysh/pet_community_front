@@ -282,6 +282,7 @@ export const ActivityDetailPage = () => {
                       alt={submission.title}
                       width={400}
                       height={128}
+                      loading="lazy"
                       className="w-full h-32 object-cover"
                     />
                     <div className="p-3">
@@ -295,6 +296,7 @@ export const ActivityDetailPage = () => {
                             alt=""
                             width={20}
                             height={20}
+                            loading="lazy"
                             className="w-5 h-5 rounded-full"
                           />
                           <span className="text-xs text-brown-secondary">{submission.userNickname}</span>

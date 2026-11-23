@@ -178,7 +178,7 @@ export function PetGrowthSection({
                 <div className="flex gap-2 mt-3">
                   {record.images.slice(0, 3).map((img, idx) => (
                     <div key={idx} className="w-16 h-16 bg-muted rounded-lg overflow-hidden">
-                      <img src={img} alt="" className="w-full h-full object-cover" decoding="async" />
+                      <img src={img} alt="" width={64} height={64} loading="lazy" className="w-full h-full object-cover" decoding="async" />
                     </div>
                   ))}
                 </div>

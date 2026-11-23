@@ -38,6 +38,7 @@ export const PostListPage = () => {
 
   return (
     <div className="post-list-page">
+      <h1 className="sr-only">动态广场</h1>
       <div className="post-list-header">
         <Tabs
           listOnly

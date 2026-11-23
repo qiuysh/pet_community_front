@@ -169,6 +169,9 @@ export const ActivitySignInPage = () => {
                         decoding="async"
                         src={record.userAvatar || getDefaultUserAvatar()}
                         alt=""
+                        width={32}
+                        height={32}
+                        loading="lazy"
                         className="w-8 h-8 rounded-full"
                       />
                       <div>

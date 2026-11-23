@@ -8,6 +8,7 @@ test-results
 .codex/*
 .vscode/*
 .codegraph/*
+.workbuddy/*
 .gemini/*
 .github/*
 .history/*

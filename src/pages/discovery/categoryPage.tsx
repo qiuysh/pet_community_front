@@ -231,7 +231,10 @@ export const CategoryPage = () => {
                     <img
                       src={img}
                       alt=""
+                      width={200}
+                      height={200}
                       decoding="async"
+                      loading="lazy"
                       onError={(e) => {
                         e.currentTarget.style.visibility = 'hidden';
                         e.currentTarget.parentElement?.classList.add('is-broken');

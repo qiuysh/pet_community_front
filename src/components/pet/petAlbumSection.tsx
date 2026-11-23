@@ -182,6 +182,9 @@ export function PetAlbumSection({
                       decoding="async"
                       src={item.imageUrl}
                       alt={item.title || `照片 ${index + 1}`}
+                      width={200}
+                      height={200}
+                      loading="lazy"
                       className="w-full h-full object-cover pointer-events-none"
                     />
                   )

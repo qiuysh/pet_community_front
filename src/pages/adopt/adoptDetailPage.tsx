@@ -123,9 +123,11 @@ export const AdoptDetailPage = () => {
             <PostImage
               src={adopt.photos[0]}
               alt={adopt.petName}
-              className="w-full h-64"
-              imgClassName="w-full h-64 object-cover"
+              className="w-full aspect-[16/10] min-h-64 max-h-96"
+              imgClassName="w-full aspect-[16/10] min-h-64 max-h-96 object-cover"
               loading="eager"
+              width={800}
+              height={500}
             />
           </div>
         </div>

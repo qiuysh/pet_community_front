@@ -99,6 +99,10 @@
         max-width: 70%;
         margin-bottom: 16px;
 
+        // 长会话渲染优化：屏外消息跳过布局与绘制（auto 会记住已渲染过的实际高度）
+        content-visibility: auto;
+        contain-intrinsic-size: auto 64px;
+
         &.sent {
           align-self: flex-end;
 

@@ -113,6 +113,8 @@ export function AdoptionFollowUpPanel({
               alt={`回访照片 ${index + 1}`}
               width={64}
               height={64}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full rounded-md object-cover"
             />
             <button

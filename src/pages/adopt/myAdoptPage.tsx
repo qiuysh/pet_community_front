@@ -156,7 +156,10 @@ export const MyAdoptPage = () => {
                     decoding="async"
                     src={adopt.photos?.[0] || '/default-pet.png'}
                     alt={adopt.petName}
-                    className="h-16 w-16 shrink-0 rounded-md object-cover"
+                    width={96}
+                    height={96}
+                    loading="lazy"
+                    className="h-24 w-24 shrink-0 rounded-md object-cover"
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">

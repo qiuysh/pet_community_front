@@ -45,6 +45,7 @@ export function ChatImagePreview({
             width={400}
             height={400}
             decoding="async"
+            loading="lazy"
           />
         ) : null}
         <p className="chat-image-preview__tip">图片将以上述内容发送（≤2MB）</p>

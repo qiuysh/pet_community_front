@@ -105,6 +105,24 @@ export function formatDateTime(value: string | number | Date): string {
   return `${formatDate(date)} ${timeFormatter.format(date)}`;
 }
 
+const compactDateTimeFormatter = new Intl.DateTimeFormat('zh-CN', {
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+});
+
+/** 紧凑日期时间：11-04 16:24（不含年份，相册等密集列表用）；非法输入返回空串 */
+export function formatCompactDateTime(value: string | number | Date): string {
+  const date = toValidDate(value);
+  if (!date) return '';
+  const parts = compactDateTimeFormatter.formatToParts(date);
+  const pick = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  return `${pick('month')}-${pick('day')} ${pick('hour')}:${pick('minute')}`;
+}
+
 /**
  * 相对时间（I1-06 / N6-04）：刚刚 / N分钟前 / N小时前 / N天前；
  * 超过 7 天回退为 formatDate。非法输入返回空串。

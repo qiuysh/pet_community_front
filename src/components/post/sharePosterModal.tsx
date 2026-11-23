@@ -125,6 +125,7 @@ export function SharePosterModal({ open, onClose, input, onGenerated }: SharePos
               width={POSTER_WIDTH}
               height={POSTER_HEIGHT}
               decoding="async"
+              loading="lazy"
               className="w-full max-w-[280px] rounded-md shadow-card border border-border-light"
             />
             <div className="flex w-full gap-2">

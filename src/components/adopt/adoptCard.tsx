@@ -50,8 +50,8 @@ export const AdoptCard = ({ adopt }: AdoptCardProps) => {
           <PostImage
             src={adopt.photos[0]}
             alt={adopt.petName}
-            className="w-24 h-24 shrink-0"
-            imgClassName="w-24 h-24 object-cover"
+            className="w-28 h-28 shrink-0"
+            imgClassName="w-28 h-28 object-cover"
           />
         )}
         <div className="flex-1 p-3">
