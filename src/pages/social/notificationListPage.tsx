@@ -126,7 +126,7 @@ const NotificationListPage: React.FC = () => {
         }
       />
 
-      <div className="notification-filters flex flex-wrap gap-2 pb-3">
+      <div className="notification-filters flex flex-wrap gap-2">
         {(
           [
             { key: 'all', label: '全部' },

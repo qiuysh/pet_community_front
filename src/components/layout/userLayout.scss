@@ -31,7 +31,8 @@
   box-shadow: $shadow-soft;
 
   .header-content {
-    max-width: $content-max;
+    // 与正文列对齐：盒子 = 内容列 1120 + 两侧 24，logo 左边缘正好压在页面卡片左边缘
+    max-width: $shell-inner-max;
     margin: 0 auto;
     height: var(--user-header-height);
     padding: 0 $spacing-lg;
@@ -423,12 +424,13 @@
 
 // ============================================
 // Site Footer (站点描述 + ICP 备案号)
+// 结构与页头对齐：外层白底通栏（窄屏/宽屏同一根横线），
+// 内层 .site-footer-inner 收窄到 $content-max 并加同款水平内边距。
+// 不要把 max-width 写在外层——那样宽屏下只有中间 1200px 是白的。
 // ============================================
 
 .site-footer {
-  max-width: $content-max;
-  margin: 0 auto;
-  padding: $spacing-lg $spacing-lg calc(#{$spacing-lg} + var(--user-safe-bottom));
+  width: 100%;
   background: $background-white;
   border-top: 1px solid $border-light;
   color: $text-muted;
@@ -436,9 +438,16 @@
   line-height: 1.7;
   text-align: center;
 
-  @media (max-width: 768px) {
-    // 底部导航覆盖在固定层，页脚需让出高度否则被遮挡
-    padding: $spacing-md $spacing-sm calc(var(--user-tab-bar-offset) + #{$spacing-md});
+  .site-footer-inner {
+    // 与 .header-content 同宽同边距，页脚文字列与顶栏、正文列三点对齐
+    max-width: $shell-inner-max;
+    margin: 0 auto;
+    padding: $spacing-lg $spacing-lg calc(#{$spacing-lg} + var(--user-safe-bottom));
+
+    @media (max-width: 768px) {
+      // 底部导航覆盖在固定层，页脚需让出高度否则被遮挡
+      padding: $spacing-md $spacing-sm calc(var(--user-tab-bar-offset) + #{$spacing-md});
+    }
   }
 
   .site-footer-desc {

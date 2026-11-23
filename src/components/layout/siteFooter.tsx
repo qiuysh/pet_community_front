@@ -16,22 +16,25 @@ export function SiteFooter() {
 
   return (
     <footer className="site-footer">
-      {siteDescription && (
-        <p className="site-footer-desc break-words line-clamp-3">{siteDescription}</p>
-      )}
-      <p className="site-footer-meta">
-        <span>© {new Date().getFullYear()} {siteName}</span>
-        {siteICP && (
-          <a
-            className="site-footer-icp"
-            href="https://beian.miit.gov.cn/"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            {siteICP}
-          </a>
+      {/* 白底通栏（与页头一致），内容列由内层收窄到 $content-max */}
+      <div className="site-footer-inner">
+        {siteDescription && (
+          <p className="site-footer-desc break-words line-clamp-3">{siteDescription}</p>
         )}
-      </p>
+        <p className="site-footer-meta">
+          <span>© {new Date().getFullYear()} {siteName}</span>
+          {siteICP && (
+            <a
+              className="site-footer-icp"
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {siteICP}
+            </a>
+          )}
+        </p>
+      </div>
     </footer>
   );
 }

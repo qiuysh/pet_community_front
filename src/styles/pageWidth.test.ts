@@ -92,4 +92,18 @@ describe('同页同宽：正文容器层无左右 padding，内容块铺满列�
     // 卡片内 16px padding 属于卡片内部（用户确认保留），只守根容器层。
     expectNoHorizontalPadding(read('src/pages/post/postDetailPage.scss'), '.post-detail-page');
   });
+
+  it('页头 / 页脚内层盒取 $shell-inner-max，与正文列同边', () => {
+    // 回归：写 $content-max（1200）会让 logo 比正文卡片左偏 16px，且页头与页脚宽度不一致。
+    expect(read('src/styles/_variables.scss')).toContain('$shell-inner-max: $page-max + $spacing-lg * 2;');
+    const layout = read('src/components/layout/userLayout.scss');
+    for (const selector of ['.header-content', '.site-footer-inner']) {
+      const widths = blocks(layout, selector).flatMap((block) => block.decls);
+      expect(widths.length, `${selector} 应有样式块`).toBeGreaterThan(0);
+      expect(
+        widths.some((decl) => /^max-width:\s*\$shell-inner-max;/.test(decl)),
+        `${selector} 的 max-width 必须用 $shell-inner-max`,
+      ).toBe(true);
+    }
+  });
 });
