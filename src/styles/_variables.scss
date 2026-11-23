@@ -108,7 +108,7 @@ $spacing-2xl: 48px;
 // 外壳 .user-content 已提供 1200px 上限 + 水平内边距（PC 24 / 移动 12），
 // 页面内部只做「收窄 + 居中」，禁止手写像素 max-width。
 // 例外：白底吸顶工具条 / 标题行的 page-shell 须加 px-4（与 PageHeader 一致），
-// 同页正文 page-shell 同步加，避免贴白边（详见 ui-design-spec 5.5）。
+// 同页正文 page-shell 同步加，避免贴白边（详见 design-system 5.5）。
 // ============================================
 $content-max: 1200px; // 外壳：顶栏 / 内容区 / 页脚共用
 $page-max: 1120px; // 常规页面：列表、详情、正文、表单、设置
@@ -116,7 +116,7 @@ $page-max-read: 720px; // 仅会话列：聊天（泡泡行宽再长就难读）
 
 // 同页同宽：一个页面里所有横向内容块必须共用同一个列宽。
 // 页头 / 页签条 / 广告位 / 固定底栏最容易漏——正文 1120 而页头铺满 1152 就是错位。
-// 背景色可以通栏，内容必须列内（详见 docs/frontend/ui-design-spec.md 5.5）。
+// 背景色可以通栏，内容必须列内（详见 .ai/design/design-system.md 5.5）。
 
 // 页面宽度容器占位符：页面根容器 @extend 它，不要手写 max-width / margin auto
 %page-shell {

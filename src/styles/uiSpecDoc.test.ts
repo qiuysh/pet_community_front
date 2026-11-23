@@ -3,15 +3,15 @@
  *
  * 目的：批次 1/2 修掉的「示例硬编码 hex、emoji 图标、自写骨架屏 keyframes、
  * 字号表脱离 token 阶梯、虚构 12 列栅格」不再回到文档里。
- * 依据：docs/frontend/ui-spec-review-2026-11-06.md（P1）+ ui-design-spec.md v2.5。
+ * 依据：.ai/design/design-system.md（UI 规范 v2.6，历史评审结论已并入）。
  */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-// vitest 的 cwd 固定为 front/；文档在仓库 docs/ 下，需退回一级。
+// vitest 的 cwd 固定为 front/；规范在仓库 .ai/ 下，需退回一级。
 const read = (rel: string) => readFileSync(resolve(process.cwd(), rel), 'utf-8');
-const spec = read('../docs/frontend/ui-design-spec.md');
+const spec = read('../.ai/design/design-system.md');
 const variablesSource = read('src/styles/_variables.scss');
 const globalSource = read('src/styles/global.scss');
 const appCssSource = read('src/styles/app.css');

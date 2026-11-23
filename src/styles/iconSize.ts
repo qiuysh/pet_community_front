@@ -1,5 +1,5 @@
 /**
- * 前台图标尺寸 Token（对齐 docs/frontend/ui-design-spec.md §4.6）
+ * 前台图标尺寸 Token（对齐 .ai/design/design-system.md §4.6）
  *
  * 场景 → 尺寸，避免业务里散落 12/14/15/18 等临时值。
  */

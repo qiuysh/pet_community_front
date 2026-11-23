@@ -133,7 +133,7 @@ export const AdoptListPage = () => {
         </div>
       </div>
 
-      <div className="page-shell px-4">
+      <div className="page-shell">
         {loading ? (
           <div className="space-y-4 mt-4">
             {[1, 2, 3, 4].map((i) => (

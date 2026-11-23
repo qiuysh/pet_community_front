@@ -90,7 +90,7 @@ export function TopicCreatePage() {
         </div>
       </div>
 
-      <div className="page-shell px-4 py-4">
+      <div className="page-shell py-4">
         {/* 等级门禁提示（T5-01：须 Lv5+） */}
         {levelBlocked && (
           <Card className="mb-4 rounded-xl border border-secondary/30 bg-secondary-soft/40 p-4">

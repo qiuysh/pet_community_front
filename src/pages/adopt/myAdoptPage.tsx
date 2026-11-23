@@ -134,7 +134,7 @@ export const MyAdoptPage = () => {
         />
       </div>
 
-      <div className="page-shell space-y-3 px-4 pb-8">
+      <div className="page-shell space-y-3 pb-8">
         {loading ? (
           [1, 2, 3].map((i) => <Skeleton key={i} className="h-24 w-full rounded-lg" />)
         ) : tab === 'adopts' ? (

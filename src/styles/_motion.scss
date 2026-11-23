@@ -1,6 +1,6 @@
 // ============================================
 // 动效工具层（唯一允许出现 @keyframes 的文件）
-// 规则见 docs/frontend/motion-spec.md
+// 规则见 .ai/design/design-system.md「十一、动效规范」
 // - 只动 transform / opacity
 // - 初始隐藏态必须包在 prefers-reduced-motion: no-preference 内
 // - 页面只加类名，不写自己的 keyframes

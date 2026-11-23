@@ -2,7 +2,7 @@
  * 配色可访问性守卫。
  *
  * 目的：把「白字配主色不达标」这类问题钉死在测试里，改 token 时立刻暴露。
- * 依据：docs/frontend/ui-spec-review-2026-11-06.md（P0 对比度实测）。
+ * 依据：.ai/design/design-system.md（配色对比度分层）。
  * 口径：WCAG 2.1 —— 正文 4.5:1，图形/UI 组件与大字号 3:1。
  */
 import { readFileSync } from 'node:fs';

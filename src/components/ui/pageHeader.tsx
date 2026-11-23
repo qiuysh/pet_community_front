@@ -17,7 +17,8 @@ export interface PageHeaderProps {
 /**
  * 标准内页页头：返回 + 居中标题 + 右侧操作。
  * 渐变头（发现页 / 排行榜 / 话题广场）有独立装饰与筛选器，不使用本组件。
- * 白底可通栏；内层 page-shell + px-4 与正文列对齐（见 ui-design-spec §5.5）。
+ * 白底可通栏；内层 page-shell + px-4 防标题贴边（见 .ai/design/design-system.md §5.5）。
+ * 正文容器不带水平 padding，内容块铺满同列；页头保留 px-4 避免贴白底边缘。
  */
 export function PageHeader({
   title,
@@ -37,7 +38,7 @@ export function PageHeader({
         .filter(Boolean)
         .join(' ')}
     >
-      <div className="page-shell flex items-center gap-2 px-4 py-3">
+      <div className="page-shell px-4 flex items-center gap-2 py-3">
         <div className="flex w-10 shrink-0 items-center">{back ? <BackButton fallbackTo={fallbackTo} /> : null}</div>
         <h1 className="page-bar-title min-w-0 flex-1 truncate text-center text-balance">{title}</h1>
         <div className="flex min-w-10 shrink-0 items-center justify-end gap-1">{right}</div>

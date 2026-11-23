@@ -88,8 +88,9 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
-    // 与页头 $spacing-md 同列 inset（§5.5）
-    padding: 0 $spacing-md $spacing-md;
+    // 正文不在两侧加水平 padding：卡片直接铺满 %page-shell 的 1120 列宽，
+    // 与页头同宽（§5.3 水平留白由外壳提供、§5.5 同页同宽）。
+    padding-bottom: $spacing-md;
 
     .loading {
       text-align: center;
@@ -178,8 +179,9 @@
 }
 
 @media (min-width: 768px) {
+  // 水平内边距由基础规则的 $spacing-md 提供，这里只调垂直（§5.3 / §5.5）
   .topic-list-page .topic-header {
-    padding: 20px;
+    padding-block: 20px;
   }
 
   .topic-list-page .topic-list {
@@ -204,7 +206,7 @@
 
 @media (min-width: 1024px) {
   .topic-list-page .topic-header {
-    padding: 24px;
+    padding-block: 24px;
   }
 
   .topic-list-page .topic-header .search-box input {

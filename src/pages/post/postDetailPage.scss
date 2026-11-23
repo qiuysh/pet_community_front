@@ -227,7 +227,7 @@
 
   .comments-section {
     background: $background-white;
-    padding: 16px;
+    padding: $spacing-md;
     scroll-margin-top: calc(var(--user-header-offset, 56px) + 48px);
 
     .comments-header {
@@ -457,18 +457,19 @@
     padding-bottom: $spacing-lg;
   }
 
-  // 列宽只由根容器 .page-shell 约束；内边距用间距 Token，不再随断点层层加宽。
+  // 水平阅读边距只在基础规则的 $spacing-md 定义一次（§5.3 / §5.5）；
+  // 媒体查询只调垂直，避免断点间水平漂移导致页头与正文错列。
   .post-detail-page .detail-header {
-    padding: $spacing-md;
+    padding-block: $spacing-md;
   }
 
   .post-detail-page .post-content-wrapper {
-    padding: $spacing-lg;
+    padding-block: $spacing-lg;
     margin-bottom: $spacing-sm;
   }
 
   .post-detail-page .comments-section {
-    padding: $spacing-lg;
+    padding-block: $spacing-lg;
   }
 
   .post-detail-page .detail-sidebar-ad {

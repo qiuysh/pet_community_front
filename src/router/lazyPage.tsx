@@ -22,7 +22,7 @@ export function lazyDefault(loader: () => Promise<{ default: ComponentType }>) {
 export function PageSkeleton() {
   return (
     <div
-      className="page-shell w-full min-h-[40vh] bg-cream px-4 py-4"
+      className="page-shell px-4 w-full min-h-[40vh] bg-cream py-4"
       role="status"
       aria-label="页面加载中"
     >

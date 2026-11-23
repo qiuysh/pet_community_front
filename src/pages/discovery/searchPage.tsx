@@ -59,7 +59,7 @@ export const SearchPage = () => {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="搜索用户、帖子、话题…"
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             aria-label="搜索"
             className="search-field"
           />
