@@ -56,7 +56,7 @@ export function AdminHeader() {
             className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-sm bg-secondary-soft"
             aria-hidden="true"
           >
-            <User {...metaIconProps} className="text-secondary" />
+            <User {...metaIconProps} className="text-secondary-dark" />
           </div>
           <div className="hidden sm:block">
             <p className="text-sm font-medium text-brown">{admin?.username || '管理员'}</p>
@@ -69,7 +69,7 @@ export function AdminHeader() {
           variant="ghost"
           size="sm"
           onClick={handleLogout}
-          className="min-w-0 p-2 flex-shrink-0 text-brown-muted hover:bg-secondary-soft hover:text-secondary"
+          className="min-w-0 p-2 flex-shrink-0 text-brown-muted hover:bg-secondary-soft hover:text-secondary-dark"
           aria-label="退出登录"
         >
           <LogOut {...metaIconProps} />

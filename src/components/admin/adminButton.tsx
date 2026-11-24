@@ -46,9 +46,9 @@ const toUiVariant: Record<AdminButtonVariant, 'secondary' | 'outline' | 'danger'
 
 const variantClass: Record<AdminButtonVariant, string> = {
   primary:
-    '!h-10 !min-h-10 !px-4 !rounded-sm !shadow-none !bg-secondary !text-white hover:!bg-secondary-dark',
+    '!h-10 !min-h-10 !px-4 !rounded-sm !shadow-none !bg-secondary-dark !text-white hover:!bg-secondary-dark/90',
   secondary:
-    '!h-10 !min-h-10 !px-4 !rounded-sm !shadow-none !bg-secondary !text-white hover:!bg-secondary-dark',
+    '!h-10 !min-h-10 !px-4 !rounded-sm !shadow-none !bg-secondary-dark !text-white hover:!bg-secondary-dark/90',
   outline:
     '!h-10 !min-h-10 !px-4 !rounded-sm !shadow-none !border-0 !bg-soft !text-brown-secondary hover:!bg-muted',
   danger:

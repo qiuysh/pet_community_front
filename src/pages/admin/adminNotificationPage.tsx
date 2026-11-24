@@ -18,7 +18,7 @@ import { ICON_SIZE } from '../../styles/iconSize';
 import { AdminSelect } from '../../components/admin/adminField';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminTabs } from '../../components/admin/adminTabs';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
@@ -354,9 +354,9 @@ export function AdminNotificationPage() {
 
       {activeTab === 'notification' && (
         <>
-          <div className="px-6 overflow-x-auto">
+          <div className="overflow-x-auto">
             {isLoadingNotifications ? (
-              <AdminTable.Status>加载中…</AdminTable.Status>
+              <AdminTableSkeleton columns={8} />
             ) : notifications.length === 0 ? (
               <AdminTable.Status>暂无通知</AdminTable.Status>
             ) : (
@@ -380,7 +380,7 @@ export function AdminNotificationPage() {
                       </AdminTable.Cell>
                       <AdminTable.Cell className="whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          notification.type === 3 ? 'bg-warning/10 text-warning-text' : 'bg-secondary-soft text-secondary'
+                          notification.type === 3 ? 'bg-warning/10 text-warning-text' : 'bg-secondary-soft text-secondary-dark'
                         }`}>
                           {getNotificationTypeLabel(notification.type)}
                         </span>
@@ -457,9 +457,9 @@ export function AdminNotificationPage() {
 
       {activeTab === 'announcement' && (
         <>
-          <div className="px-6 overflow-x-auto">
+          <div className="overflow-x-auto">
             {isLoadingAnnouncements ? (
-              <AdminTable.Status>加载中…</AdminTable.Status>
+              <AdminTableSkeleton columns={8} />
             ) : announcements.length === 0 ? (
               <AdminTable.Status>暂无公告</AdminTable.Status>
             ) : (
@@ -481,14 +481,14 @@ export function AdminNotificationPage() {
                       <AdminTable.Cell>
                         <div className="max-w-xs truncate">
                           {announcement.sortOrder > 0 && (
-                            <span className="text-secondary mr-1 inline-flex items-center"><Pin size={ICON_SIZE.inline} aria-hidden="true" /></span>
+                            <span className="text-secondary-dark mr-1 inline-flex items-center"><Pin size={ICON_SIZE.inline} aria-hidden="true" /></span>
                           )}
                           {announcement.title}
                         </div>
                       </AdminTable.Cell>
                       <AdminTable.Cell className="whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          announcement.type === 3 ? 'bg-warning/10 text-warning-text' : 'bg-secondary-soft text-secondary'
+                          announcement.type === 3 ? 'bg-warning/10 text-warning-text' : 'bg-secondary-soft text-secondary-dark'
                         }`}>
                           {getAnnouncementTypeLabel(announcement.type)}
                         </span>

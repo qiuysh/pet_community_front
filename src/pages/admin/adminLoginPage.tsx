@@ -127,7 +127,7 @@ export function AdminLoginPage() {
             <ShieldCheck
               size={ICON_SIZE.feature}
               strokeWidth={iconStroke(ICON_SIZE.feature)}
-              className="text-secondary"
+              className="text-secondary-dark"
               aria-hidden="true"
             />
           </div>
@@ -266,7 +266,7 @@ export function AdminLoginPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-brown-muted">
             还没有账号？{' '}
-            <span className="text-secondary">后台账号由超级管理员创建</span>
+            <span className="text-secondary-dark">后台账号由超级管理员创建</span>
           </p>
         </div>
       </main>

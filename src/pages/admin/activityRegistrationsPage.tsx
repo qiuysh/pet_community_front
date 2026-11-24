@@ -13,7 +13,7 @@ import { useConfirm } from '../../hooks/useConfirm';
 import { Pagination } from '../../components/admin/pagination';
 import { adminButtonClass } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { AdminSelect } from '../../components/admin/adminField';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
@@ -142,9 +142,9 @@ export function ActivityRegistrationsPage() {
         </AdminFilterBar>
       </div>
 
-      <div className="px-6 py-4">
+      <div className="py-4">
         {listHook.loading ? (
-          <div className="flex h-40 items-center justify-center text-brown-muted">加载中…</div>
+          <AdminTableSkeleton columns={7} />
         ) : list.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 py-16 text-brown-muted">
             <PawPrint className="h-10 w-10 opacity-40" aria-hidden />

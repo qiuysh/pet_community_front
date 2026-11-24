@@ -25,7 +25,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     >
       <a
         href="#admin-main"
-        className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2 focus-visible:left-2 focus-visible:z-50 focus-visible:px-4 focus-visible:py-2 focus-visible:bg-secondary focus-visible:text-white focus-visible:rounded-sm"
+        className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:top-2 focus-visible:left-2 focus-visible:z-50 focus-visible:px-4 focus-visible:py-2 focus-visible:bg-secondary-dark focus-visible:text-white focus-visible:rounded-sm"
       >
         跳到主要内容
       </a>
@@ -46,7 +46,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <AdminHeader />
         <main id="admin-main" className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
-          <div className="p-4 sm:p-6">{children}</div>
+          <div className="mx-auto w-full max-w-[1600px] p-4 sm:p-6">{children}</div>
         </main>
       </div>
     </div>

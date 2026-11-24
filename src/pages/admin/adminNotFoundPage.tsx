@@ -22,7 +22,7 @@ export function AdminNotFoundPage() {
         aria-labelledby="admin-not-found-title"
       >
         <div
-          className="mb-5 flex h-16 w-16 items-center justify-center rounded-md bg-secondary-soft text-secondary"
+          className="mb-5 flex h-16 w-16 items-center justify-center rounded-md bg-secondary-soft text-secondary-dark"
           aria-hidden
         >
           <FileQuestion size={ICON_SIZE.empty} strokeWidth={iconStroke(ICON_SIZE.empty)} />

@@ -9,14 +9,14 @@ import { ReportStats } from '../../components/admin/reportStats';
 import { Pagination } from '../../components/admin/pagination';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
-import { Flag, ClipboardList } from 'lucide-react';
+import { ClipboardList } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
 import { adminUi } from '../../styles/adminUi';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { AdminSelect } from '../../components/admin/adminField';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 
 type StatusFilter = 'all' | '0' | '1' | '2';
@@ -187,14 +187,9 @@ export function AdminReportPage() {
         )}
       </div>
 
-      <div className="px-6">
+      <div>
         {loading ? (
-          <AdminTable.Status>
-            <div className="mb-2 flex justify-center animate-pulse text-brown-light">
-              <Flag size={32} aria-hidden="true" />
-            </div>
-            <p>加载中…</p>
-          </AdminTable.Status>
+          <AdminTableSkeleton columns={pendingOnly ? 8 : 7} />
         ) : list.length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">

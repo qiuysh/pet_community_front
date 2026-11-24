@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ClipboardList, PawPrint } from 'lucide-react';
+import { ClipboardList } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
 import { getUserBehaviorLogs, getSecurityAuditLogs, getOperationLogs } from '../../api/admin';
 import type { UserBehaviorLog, AdminOperationLog } from '../../types/admin';
@@ -11,7 +11,7 @@ import { useAsyncEffect } from '../../hooks/useAsync';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
 import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { AdminTabs } from '../../components/admin/adminTabs';
 import { AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { adminUi } from '../../styles/adminUi';
@@ -230,14 +230,9 @@ export function AdminLogsPage() {
                 />
             </div>
 
-            <div className="px-6 pt-2">
+            <div className="pt-2">
                 {loading ? (
-                    <AdminTable.Status>
-                        <div className="mb-2 flex justify-center animate-pulse text-brown-light">
-                            <PawPrint size={32} aria-hidden="true" />
-                        </div>
-                        <p>加载中…</p>
-                    </AdminTable.Status>
+                    <AdminTableSkeleton columns={8} />
                 ) : getCurrentLogs().length === 0 ? (
                     <AdminTable.Status>
                         <div className="mb-2 flex justify-center text-brown-light">

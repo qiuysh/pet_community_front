@@ -19,6 +19,7 @@ import { TodayTrendChart } from '@/components/admin/todayTrendChart';
 import { TodoAggregate } from '@/components/admin/todoAggregate';
 import { AdminButton } from '@/components/admin/adminButton';
 import { EmptyState } from '@/components/ui/emptyState';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getDashboardOverview, getTodoAggregate } from '@/api/admin';
 import { useAsyncEffect } from '@/hooks/useAsync';
 import { adminUi } from '@/styles/adminUi';
@@ -52,11 +53,63 @@ export function AdminDashboardPage() {
   const isInitialLoading = loading && !data;
   const refreshing = loading && !!data;
 
+  const pageHeader = (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <h1 className={adminUi.pageTitle}>运营驾驶舱</h1>
+        <p className={adminUi.pageDesc}>
+          今日核心指标与待办
+          {lastUpdated && (
+            <span className="ml-2 text-xs text-brown-muted">
+              最后更新：{lastUpdated.toLocaleTimeString('zh-CN')}
+            </span>
+          )}
+        </p>
+      </div>
+      <AdminButton type="button" variant="secondary" onClick={handleRefresh} disabled={refreshing} loading={refreshing}>
+        <RefreshCw className={`mr-2 inline h-4 w-4 ${refreshing ? 'animate-spin motion-reduce:animate-none' : ''}`} aria-hidden="true" />
+        {refreshing ? '刷新中…' : '刷新'}
+      </AdminButton>
+    </div>
+  );
+
   if (isInitialLoading) {
     return (
-      <div className="flex h-64 items-center justify-center" role="status" aria-live="polite">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-secondary border-t-transparent motion-reduce:animate-none" />
+      <div
+        className="space-y-5 animate-fadeIn sm:space-y-6"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
         <span className="sr-only">加载中…</span>
+        {pageHeader}
+
+        <section aria-label="今日必做">
+          <h2 className={`${adminUi.sectionTitle} mb-3`}>今日必做</h2>
+          <div className={adminUi.chartCard}>
+            <Skeleton className="mb-3 h-4 w-1/4" />
+            <div className="space-y-2">
+              {[0, 1, 2].map((index) => (
+                <Skeleton key={index} className="h-8 w-full" />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section aria-label="今日用户与内容">
+          <h2 className={`${adminUi.sectionTitle} mb-3`}>今日概况</h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+            {[0, 1, 2, 3].map((index) => (
+              <Skeleton key={index} className="h-32 w-full" />
+            ))}
+          </div>
+        </section>
+
+        <section aria-label="互动与趋势" className="space-y-5">
+          <h2 className={`${adminUi.sectionTitle} mb-3`}>今日互动与活动</h2>
+          <Skeleton className="h-40 w-full" />
+          <Skeleton className="h-[280px] w-full" />
+        </section>
       </div>
     );
   }
@@ -65,7 +118,7 @@ export function AdminDashboardPage() {
   if (!data && error) {
     return (
       <div className="space-y-5">
-        <h1 className={adminUi.pageTitle}>运营驾驶舱</h1>
+        {pageHeader}
         <EmptyState
           title="驾驶舱数据加载失败"
           description="可能是网络或服务异常，请重新加载"
@@ -99,32 +152,9 @@ export function AdminDashboardPage() {
 
   return (
     <div className="space-y-5 animate-fadeIn sm:space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <h1 className={adminUi.pageTitle}>运营驾驶舱</h1>
-          <p className={adminUi.pageDesc}>
-            今日核心指标与待办
-            {lastUpdated && (
-              <span className="ml-2 text-xs text-brown-muted">
-                最后更新：{lastUpdated.toLocaleTimeString('zh-CN')}
-              </span>
-            )}
-          </p>
-        </div>
-        <AdminButton type="button" variant="secondary" onClick={handleRefresh} disabled={refreshing} loading={refreshing}>
-          <RefreshCw className={`mr-2 inline h-4 w-4 ${refreshing ? 'animate-spin motion-reduce:animate-none' : ''}`} aria-hidden="true" />
-          {refreshing ? '刷新中…' : '刷新'}
-        </AdminButton>
-      </div>
+      {pageHeader}
 
-      <section
-        aria-label="今日必做"
-        className={
-          (todoData?.total ?? 0) > 0
-            ? 'rounded-md border border-warning/30 bg-warning/5 p-3 sm:p-4'
-            : undefined
-        }
-      >
+      <section aria-label="今日必做">
         <h2 className={`${adminUi.sectionTitle} mb-3`}>今日必做</h2>
         <TodoAggregate data={todoData ?? null} loading={refreshing} />
       </section>
@@ -138,7 +168,7 @@ export function AdminDashboardPage() {
             hint={`累计用户 ${formatCount(summary?.totalUsers)}`}
             change={newUsersChange.change}
             changeType={newUsersChange.changeType}
-            iconTone="bg-secondary-soft text-secondary"
+            iconTone="bg-secondary-soft text-secondary-dark"
             icon={<Users className="h-5 w-5" />}
           />
           <DashboardCard
@@ -155,7 +185,7 @@ export function AdminDashboardPage() {
             hint={`累计帖子 ${formatCount(summary?.totalPosts)}`}
             change={postsChange.change}
             changeType={postsChange.changeType}
-            iconTone="bg-secondary-soft text-secondary"
+            iconTone="bg-secondary-soft text-secondary-dark"
             icon={<FileText className="h-5 w-5" />}
           />
           <DashboardCard
@@ -224,11 +254,8 @@ export function AdminDashboardPage() {
           </div>
         )}
 
-        <details className="rounded-md border border-border-light bg-white open:shadow-card">
-          <summary className={`${adminUi.sectionTitle} cursor-pointer list-none px-4 py-3 marker:content-none [&::-webkit-details-marker]:hidden`}>
-            业务存量与治理
-            <span className="ml-2 text-xs font-normal text-brown-muted">点击展开</span>
-          </summary>
+        <section className="rounded-md border border-border-light bg-white shadow-card">
+          <h3 className={`${adminUi.sectionTitle} px-4 py-3`}>业务存量与治理</h3>
           <div className="border-t border-border-light px-4 py-3">
             <DashboardStockPanel
               groups={[
@@ -267,7 +294,7 @@ export function AdminDashboardPage() {
               ]}
             />
           </div>
-        </details>
+        </section>
       </section>
     </div>
   );

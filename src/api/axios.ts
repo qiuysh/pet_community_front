@@ -155,6 +155,10 @@ const createApiInstance = (): AxiosInstance => {
   // 响应拦截器 - 统一处理
   instance.interceptors.response.use(
     (response: AxiosResponse) => {
+      // 导出文件是裸二进制，没有 { code, data } 包装；解构会把 Blob 丢成 undefined
+      if (response.config.responseType === 'blob') {
+        return response.data;
+      }
       const { code, message, data } = response.data;
       const httpStatus = response.status;
 

@@ -169,7 +169,7 @@ function withAdmin(page: ReactNode) {
   return (
     <AdminProtectedRoute>
       <AdminLayout>
-        <PageSuspense>{page}</PageSuspense>
+        <PageSuspense fullWidth>{page}</PageSuspense>
       </AdminLayout>
     </AdminProtectedRoute>
   );

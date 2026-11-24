@@ -11,7 +11,7 @@ import { Pagination } from '../../components/admin/pagination';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
 import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
-import { PawPrint, ClipboardList } from 'lucide-react';
+import { ClipboardList } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
 import { adminUi } from '../../styles/adminUi';
 import { AdminButton } from '../../components/admin/adminButton';
@@ -19,7 +19,7 @@ import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { AdminSelect } from '../../components/admin/adminField';
 import { AdminTabs } from '../../components/admin/adminTabs';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 
 type TabType = 'pending' | 'history';
@@ -211,14 +211,9 @@ export function AdminReviewPage() {
         )}
       </div>
 
-      <div className="px-6">
+      <div>
         {loading ? (
-          <AdminTable.Status>
-            <div className="mb-2 flex justify-center animate-pulse text-brown-light">
-              <PawPrint size={ICON_SIZE.feature} aria-hidden="true" />
-            </div>
-            <p>加载中…</p>
-          </AdminTable.Status>
+          <AdminTableSkeleton columns={activeTab === 'pending' ? 7 : 8} />
         ) : (activeTab === 'pending' ? pendingList : historyList).length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">
@@ -263,7 +258,7 @@ export function AdminReviewPage() {
                     <AdminButton
                       type="button"
                       variant="ghost"
-                      className="!h-auto !max-w-xs !justify-start !whitespace-normal !px-0 text-left text-brown-secondary hover:!text-secondary"
+                      className="!h-auto !max-w-xs !justify-start !whitespace-normal !px-0 text-left text-brown-secondary hover:!text-secondary-dark"
                       onClick={() => setPreviewContent(item)}
                     >
                       <span className="line-clamp-2 break-words" title={item.content}>

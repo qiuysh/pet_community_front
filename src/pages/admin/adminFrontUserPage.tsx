@@ -11,7 +11,7 @@ import { Modal } from '../../components/ui';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminCheckbox } from '../../components/admin/adminCheckbox';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { FrontUserDetailDialog } from '../../components/admin/frontUserDetailDialog';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
@@ -229,7 +229,7 @@ export function AdminFrontUserPage() {
 
       <div>
         {isLoading ? (
-          <AdminTable.Status>加载中…</AdminTable.Status>
+          <AdminTableSkeleton columns={8} />
         ) : users.length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">
@@ -267,7 +267,7 @@ export function AdminFrontUserPage() {
                   </AdminTable.Cell>
                   <AdminTable.Cell className="min-w-0">
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-secondary-soft font-semibold text-secondary">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-secondary-soft font-semibold text-secondary-dark">
                         {user.nickname.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0 truncate font-medium text-brown">{user.nickname}</div>

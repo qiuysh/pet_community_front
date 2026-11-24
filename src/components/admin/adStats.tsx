@@ -4,6 +4,7 @@ import { showErrorToast } from '../../utils/toastManager';
 import { useAsyncEffect } from '../../hooks/useAsync';
 import { BarChart3, Eye, Pointer, TrendingUp } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
+import { Skeleton } from '../ui';
 
 interface AdStatsProps {
     startDate?: string;
@@ -26,12 +27,18 @@ export function AdStats({ startDate, endDate }: AdStatsProps) {
 
     if (loading) {
         return (
-            <div className="bg-white rounded-md shadow-card p-6">
-                <div className="text-center py-12">
-                    <div className="mb-2 flex justify-center animate-pulse text-brown-light">
-                        <BarChart3 size={32} aria-hidden="true" />
-                    </div>
-                    <p className="text-brown-muted">加载中…</p>
+            <div className="bg-white rounded-md shadow-card p-6" role="status" aria-live="polite" aria-busy="true">
+                <span className="sr-only">加载中…</span>
+                <Skeleton className="mb-6 h-6 w-32" />
+                <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+                    {[0, 1, 2].map((index) => (
+                        <Skeleton key={index} className="h-28" />
+                    ))}
+                </div>
+                <div className="space-y-3">
+                    {[0, 1, 2].map((index) => (
+                        <Skeleton key={index} className="h-4 w-full" />
+                    ))}
                 </div>
             </div>
         );

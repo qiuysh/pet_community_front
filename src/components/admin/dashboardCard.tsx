@@ -20,7 +20,7 @@ export function DashboardCard({
   changeLabel = '较昨日',
   hint,
   icon,
-  iconTone = 'bg-secondary-soft text-secondary',
+  iconTone = 'bg-secondary-soft text-secondary-dark',
 }: DashboardCardProps) {
   const changeTone =
     changeType === 'up' ? 'text-success-text' : changeType === 'down' ? 'text-error-text' : 'text-brown-muted';

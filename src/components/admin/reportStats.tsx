@@ -1,4 +1,5 @@
 import type { ReportStatsResponse } from '../../types/admin';
+import { Skeleton } from '../ui';
 
 interface ReportStatsProps {
   stats: ReportStatsResponse | null;
@@ -21,10 +22,13 @@ const TARGET_LABELS: Record<string, string> = {
 export function ReportStats({ stats, loading }: ReportStatsProps) {
   if (loading && !stats) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 animate-pulse">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-20 bg-soft rounded-md" />
-        ))}
+      <div className="mb-6" role="status" aria-live="polite" aria-busy="true">
+        <span className="sr-only">加载中…</span>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[1, 2, 3, 4].map((index) => (
+            <Skeleton key={index} className="h-20" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -35,7 +39,7 @@ export function ReportStats({ stats, loading }: ReportStatsProps) {
     { label: '举报总数', value: stats.total, color: 'text-brown' },
     { label: '待处理', value: stats.pending, color: 'text-warning-text' },
     { label: '已处理', value: stats.handled, color: 'text-success-text' },
-    { label: '处理率', value: `${stats.handleRate.toFixed(1)}%`, color: 'text-secondary' },
+    { label: '处理率', value: `${stats.handleRate.toFixed(1)}%`, color: 'text-secondary-dark' },
   ];
 
   return (

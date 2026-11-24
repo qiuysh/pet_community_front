@@ -222,7 +222,7 @@ export function AdminSidebar() {
         ) : (
           <Link
             to="/admin/dashboard"
-            className="mx-auto flex h-8 w-8 items-center justify-center rounded-sm bg-white text-secondary shadow-card hover:text-secondary"
+            className="mx-auto flex h-8 w-8 items-center justify-center rounded-sm bg-white text-secondary-dark shadow-card hover:text-secondary-dark"
             aria-label="运营驾驶舱首页"
           >
             <ShieldCheck {...menuIconProps} className="h-5 w-5" />
@@ -278,7 +278,7 @@ export function AdminSidebar() {
       <button
         type="button"
         onClick={toggleSidebar}
-        className="absolute -right-3 top-20 hidden h-6 w-6 items-center justify-center rounded-full border border-border-light bg-white text-brown-secondary shadow-card transition-colors hover:border-secondary hover:text-secondary lg:flex"
+        className="absolute -right-3 top-20 hidden h-6 w-6 items-center justify-center rounded-full border border-border-light bg-white text-brown-secondary shadow-card transition-colors hover:border-secondary hover:text-secondary-dark lg:flex"
         aria-label={collapseLabel}
         aria-expanded={!sidebarCollapsed}
       >

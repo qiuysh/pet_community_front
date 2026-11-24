@@ -22,7 +22,7 @@ import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { Pagination } from '../../components/admin/pagination';
 import { adminButtonClass } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { AdminInput, AdminSelect } from '../../components/admin/adminField';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
@@ -158,7 +158,7 @@ export function AdminActivityListPage() {
       />
 
       {focusRegistrations && (
-        <div className="mx-6 mt-4 rounded-md border border-secondary/20 bg-secondary-soft px-4 py-3 text-sm text-secondary">
+        <div className="mx-6 mt-4 rounded-md border border-secondary/20 bg-secondary-soft px-4 py-3 text-sm text-secondary-dark">
           待办入口：从下方活动进入「报名」处理待审核报名。
         </div>
       )}
@@ -213,9 +213,9 @@ export function AdminActivityListPage() {
         </AdminFilterBar>
       </div>
 
-      <div className="px-6 py-4">
+      <div className="py-4">
         {listHook.loading ? (
-          <div className="flex h-40 items-center justify-center text-brown-muted">加载中…</div>
+          <AdminTableSkeleton columns={6} />
         ) : list.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 py-16 text-brown-muted">
             <PawPrint className="h-10 w-10 opacity-40" aria-hidden />

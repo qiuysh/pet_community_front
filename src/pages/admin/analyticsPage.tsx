@@ -28,6 +28,7 @@ import { chartTheme } from '../../styles/chartTheme';
 import { AdminSelect } from '../../components/admin/adminField';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 import { adminUi } from '../../styles/adminUi';
+import { Skeleton } from '../../components/ui/skeleton';
 import { reportError } from '../../utils/errorReport';
 
 type Period = '7d' | '30d' | '90d';
@@ -112,11 +113,71 @@ export default function AdminAnalyticsPage() {
     }
   };
 
+  const header = (
+    <>
+      <AdminPageHeader
+        title="分析报表"
+        description="深度数据分析，洞察用户增长与内容互动趋势"
+        actions={<ExportButton onExport={handleExport} />}
+      />
+      <div className="py-4 border-b border-border-light">
+        <AdminFilterBar>
+          <AdminFilterField label="统计周期" htmlFor="analytics-period">
+            <AdminSelect
+              id="analytics-period"
+              name="period"
+              value={period}
+              onChange={(e) => setPeriod(e.target.value as Period)}
+            >
+              <option value="7d">{periodDays['7d']} 天</option>
+              <option value="30d">{periodDays['30d']} 天</option>
+              <option value="90d">{periodDays['90d']} 天</option>
+            </AdminSelect>
+          </AdminFilterField>
+          <AdminFilterField label="对比方式" htmlFor="analytics-compare">
+            <AdminSelect
+              id="analytics-compare"
+              name="compareType"
+              value={compareType}
+              onChange={(e) => setCompareType(e.target.value as CompareType)}
+            >
+              <option value="week">环比</option>
+              <option value="month">同比</option>
+            </AdminSelect>
+          </AdminFilterField>
+        </AdminFilterBar>
+      </div>
+    </>
+  );
+
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center" role="status" aria-live="polite">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-secondary border-t-transparent motion-reduce:animate-none" />
+      <div
+        className={`${adminUi.page} space-y-6 animate-fadeIn p-5 sm:p-6`}
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
         <span className="sr-only">加载中…</span>
+        {header}
+        <section className="space-y-3" aria-label="趋势分析">
+          <h2 className={adminUi.sectionTitle}>趋势分析</h2>
+          {[0, 1, 2].map((index) => (
+            <Skeleton key={index} className="h-64 w-full" />
+          ))}
+        </section>
+        <section className="space-y-3" aria-label="对比分析">
+          <h2 className={adminUi.sectionTitle}>对比分析</h2>
+          <Skeleton className="h-64 w-full" />
+        </section>
+        <section className="space-y-3" aria-label="分布分析">
+          <h2 className={adminUi.sectionTitle}>分布分析</h2>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {[0, 1].map((index) => (
+              <Skeleton key={index} className="h-72 w-full" />
+            ))}
+          </div>
+        </section>
       </div>
     );
   }
@@ -146,41 +207,8 @@ export default function AdminAnalyticsPage() {
   })) || [];
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      <div className={adminUi.page}>
-        <AdminPageHeader
-          title="分析报表"
-          description="深度数据分析，洞察用户增长与内容互动趋势"
-          actions={<ExportButton onExport={handleExport} />}
-        />
-        <div className={adminUi.filterSection}>
-          <AdminFilterBar>
-            <AdminFilterField label="统计周期" htmlFor="analytics-period">
-              <AdminSelect
-                id="analytics-period"
-                name="period"
-                value={period}
-                onChange={(e) => setPeriod(e.target.value as Period)}
-              >
-                <option value="7d">{periodDays['7d']} 天</option>
-                <option value="30d">{periodDays['30d']} 天</option>
-                <option value="90d">{periodDays['90d']} 天</option>
-              </AdminSelect>
-            </AdminFilterField>
-            <AdminFilterField label="对比方式" htmlFor="analytics-compare">
-              <AdminSelect
-                id="analytics-compare"
-                name="compareType"
-                value={compareType}
-                onChange={(e) => setCompareType(e.target.value as CompareType)}
-              >
-                <option value="week">环比</option>
-                <option value="month">同比</option>
-              </AdminSelect>
-            </AdminFilterField>
-          </AdminFilterBar>
-        </div>
-      </div>
+    <div className={`${adminUi.page} space-y-6 animate-fadeIn p-5 sm:p-6`}>
+      {header}
 
       <section className="space-y-3">
         <h2 className={adminUi.sectionTitle}>趋势分析</h2>

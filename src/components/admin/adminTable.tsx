@@ -4,6 +4,7 @@
  */
 import type { ReactNode } from 'react';
 import {
+  Skeleton,
   Table,
   type TableBodyProps,
   type TableCellProps,
@@ -79,6 +80,52 @@ function AdminTableCell({ className, ...rest }: TableCellProps) {
 
 function isEmptyishMessage(node: ReactNode): node is string {
   return typeof node === 'string' && /暂无|没有|无数据|为空/.test(node);
+}
+
+export interface AdminTableSkeletonProps {
+  /** 占位行数，贴近当前页 pageSize 时跳版最小 */
+  rows?: number;
+  /** 占位列数，与真实表头列数一致 */
+  columns?: number;
+}
+
+const skeletonWidths = ['w-4/5', 'w-full', 'w-2/3', 'w-3/4', 'w-1/2'];
+
+/** 后台列表加载占位：与 AdminTable 同列宽/行高，供各列表页共用 */
+export function AdminTableSkeleton({ rows = 6, columns = 5 }: AdminTableSkeletonProps) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      data-testid="admin-table-skeleton"
+      className="min-w-0"
+    >
+      <span className="sr-only">加载中…</span>
+      <div className="flex h-12 items-center gap-4 border-b border-border-light bg-soft px-6">
+        {Array.from({ length: columns }, (_, index) => (
+          <div key={index} className="min-w-0 flex-1">
+            <Skeleton className="h-3 w-3/4" />
+          </div>
+        ))}
+      </div>
+      {Array.from({ length: rows }, (_, rowIndex) => (
+        <div
+          key={rowIndex}
+          data-testid="admin-table-skeleton-row"
+          className="flex h-14 items-center gap-4 border-b border-border-light px-6 last:border-b-0"
+        >
+          {Array.from({ length: columns }, (_, columnIndex) => (
+            <div key={columnIndex} className="min-w-0 flex-1">
+              <Skeleton
+                className={joinClass('h-4', skeletonWidths[(rowIndex + columnIndex) % skeletonWidths.length])}
+              />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 /** 加载中 / 空数据：放在表格外，避免 HeroUI 行列数约束 */

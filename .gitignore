@@ -13,6 +13,7 @@ test-results
 .github/*
 .history/*
 .kite/*
+.visual-regression-out/*
 opencode.jsonc
 GEMINI.md
 AGENTS.md

@@ -4,13 +4,13 @@ import { AdminInput, AdminLabel } from '../../components/admin/adminField';
 import { useAdminSettings } from '../../hooks/useAdminSettings';
 import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
 import { AddSensitiveWordRequest, UpdateSensitiveWordRequest } from '../../types/admin';
-import { AlertTriangle, Pencil, Plus, PawPrint, Search } from 'lucide-react';
+import { AlertTriangle, Pencil, Plus, Search } from 'lucide-react';
 import { ICON_SIZE, iconStroke } from '../../styles/iconSize';
 import { adminActionClass, adminUi } from '../../styles/adminUi';
 import { Modal } from '../../components/ui';
 import { AdminButton } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 
 const SENSITIVE_QUERY = {
@@ -180,14 +180,9 @@ export function AdminSensitiveWordsPage() {
         </AdminFilterBar>
       </div>
 
-      <div className="px-6">
+      <div>
         {loading ? (
-          <AdminTable.Status>
-            <div className="mb-2 flex justify-center animate-pulse text-brown-light">
-              <PawPrint size={32} aria-hidden="true" />
-            </div>
-            <p>加载中…</p>
-          </AdminTable.Status>
+          <AdminTableSkeleton columns={4} />
         ) : sensitiveWords.length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">
@@ -289,7 +284,7 @@ export function AdminSensitiveWordsPage() {
             <Plus
               size={ICON_SIZE.nav}
               strokeWidth={iconStroke(ICON_SIZE.nav)}
-              className="text-secondary"
+              className="text-secondary-dark"
               aria-hidden="true"
             />
           </div>
@@ -369,7 +364,7 @@ export function AdminSensitiveWordsPage() {
             <Pencil
               size={ICON_SIZE.nav}
               strokeWidth={iconStroke(ICON_SIZE.nav)}
-              className="text-secondary"
+              className="text-secondary-dark"
               aria-hidden="true"
             />
           </div>

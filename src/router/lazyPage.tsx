@@ -18,11 +18,16 @@ export function lazyDefault(loader: () => Promise<{ default: ComponentType }>) {
   return lazy(loader);
 }
 
+interface PageSkeletonProps {
+  /** 后台内容区自身已限宽，骨架须铺满容器；前台仍走 1120 列宽 */
+  fullWidth?: boolean;
+}
+
 /** 接近终态的页壳骨架：顶栏占位 + 内容条，避免仅 Spinner 的空白感 */
-export function PageSkeleton() {
+export function PageSkeleton({ fullWidth = false }: PageSkeletonProps) {
   return (
     <div
-      className="page-shell px-4 w-full min-h-[40vh] bg-cream py-4"
+      className={`${fullWidth ? 'w-full' : 'page-shell px-4 w-full'} min-h-[40vh] bg-cream py-4`}
       role="status"
       aria-label="页面加载中"
     >
@@ -53,6 +58,12 @@ export function PageSkeleton() {
   );
 }
 
-export function PageSuspense({ children }: { children: ReactNode }) {
-  return <Suspense fallback={<PageSkeleton />}>{children}</Suspense>;
+export function PageSuspense({
+  children,
+  fullWidth = false,
+}: {
+  children: ReactNode;
+  fullWidth?: boolean;
+}) {
+  return <Suspense fallback={<PageSkeleton fullWidth={fullWidth} />}>{children}</Suspense>;
 }

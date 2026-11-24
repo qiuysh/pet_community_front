@@ -226,7 +226,7 @@ export function AdminSettingsPage() {
                     <ShieldCheck
                       size={ICON_SIZE.nav}
                       strokeWidth={iconStroke(ICON_SIZE.nav)}
-                      className="text-secondary"
+                      className="text-secondary-dark"
                       aria-hidden="true"
                     />
                   </div>

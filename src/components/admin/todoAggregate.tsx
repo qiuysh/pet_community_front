@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import { Skeleton } from '../ui';
 import type { TodoAggregate as TodoAggregateData } from '@/types/chart';
 import { adminUi } from '@/styles/adminUi';
 
@@ -12,14 +13,13 @@ interface TodoAggregateProps {
 export function TodoAggregate({ data, loading }: TodoAggregateProps) {
   if (loading) {
     return (
-      <div className={adminUi.chartCard}>
-        <div className="animate-pulse">
-          <div className="mb-3 h-4 w-1/4 rounded bg-muted" />
-          <div className="space-y-2">
-            <div className="h-8 rounded bg-muted" />
-            <div className="h-8 rounded bg-muted" />
-            <div className="h-8 rounded bg-muted" />
-          </div>
+      <div className={adminUi.chartCard} role="status" aria-live="polite" aria-busy="true">
+        <span className="sr-only">加载中…</span>
+        <Skeleton className="mb-3 h-4 w-1/4" />
+        <div className="space-y-2">
+          {[0, 1, 2].map((index) => (
+            <Skeleton key={index} className="h-8 w-full" />
+          ))}
         </div>
       </div>
     );

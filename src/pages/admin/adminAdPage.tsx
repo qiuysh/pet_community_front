@@ -19,10 +19,10 @@ import { useAsyncEffect } from '../../hooks/useAsync';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useAdminTabQuery } from '../../hooks/useAdminTabQuery';
 import { useSyncedSearchParams } from '../../hooks/useSyncedSearchParams';
-import { PawPrint, ClipboardList, Eye, Pointer } from 'lucide-react';
+import { ClipboardList, Eye, Pointer } from 'lucide-react';
 import { ICON_SIZE } from '../../styles/iconSize';
 import { AdminButton } from '../../components/admin/adminButton';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { AdminInput, AdminLabel, AdminSelect } from '../../components/admin/adminField';
 import { AdminTabs } from '../../components/admin/adminTabs';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
@@ -404,14 +404,9 @@ export function AdminAdPage() {
                         </div>
                     ) : (
                         <>
-                            <div className="overflow-x-auto">
+                            <div className="-mx-6 overflow-x-auto">
                                 {loading ? (
-                                    <AdminTable.Status>
-                                        <div className="mb-2 flex justify-center animate-pulse text-brown-light">
-                                            <PawPrint size={32} aria-hidden="true" />
-                                        </div>
-                                        <p>加载中…</p>
-                                    </AdminTable.Status>
+                                    <AdminTableSkeleton columns={7} />
                                 ) : positions.length === 0 ? (
                                     <AdminTable.Status>
                                         <div className="mb-2 flex justify-center text-brown-light">
@@ -436,7 +431,7 @@ export function AdminAdPage() {
                                                     <AdminTable.Cell className="whitespace-nowrap font-mono tabular-nums">#{position.id}</AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap font-medium">{position.name}</AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">
-                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-secondary-soft text-secondary">
+                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-secondary-soft text-secondary-dark">
                                                             {getLocationLabel(position.location)}
                                                         </span>
                                                     </AdminTable.Cell>
@@ -490,14 +485,9 @@ export function AdminAdPage() {
                         />
                     ) : (
                         <>
-                            <div className="overflow-x-auto">
+                            <div className="-mx-6 overflow-x-auto">
                                 {loading ? (
-                                    <AdminTable.Status>
-                                        <div className="mb-2 flex justify-center animate-pulse text-brown-light">
-                                            <PawPrint size={32} aria-hidden="true" />
-                                        </div>
-                                        <p>加载中…</p>
-                                    </AdminTable.Status>
+                                    <AdminTableSkeleton columns={8} />
                                 ) : ads.length === 0 ? (
                                     <AdminTable.Status>
                                         <div className="mb-2 flex justify-center text-brown-light">
@@ -527,7 +517,7 @@ export function AdminAdPage() {
                                                         </div>
                                                     </AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">
-                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-secondary-soft text-secondary">
+                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-secondary-soft text-secondary-dark">
                                                             {ad.position?.name || '-'}
                                                         </span>
                                                     </AdminTable.Cell>
@@ -542,7 +532,7 @@ export function AdminAdPage() {
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-brown-muted inline-flex items-center gap-1"><Eye size={ICON_SIZE.inline} aria-hidden="true" /><span className="tabular-nums">{ad.viewCount}</span></span>
                                                             <span>/</span>
-                                                            <span className="text-secondary inline-flex items-center gap-1"><Pointer size={ICON_SIZE.inline} aria-hidden="true" /><span className="tabular-nums">{ad.clickCount}</span></span>
+                                                            <span className="text-secondary-dark inline-flex items-center gap-1"><Pointer size={ICON_SIZE.inline} aria-hidden="true" /><span className="tabular-nums">{ad.clickCount}</span></span>
                                                         </div>
                                                     </AdminTable.Cell>
                                                     <AdminTable.Cell className="whitespace-nowrap">

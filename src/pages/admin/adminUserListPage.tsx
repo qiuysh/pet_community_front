@@ -8,7 +8,7 @@ import { adminActionClass, adminUi } from '../../styles/adminUi';
 import { adminRoleLabel } from '../../utils/adminRole';
 import { AdminButton, adminButtonClass } from '../../components/admin/adminButton';
 import { AdminChip, type AdminChipTone } from '../../components/admin/adminChip';
-import { AdminTable } from '../../components/admin/adminTable';
+import { AdminTable, AdminTableSkeleton } from '../../components/admin/adminTable';
 import { AdminInput } from '../../components/admin/adminField';
 import { AdminFilterBar, AdminFilterField, AdminPageHeader } from '../../components/admin/adminFilterToolbar';
 
@@ -66,8 +66,8 @@ export function AdminUserListPage() {
     role === 'super_admin' ? 'secondary' : 'neutral';
 
   const getRoleAvatarTone = (role: string) => {
-    if (role === 'super_admin') return 'bg-secondary text-white';
-    return 'bg-secondary-soft text-secondary';
+    if (role === 'super_admin') return 'bg-secondary-dark text-white';
+    return 'bg-secondary-soft text-secondary-dark';
   };
 
   const getStatusTone = (status: number): AdminChipTone =>
@@ -115,7 +115,7 @@ export function AdminUserListPage() {
 
       <div className="px-0 sm:px-0">
         {isLoading ? (
-          <AdminTable.Status>加载中…</AdminTable.Status>
+          <AdminTableSkeleton columns={5} />
         ) : users.length === 0 ? (
           <AdminTable.Status>
             <div className="mb-2 flex justify-center text-brown-light">
