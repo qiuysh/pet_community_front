@@ -65,7 +65,7 @@ export function DraftListPage() {
   };
 
   return (
-    <div className="page-shell min-h-screen bg-cream pb-10">
+    <div className="min-h-screen bg-cream pb-10">
       <PageHeader
         title="草稿箱"
         fallbackTo="/posts/create"
@@ -83,7 +83,7 @@ export function DraftListPage() {
         }
       />
 
-      <div className="space-y-3 px-4 py-4">
+      <div className="page-shell space-y-3 py-4">
         {loading && drafts.length === 0 ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (

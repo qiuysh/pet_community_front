@@ -102,7 +102,10 @@ describe('UI 设计规范与代码一致', () => {
     expect(spec).toMatch(/^### 5\.3[^\n]*不存在 12 列栅格/m);
     const grid = section('5.3');
     expect(grid).toContain('$content-max');
-    expect(grid).toContain('$page-max-read');
+    expect(grid).toContain('$page-max');
+    expect(grid).toContain('$shell-inner-max');
+    expect(grid).toContain('$bare-shell-max');
+    expect(grid).toContain('%page-bare-shell');
     // 旧表的「移动端/平板/桌面 × 12 列 × 90%」不得回潮
     expect(grid).not.toMatch(/\|\s*平板\s*\|\s*12\s*\|/);
     expect(grid).not.toMatch(/采用 12 列栅格系统/);

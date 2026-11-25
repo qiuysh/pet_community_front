@@ -107,16 +107,20 @@ $spacing-2xl: 48px;
 // 页面宽度（唯一事实来源）
 // 外壳 .user-content 已提供 1200px 上限 + 水平内边距（PC 24 / 移动 12），
 // 页面内部只做「收窄 + 居中」，禁止手写像素 max-width。
-// 例外：白底吸顶工具条 / 标题行的 page-shell 须加 px-4（与 PageHeader 一致），
-// 同页正文 page-shell 同步加，避免贴白边（详见 design-system 5.5）。
+// 前台所有内容页统一 1120（登录 / 注册 / 重置密码是独立居中布局，不套前台列宽）。
+// 所有页头的内层盒宽 = 内容 + 内边距 = 1120（含顶栏 / 页面内页头 / 页脚）。
+// 正文容器层不加水平 padding，文字对齐由卡片自身内边距承担（详见 design-system 5.4 / 5.5）。
+// bare 路由（聊天 / 活动签到）没有 UserLayout，用 %page-bare-shell 复刻外壳留白：
+// 它的外层是 1168（1120 内容 + 24×2 内边距），不要把它与页头盒宽混用。
 // ============================================
 $content-max: 1200px; // 外壳：内容区背景上限
-$page-max: 1120px; // 常规页面：列表、详情、正文、表单、设置
-$page-max-read: 720px; // 仅会话列：聊天（泡泡行宽再长就难读）
-// 页头 / 页脚内层盒：内容列 + 两侧内边距（24×2 = 1168）。
-// 这样内层子元素的左边缘恰好落在 %page-shell 的列边上（页面卡片左边缘），
-// 不能直接写 $content-max —— 那会让顶栏 logo 比正文卡片向左多出 16px。
-$shell-inner-max: $page-max + $spacing-lg * 2;
+$page-max: 1120px; // 前台所有内容页：列表 / 详情 / 正文 / 表单 / 设置 / 聊天
+// 页头 / 页脚内层盒总宽（border-box）：内容 + 左右内边距 = 1120。
+// 盒宽与正文列同值，但 padding 在盒内；写 $content-max 会让顶栏比正文宽 80px。
+$shell-inner-max: $page-max;
+// bare 路由外层壳：内容列 1120 + 两侧 24 = 1168，使内层内容列与常规页同为 1120。
+// 仅用于 %page-bare-shell，禁止用于页头 / 页脚。
+$bare-shell-max: $page-max + $spacing-lg * 2;
 
 // 同页同宽：一个页面里所有横向内容块必须共用同一个列宽。
 // 页头 / 页签条 / 广告位 / 固定底栏最容易漏——正文 1120 而页头铺满 1152 就是错位。
@@ -128,6 +132,22 @@ $shell-inner-max: $page-max + $spacing-lg * 2;
   max-width: $page-max;
   margin-left: auto;
   margin-right: auto;
+}
+
+// bare 路由外壳：脱离 UserLayout 时复刻 .user-content 的 1168 列 + 24/12 水平留白，
+// 内层内容列因此与其它前台页同为 1120（§5.3 / §5.5）。
+%page-bare-shell {
+  width: 100%;
+  max-width: $bare-shell-max;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $spacing-lg;
+  padding-right: $spacing-lg;
+
+  @media (max-width: 768px) {
+    padding-left: $spacing-sm;
+    padding-right: $spacing-sm;
+  }
 }
 
 // 页头阅读面（萌宠社区 · 可爱活力）：

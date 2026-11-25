@@ -116,7 +116,13 @@ export function ActivityRegistrationsPage() {
         title="报名审核"
         description={activityHook.data ? `活动：${activityHook.data.title}` : '加载中…'}
         actions={
-          <Link to="/admin/activities" className={adminButtonClass({ variant: 'outline' })}>
+          <Link
+            to="/admin/activities"
+            className={adminButtonClass({
+              variant: 'outline',
+              className: '[&&]:!bg-muted [&&]:hover:!bg-border',
+            })}
+          >
             返回列表
           </Link>
         }

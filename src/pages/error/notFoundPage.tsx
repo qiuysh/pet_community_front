@@ -12,7 +12,7 @@ export function NotFoundPage() {
 
   return (
     <div
-      className="flex min-h-[55vh] flex-col items-center justify-center px-4 py-8 text-center sm:min-h-[65vh] sm:py-14"
+      className="page-shell flex min-h-[55vh] flex-col items-center justify-center py-8 text-center sm:min-h-[65vh] sm:py-14"
       role="main"
       aria-labelledby="not-found-title"
     >

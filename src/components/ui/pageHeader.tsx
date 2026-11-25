@@ -17,7 +17,7 @@ export interface PageHeaderProps {
 /**
  * 标准内页页头：返回 + 居中标题 + 右侧操作。
  * 渐变头（发现页 / 排行榜 / 话题广场）有独立装饰与筛选器，不使用本组件。
- * 白底可通栏；内层 page-shell + px-4 防标题贴边（见 .ai/design/design-system.md §5.5）。
+ * 白底可通栏；内层 page-shell + px-4 盒宽 = 内容 + 内边距 = 1120，防标题贴边（见 §5.4 / §5.5）。
  * 正文容器不带水平 padding，内容块铺满同列；页头保留 px-4 避免贴白底边缘。
  */
 export function PageHeader({

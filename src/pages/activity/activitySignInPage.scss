@@ -1,0 +1,20 @@
+@import '../../styles/variables.scss';
+
+// 活动签到是 bare 路由：白底标题层 / 吸顶页签背景通栏，内容仍落在 1120 列内（§5.3 / §5.5）。
+.sign-in-shell {
+  @extend %page-bare-shell;
+}
+
+// 页头内层盒：内容 + 内边距 = 1120（与其它前台页头同宽）。
+// PC 内边距 16 与卡片内边距一致（居中盒）；移动 28 = 外壳 12 + 卡片 16，
+// 保证标题 / 页签文字左缘与正文卡片文字左缘对齐。
+.sign-in-header {
+  @extend %page-shell;
+  padding-left: $spacing-sm + $spacing-md;
+  padding-right: $spacing-sm + $spacing-md;
+
+  @media (min-width: 769px) {
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
+  }
+}

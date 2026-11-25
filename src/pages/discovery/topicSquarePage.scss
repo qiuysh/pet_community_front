@@ -90,14 +90,20 @@
     font-size: $font-size-sm;
   }
 
+  // 快捷入口行：与页头 / 分区标题同列（§5.4 / §5.5）
+  .quick-links {
+    padding: 0 $spacing-md;
+  }
+
   .section {
-    padding: $spacing-md;
+    padding: $spacing-md 0;
 
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       margin-bottom: $spacing-md;
+      padding: 0 $spacing-md;
 
       .section-title {
         margin: 0;
@@ -186,6 +192,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: $spacing-xs;
+      padding: 0 $spacing-md;
 
       .tag-item {
         display: flex;

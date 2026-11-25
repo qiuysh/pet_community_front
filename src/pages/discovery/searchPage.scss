@@ -83,8 +83,8 @@
   }
 
   .search-content {
-    // 与 .search-header 水平 $spacing-md 同列（§5.5）
-    padding: $spacing-md;
+    // 正文列 1120：水平留白交给标题 / 卡片自身（§5.4 / §5.5）
+    padding: $spacing-md 0;
 
     .section {
       margin-bottom: 24px;
@@ -94,6 +94,7 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 12px;
+        padding: 0 $spacing-md;
 
         .clear-btn {
           background: none;
@@ -112,6 +113,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        padding: 0 $spacing-md;
 
         .hot-keyword-item {
           display: flex;
@@ -226,8 +228,8 @@
   }
 
   .search-result {
-    // 与 .search-header 水平 $spacing-md 同列（§5.5）
-    padding: $spacing-md;
+    // 正文列 1120：水平留白交给标题 / 卡片自身（§5.4 / §5.5）
+    padding: $spacing-md 0;
 
     .loading {
       text-align: center;
@@ -241,6 +243,7 @@
 
       .section-title {
         margin-bottom: 12px;
+        padding: 0 $spacing-md;
       }
 
       .user-item {

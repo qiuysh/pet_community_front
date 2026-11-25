@@ -25,9 +25,10 @@ interface PageSkeletonProps {
 
 /** 接近终态的页壳骨架：顶栏占位 + 内容条，避免仅 Spinner 的空白感 */
 export function PageSkeleton({ fullWidth = false }: PageSkeletonProps) {
+  // 前台骨架不写 px-4：与 1120 正文列同边，避免加载完成时横向跳动（§5.4）
   return (
     <div
-      className={`${fullWidth ? 'w-full' : 'page-shell px-4 w-full'} min-h-[40vh] bg-cream py-4`}
+      className={`${fullWidth ? 'w-full' : 'page-shell w-full'} min-h-[40vh] bg-cream py-4`}
       role="status"
       aria-label="页面加载中"
     >

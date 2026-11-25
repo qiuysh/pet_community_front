@@ -80,7 +80,7 @@ export const TopicSquarePage = () => {
       </div>
 
       <div className="section pt-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="quick-links flex flex-wrap gap-2">
           <Link
             to="/activities"
             className="inline-flex items-center gap-1.5 rounded-md bg-secondary-soft px-3 py-2 text-sm text-secondary-dark hover:bg-secondary/20"
@@ -101,7 +101,7 @@ export const TopicSquarePage = () => {
       {loading ? (
         <div className="section space-y-6">
           <div>
-            <Skeleton className="h-6 w-32 mb-4" />
+            <Skeleton className="h-6 w-32 mb-4 mx-4" />
             <div className="categories-grid">
               {[1, 2, 3, 4].map((i) => (
                 <Card key={i} padding="md" className="category-card">

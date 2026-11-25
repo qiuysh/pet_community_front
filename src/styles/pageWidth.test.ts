@@ -56,6 +56,20 @@ function blocks(source: string, selector: string): Block[] {
   return out;
 }
 
+/** 取整块原文（含嵌套 media），用于断言媒体查询内的声明 */
+function blockText(source: string, selector: string): string {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const m = new RegExp(`${escaped}\\s*\\{`).exec(source);
+  if (!m) return '';
+  let depth = 1;
+  let i = m.index + m[0].length;
+  for (; i < source.length && depth > 0; i++) {
+    if (source[i] === '{') depth++;
+    else if (source[i] === '}') depth--;
+  }
+  return source.slice(m.index, i);
+}
+
 /** padding 简写是否带水平分量：1 值即水平；2/3/4 值的第 2 个为水平 */
 function hasHorizontalPadding(value: string): boolean {
   const parts = value.trim().split(/\s+/);
@@ -93,9 +107,59 @@ describe('同页同宽：正文容器层无左右 padding，内容块铺满列�
     expectNoHorizontalPadding(read('src/pages/post/postDetailPage.scss'), '.post-detail-page');
   });
 
-  it('页头 / 页脚内层盒取 $shell-inner-max，与正文列同边', () => {
-    // 回归：写 $content-max（1200）会让 logo 比正文卡片左偏 16px，且页头与页脚宽度不一致。
-    expect(read('src/styles/_variables.scss')).toContain('$shell-inner-max: $page-max + $spacing-lg * 2;');
+  it('列表 / 发现 / 社交页正文容器无水平 padding，卡片铺满 1120', () => {
+    const cases: Array<[file: string, selector: string]> = [
+      ['src/pages/discovery/categoryPage.scss', '.posts-list'],
+      ['src/pages/discovery/searchPage.scss', '.search-content'],
+      ['src/pages/discovery/searchPage.scss', '.search-result'],
+      ['src/pages/discovery/rankingPage.scss', '.ranking-main'],
+      ['src/pages/discovery/topicSquarePage.scss', '.section'],
+      ['src/pages/social/followListPage.scss', '.user-list'],
+      ['src/pages/social/messageListPage.scss', '.conversation-list'],
+      ['src/pages/social/newMessagePage.scss', '.follow-list-section'],
+      ['src/pages/social/newMessagePage.scss', '.compose-section'],
+      ['src/pages/social/notificationListPage.scss', '.notification-list'],
+      ['src/pages/social/notificationSettingsPage.scss', '.settings-list'],
+      ['src/pages/social/pointsPage.scss', '.points-main'],
+    ];
+    for (const [file, selector] of cases) {
+      expectNoHorizontalPadding(read(file), selector);
+    }
+  });
+
+  it('聊天 / 签到等 bare 路由用 %page-bare-shell，内容列同为 1120', () => {
+    const variables = read('src/styles/_variables.scss');
+    expect(variables).toContain('%page-bare-shell');
+    expect(variables).not.toContain('$page-max-read');
+    expect(read('src/styles/global.scss')).not.toContain('page-shell--read');
+
+    const chat = read('src/pages/social/chatPage.scss');
+    expect(chat).toContain('@extend %page-bare-shell');
+    expect(chat).not.toContain('$page-max-read');
+
+    expect(read('src/pages/activity/activitySignInPage.scss')).toContain('@extend %page-bare-shell');
+    const signIn = read('src/pages/activity/activitySignInPage.tsx');
+    expect(signIn).toContain('sign-in-shell');
+    expect(signIn).not.toContain('page-shell px-4');
+  });
+
+  it('前台加载骨架与 404 页无水平 padding，列宽同为 1120', () => {
+    const skeleton = read('src/router/lazyPage.tsx');
+    expect(skeleton).toContain('page-shell w-full');
+    expect(skeleton).not.toContain('page-shell px-4');
+
+    const notFound = read('src/pages/error/notFoundPage.tsx');
+    expect(notFound).toContain('page-shell');
+    expect(notFound).not.toContain('px-4');
+  });
+
+  it('所有页头 / 页脚盒宽 = 内容 + 内边距 = 1120', () => {
+    const variables = read('src/styles/_variables.scss');
+    expect(variables).toContain('$shell-inner-max: $page-max;');
+    // bare 外壳的 1168 是「内容列 + 两侧留白」，不得再当页头盒宽用。
+    expect(variables).toContain('$bare-shell-max: $page-max + $spacing-lg * 2;');
+    expect(variables).toContain('max-width: $bare-shell-max;');
+
     const layout = read('src/components/layout/userLayout.scss');
     for (const selector of ['.header-content', '.site-footer-inner']) {
       const widths = blocks(layout, selector).flatMap((block) => block.decls);
@@ -105,5 +169,22 @@ describe('同页同宽：正文容器层无左右 padding，内容块铺满列�
         `${selector} 的 max-width 必须用 $shell-inner-max`,
       ).toBe(true);
     }
+
+    // 顶部导航精确口径：盒宽 1120 = 内容 + 盒内 padding（PC 24 / 移动 12）。
+    // 三要素缺一不可：盒宽 token + padding token + border-box（padding 计入盒宽）。
+    const nav = blockText(layout, '.header-content');
+    expect(nav).toMatch(/padding:\s*0 \$spacing-lg;/);
+    expect(nav).toMatch(/padding:\s*0 \$spacing-sm;/);
+    expect(read('src/styles/global.scss')).toMatch(/box-sizing:\s*border-box/);
+
+    // 页面内页头沿用 page-shell + px-4，盒宽同为 1120。
+    expect(read('src/components/ui/pageHeader.tsx')).toContain('page-shell px-4');
+    // bare 签到页的标题层 / 页签条也必须是 1120 盒宽，不能再套 1168 的 sign-in-shell。
+    const signInStyle = read('src/pages/activity/activitySignInPage.scss');
+    expect(signInStyle).toContain('.sign-in-header');
+    expect(signInStyle).toContain('@extend %page-shell');
+    const signIn = read('src/pages/activity/activitySignInPage.tsx');
+    expect(signIn.match(/className="sign-in-header"/g)?.length).toBe(2);
+    expect(signIn.match(/className="sign-in-shell(?: |")/g)?.length).toBe(1);
   });
 });

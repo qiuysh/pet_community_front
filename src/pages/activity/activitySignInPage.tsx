@@ -11,6 +11,7 @@ import { Card } from '../../components/ui/card';
 import { EmptyState } from '../../components/ui/emptyState';
 import { FieldLabel, Input } from '../../components/ui/input';
 import { Tabs } from '../../components/ui/tabs';
+import './activitySignInPage.scss';
 
 export const ActivitySignInPage = () => {
   const toast = useToast();
@@ -60,27 +61,29 @@ export const ActivitySignInPage = () => {
 
   return (
     <div className="bg-cream min-h-dvh pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
-      <div className="page-shell px-4 bg-white py-4 shadow-card">
-        <h1 className="page-content-title mb-2">{activity.title}</h1>
-        <p className="text-sm text-brown-muted mb-4">{activity.description}</p>
+      <div className="bg-white py-4 shadow-card">
+        <div className="sign-in-header">
+          <h1 className="page-content-title mb-2">{activity.title}</h1>
+          <p className="text-sm text-brown-muted mb-4">{activity.description}</p>
 
-        {signInStats && (
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-1">
-              <span className="text-brown-muted">签到人数：</span>
-              <span className="font-medium text-secondary-dark">{signInStats.signInCount}</span>
+          {signInStats && (
+            <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-1">
+                <span className="text-brown-muted">签到人数：</span>
+                <span className="font-medium text-secondary-dark">{signInStats.signInCount}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-brown-muted">报名人数：</span>
+                <span className="font-medium text-primary-text">{signInStats.registrationCount}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="text-brown-muted">报名人数：</span>
-              <span className="font-medium text-primary-text">{signInStats.registrationCount}</span>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="sticky top-0 z-10 border-b bg-white py-2 shadow-card">
-        {/* 白底通栏；水平内边距放在 page-shell，与下方正文同列 */}
-        <div className="page-shell px-4">
+        {/* 白底通栏；页签盒宽 1120（内容 + 内边距），与标题 / 正文同列 */}
+        <div className="sign-in-header">
           <Tabs
             listOnly
             className="w-full"
@@ -94,7 +97,7 @@ export const ActivitySignInPage = () => {
         </div>
       </div>
 
-      <div className="page-shell py-4">
+      <div className="sign-in-shell py-4">
         {activeTab === 'qrcode' && (
           <div className="space-y-6">
             <Card>

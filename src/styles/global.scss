@@ -250,11 +250,6 @@ a,
 
 .page-shell {
   @extend %page-shell;
-
-  // 会话列：聊天
-  &--read {
-    max-width: $page-max-read;
-  }
 }
 
 // ============================================

@@ -1,6 +1,9 @@
 @import '../../styles/variables.scss';
 
 .chat-page {
+  // bare 路由无 UserLayout：复刻外壳留白，内容列与其它前台页同为 1120（§5.3 / §5.5）
+  @extend %page-bare-shell;
+
   display: flex;
   flex-direction: column;
   position: relative;
@@ -621,10 +624,9 @@
   gap: 12px;
 }
 
+// 列宽统一由 %page-bare-shell 提供（内容 1120）；侧边线只做会话列视觉边界。
 @media (min-width: 768px) {
   .chat-page {
-    max-width: $page-max-read;
-    margin: 0 auto;
     border-left: 1px solid $background-muted;
     border-right: 1px solid $background-muted;
   }

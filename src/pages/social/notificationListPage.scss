@@ -12,14 +12,15 @@
     color: $text-muted;
   }
 
-  // 页签条：左右与 PageHeader 的 px-4、列表卡片的 $spacing-md 对齐；
-  // 上下留 12px 呼吸，避免紧贴页头白条下沿（原写法只有 pb-3、无左右内边距）。
+  // 页签条：左右与 PageHeader 的 px-4、列表卡片的内边距对齐；
+  // 上下留 12px 呼吸，避免紧贴页头白条下沿。
   .notification-filters {
     padding: $spacing-sm $spacing-md;
   }
 
   .notification-list {
-    padding: $spacing-md;
+    // 只留下内边距；上内边距移除，避免页签条下沿到列表首项的间距过大
+    padding-bottom: $spacing-md;
 
     .notification-item {
       display: flex;

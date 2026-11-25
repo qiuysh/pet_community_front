@@ -5,9 +5,9 @@
   min-height: 100vh;
   background-color: $background-color;
 
-  // PageHeader 通栏；正文与页头内层 px-4 对齐
+  // PageHeader 通栏；正文卡片铺满 1120，文字对齐由卡片内边距承担（§5.4 / §5.5）
   .points-main {
-    padding: $spacing-md;
+    padding: $spacing-md 0;
     display: flex;
     flex-direction: column;
     gap: $spacing-md;

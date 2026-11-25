@@ -74,10 +74,10 @@ export function MyReportListPage() {
   const maxPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <div className="page-shell min-h-screen py-4">
+    <div className="min-h-screen py-4">
       <PageHeader title="我的举报" fallbackTo="/profile" />
 
-      <div className="mt-4 space-y-3 px-4 motion-list">
+      <div className="page-shell mt-4 space-y-3 motion-list">
         {loading ? (
           [1, 2, 3].map((i) => (
             <Card key={i} className="space-y-2">
@@ -138,7 +138,7 @@ export function MyReportListPage() {
       </div>
 
       {maxPage > 1 && (
-        <div className="mt-4 flex items-center justify-center gap-3">
+        <div className="page-shell mt-4 flex items-center justify-center gap-3">
           <Button
             type="button"
             variant="outline"

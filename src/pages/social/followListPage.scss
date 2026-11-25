@@ -8,7 +8,7 @@
   .tab-bar {
     display: flex;
     background-color: $background-white;
-    // 与 PageHeader 内层 px-4 / 列表 $spacing-md 同列 inset（§5.5）
+    // 页签文字与页头 px-4 同列；列表卡片铺满 1120（§5.4 / §5.5）
     padding: 0 $spacing-md;
     margin-top: $spacing-sm;
 
@@ -42,7 +42,7 @@
   }
 
   .user-list {
-    padding: $spacing-md;
+    padding: $spacing-md 0;
 
     .loading,
 

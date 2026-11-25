@@ -31,7 +31,7 @@
   box-shadow: $shadow-soft;
 
   .header-content {
-    // 与正文列对齐：盒子 = 内容列 1120 + 两侧 24，logo 左边缘正好压在页面卡片左边缘
+    // 盒宽 = 内容 + 内边距 = 1120（PC 24 / 移动 12 内边距在盒内）
     max-width: $shell-inner-max;
     margin: 0 auto;
     height: var(--user-header-height);
@@ -425,8 +425,8 @@
 // ============================================
 // Site Footer (站点描述 + ICP 备案号)
 // 结构与页头对齐：外层白底通栏（窄屏/宽屏同一根横线），
-// 内层 .site-footer-inner 收窄到 $content-max 并加同款水平内边距。
-// 不要把 max-width 写在外层——那样宽屏下只有中间 1200px 是白的。
+// 内层 .site-footer-inner 收窄到 1120 盒宽并加同款水平内边距。
+// 不要把 max-width 写在外层——那样宽屏下只有中间一段是白的。
 // ============================================
 
 .site-footer {
@@ -439,7 +439,7 @@
   text-align: center;
 
   .site-footer-inner {
-    // 与 .header-content 同宽同边距，页脚文字列与顶栏、正文列三点对齐
+    // 与 .header-content 同为 1120 盒宽（内容 + 内边距）
     max-width: $shell-inner-max;
     margin: 0 auto;
     padding: $spacing-lg $spacing-lg calc(#{$spacing-lg} + var(--user-safe-bottom));
